@@ -1,5 +1,9 @@
 const configs = require("./config");
 const Post= require("../models/post.model.js")
+const Project= require("../models/project.model")
+const Task= require("../models/task.model")
+const SubTask= require("../models/subtask.model")
+const Milestone= require("../models/milestone.model")
 // configuration file for TypeORM db connection
 
 module.exports = {
@@ -11,7 +15,7 @@ module.exports = {
   password: configs.postgres.pswd,
   database: configs.postgres.database,
   // entities: [__dirname + "/../models/*.js"],
-  entities: [Post],
+  entities: [Post,Project,Task,SubTask,Milestone],
 
   synchronize: configs.env == "development" ? true : false,
   migrations: [__dirname + "./migrations/*.js"], // Path to migration files
