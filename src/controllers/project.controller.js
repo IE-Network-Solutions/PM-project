@@ -5,9 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const { projectService} = require('../services');
 
 const createProject = catchAsync(async (req, res) => {
-// 
 const project = await projectService.createProject(req.body);
-
 res.status(httpStatus.CREATED).send(project);
 });
 
@@ -18,7 +16,7 @@ const getProjects = catchAsync(async(req, res)=>{
   res.send(result);
 });
 const getProject = catchAsync(async(req, res)=>{
-  const project = await projectService.getProject(req.params.postId);
+  const project = await projectService.getProject(req.params.projectId);
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
@@ -29,7 +27,8 @@ const updateProject = catchAsync(async(req, res)=>{
   res.send(project);
 });
 const deleteProject = catchAsync(async(req, res)=>{
-  res.send("Routing for delete project working fine")
+  await projectService.deleteProject(req.params.projectId);
+  res.status(httpStatus.NO_CONTENT).send();
 });
 
 module.exports = {

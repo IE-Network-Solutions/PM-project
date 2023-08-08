@@ -73,8 +73,8 @@ const updateProject = async (projectId, updateBody) => {
  * @param {ObjectId} ProjectId
  * @returns {Promise<User>}
  */
-const deleteProjectById = async (projectId) => {
-  const post = await getProjectById(projectId);
+const deleteProject = async (projectId) => {
+  const post = await getProject(projectId);
   if (!post) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
   }
@@ -86,5 +86,5 @@ module.exports = {
   getProjects,
   getProject,
   updateProject,
-  deleteProjectById,
+  deleteProject,
 };

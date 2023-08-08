@@ -1,6 +1,7 @@
 const express = require('express');
 const postRoute = require('./post.route');
 const projectRoute = require('./project.route');
+const milestoneRoute = require('./milestone.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
@@ -14,6 +15,11 @@ const defaultRoutes = [
   {
     path: '/projects',
     route: projectRoute,
+  }
+  ,
+  {
+    path: '/milestones',
+    route: milestoneRoute,
   }
 ];
 

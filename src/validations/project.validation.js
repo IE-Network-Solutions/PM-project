@@ -16,6 +16,9 @@ const createProject = {
 
 const getProjects = {
   query: Joi.object().keys({
+    sortBy: Joi.string(),
+    limit: Joi.number().integer(),
+    page: Joi.number().integer(),
   }),
 };
 
@@ -37,7 +40,7 @@ const updateProject = {
 
 const deleteProject = {
     params: Joi.object().keys({
-      postId: Joi.string(),
+      projectId: Joi.string(),
     }),
   };
 
