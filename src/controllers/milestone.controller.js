@@ -5,8 +5,15 @@ const catchAsync = require('../utils/catchAsync');
 const { milestoneService} = require('../services');
 
 const createMilestone = catchAsync(async (req, res) => {
-const project = await milestoneService.createMilestone(req.body);
-res.status(httpStatus.CREATED).send(project);
+const milestone = await milestoneService.createMilestone(req.body);
+
+// const project = await milestoneService.getMilestone.findOneBy({ id: req.body.projectId }); // Provide the condition
+
+// if (!project) {
+//   return res.status(404).json({ error: 'Project not found' });
+// }
+
+res.status(httpStatus.CREATED).send(milestone);
 });
 
 const getMilestones = catchAsync(async(req, res)=>{

@@ -6,6 +6,7 @@ const createMilestone = {
     name: Joi.string().required(),
     status: Joi.string().required(),
     weight: Joi.required(),
+    projectId: Joi.string(),
   }),
 };
 
