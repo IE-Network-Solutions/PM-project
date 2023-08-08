@@ -22,11 +22,5 @@ module.exports = new EntitySchema({
   name: 'Project',
   tableName: 'projects',
   columns: new Project(),
-  relations: {
-    milestone: {
-        type: "one-to-many",
-        target: "milestones", // Target entity name (name of the related entity)
-        inverseSide: "projects", // Property name on the related entity that points back to Post
-      },
-  },
+
 });

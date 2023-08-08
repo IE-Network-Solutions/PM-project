@@ -8,16 +8,15 @@ class Task extends Base {
   constructor() {
     super(); // Call the constructor of the Base entity to inherit its properties
     this.name = { type: 'varchar' };
-    this.plannedStart = { type: 'text' };
-    this.plannedFinish = { type: 'text' };
-    this.actualStart = { type: 'text' };
-    this.actualFinish = { type: 'text' };
-    this.completion = { type: 'text' };
-    this.plannedCost = { type: 'text' };
-    this.actualCost = { type: 'text' };
-    this.status = { type: 'text' };
-    this.plannedStart = { type: 'text' };
-    this.sleepingReason = { type: 'text' };
+    this.plannedStart = { type: 'date' };
+    this.plannedFinish = { type: 'date' };
+    this.actualStart = { type: 'date' };
+    this.actualFinish = { type: 'date' };
+    this.completion = { type: 'int' };
+    this.plannedCost = { type: 'int' };
+    this.actualCost = { type: 'int' };
+    this.status = { type: 'boolean' };
+    this.sleepingReason = { type: 'varchar', default: () => "NULL"};
 
   }
 }

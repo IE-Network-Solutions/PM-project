@@ -1,5 +1,6 @@
 const express = require('express');
 const postRoute = require('./post.route');
+const projectRoute = require('./project.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
@@ -9,6 +10,10 @@ const defaultRoutes = [
   {
     path: '/posts',
     route: postRoute,
+  },
+  {
+    path: '/projects',
+    route: projectRoute,
   }
 ];
 
