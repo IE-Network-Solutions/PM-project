@@ -37,7 +37,7 @@ const queryPosts = async (filter, options) => {
 
   return await postRepository.findAll({
     tableName: 'post',
-    sortOptions: sortBy&&{ option: sortBy },
+    sortOptions: sortBy && { option: sortBy },
     paginationOptions: { limit: limit, page: page },
   });
 

@@ -1,17 +1,17 @@
 
 const app = require('./app');
-const AppDataSource =require('./utils/createDatabaseConnection')
+const AppDataSource = require('./utils/createDatabaseConnection')
 const config = require('./config/config');
 const logger = require('./config/logger');
 
 let server;
 
-AppDataSource.initialize().then(()=>{
+AppDataSource.initialize().then(() => {
   logger.info('Connected to Postgres through Typeorm');
   server = app.listen(config.port, () => {
     logger.info(`Listening to port ${config.port}`);
   });
-}).catch((e)=>{
+}).catch((e) => {
   logger.error(`Exception Error ${e}`)
 })
 

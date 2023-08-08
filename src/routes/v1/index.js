@@ -1,5 +1,7 @@
 const express = require('express');
 const postRoute = require('./post.route');
+const riskRoute = require('./risk.route');
+const issueRoute = require('./issue.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
@@ -9,7 +11,16 @@ const defaultRoutes = [
   {
     path: '/posts',
     route: postRoute,
-  }
+  },
+  {
+    path: '/risks',
+    route: riskRoute,
+  },
+  {
+    path: '/issues',
+    route: issueRoute,
+  },
+
 ];
 
 const devRoutes = [
