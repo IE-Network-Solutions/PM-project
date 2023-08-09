@@ -3,8 +3,7 @@ const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { riskService } = require('../services');
-const { riskImpactkMatrixRules } = require('../utils/riskMatrix');
-const { residualRiskResidualImpactMatrixRules } = require('../utils/riskMatrix');
+const { residualMapRiskRate } = require('../utils/riskMatrix');
 const { mapRiskRate } = require('././../utils/riskMatrix');
 
 const createRisk = catchAsync(async (req, res) => {
@@ -16,7 +15,7 @@ const createRisk = catchAsync(async (req, res) => {
     // const residualRiskRate = residualRiskResidualImpactMatrixRules.find(rules => rules.residualImpact === residualImpact && rules.residualProbability === residualProbability);
     // req.body.residualRiskRate = residualRiskRate.rating;
     req.body.riskRate = mapRiskRate(impact, probability);
-    req.body.residualRiskRate = mapRiskRate(impact, probability);
+    req.body.residualRiskRate = residualMapRiskRate(residualImpact, residualProbability);
 
 
     const risk = await riskService.createRisk(req.body);
