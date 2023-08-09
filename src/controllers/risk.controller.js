@@ -5,15 +5,19 @@ const catchAsync = require('../utils/catchAsync');
 const { riskService } = require('../services');
 const { riskImpactkMatrixRules } = require('../utils/riskMatrix');
 const { residualRiskResidualImpactMatrixRules } = require('../utils/riskMatrix');
+const { mapRiskRate } = require('././../utils/riskMatrix');
 
 const createRisk = catchAsync(async (req, res) => {
     const { impact, probability, residualImpact, residualProbability } = req.body;
 
-    const riskRate = riskImpactkMatrixRules.find(rules => rules.impact === impact && rules.probability === probability);
-    req.body.riskRate = riskRate.rating;
+    // const riskRate = riskImpactkMatrixRules.find(rules => rules.impact === impact && rules.probability === probability);
+    // req.body.riskRate = riskRate.rating;
 
-    const residualRiskRate = residualRiskResidualImpactMatrixRules.find(rules => rules.residualImpact === residualImpact && rules.residualProbability === residualProbability);
-    req.body.residualRiskRate = residualRiskRate.rating;
+    // const residualRiskRate = residualRiskResidualImpactMatrixRules.find(rules => rules.residualImpact === residualImpact && rules.residualProbability === residualProbability);
+    // req.body.residualRiskRate = residualRiskRate.rating;
+    req.body.riskRate = mapRiskRate(impact, probability);
+    req.body.residualRiskRate = mapRiskRate(impact, probability);
+
 
     const risk = await riskService.createRisk(req.body);
     res.status(httpStatus.CREATED).send(risk);
