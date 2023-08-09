@@ -3,6 +3,7 @@ const postRoute = require('./post.route');
 const projectRoute = require('./project.route');
 const milestoneRoute = require('./milestone.route');
 const taskRoute = require('./task.route');
+const subTaskRoute = require('./subtask.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
@@ -26,6 +27,11 @@ const defaultRoutes = [
   {  
     path: '/tasks',
     route: taskRoute,
+  }
+  ,
+  {  
+    path: '/subtasks',
+    route: subTaskRoute,
   }
 ];
 
