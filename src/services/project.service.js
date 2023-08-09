@@ -10,9 +10,6 @@ const projectRepository = dataSource.getRepository(Project).extend({
   sortBy,
 });
 
-// .extend({ sortBy });
-//
-
 /**
  * Create a user
  * @param {Object} projectBody
@@ -74,9 +71,9 @@ const updateProject = async (projectId, updateBody) => {
  * @returns {Promise<User>}
  */
 const deleteProject = async (projectId) => {
-  const post = await getProject(projectId);
-  if (!post) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
+  const project = await getProject(projectId);
+  if (!project) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
   return await projectRepository.delete({ id: projectId });
 };
