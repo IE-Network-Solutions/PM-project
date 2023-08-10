@@ -4,19 +4,19 @@ const config = require('../config/config');
 const logger = require('../config/logger');
 const ApiError = require('../utils/ApiError');
 
-const TypeORMErrors  = require('typeorm');
+const TypeORMErrors = require('typeorm');
 
 const errorConverter = (err, req, res, next) => {
   let error = err;
-  let statusCode=httpStatus.INTERNAL_SERVER_ERROR;
+  let statusCode = httpStatus.INTERNAL_SERVER_ERROR;
   if (!(error instanceof ApiError)) {
-    for (const errorClass of Object.values(TypeORMErrors)) {
-      if (error instanceof errorClass) {
-        console.log(`This is a ${errorClass.name}:`, error);
-        statusCode=httpStatus.BAD_REQUEST
-        break;
-      }
-    }
+    // for (const errorClass of Object.values(TypeORMErrors)) {
+    //   if (error instanceof errorClass) {
+    //     console.log(`This is a ${errorClass.name}:`, error);
+    //     statusCode = httpStatus.BAD_REQUEST
+    //     break;
+    //   }
+    // }
 
     const message = error.message || httpStatus[statusCode];
     error = new ApiError(statusCode, message, false, err.stack);

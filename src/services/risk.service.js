@@ -45,6 +45,21 @@ const queryRisks = async (filter, options) => {
  * @param {ObjectId} id
  * @returns {Promise<Risk>}
  */
+const getRiskByDate = async (startDate, endDate) => {
+    return await Risk.findAll({
+        where: {
+            created_at: {
+                [Op.between]: [startDate, endDate],
+            },
+        },
+    });
+};
+
+/**
+ * Get risk by id
+ * @param {ObjectId} id
+ * @returns {Promise<Risk>}
+ */
 const getRiskById = async (id) => {
     return await riskRepository.findOneBy({ id: id });
 };
@@ -80,6 +95,7 @@ const deleteRiskById = async (riskId) => {
 module.exports = {
     createRisk,
     queryRisks,
+    getRiskByDate,
     getRiskById,
     updateRiskById,
     deleteRiskById,

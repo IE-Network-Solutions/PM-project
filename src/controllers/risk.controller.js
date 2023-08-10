@@ -29,6 +29,18 @@ const getRisks = catchAsync(async (req, res) => {
     res.send(result);
 });
 
+const getRiskByDate = catchAsync(async (req, res) => {
+
+    const startDate = new Date(req.body.startDate); 
+    const endDate = new Date(req.body.endDate);
+    const risk = await riskService.getRiskByDate(startDate, endDate);
+
+    if (!risk) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Risk not found');
+    }
+    res.send(risk);
+});
+
 const getRisk = catchAsync(async (req, res) => {
     const risk = await riskService.getRiskById(req.params.riskId);
     if (!risk) {
@@ -51,6 +63,7 @@ module.exports = {
     createRisk,
     getRisks,
     getRisk,
+    getRiskByDate,
     updateRisk,
     deleteRisk
 };

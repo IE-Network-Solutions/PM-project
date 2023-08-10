@@ -2,6 +2,10 @@ const express = require('express');
 const postRoute = require('./post.route');
 const riskRoute = require('./risk.route');
 const issueRoute = require('./issue.route');
+const AAARoute = require('./AAA.route');
+const relatedIssue = require('./relatedIssue.route');
+const actionRoute = require('./action.route');
+const afterActionAnalysisActionRoute = require('./afterActionAnalysisIssueRelated.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
@@ -19,6 +23,25 @@ const defaultRoutes = [
   {
     path: '/issues',
     route: issueRoute,
+  },
+  {
+    path: '/AAA',
+    route: AAARoute,
+  },
+
+  {
+    path: '/relatedIssues',
+    route: relatedIssue,
+  },
+
+  {
+    path: '/actions',
+    route: actionRoute,
+  },
+
+  {
+    path: '/afterActionAnalysisAction',
+    route: afterActionAnalysisActionRoute,
   },
 
 ];
