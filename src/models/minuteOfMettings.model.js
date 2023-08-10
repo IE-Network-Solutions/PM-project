@@ -19,6 +19,7 @@ module.exports = new EntitySchema({
   name: 'minuteOfMeeting',
   tableName: 'minute_of_meetings',
   columns: new minuteOfMeeting(),
+  
   relations: {
     project: {
         type: "many-to-one", 

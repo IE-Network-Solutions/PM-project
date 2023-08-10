@@ -14,6 +14,7 @@ module.exports = new EntitySchema({
   name: 'Agenda',
   tableName: 'agendas',
   columns: new Agenda(),
+  
   relations: {
     mom: {
         type: "many-to-one", 

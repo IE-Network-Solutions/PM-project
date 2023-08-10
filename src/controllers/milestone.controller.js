@@ -2,25 +2,29 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { milestoneService} = require('../services');
+const { milestoneService, projectService} = require('../services');
 
 const createMilestone = catchAsync(async (req, res) => {
-const milestone = await milestoneService.createMilestone(req.body);
+  const milestone = await milestoneService.createMilestone(req.body);
 
-// const project = await milestoneService.getMilestone.findOneBy({ id: req.body.projectId }); // Provide the condition
+  // relation with project
+  const project = await projectService.getProject(req.body.projectId);
+  if (!project) {
+    return res.status(404).json({ error: "Project not found" });
+  }
+  milestone.project = project; // Associate the milestone with the project
 
-// if (!project) {
-//   return res.status(404).json({ error: 'Project not found' });
-// }
-
-res.status(httpStatus.CREATED).send(milestone);
+  // Save the milestone with the associated project
+  await milestoneService.createMilestone(milestone); // Replace with the appropriate method
+  res.status(httpStatus.CREATED).json(milestone); // Send the milestone in the response
 });
+
 
 const getMilestones = catchAsync(async(req, res)=>{
   const filter = pick(req.query, ['status']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const result = await milestoneService.getMilestones(filter, options);
-  res.send(result);
+  const milestone = await milestoneService.getMilestones(filter, options, relation, ["project"]);
+  res.send(milestone);
 });
 
 const getMilestone = catchAsync(async(req, res)=>{
