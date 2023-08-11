@@ -7,13 +7,13 @@ const router = express.Router();
 
 router
     .route('/:afterActionAnalysisId')
-    .post(validate(afterActionAnalysisIssueRelatedValidation.createAfterActionAnalysisAction),
+    .post(validate(afterActionAnalysisIssueRelatedValidation.createAfterActionAnalysisIssueRelated),
         afterActionAnalysisIssueRelatedController.createAfterActionAnalysisIssueRelated)
-    .get(validate(afterActionAnalysisIssueRelatedValidation.getActionAnalysisActionById),
+    .get(validate(afterActionAnalysisIssueRelatedValidation.getActionAnalysisIssueRelated),
         afterActionAnalysisIssueRelatedController.getafterActionAnalysisWithIssueRelated);
 
 router.
-    route('/').get(validate(afterActionAnalysisIssueRelatedValidation.getActionAnalysisActions),
+    route('/').get(validate(afterActionAnalysisIssueRelatedValidation.getActionAnalysisIssueRelatedById),
         afterActionAnalysisIssueRelatedController.getafterActionAnalysisWithIssueRelatedById);
 
 module.exports = router;

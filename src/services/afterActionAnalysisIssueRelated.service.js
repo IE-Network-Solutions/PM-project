@@ -1,13 +1,13 @@
 const httpStatus = require('http-status');
-const { AfterActionAnalysisAction, AfterActionAnalysis, Action } = require('../models');
+const { AfterActionAnalysisIssueRelated, AfterActionAnalysis, RelatedIssue } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 
-const afterActionAnalysisIssueRelatedRepository = dataSource.getRepository(AfterActionAnalysisAction).extend({ findAll, sortBy });
+const afterActionAnalysisIssueRelatedRepository = dataSource.getRepository(AfterActionAnalysisIssueRelated).extend({ findAll, sortBy });
 const afterActionAnalysisRepository = dataSource.getRepository(AfterActionAnalysis).extend({ findAll, sortBy });
-const actionRepository = dataSource.getRepository(Action).extend({ findAll, sortBy });
+const issueRelatedRepository = dataSource.getRepository(RelatedIssue).extend({ findAll, sortBy });
 // .extend({ sortBy });
 //
 
@@ -22,16 +22,17 @@ const createAfterActionAnalysisIssueRelated = async (afterActionAnalysisId, issu
     if (!afterActionAnalysis) {
         throw new ApiError(httpStatus.NOT_FOUND, 'After Action Analysis ID is not found');
     }
-    const issueRelated = await actionRepository.findByIds({ where: { id: issueRelatedId } })
-    if (!issueRelated) {
+    const check = await issueRelatedRepository.findOne({ where: { id: issueRelatedId } });
+    if (!check) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Issue Related ID is not found');
     }
+    const issueRelated = await issueRelatedRepository.findByIds({ issueRelatedId });
 
-    const AAAAction = issueRelated.map((issueRelated) => {
-        const assignedRelatedIssues = afterActionAnalysisIssueRelatedRepository.create({ afterActionAnalysis: afterActionAnalysis, issueRelated });
+    const AAAAction = issueRelated.map(async (issue) => {
+        const assignedRelatedIssues = afterActionAnalysisIssueRelatedRepository.create({ afterActionAnalysis: afterActionAnalysis, issue });
         return assignedRelatedIssues;
     });
-    return afterActionAnalysisIssueRelatedRepository.save(AAAAction);
+    return await afterActionAnalysisIssueRelatedRepository.save(AAAAction);
 };
 
 /**

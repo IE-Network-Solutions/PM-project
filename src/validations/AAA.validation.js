@@ -9,9 +9,8 @@ const createAAA = {
         rootCause: Joi.string().required(),
         lessonLearned: Joi.string().required(),
         remarks: Joi.string().required(),
-        projectId: Joi.string(),
-        relatedIssueId: Joi.string(),
-        actions:Joi.array()
+        projectId: Joi.string().required(),
+        actions: Joi.array().required()
         // projectId: Joi.string().custom(objectId),
         // issueId: Joi.string().custom(objectId),
     }),
@@ -46,7 +45,9 @@ const updateAAA = {
         rootCause: Joi.string().required(),
         lessonLearned: Joi.string().required(),
         remarks: Joi.string().required(),
-        relatedIssueId: Joi.string().required(),
+        projectId: Joi.string(),
+        actions: Joi.array().required()
+        // projectId: Joi.string().custom(objectId),
         // issueId: Joi.string().custom(objectId),
     })
         .min(1),

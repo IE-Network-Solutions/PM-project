@@ -26,7 +26,10 @@ module.exports = new EntitySchema({
             joinColumn: {
                 name: "AAAId",
                 referencedColumnName: "id"
-            }
+            },
+            onDelete: "SET NULL",
+            cascade: true,
+            onUpdate: 'CASCADE'
         },
     },
 });

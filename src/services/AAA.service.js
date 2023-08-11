@@ -4,7 +4,7 @@ const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
-const { createAction } = require('./action.service');
+const { createAction, getIssueRelatedById } = require('./action.service');
 
 const AAARepository = dataSource.getRepository(AfterActionAnalysis).extend({ findAll, sortBy });
 // .extend({ sortBy });
@@ -19,7 +19,8 @@ const createAAA = async (AAABody) => {
     let requestActions = AAABody.actions
     const result = await AAARepository.create(AAABody);
     await AAARepository.save(result);
-    requestActions.forEach(async (action) => {
+
+    requestActions.map(async (action) => {
         action.afterActionAnalysis = result;
         await createAction(action);
     });
@@ -69,12 +70,22 @@ const getAAAById = async (id) => {
  * @returns {Promise<AAA>}
  */
 const updateAAAById = async (AAAId, updateBody) => {
-    const AAA = await getAAAById(AAAId);
-    if (!AAA) {
+    const checkAAAId = await getAAAById(AAAId);
+    if (!checkAAAId) {
         throw new ApiError(httpStatus.NOT_FOUND, 'AAA not found');
     }
-    await AAARepository.update({ id: AAAId }, updateBody);
-    return await getAAAById(AAAId);
+
+    let requestActions = updateBody.actions
+    const result = await AAARepository.update({ id: AAAId }, updateBody);
+
+    requestActions.map(async (action) => {
+        action.afterActionAnalysis = result;
+        await getIssueRelatedById(action);
+    });
+
+    return result;
+
+    // return await getAAAById(AAAId);
 };
 
 /**
@@ -89,6 +100,7 @@ const deleteAAAById = async (AAAId) => {
     }
     return await AAARepository.delete({ id: AAAId });
 };
+
 
 module.exports = {
     createAAA,

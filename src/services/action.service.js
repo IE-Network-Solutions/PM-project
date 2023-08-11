@@ -4,6 +4,7 @@ const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const { getAAAById } = require('../services/AAA.service');
 
 const actionRepository = dataSource.getRepository(Action).extend({ findAll, sortBy });
 // .extend({ sortBy });
@@ -90,5 +91,4 @@ module.exports = {
     getActionById,
     updateActionById,
     deleteActionById,
-    getActionsId
 };

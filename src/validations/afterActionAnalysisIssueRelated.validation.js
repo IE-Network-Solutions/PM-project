@@ -3,10 +3,11 @@ const { objectId } = require('./custom.validation');
 
 const createAfterActionAnalysisIssueRelated = {
     params: Joi.object().keys({
-        actionAnalysisIssueRelatedId: Joi.string().custom(objectId),
+        afterActionAnalysisId: Joi.string().custom(objectId),
     }),
     body: Joi.object().keys({
-        issueRelatedId: Joi.array().required(),
+        relatedIssuedId: Joi.array().required(),
+        name: Joi.array().required(),
     }),
 };
 
