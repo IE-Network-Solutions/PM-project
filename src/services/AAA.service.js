@@ -5,6 +5,7 @@ const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 const { createAction, getIssueRelatedById } = require('./action.service');
+const { createAfterActionAnalysisIssueRelated } = require('./afterActionAnalysisIssueRelated.service');
 
 const AAARepository = dataSource.getRepository(AfterActionAnalysis).extend({ findAll, sortBy });
 // .extend({ sortBy });
@@ -17,12 +18,17 @@ const AAARepository = dataSource.getRepository(AfterActionAnalysis).extend({ fin
  */
 const createAAA = async (AAABody) => {
     let requestActions = AAABody.actions
-    const result = await AAARepository.create(AAABody);
+    let requestRelatedIssue = AAABody.relatedIssueId;
+    const result = AAARepository.create(AAABody);
     await AAARepository.save(result);
 
-    requestActions.map(async (action) => {
+    requestActions.forEach(async (action) => {
         action.afterActionAnalysis = result;
         await createAction(action);
+    });
+
+    requestRelatedIssue.forEach(async (issue) => {
+        await createAfterActionAnalysisIssueRelated(result.id, issue);
     });
     return result;
 };

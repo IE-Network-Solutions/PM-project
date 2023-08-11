@@ -10,9 +10,9 @@ const createAAA = {
         lessonLearned: Joi.string().required(),
         remarks: Joi.string().required(),
         projectId: Joi.string().required(),
-        actions: Joi.array().required()
-        // projectId: Joi.string().custom(objectId),
-        // issueId: Joi.string().custom(objectId),
+        actions: Joi.array().required(),
+        relatedIssueId: Joi.array().items(Joi.string().custom(objectId))  // Assuming objectId is your custom validation function
+            .required(),
     }),
 };
 

@@ -1,37 +1,53 @@
 const httpStatus = require('http-status');
 const { AfterActionAnalysisIssueRelated, AfterActionAnalysis, RelatedIssue } = require('../models');
+const services = require('../services');
+
+const { AfterActionAnalysisService, relatedIssueService } = require('../services');
+
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 
-const afterActionAnalysisIssueRelatedRepository = dataSource.getRepository(AfterActionAnalysisIssueRelated).extend({ findAll, sortBy });
-const afterActionAnalysisRepository = dataSource.getRepository(AfterActionAnalysis).extend({ findAll, sortBy });
-const issueRelatedRepository = dataSource.getRepository(RelatedIssue).extend({ findAll, sortBy });
-// .extend({ sortBy });
-//
+
+const afterActionAnalysisIssueRelatedRepository = dataSource.getRepository(AfterActionAnalysisIssueRelated)
+    .extend({ findAll, sortBy });
+
 
 /**
  * Create a risk
  * @param {Object} userBody
- * @returns {Promise<AfterActionAnalysisAction>}
+ * @returns {Promise<AfterActionAnalysisIssueRelated>}
  */
 const createAfterActionAnalysisIssueRelated = async (afterActionAnalysisId, issueRelatedId) => {
+    console.log("HERE 1")
 
-    const afterActionAnalysis = await afterActionAnalysisRepository.findOne({ where: { id: afterActionAnalysisId } });
+    const afterActionAnalysis = await services.AfterActionAnalysisService.getAAAById(afterActionAnalysisId);
     if (!afterActionAnalysis) {
         throw new ApiError(httpStatus.NOT_FOUND, 'After Action Analysis ID is not found');
     }
-    const check = await issueRelatedRepository.findOne({ where: { id: issueRelatedId } });
-    if (!check) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Issue Related ID is not found');
-    }
-    const issueRelated = await issueRelatedRepository.findByIds({ issueRelatedId });
 
-    const AAAAction = issueRelated.map(async (issue) => {
-        const assignedRelatedIssues = afterActionAnalysisIssueRelatedRepository.create({ afterActionAnalysis: afterActionAnalysis, issue });
-        return assignedRelatedIssues;
-    });
+
+    const issueRelated = await services.relatedIssueService.getRelatedIssueById(issueRelatedId)
+    if (!issueRelated) {
+        return new ApiError(httpStatus.NOT_FOUND, 'Issue Related ID is not found');
+    }
+
+    const issueRelateds = services.relatedIssueService.getRelatedIssuesByIds(issueRelatedId);
+    if (!issueRelated) {
+        return new ApiError(httpStatus.NOT_FOUND, 'Issue Related ID is not found');
+    }
+    console.log("HERE 2")
+
+    const AAAAction = afterActionAnalysisIssueRelatedRepository.create(issueRelateds.map(async (issue) => {
+        return {
+            afterActionAnalysisId: afterActionAnalysisId,
+            relatedIssueId: issue
+        };
+    }))
+    console.log("HERE 3")
+
+
     return await afterActionAnalysisIssueRelatedRepository.save(AAAAction);
 };
 

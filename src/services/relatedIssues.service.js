@@ -77,10 +77,15 @@ const deleteRelatedIssueById = async (relatedIssueId) => {
     return await relatedIssueRepository.delete({ id: relatedIssueId });
 };
 
+const getRelatedIssuesByIds = async (issueId) => {
+    return await relatedIssueRepository.findByIds({ id: issueId })
+}
+
 module.exports = {
     createRelatedIssue,
     queryRelatedIssues,
     getRelatedIssueById,
     updateRelatedIssueById,
     deleteRelatedIssueById,
+    getRelatedIssuesByIds
 };

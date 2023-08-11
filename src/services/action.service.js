@@ -1,10 +1,10 @@
+/* eslint-disable prettier/prettier */
 const httpStatus = require('http-status');
 const { Action } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
-const { getAAAById } = require('../services/AAA.service');
 
 const actionRepository = dataSource.getRepository(Action).extend({ findAll, sortBy });
 // .extend({ sortBy });
@@ -16,6 +16,7 @@ const actionRepository = dataSource.getRepository(Action).extend({ findAll, sort
  * @returns {Promise<Action>}
  */
 const createAction = async (actionBody = []) => {
+   
     const action = actionRepository.create(actionBody);
     return await actionRepository.save(action);
 };
