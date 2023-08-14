@@ -3,14 +3,15 @@ const { objectId } = require('./custom.validation');
 
 const createProject = {
   body: Joi.object().keys({
-    name: Joi.string().required(),
-    milestone: Joi.string().required(),
-    budget: Joi.string().required(),
-    contract_sign_date: Joi.string().required(),
-    lc_opening_date: Joi.string().required(),
-    advanced_payment_date: Joi.string().required(),
-    status: Joi.string().required(),
-    planned_end_date: Joi.string().required(),
+    name: Joi.required(),
+    milestone: Joi.required(),
+    budget: Joi.required(),
+    contract_sign_date: Joi.required(),
+    lc_opening_date: Joi.required(),
+    advanced_payment_date: Joi.required(),
+    status: Joi.required(),
+    planned_end_date: Joi.required(),
+    projectMembers: Joi.required()
   }),
 };
 

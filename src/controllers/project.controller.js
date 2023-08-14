@@ -4,10 +4,21 @@ const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { projectService} = require('../services');
 
+
+
+// const createProject = catchAsync(async (req, res) => {
+// const project = await projectService.createProject(req.body);
+// res.status(httpStatus.CREATED).send(project);
+// });
+
+// project.controller.js
 const createProject = catchAsync(async (req, res) => {
-const project = await projectService.createProject(req.body);
-res.status(httpStatus.CREATED).send(project);
+  const projectMembers = req.body.projectMembers; // Extract project members from the request body
+  delete req.body.projectMembers; // Remove project members from the project object
+  const project = await projectService.createProject(req.body, projectMembers);
+  res.status(httpStatus.CREATED).json(project);
 });
+
 
 const getProjects = catchAsync(async(req, res)=>{
   const filter = pick(req.query, ['milestone']);
@@ -15,6 +26,7 @@ const getProjects = catchAsync(async(req, res)=>{
   const result = await projectService.getProjects(filter, options);
   res.send(result);
 });
+
 const getProject = catchAsync(async(req, res)=>{
   const project = await projectService.getProject(req.params.projectId);
   if (!project) {

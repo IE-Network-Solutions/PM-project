@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Project } = require('../models');
+const { Project, ProjectMembers } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -9,16 +9,47 @@ const projectRepository = dataSource.getRepository(Project).extend({
   findAll,
   sortBy,
 });
+const projectMemberRepository = dataSource.getRepository(ProjectMembers);
 
 /**
  * Create a user
  * @param {Object} projectBody
  * @returns {Promise<Project>}
  */
-const createProject = async (projectBody) => {
+
+// const createProject = async (projectBody) => {
+//   const project = projectRepository.create(projectBody);
+//   return await projectRepository.save(project);
+// };
+
+
+   // project.service.js
+const createProject = async (projectBody, projectMembers) => {
   const project = projectRepository.create(projectBody);
-  return await projectRepository.save(project);
+
+  // Save the project instance
+  await projectRepository.save(project);
+
+  if (projectMembers) {
+    const projectMemberInstances = projectMembers.map((member) => {
+      return projectMemberRepository.create({
+        projectId: project.id,
+        memberId: member.memberId,
+        memberName: member.memberName,
+        roleId: member.roleId,
+        roleName: member.roleName,
+      });
+    });
+
+    // Save the project member instances
+    await projectMemberRepository.save(projectMemberInstances);
+  }
+
+  return project;
 };
+
+
+
 
 
 /**
@@ -34,12 +65,22 @@ const createProject = async (projectBody) => {
 const getProjects = async (filter, options) => {
   const { limit, page, sortBy } = options;
 
-  return await projectRepository.findAll({
+  return await projectRepository.find({
     tableName: 'projects',
     sortOptions: sortBy&&{ option: sortBy },
     paginationOptions: { limit: limit, page: page },
+    relations: ['projectMembers'],
   });
 };
+
+
+// project.service.js
+// const getProjects = async () => {
+//   return await projectRepository.findAll({
+//     relations: ['projectMembers'], // Load the projectMembers association
+//   });
+// };
+
 
 /**
  * Get post by id

@@ -24,7 +24,7 @@ const getMilestones = catchAsync(async(req, res)=>{
   const filter = pick(req.query, ['status']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const milestone = await milestoneService.getMilestones(filter, options, relation, ["project"]);
-  res.send(milestone);
+  res.send(milestone);           
 });
 
 const getMilestone = catchAsync(async(req, res)=>{
