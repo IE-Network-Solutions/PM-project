@@ -1,7 +1,12 @@
 const configs = require("./config");
 const Post = require("../models/post.model.js")
 const Risk = require('../models/risk.model.js');
-const { Issue, AfterActionAnalysis, RelatedIssue, Action, AfterActionAnalysisIssueRelated } = require("../models");
+const { Issue,
+  AfterActionAnalysis,
+  RelatedIssue,
+  Action,
+  AfterActionAnalysisIssueRelated,
+  LessonLearned, IndividualLL } = require("../models");
 
 module.exports = {
 
@@ -12,7 +17,10 @@ module.exports = {
   password: configs.postgres.pswd,
   database: configs.postgres.database,
   // entities: [__dirname + "/../models/*.js"],
-  entities: [Post, Risk, Issue, AfterActionAnalysis, RelatedIssue, Action, AfterActionAnalysisIssueRelated],
+  entities: [Post, Risk, Issue,
+    AfterActionAnalysis, RelatedIssue,
+    Action, AfterActionAnalysisIssueRelated,
+    LessonLearned, IndividualLL],
 
   synchronize: configs.env == "development" ? true : false,
   migrations: [__dirname + "./migrations/*.js"], // Path to migration files

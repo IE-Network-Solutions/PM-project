@@ -6,6 +6,8 @@ const AAARoute = require('./AAA.route');
 const relatedIssue = require('./relatedIssue.route');
 const actionRoute = require('./action.route');
 const afterActionAnalysisActionRoute = require('./afterActionAnalysisIssueRelated.route');
+const leasonLearnedRoute = require('./lessonLearned.route');
+const individualLLRoute = require('./individualLL.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
@@ -43,7 +45,14 @@ const defaultRoutes = [
     path: '/afterActionAnalysisAction',
     route: afterActionAnalysisActionRoute,
   },
-
+  {
+    path: '/lessonLearned',
+    route: leasonLearnedRoute,
+  },
+  {
+    path: '/individualLL',
+    route: individualLLRoute,
+  },
 ];
 
 const devRoutes = [

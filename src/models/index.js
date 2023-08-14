@@ -5,3 +5,5 @@ module.exports.AfterActionAnalysis = require('./AAA.model');
 module.exports.RelatedIssue = require('./relatedIssues.model');
 module.exports.Action = require('./action.model');
 module.exports.AfterActionAnalysisIssueRelated = require('./afterActionAnalysisIssueRelated.model');
+module.exports.LessonLearned = require('./lessonLearned.model');
+module.exports.IndividualLL = require('./individualLL.model');

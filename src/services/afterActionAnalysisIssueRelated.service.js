@@ -20,13 +20,13 @@ const afterActionAnalysisIssueRelatedRepository = dataSource.getRepository(After
  * @returns {Promise<AfterActionAnalysisIssueRelated>}
  */
 const createAfterActionAnalysisIssueRelated = async (afterActionAnalysisId, issueRelatedId) => {
+
     console.log("HERE 1")
 
     const afterActionAnalysis = await services.AfterActionAnalysisService.getAAAById(afterActionAnalysisId);
     if (!afterActionAnalysis) {
         throw new ApiError(httpStatus.NOT_FOUND, 'After Action Analysis ID is not found');
     }
-
 
     const issueRelated = await services.relatedIssueService.getRelatedIssueById(issueRelatedId)
     if (!issueRelated) {
@@ -41,11 +41,10 @@ const createAfterActionAnalysisIssueRelated = async (afterActionAnalysisId, issu
 
     const AAAAction = afterActionAnalysisIssueRelatedRepository.create(issueRelateds.map(async (issue) => {
         return {
-            afterActionAnalysisId: afterActionAnalysisId,
+            afterActionAnalysis: afterActionAnalysisId,
             relatedIssueId: issue
         };
     }))
-    console.log("HERE 3")
 
 
     return await afterActionAnalysisIssueRelatedRepository.save(AAAAction);
