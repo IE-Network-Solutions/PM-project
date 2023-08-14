@@ -1,5 +1,4 @@
 const configs = require("./config");
-const Post = require("../models/post.model.js")
 const Risk = require('../models/risk.model.js');
 const { Issue,
   AfterActionAnalysis,
@@ -7,6 +6,12 @@ const { Issue,
   Action,
   AfterActionAnalysisIssueRelated,
   LessonLearned, IndividualLL } = require("../models");
+const Post = require("../models/post.model.js")
+const Project = require("../models/project.model")
+const Task = require("../models/task.model")
+const SubTask = require("../models/subtask.model")
+const Milestone = require("../models/milestone.model")
+// configuration file for TypeORM db connection
 
 module.exports = {
 
@@ -20,7 +25,8 @@ module.exports = {
   entities: [Post, Risk, Issue,
     AfterActionAnalysis, RelatedIssue,
     Action, AfterActionAnalysisIssueRelated,
-    LessonLearned, IndividualLL],
+    LessonLearned, IndividualLL,
+    Project, Task, SubTask, Milestone],
 
   synchronize: configs.env == "development" ? true : false,
   migrations: [__dirname + "./migrations/*.js"], // Path to migration files

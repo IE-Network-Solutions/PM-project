@@ -28,5 +28,15 @@ module.exports = new EntitySchema({
             target: 'IndividualLL',
             inverseSide: 'lessonLearned',
         },
+        projects: {
+            type: 'many-to-one',
+            target: 'Project',
+            joinColumn: {
+                name: "projectId",
+                referencedColumnName: "id"
+            },
+            onDelete: "SET NULL",
+            onUpdate: 'CASCADE'
+        },
     },
 });
