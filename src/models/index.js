@@ -1,0 +1,10 @@
+module.exports.LessonLearned = require('./lessonLearned.model')
+module.exports.IssueRelated = require('./relatedIssues.model')
+module.exports.Issue = require('./issue.model')
+module.exports.Risk = require('./risk.model')
+module.exports.AfterActionAnalysis = require('./AAA.model')
+module.exports.Action = require('./action.model')
+module.exports.AfterActionAnalysisIssueRelatedService = require('./afterActionAnalysisIssueRelated.model')
+module.exports.LessonLearned = require('./lessonLearned.model')
+module.exports.IndividualLL = require('./individualLL.model')
+module.exports.Post = require('./post.model');
