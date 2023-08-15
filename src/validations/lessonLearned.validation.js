@@ -10,7 +10,7 @@ const createLL = {
         PMId: Joi.string().required(),
         status: Joi.string().valid("Created", "Pending", "CEO Pending", "Approved").required(),
         date: Joi.string().required(),
-        projectId: Joi.string().custom(objectId),
+        projectId: Joi.string().required()
     }),
 };
 
@@ -45,6 +45,7 @@ const updateLLById = {
         PMId: Joi.string().required(),
         status: Joi.string().valid("Created", "Pending", "CEO Pending", "Approved").required().default("Created"),
         date: Joi.string().required(),
+        projectId: Joi.string().required()
     })
         .min(1),
 };
