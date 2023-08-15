@@ -11,14 +11,6 @@ const momAction= require("../models/momActions.model")
 const momAttendees= require("../models/momAttendees.model")
 
 // configuration file for TypeORM db connection
-const Post = require("../models/post.model.js")
-const Risk = require('../models/risk.model.js');
-const { Issue,
-  AfterActionAnalysis,
-  RelatedIssue,
-  Action,
-  AfterActionAnalysisIssueRelated,
-  LessonLearned, IndividualLL } = require("../models");
 
 module.exports = {
 
@@ -30,10 +22,6 @@ module.exports = {
   database: configs.postgres.database,
   // entities: [__dirname + "/../models/*.js"],
   entities: [Post,Project,Task,SubTask,Milestone,minuteOfMeeting,agenda,agendaTopic,momAction,momAttendees],
-  entities: [Post, Risk, Issue,
-    AfterActionAnalysis, RelatedIssue,
-    Action, AfterActionAnalysisIssueRelated,
-    LessonLearned, IndividualLL],
 
   synchronize: configs.env == "development" ? true : false,
   migrations: [__dirname + "./migrations/*.js"], // Path to migration files
