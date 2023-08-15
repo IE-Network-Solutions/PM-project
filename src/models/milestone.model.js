@@ -8,7 +8,7 @@ class Milestone extends Base {
     super(); // Call the constructor of the Base entity to inherit its properties
     this.name = { type: 'varchar' };
     this.status = { type: 'varchar' };
-    this.weight = { type: 'int' };
+    this.weight = { type: 'int', default: () => "NULL"  };
   }
 }
 

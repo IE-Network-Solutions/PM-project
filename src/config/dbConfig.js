@@ -1,16 +1,15 @@
 const configs = require("./config");
-const Risk = require('../models/risk.model.js');
-const { Issue,
-  AfterActionAnalysis,
-  RelatedIssue,
-  Action,
-  AfterActionAnalysisIssueRelated,
-  LessonLearned, IndividualLL } = require("../models");
-const Post = require("../models/post.model.js")
-const Project = require("../models/project.model")
-const Task = require("../models/task.model")
-const SubTask = require("../models/subtask.model")
-const Milestone = require("../models/milestone.model")
+const Post= require("../models/post.model.js")
+const Project= require("../models/project.model")
+const Task= require("../models/task.model")
+const SubTask= require("../models/subtask.model")
+const Milestone= require("../models/milestone.model")
+const minuteOfMeeting= require("../models/minuteOfMettings.model")
+const agenda= require("../models/agenda.model")
+const agendaTopic= require("../models/agendaTopics.model")
+const momAction= require("../models/momActions.model")
+const momAttendees= require("../models/momAttendees.model")
+
 // configuration file for TypeORM db connection
 
 module.exports = {
@@ -22,11 +21,7 @@ module.exports = {
   password: configs.postgres.pswd,
   database: configs.postgres.database,
   // entities: [__dirname + "/../models/*.js"],
-  entities: [Post, Risk, Issue,
-    AfterActionAnalysis, RelatedIssue,
-    Action, AfterActionAnalysisIssueRelated,
-    LessonLearned, IndividualLL,
-    Project, Task, SubTask, Milestone],
+  entities: [Post,Project,Task,SubTask,Milestone,minuteOfMeeting,agenda,agendaTopic,momAction,momAttendees],
 
   synchronize: configs.env == "development" ? true : false,
   migrations: [__dirname + "./migrations/*.js"], // Path to migration files

@@ -8,3 +8,7 @@ module.exports.afterActionAnalysisIssueRelatedValidation = require('./afterActio
 module.exports.lessonLearnedValidation = require('./lessonLearned.validation');
 module.exports.individualLLValidation = require('./individualLL.validation');
 
+module.exports.projectValidation = require('./project.validation');
+module.exports.milestoneValidation = require('./milestone.validation');
+module.exports.taskValidation = require('./task.validation');
+module.exports.subTaskValidation = require('./subtask.validation');
