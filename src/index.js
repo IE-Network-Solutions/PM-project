@@ -1,4 +1,3 @@
-
 const app = require('./app');
 const AppDataSource = require('./utils/createDatabaseConnection')
 const config = require('./config/config');

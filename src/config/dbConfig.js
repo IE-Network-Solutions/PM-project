@@ -1,14 +1,4 @@
 const configs = require("./config");
-const Post= require("../models/post.model.js")
-const Project= require("../models/project.model")
-const Task= require("../models/task.model")
-const SubTask= require("../models/subtask.model")
-const Milestone= require("../models/milestone.model")
-const minuteOfMeeting= require("../models/minuteOfMettings.model")
-const agenda= require("../models/agenda.model")
-const agendaTopic= require("../models/agendaTopics.model")
-const momAction= require("../models/momActions.model")
-const momAttendees= require("../models/momAttendees.model")
 
 // configuration file for TypeORM db connection
 const Post = require("../models/post.model.js")
@@ -29,7 +19,6 @@ module.exports = {
   password: configs.postgres.pswd,
   database: configs.postgres.database,
   // entities: [__dirname + "/../models/*.js"],
-  entities: [Post,Project,Task,SubTask,Milestone,minuteOfMeeting,agenda,agendaTopic,momAction,momAttendees],
   entities: [Post, Risk, Issue,
     AfterActionAnalysis, RelatedIssue,
     Action, AfterActionAnalysisIssueRelated,
