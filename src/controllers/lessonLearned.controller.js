@@ -34,32 +34,67 @@ const deleteLLById = catchAsync(async (req, res) => {
     res.status(httpStatus.NO_CONTENT).send();
 });
 
-const approvalRequestByPMOMLLById = catchAsync(async (req, res) => {
-    const result = await lessonLearnedService.approvalRequestByPMOMLLById(req.params.LLId);
+const approvalRequestByPM = catchAsync(async (req, res) => {
+    const result = await lessonLearnedService.approvalRequestByPM(req.params.LLId);
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Lesson learned not found');
+    }
+    if (result[0].status === "Pending") {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Lesson learned is already on pending');
+    }
+    const pending = await lessonLearnedService.updateLLById(req.params.LLId, { status: "Pending" });
+    res.send(pending);
+});
+
+const getPendingApprovalRequestByPMOMById = catchAsync(async (req, res) => {
+    const result = await lessonLearnedService.getPendingApprovalRequestByPMOM(req.params.LLId);
     if (!result) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Lesson learned not found');
     }
     res.send(result);
 });
 
-const getAllLLByPMOMById = catchAsync(async (req, res) => {
-    const result = await lessonLearnedService.getAllLLByPMOMById(req.params.LLId, req.body);
+const getAllPendingApprovalRequestByPMOM = catchAsync(async (req, res) => {
+    const result = await lessonLearnedService.getAllPendingApprovalRequestByPMOM(req.params.LLId);
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Lesson learned not found');
+    }
     res.send(result);
 });
 
-const approvalRequestForCEO = catchAsync(async (req, res) => {
-    await lessonLearnedService.approvalRequestForCEO(req.params.LLId);
-    res.status(httpStatus.NO_CONTENT).send();
+const approvalRequestByPMOM = catchAsync(async (req, res) => {
+    const result = await lessonLearnedService.approvalRequestByPMOM(req.params.LLId);
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Lesson learned not found');
+    }
+    if (result[0].status === "Pending") {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Lesson learned is already on pending');
+    }
+    const pending = await lessonLearnedService.updateLLById(req.params.LLId, { status: "Pending" });
+    res.send(pending);
 });
 
-const getAllLLByCEO = catchAsync(async (req, res) => {
-    const result = await lessonLearnedService.getAllLLByCEO(req.params.LLId, req.body);
+const getPendingApprovalRequestByCEOById = catchAsync(async (req, res) => {
+    const result = await lessonLearnedService.getPendingApprovalRequestByCEOById(req.params.LLId);
     res.send(result);
 });
 
-const approveLLByCEO = catchAsync(async (req, res) => {
-    await lessonLearnedService.approveLLByCEO(req.params.LLId);
-    res.status(httpStatus.NO_CONTENT).send();
+const getAllPendingApprovalRequestByCEO = catchAsync(async (req, res) => {
+    const result = await lessonLearnedService.getAllPendingApprovalRequestByCEO();
+    res.send(result);
+});
+
+const approveByCEO = catchAsync(async (req, res) => {
+    const result = await lessonLearnedService.approveByCEO(req.params.LLId);
+    console.log(result)
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Lesson learned not found');
+    }
+    if (result[0].status === "Approved") {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Lesson learned is already on Approved');
+    }
+    const pending = await lessonLearnedService.updateLLById(req.params.LLId, { status: "Approved" });
+    res.send(pending);
 });
 
 module.exports = {
@@ -69,10 +104,11 @@ module.exports = {
     updateLLById,
     deleteLLById,
 
-    approvalRequestByPMOMLLById,
-    getAllLLByPMOMById,
-    approvalRequestForCEO,
-    getAllLLByCEO,
-    approveLLByCEO
-
+    approvalRequestByPM,
+    getPendingApprovalRequestByPMOMById,
+    getAllPendingApprovalRequestByPMOM,
+    approvalRequestByPMOM,
+    getPendingApprovalRequestByCEOById,
+    getAllPendingApprovalRequestByCEO,
+    approveByCEO
 };

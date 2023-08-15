@@ -59,11 +59,18 @@ const deleteLLById = {
 
 //Additional Routes/API's (for getting and approval of ll by different levels [CEO, PMOM])
 
+const approvalRequestByPM = {
+    params: Joi.object().keys({
+        LLId: Joi.string().custom(objectId),
+    }),
+};
+
 const approvalRequestByPMOMLLById = {
     params: Joi.object().keys({
         LLId: Joi.string().custom(objectId),
     }),
 };
+
 const getAllLLByPMOMById = {
     params: Joi.object().keys({
         LLId: Joi.string().custom(objectId),
@@ -93,6 +100,7 @@ module.exports = {
     updateLLById,
     deleteLLById,
 
+    approvalRequestByPM,
     approvalRequestByPMOMLLById,
     getAllLLByPMOMById,
     approvalRequestForCEO,

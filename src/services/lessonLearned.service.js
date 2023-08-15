@@ -79,29 +79,51 @@ const deleteLLById = async (issueId) => {
 };
 
 //Addional API's for listing and approval requests by different levels [CEO, PMOM]
-const approvalRequestByPMOMLLById = async (LLId) => {
+
+const approvalRequestByPM = async () => {
     return await lessonLearnedRepository.find({
-        where: { id: LLId },
+        where: { status: "Pending" },
         relations: ['individuals']
     })
 }
-const getAllLLByPMOMById = async (LLId) => {
+const getPendingApprovalRequestByPMOMById = async (LLId) => {
     return await lessonLearnedRepository.find({
-        where: { id: id },
+        where: { id: LLId, status: "Pending" },
         relations: ['individuals']
-    });
+    })
 }
-const approvalRequestForCEO = async (LLId) => {
- 
-}
-const getAllLLByCEO = async (LLId) => {
-    return await lessonLearnedRepository.find({
-        where: { id: id },
-        relations: ['individuals']
-    });
-}
-const approveLLByCEO = async (LLId) => {
 
+const getAllPendingApprovalRequestByPMOM = async (LLId) => {
+    return await lessonLearnedRepository.find({
+        where: { status: "Pending" },
+        relations: ['individuals']
+    })
+}
+const approvalRequestByPMOM = async (LLId) => {
+    return await lessonLearnedRepository.find({
+        where: { id: LLId },
+        relations: ['individuals']
+    });
+}
+const getPendingApprovalRequestByCEOById = async (LLId) => {
+    return await lessonLearnedRepository.find({
+        where: { id: LLId, status: "Pending" },
+        relations: ['individuals']
+    });
+}
+
+const getAllPendingApprovalRequestByCEO = async () => {
+    return await lessonLearnedRepository.find({
+        where: { status: "Pending" },
+        relations: ['individuals']
+    });
+}
+
+const approveByCEO = async (LLId) => {
+    return await lessonLearnedRepository.find({
+        where: { id: LLId },
+        relations: ['individuals']
+    });
 }
 
 
@@ -112,9 +134,11 @@ module.exports = {
     updateLLById,
     deleteLLById,
 
-    approvalRequestByPMOMLLById,
-    getAllLLByPMOMById,
-    approvalRequestForCEO,
-    getAllLLByCEO,
-    approveLLByCEO
+    approvalRequestByPM,
+    getPendingApprovalRequestByPMOMById,
+    getAllPendingApprovalRequestByPMOM,
+    approvalRequestByPMOM,
+    getPendingApprovalRequestByCEOById,
+    getAllPendingApprovalRequestByCEO,
+    approveByCEO,
 };

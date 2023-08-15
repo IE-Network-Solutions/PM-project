@@ -13,12 +13,25 @@ router
     .route('/:LLId')
     .get(validate(lessonLearnedValidation.getLLById), lessonLearnedController.getLLById)
     .patch(validate(lessonLearnedValidation.updateLLById), lessonLearnedController.updateLLById)
-    .delete(validate(lessonLearnedValidation.deleteLLById), lessonLearnedController.deleteLLById)
-    .post(validate(lessonLearnedValidation.approvalRequestByPMOMLLById), lessonLearnedController.approvalRequestByPMOMLLById)
-    .get(validate(lessonLearnedValidation.getAllLLByPMOMById), lessonLearnedController.getAllLLByPMOMById)
-    .post(validate(lessonLearnedValidation.approvalRequestForCEO), lessonLearnedController.approvalRequestForCEO)
-    .get(validate(lessonLearnedValidation.getAllLLByCEO), lessonLearnedController.getAllLLByCEO)
-    .post(validate(lessonLearnedValidation.approveLLByCEO), lessonLearnedController.approveLLByCEO);
+    .delete(validate(lessonLearnedValidation.deleteLLById), lessonLearnedController.deleteLLById);
+
+router.route("/approvals/pm/:LLId")
+    .post(validate(lessonLearnedValidation.approvalRequestByPMOMLLById), lessonLearnedController.approvalRequestByPM);
+
+router.route("/approvals/pmom/:LLId")
+    .get(validate(lessonLearnedValidation.approvalRequestByPMOMLLById), lessonLearnedController.getPendingApprovalRequestByPMOMById)
+    .post(validate(lessonLearnedValidation.getAllLLByPMOMById), lessonLearnedController.approvalRequestByPMOM);
+router.route("/approvals/pmom")
+    .get(lessonLearnedController.getAllPendingApprovalRequestByPMOM)
+
+router.route("/approvals/ceo/:LLId")
+    .get(validate(lessonLearnedValidation.approvalRequestForCEO), lessonLearnedController.getPendingApprovalRequestByCEOById)
+    .post(validate(lessonLearnedValidation.getAllLLByCEO), lessonLearnedController.approveByCEO)
+router.route("/approvals/ceo")
+    .get(lessonLearnedController.getAllPendingApprovalRequestByCEO)
+
+
+
 
 module.exports = router;
 
