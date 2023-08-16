@@ -33,12 +33,20 @@ const queryLLs = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
     return await lessonLearnedRepository.find({
-        relations: ['individuals'],
+        relations: ['individuals', 'llComments'],
         tableName: 'lessonLearned',
         sortOptions: sortBy && { option: sortBy },
         paginationOptions: { limit: limit, page: page },
     });
 
+};
+
+const getAllLLByProjectId = async (id) => {
+    return await lessonLearnedRepository.find(
+        {
+            where: { id: id },
+            relations: ['individuals', 'llComments']
+        });
 };
 
 /**
@@ -47,7 +55,11 @@ const queryLLs = async (filter, options) => {
  * @returns {Promise<LessonLearned>}
  */
 const getLLById = async (id) => {
-    return await lessonLearnedRepository.find({ where: { id: id }, relations: ['individuals'] });
+    return await lessonLearnedRepository.find(
+        {
+            where: { id: id },
+            relations: ['individuals', 'llComments']
+        });
 };
 
 /**
@@ -70,19 +82,20 @@ const updateLLById = async (LLId, updateBody) => {
  * @param {ObjectId} issueId
  * @returns {Promise<LessonLearned>}
  */
-const deleteLLById = async (issueId) => {
-    const result = await getLLById();
+const deleteLLById = async (LLId) => {
+    const result = await getLLById(LLId);
+    console.log(result)
     if (!result) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Lesson learned not found');
     }
-    return await lessonLearnedRepository.delete({ id: issueId });
+    return await lessonLearnedRepository.delete({ id: LLId });
 };
 
 //Addional API's for listing and approval requests by different levels [CEO, PMOM]
 
-const approvalRequestByPM = async () => {
+const approvalRequestByPM = async (LLId) => {
     return await lessonLearnedRepository.find({
-        where: { status: "Pending" },
+        where: { id: LLId },
         relations: ['individuals']
     })
 }
@@ -130,15 +143,16 @@ const approveByCEO = async (LLId) => {
 module.exports = {
     createLL,
     queryLLs,
+    getAllLLByProjectId,
     getLLById,
     updateLLById,
     deleteLLById,
 
-    approvalRequestByPM,
     getPendingApprovalRequestByPMOMById,
     getAllPendingApprovalRequestByPMOM,
-    approvalRequestByPMOM,
+    approvalRequestByPM,
     getPendingApprovalRequestByCEOById,
     getAllPendingApprovalRequestByCEO,
+    approvalRequestByPMOM,
     approveByCEO,
 };

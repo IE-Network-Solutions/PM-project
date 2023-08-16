@@ -8,3 +8,4 @@ module.exports.actionService = require('./action.service');
 module.exports.afterActionAnalysisIssueRelatedService = require('./afterActionAnalysisIssueRelated.service');
 module.exports.lessonLearnedService = require('./lessonLearned.service');
 module.exports.individualLLService = require('./individualLL.service');
+module.exports.LLCommentService = require('./LLComment.service');

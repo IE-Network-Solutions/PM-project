@@ -15,6 +15,11 @@ router
     .patch(validate(lessonLearnedValidation.updateLLById), lessonLearnedController.updateLLById)
     .delete(validate(lessonLearnedValidation.deleteLLById), lessonLearnedController.deleteLLById);
 
+router
+    .route('/list/:projectId')
+    .get(lessonLearnedController.getAllLLByProjectId);
+
+
 router.route("/approvals/pm/:LLId")
     .post(validate(lessonLearnedValidation.approvalRequestByPMOMLLById), lessonLearnedController.approvalRequestByPM);
 
@@ -29,9 +34,6 @@ router.route("/approvals/ceo/:LLId")
     .post(validate(lessonLearnedValidation.getAllLLByCEO), lessonLearnedController.approveByCEO)
 router.route("/approvals/ceo")
     .get(lessonLearnedController.getAllPendingApprovalRequestByCEO)
-
-
-
 
 module.exports = router;
 

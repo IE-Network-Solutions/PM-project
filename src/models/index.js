@@ -7,4 +7,5 @@ module.exports.Action = require('./action.model')
 module.exports.AfterActionAnalysisIssueRelatedService = require('./afterActionAnalysisIssueRelated.model')
 module.exports.LessonLearned = require('./lessonLearned.model')
 module.exports.IndividualLL = require('./individualLL.model')
+module.exports.LLComments = require('./llComments.model')
 module.exports.Post = require('./post.model');

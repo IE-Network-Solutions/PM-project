@@ -7,4 +7,5 @@ module.exports.actionValidation = require('./action.validation');
 module.exports.afterActionAnalysisIssueRelatedValidation = require('./afterActionAnalysisIssueRelated.validation');
 module.exports.lessonLearnedValidation = require('./lessonLearned.validation');
 module.exports.individualLLValidation = require('./individualLL.validation');
+module.exports.LLCommentValidation = require('./llComments.validation');
 

@@ -8,3 +8,4 @@ module.exports.AAAController = require('./AAA.controller');
 module.exports.afterActionAnalysisIssueRelatedController = require('./afterActionAnalysisIssueRelated.controller');
 module.exports.lessonLearnedController = require('./lessonLearned.controller');
 module.exports.individualLLController = require('./individualLL.controller');
+module.exports.LLCommentController = require('./LLComment.controller');

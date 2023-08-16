@@ -16,6 +16,16 @@ const getLLs = catchAsync(async (req, res) => {
     res.send(result);
 });
 
+
+const getAllLLByProjectId = catchAsync(async (req, res) => {
+    const result = await lessonLearnedService.getAllLLByProjectId(req.params.projectId);
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Project id is not found');
+    }
+    res.send(result);
+});
+
+
 const getLLById = catchAsync(async (req, res) => {
     const result = await lessonLearnedService.getLLById(req.params.LLId);
     if (!result) {
@@ -47,7 +57,7 @@ const approvalRequestByPM = catchAsync(async (req, res) => {
 });
 
 const getPendingApprovalRequestByPMOMById = catchAsync(async (req, res) => {
-    const result = await lessonLearnedService.getPendingApprovalRequestByPMOM(req.params.LLId);
+    const result = await lessonLearnedService.getPendingApprovalRequestByPMOMById(req.params.LLId);
     if (!result) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Lesson learned not found');
     }
@@ -100,9 +110,11 @@ const approveByCEO = catchAsync(async (req, res) => {
 module.exports = {
     createLL,
     getLLs,
+    getAllLLByProjectId,
     getLLById,
     updateLLById,
     deleteLLById,
+
 
     approvalRequestByPM,
     getPendingApprovalRequestByPMOMById,

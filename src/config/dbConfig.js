@@ -8,7 +8,7 @@ const { Issue,
   RelatedIssue,
   Action,
   AfterActionAnalysisIssueRelated,
-  LessonLearned, IndividualLL } = require("../models");
+  LessonLearned, IndividualLL, LLComments } = require("../models");
 
 module.exports = {
 
@@ -22,7 +22,7 @@ module.exports = {
   entities: [Post, Risk, Issue,
     AfterActionAnalysis, RelatedIssue,
     Action, AfterActionAnalysisIssueRelated,
-    LessonLearned, IndividualLL],
+    LessonLearned, IndividualLL, LLComments],
 
   synchronize: configs.env == "development" ? true : false,
   migrations: [__dirname + "./migrations/*.js"], // Path to migration files
