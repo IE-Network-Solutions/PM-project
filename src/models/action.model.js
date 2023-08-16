@@ -19,16 +19,16 @@ module.exports = new EntitySchema({
     name: 'Action',
     tableName: 'actions',
     columns: new Action(),
-    relations: {
-        afterActionAnalysis: {
-            type: 'many-to-one',
-            target: 'AfterActionAnalysis',
-            joinColumn: {
-                name: "AAAId",
-                referencedColumnName: "id"
-            },
-            onDelete: "SET NULL",
-            onUpdate: 'CASCADE'
-        },
-    },
+    // relations: {
+    //     afterActionAnalysis: {
+    //         type: 'many-to-one',
+    //         target: 'AfterActionAnalysis',
+    //         joinColumn: {
+    //             name: "AAAId",
+    //             referencedColumnName: "id"
+    //         },
+    //         onDelete: "CASCADE",
+    //         onUpdate: 'CASCADE'
+    //     },
+    // },
 });
