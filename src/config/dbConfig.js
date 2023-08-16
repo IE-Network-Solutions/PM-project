@@ -10,6 +10,7 @@ const agendaTopic= require("../models/agendaTopics.model")
 const momAction= require("../models/momActions.model")
 const momAttendees= require("../models/momAttendees.model")
 const ProjectMember= require("../models/project_member.model")
+const ProjectContractValue= require("../models/projectContractValue.model")
 
 // configuration file for TypeORM db connection
 
@@ -22,7 +23,7 @@ module.exports = {
   password: configs.postgres.pswd,
   database: configs.postgres.database,
   // entities: [__dirname + "/../models/*.js"],
-  entities: [Post,Project,Task,SubTask,Milestone,minuteOfMeeting,agenda,agendaTopic,momAction,momAttendees, ProjectMember],
+  entities: [Post,Project,Task,SubTask,Milestone,minuteOfMeeting,agenda,agendaTopic,momAction,momAttendees, ProjectMember,ProjectContractValue],
 
   synchronize: configs.env == "development" ? true : false,
   migrations: [__dirname + "./migrations/*.js"], // Path to migration files

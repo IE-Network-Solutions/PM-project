@@ -6,16 +6,12 @@ const { projectService} = require('../services');
 
 
 
-// const createProject = catchAsync(async (req, res) => {
-// const project = await projectService.createProject(req.body);
-// res.status(httpStatus.CREATED).send(project);
-// });
-
-// project.controller.js
-const createProject = catchAsync(async (req, res) => {
-  const projectMembers = req.body.projectMembers; // Extract project members from the request body
-  delete req.body.projectMembers; // Remove project members from the project object
-  const project = await projectService.createProject(req.body, projectMembers);
+const createProject = catchAsync(async (req, res) =>  {
+  const projectMembers = req.body.projectMembers;
+  const projectContractValue = req.body.projectContractValue;
+  delete req.body.projectMembers;
+  delete req.body.projectContractValue; 
+  const project = await projectService.createProject(req.body, projectMembers, projectContractValue);
   res.status(httpStatus.CREATED).json(project);
 });
 
