@@ -9,7 +9,7 @@ let server;
 AppDataSource.initialize().then(() => {
   logger.info('Connected to Postgres through Typeorm');
   server = app.listen(config.port, () => {
-    logger.info(`Listening to port ${config.port}`);
+    logger.info(`Listening to port http://localhost:${config.port}`);
   });
 }).catch((e) => {
   logger.error(`Exception Error ${e}`)

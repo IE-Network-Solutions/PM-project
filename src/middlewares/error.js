@@ -8,12 +8,12 @@ const TypeORMErrors = require('typeorm');
 
 const errorConverter = (err, req, res, next) => {
   let error = err;
-  let statusCode = httpStatus.INTERNAL_SERVER_ERROR;
+  let statusCode=httpStatus.BAD_REQUEST;
   if (!(error instanceof ApiError)) {
     // for (const errorClass of Object.values(TypeORMErrors)) {
     //   if (error instanceof errorClass) {
     //     console.log(`This is a ${errorClass.name}:`, error);
-    //     statusCode = httpStatus.BAD_REQUEST
+    //     statusCode=httpStatus.BAD_REQUEST
     //     break;
     //   }
     // }

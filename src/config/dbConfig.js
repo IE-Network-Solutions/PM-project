@@ -1,7 +1,6 @@
 const configs = require("./config");
-const Post = require("../models/post.model.js")
-const Risk = require('../models/risk.model.js');
-const { Issue, AfterActionAnalysis, RelatedIssue, Action, AfterActionAnalysisIssueRelated } = require("../models");
+
+// configuration file for TypeORM db connection
 
 module.exports = {
 
@@ -11,13 +10,14 @@ module.exports = {
   username: configs.postgres.userName,
   password: configs.postgres.pswd,
   database: configs.postgres.database,
-  // entities: [__dirname + "/../models/*.js"],
-  entities: [Post, Risk, Issue, AfterActionAnalysis, RelatedIssue, Action, AfterActionAnalysisIssueRelated],
+  entities: [__dirname + "/../models/*.js"],
+  // entities: [Post,Project,Task,SubTask,Milestone,minuteOfMeeting,agenda,agendaTopic,momAction,momAttendees, Risk, Issue, AfterActionAnalysis, RelatedIssue, Action, AfterActionAnalysisIssueRelated],
+  // entities: [Post,Project,Task,SubTask,Milestone,minuteOfMeeting,agenda,agendaTopic,momAction,momAttendees],
 
   synchronize: configs.env == "development" ? true : false,
   migrations: [__dirname + "./migrations/*.js"], // Path to migration files
   cli: {
-    entitiesDir: __dirname + "./models/*.js",
+    entitiesDir: __dirname + "/../models/*.js",
     migrationsDir: __dirname + "./migrations",
   },
   extra: {
