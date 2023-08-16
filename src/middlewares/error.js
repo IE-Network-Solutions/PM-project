@@ -4,7 +4,7 @@ const config = require('../config/config');
 const logger = require('../config/logger');
 const ApiError = require('../utils/ApiError');
 
-const TypeORMErrors  = require('typeorm');
+const TypeORMErrors = require('typeorm');
 
 const errorConverter = (err, req, res, next) => {
   let error = err;

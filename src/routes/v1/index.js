@@ -1,18 +1,49 @@
 const express = require('express');
-const postRoute = require('./post.route');
+
+const riskRoute = require('./risk.route');
+const issueRoute = require('./issue.route');
+const AAARoute = require('./AAA.route');
+const relatedIssue = require('./relatedIssue.route');
+const actionRoute = require('./action.route');
+const afterActionAnalysisActionRoute = require('./afterActionAnalysisIssueRelated.route');
 const projectRoute = require('./project.route');
 const milestoneRoute = require('./milestone.route');
 const taskRoute = require('./task.route');
 const subTaskRoute = require('./subtask.route');
+const usersRoute=require('./user.route')
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
 const router = express.Router();
 
 const defaultRoutes = [
+
   {
-    path: '/posts',
-    route: postRoute,
+    path: '/risks',
+    route: riskRoute,
+  },
+  {
+    path: '/issues',
+    route: issueRoute,
+  },
+  {
+    path: '/AAA',
+    route: AAARoute,
+  },
+
+  {
+    path: '/relatedIssues',
+    route: relatedIssue,
+  },
+
+  {
+    path: '/actions',
+    route: actionRoute,
+  },
+
+  {
+    path: '/afterActionAnalysisAction',
+    route: afterActionAnalysisActionRoute,
   },
   {
     path: '/projects',
@@ -22,17 +53,20 @@ const defaultRoutes = [
   {
     path: '/milestones',
     route: milestoneRoute,
-  }
-  ,
+  },
   {  
     path: '/tasks',
     route: taskRoute,
-  }
-  ,
+  },
   {  
     path: '/subtasks',
     route: subTaskRoute,
-  }
+  },
+  {  
+    path: '/users',
+    route: usersRoute,
+  },
+  
 ];
 
 const devRoutes = [
