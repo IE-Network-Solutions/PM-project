@@ -9,3 +9,6 @@ module.exports.Project = require('./project.model');
 module.exports.Milestone = require('./milestone.model');
 module.exports.Task = require('./task.model');
 module.exports.User =require('./user.model')
+module.exports.LessonLearned = require('./lessonLearned.model')
+module.exports.IndividualLL = require('./individualLL.model')
+module.exports.LLComments = require('./llComments.model')
