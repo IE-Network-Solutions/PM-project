@@ -25,5 +25,9 @@ module.exports = new EntitySchema({
   name: 'User',
   tableName: 'users',
   columns: new User(),
-
+  projectMembers: {
+    type: 'one-to-many',
+    target: 'ProjectMember',
+    inverseSide: 'User',
+  },
 });

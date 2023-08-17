@@ -5,11 +5,7 @@ const { Base } = require('./BaseModel');
 class ProjectMember extends Base {
   constructor() {
     super();
-    this.roleId = { type: 'varchar' };
-    this.roleName = { type: 'varchar' };
-    this.memberId = { type: 'varchar' };
-    this.memberName = { type: 'varchar' };
-    this.projectId = { type: 'uuid' }; // Add this line for the foreign key
+    this.roleId = { type: 'uuid' };
   }
 }
 
@@ -21,7 +17,11 @@ module.exports = new EntitySchema({
     project: {
       type: 'many-to-one',
       target: 'Project',
-     
+      inverseSide: 'projectMembers', // Assuming 'projectMembers' is the inverse side property in the Project entity
+    },
+    user: {
+      type: 'many-to-one',
+      target: 'User',
       inverseSide: 'projectMembers', // Assuming 'projectMembers' is the inverse side property in the Project entity
     },
   },
