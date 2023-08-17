@@ -14,6 +14,7 @@ const createRisk = {
         controlOwner: Joi.string().required(),
         residualProbability: Joi.string().required(),
         residualImpact: Joi.string().required(),
+        projectId: Joi.string().custom(objectId),
     }),
 };
 

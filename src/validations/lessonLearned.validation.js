@@ -9,7 +9,7 @@ const createLL = {
         PMName: Joi.string().required(),
         PMId: Joi.string().required(),
         status: Joi.string().valid("Created", "Pending", "CEO Pending", "Approved").required(),
-        date: Joi.string().required(),
+        date: Joi.date().required(),
         projectId: Joi.string().required(),
         departmentId: Joi.string().required()
     }),
@@ -24,13 +24,26 @@ const getLLs = {
         PMNId: Joi.string(),
         status: Joi.string(),
         date: Joi.string(),
-        projectId: Joi.string()
+        projectId: Joi.string(),
+        departmentId: Joi.string()
     }),
 };
 
 const getLLById = {
     params: Joi.object().keys({
         LLId: Joi.string().custom(objectId),
+    }),
+};
+
+const getLLByProjectId = {
+    params: Joi.object().keys({
+        projectId: Joi.required(),
+    }),
+};
+
+const getLLByDepartmentId = {
+    params: Joi.object().keys({
+        departmentId: Joi.string().custom(objectId),
     }),
 };
 
@@ -45,8 +58,7 @@ const updateLLById = {
         PMName: Joi.string().required(),
         PMId: Joi.string().required(),
         status: Joi.string().valid("Created", "Pending", "CEO Pending", "Approved").required().default("Created"),
-        date: Joi.string().required(),
-        projectId: Joi.string().required()
+        date: Joi.date().required(),
     })
         .min(1),
 };
@@ -98,6 +110,8 @@ module.exports = {
     createLL,
     getLLs,
     getLLById,
+    getLLByProjectId,
+    getLLByDepartmentId,
     updateLLById,
     deleteLLById,
 

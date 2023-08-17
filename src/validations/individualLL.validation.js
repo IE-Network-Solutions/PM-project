@@ -8,7 +8,7 @@ const createIndividualLL = {
         problem: Joi.string().required(),
         impact: Joi.string().required(),
         lessonLearnedText: Joi.string().required(),
-        lessonLearnedId: Joi.required()
+        lessonLearnedId: Joi.required().required()
     }),
 };
 
