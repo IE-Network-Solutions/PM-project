@@ -16,5 +16,10 @@ router
     .patch(validate(riskValidation.updateRisk), riskController.updateRisk)
     .delete(validate(riskValidation.deleteRisk), riskController.deleteRisk);
 
+router
+    .route('/riskBy/:projectId')
+    .get(validate(riskValidation.getRiskByProjectId), riskController.getRiskByProjectId);
+
+
 module.exports = router;
 

@@ -31,7 +31,7 @@ const getRisks = catchAsync(async (req, res) => {
 
 const getRiskByDate = catchAsync(async (req, res) => {
 
-    const startDate = new Date(req.body.startDate); 
+    const startDate = new Date(req.body.startDate);
     const endDate = new Date(req.body.endDate);
     const risk = await riskService.getRiskByDate(startDate, endDate);
 
@@ -39,6 +39,14 @@ const getRiskByDate = catchAsync(async (req, res) => {
         throw new ApiError(httpStatus.NOT_FOUND, 'Risk not found');
     }
     res.send(risk);
+});
+const getRiskByProjectId = catchAsync(async (req, res) => {
+    const result = await riskService.getRiskByProjectId(req.params.projectId);
+    console.log("result", result)
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Project id not found');
+    }
+    res.send(result);
 });
 
 const getRisk = catchAsync(async (req, res) => {
@@ -63,6 +71,7 @@ module.exports = {
     createRisk,
     getRisks,
     getRisk,
+    getRiskByProjectId,
     getRiskByDate,
     updateRisk,
     deleteRisk

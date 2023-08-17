@@ -61,6 +61,11 @@ const getRiskByDate = async (startDate, endDate) => {
  * @param {ObjectId} id
  * @returns {Promise<Risk>}
  */
+
+const getRiskByProjectId = async (id) => {
+    return await riskRepository.find({ projectId: id, relations: ['project'] });
+};
+
 const getRiskById = async (id) => {
     return await riskRepository.find({ id: id, relations: ['project'], });
 };
@@ -98,6 +103,7 @@ module.exports = {
     queryRisks,
     getRiskByDate,
     getRiskById,
+    getRiskByProjectId,
     updateRiskById,
     deleteRiskById,
 };
