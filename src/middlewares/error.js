@@ -10,6 +10,7 @@ const errorConverter = (err, req, res, next) => {
   let error = err;
   let statusCode=httpStatus.BAD_REQUEST;
   if (!(error instanceof ApiError)) {
+    console.log(error)
     // for (const errorClass of Object.values(TypeORMErrors)) {
     //   if (error instanceof errorClass) {
     //     console.log(`This is a ${errorClass.name}:`, error);
