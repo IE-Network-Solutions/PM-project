@@ -1,16 +1,19 @@
 const Joi = require('joi');
 const { objectId } = require('./custom.validation');
+const { ProjectContractValue } = require('../models');
 
 const createProject = {
   body: Joi.object().keys({
     name: Joi.string().required(),
-    milestone: Joi.string().required(),
-    budget: Joi.string().required(),
-    contract_sign_date: Joi.string().required(),
-    lc_opening_date: Joi.string().required(),
-    advanced_payment_date: Joi.string().required(),
-    status: Joi.string().required(),
-    planned_end_date: Joi.string().required(),
+    milestone: Joi.number(),
+    budget: Joi.required(),
+    contract_sign_date: Joi.date(),
+    lc_opening_date: Joi.date(),
+    advanced_payment_date: Joi.date(),
+    status: Joi.boolean(),
+    planned_end_date: Joi.required(),
+    projectMembers: Joi.array(), 
+    projectContractValue: Joi.array()
   }),
 };
 

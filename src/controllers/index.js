@@ -11,3 +11,6 @@ module.exports.taskController = require('./task.controller');
 module.exports.subTaskController = require('./subtask.controller');
 module.exports.userController = require('./user.controller');
 
+module.exports.lessonLearnedController = require('./lessonLearned.controller');
+module.exports.individualLLController = require('./individualLL.controller');
+module.exports.LLCommentController = require('./LLComment.controller');

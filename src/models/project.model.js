@@ -1,20 +1,18 @@
+// project.model.js
 const { EntitySchema } = require('typeorm');
-const {Base} = require('./BaseModel')
-
-
+const { Base } = require('./BaseModel');
 
 class Project extends Base {
-  // Define additional properties specific to Project entity
   constructor() {
-    super(); // Call the constructor of the Base entity to inherit its properties
+    super();
     this.name = { type: 'varchar' };
-    this.milestone = { type: 'text' };
-    this.budget = { type: 'text' };
-    this.contract_sign_date = { type: 'text' };
-    this.planned_end_date = { type: 'text' };
-    this.lc_opening_date = { type: 'text' };
-    this.advanced_payment_date = { type: 'text' };
-    this.status = { type: 'text' };
+    this.milestone = { type: 'int' };
+    this.budget = { type: 'int' };
+    this.contract_sign_date = { type: 'date' };
+    this.planned_end_date = { type: 'date' };
+    this.lc_opening_date = { type: 'date' };
+    this.advanced_payment_date = { type: 'date' };
+    this.status = { type: 'boolean'};
   }
 }
 
@@ -22,5 +20,16 @@ module.exports = new EntitySchema({
   name: 'Project',
   tableName: 'projects',
   columns: new Project(),
-
+  relations: {
+    projectMembers: {
+      type: 'one-to-many',
+      target: 'ProjectMember',
+      inverseSide: 'project',
+    },
+    projectContractValues: { // Change to projectContractValues
+      type: 'one-to-many',
+      target: 'ProjectContractValue',
+      inverseSide: 'project', // Assuming this is the correct inverseSide property
+    },
+  },
 });
