@@ -25,13 +25,13 @@ const getTasks = {
 
 const getTask = {
   params: Joi.object().keys({
-    taskId: Joi.string()
+    taskId: Joi.string(),
   }),
 };
 
 const updateTask = {
   params: Joi.object().keys({
-    taskId: Joi.string()
+    taskId: Joi.string(),
   }),
   body: Joi.object()
     .keys({
@@ -40,16 +40,28 @@ const updateTask = {
     .min(1),
 };
 
-const deleteTask= {
-    params: Joi.object().keys({
-      taskId: Joi.string(),
-    }),
-  };
+const deleteTask = {
+  params: Joi.object().keys({
+    taskId: Joi.string(),
+  }),
+};
+
+const assignResource = {
+  params: Joi.object().keys({
+    taskId: Joi.string(),
+  }),
+  body: Joi.object()
+    .keys({
+      userIds: Joi.array().items(Joi.string().guid()).required(),
+    })
+    .min(1),
+};
 
 module.exports = {
   createTask,
   getTasks,
   getTask,
   updateTask,
-  deleteTask
+  deleteTask,
+  assignResource,
 };

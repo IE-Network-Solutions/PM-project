@@ -1,11 +1,17 @@
 const httpStatus = require('http-status');
-const { Task } = require('../models');
+const { Task, TaskUser } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const services = require('./index');
 
 const taskRepository = dataSource.getRepository(Task).extend({
+  findAll,
+  sortBy,
+});
+
+const taskUserRepository = dataSource.getRepository(TaskUser).extend({
   findAll,
   sortBy,
 });
@@ -23,7 +29,6 @@ const createTask = async (taskBody) => {
   return await taskRepository.save(task);
 };
 
-
 /**
  * Query for users
  * @param {Object} filter - Filter options
@@ -39,7 +44,7 @@ const getTasks = async (filter, options) => {
 
   return await taskRepository.findAll({
     tableName: 'tasks',
-    sortOptions: sortBy&&{ option: sortBy },
+    sortOptions: sortBy && { option: sortBy },
     paginationOptions: { limit: limit, page: page },
   });
 };
@@ -81,10 +86,39 @@ const deleteTask = async (taskId) => {
   return await taskRepository.delete({ id: taskId });
 };
 
+/**
+ * Assign Resoure to the task
+ * @param {String} taskId
+ * @param {Array} usersId
+ * @returns {Promise<User>}
+ */
+const assignResource = async (taskId, userIds) => {
+  const task = await getTask(taskId);
+  if (!task) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
+  }
+  console.log(userIds, 'testttttt');
+  const users = await services.userService.getUsersById(userIds);
+  if (!users) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Users not found');
+  }
+
+  const taskUsers = users.map((user) => {
+    const taskUser = taskUserRepository.create({
+      task: task,
+      user,
+    });
+    return taskUser;
+  });
+  await taskUserRepository.save(taskUsers);
+  return taskUsers;
+};
+
 module.exports = {
   createTask,
   getTasks,
   getTask,
   updateTask,
   deleteTask,
+  assignResource,
 };

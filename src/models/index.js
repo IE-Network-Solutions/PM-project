@@ -1,4 +1,3 @@
-
 module.exports.Risk = require('./risk.model');
 module.exports.Issue = require('./issue.model');
 
@@ -11,4 +10,5 @@ module.exports.Project = require('./project.model');
 module.exports.Milestone = require('./milestone.model');
 module.exports.Task = require('./task.model');
 
-module.exports.User =require('./user.model')
+module.exports.User = require('./user.model');
+module.exports.TaskUser = require('./taskUser.model');
