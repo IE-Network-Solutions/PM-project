@@ -24,12 +24,13 @@ module.exports = new EntitySchema({
     projectMembers: {
       type: 'one-to-many',
       target: 'ProjectMember',
-      inverseSide: 'project',
+      inverseSide: 'Project',
     },
     projectContractValues: { // Change to projectContractValues
       type: 'one-to-many',
       target: 'ProjectContractValue',
-      inverseSide: 'project', // Assuming this is the correct inverseSide property
+      inverseSide: 'Project', // Assuming this is the correct inverseSide property
     },
   },
+  
 });

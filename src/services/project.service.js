@@ -35,10 +35,8 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
     const projectMemberInstances = projectMembers.map((member) => {
       return projectMemberRepository.create({
         projectId: project.id,
-        memberId: member.memberId,
-        memberName: member.memberName,
+        userId: member.memberId,
         roleId: member.roleId,
-        roleName: member.roleName,
       });
     });
 
