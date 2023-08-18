@@ -67,7 +67,15 @@ const getRiskByProjectId = async (id) => {
 };
 
 const getRiskById = async (id) => {
-    return await riskRepository.find({ id: id, relations: ['project'], });
+    return await riskRepository.findOne(
+        {
+            where: { id: id },
+            relations: ['project']
+        });
+};
+
+const updateRiskStatus = async (riskId, status) => {
+    return await riskRepository.update({ id: "Transfered" })
 };
 
 /**
@@ -106,4 +114,5 @@ module.exports = {
     getRiskByProjectId,
     updateRiskById,
     deleteRiskById,
+    updateRiskStatus
 };

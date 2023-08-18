@@ -76,11 +76,18 @@ const deleteRisk = {
     }),
 };
 
+const moveRiskToIssue = {
+    params: Joi.object().keys({
+        riskId: Joi.string().custom(objectId),
+    }),
+};
+
 module.exports = {
     createRisk,
     getRisks,
     getRisk,
     getRiskByProjectId,
     updateRisk,
-    deleteRisk
+    deleteRisk,
+    moveRiskToIssue
 };

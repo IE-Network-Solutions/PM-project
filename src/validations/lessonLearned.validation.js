@@ -9,7 +9,6 @@ const createLL = {
         PMName: Joi.string().required(),
         PMId: Joi.string().required(),
         status: Joi.string().valid("Created", "Pending", "CEO Pending", "Approved").required(),
-        date: Joi.date().required(),
         projectId: Joi.string().required(),
         departmentId: Joi.string().required()
     }),

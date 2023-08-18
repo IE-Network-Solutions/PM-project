@@ -5,6 +5,8 @@ const catchAsync = require('../utils/catchAsync');
 const { lessonLearnedService } = require('../services');
 
 const createLL = catchAsync(async (req, res) => {
+    req.body.date = new Date().toString();
+    console.log(req.body)
     const result = await lessonLearnedService.createLL(req.body);
     res.status(httpStatus.CREATED).send(result);
 });

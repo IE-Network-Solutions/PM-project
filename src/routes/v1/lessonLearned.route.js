@@ -16,11 +16,11 @@ router
     .delete(validate(lessonLearnedValidation.deleteLLById), lessonLearnedController.deleteLLById);
 
 router
-    .route('/listBy/:projectId')
+    .route('/listByProject/:projectId')
     .get(validate(lessonLearnedValidation.getLLByProjectId), lessonLearnedController.getAllLLByProjectId);
 
 router
-    .route('/list/:departmentId')
+    .route('/listByDepartment/:departmentId')
     .get(validate(lessonLearnedValidation.getLLByDepartmentId), lessonLearnedController.getAllLLByDepartmentId);
 
 

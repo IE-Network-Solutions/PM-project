@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { riskService } = require('../services');
+const { riskService, issueService } = require('../services');
 const { residualMapRiskRate } = require('../utils/riskMatrix');
 const { mapRiskRate } = require('././../utils/riskMatrix');
 
@@ -67,6 +67,22 @@ const deleteRisk = catchAsync(async (req, res) => {
     res.status(httpStatus.NO_CONTENT).send();
 });
 
+const moveRiskToIssue = catchAsync(async (req, res) => {
+    const riskId = req.params.riskId;
+    const result = await riskService.getRiskById(riskId);
+    if (result.status === 'Closed') {
+        throw new ApiError(httpStatus.NOT_FOUND, "Risk is Already Closed");
+    }
+    console.log(result);
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Risk id is not found");
+    }
+
+    await issueService.createIssue(result);
+    const status = await riskService.updateRiskById(riskId, { status: "Transfered" });
+    res.send(status)
+})
+
 module.exports = {
     createRisk,
     getRisks,
@@ -74,5 +90,6 @@ module.exports = {
     getRiskByProjectId,
     getRiskByDate,
     updateRisk,
-    deleteRisk
+    deleteRisk,
+    moveRiskToIssue
 };

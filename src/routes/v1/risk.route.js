@@ -17,9 +17,12 @@ router
     .delete(validate(riskValidation.deleteRisk), riskController.deleteRisk);
 
 router
-    .route('/riskBy/:projectId')
+    .route('/riskByProject/:projectId')
     .get(validate(riskValidation.getRiskByProjectId), riskController.getRiskByProjectId);
 
+router
+    .route('/moveRiskToIssue/:riskId')
+    .delete(validate(riskValidation.moveRiskToIssue), riskController.moveRiskToIssue);
 
 module.exports = router;
 

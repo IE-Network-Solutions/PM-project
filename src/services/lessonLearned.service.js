@@ -45,15 +45,15 @@ const getAllLLByProjectId = async (id) => {
     return await lessonLearnedRepository.find(
         {
             where: { projectId: id },
-            relations: ['individuals', 'llComments', 'project']
+            relations: ['individuals', 'llComments']
         });
 };
 
 const getAllLLByDepartmentId = async (id) => {
     return await lessonLearnedRepository.find(
         {
-            where: { id: id },
-            relations: ['individuals', 'llComments', "project"]
+            where: { departmentId: id },
+            relations: ['individuals', 'llComments', 'project']
         });
 };
 
@@ -63,10 +63,10 @@ const getAllLLByDepartmentId = async (id) => {
  * @returns {Promise<LessonLearned>}
  */
 const getLLById = async (id) => {
-    return await lessonLearnedRepository.find(
+    return await lessonLearnedRepository.findOne(
         {
             where: { id: id },
-            relations: ['individuals', 'llComments']
+            relations: ['individuals', 'llComments', 'project']
         });
 };
 
