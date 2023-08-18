@@ -7,6 +7,8 @@ const createMilestone = {
     status: Joi.string().required(),
     weight: Joi.required(),
     projectId: Joi.string(),
+    tasks: Joi.array(),
+    subtasks: Joi.array(),
   }),
 };
 
