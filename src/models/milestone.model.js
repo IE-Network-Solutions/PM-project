@@ -9,6 +9,7 @@ class Milestone extends Base {
     this.name = { type: 'varchar' };
     this.status = { type: 'varchar' };
     this.weight = { type: 'int', default: () => "NULL"  };
+    this.projectId = { type: 'uuid',};
   }
 }
 

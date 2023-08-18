@@ -17,6 +17,7 @@ class Task extends Base {
     this.actualCost = { type: 'int' , nullable: true};
     this.status = { type: 'boolean' , nullable: true};
     this.sleepingReason = { type: 'varchar', nullable: true};
+    this.milestoneId = { type: 'uuid'};
 
   }
 }

@@ -26,47 +26,98 @@ const subTaskRepository = dataSource.getRepository(Subtask).extend({
  * @param {Object} milestoneBody
  * @returns {Promise<Project>}
  */
-const createMilestone = async (milestoneBody, tasks, subTasks) => {
+// const createMilestone = async (milestoneBody, tasks, subTasks) => {
+//   const milestone = milestoneRepository.create(milestoneBody);
+//   //save milestone instance
+//   await milestoneRepository.save(milestone);
+//   if (tasks) {
+//     const taskInstances = tasks.map(async (eachTask) => {
+//       const subTasks = eachTask.subtasks || [];
+//       console.log(eachTask);
+//       if (subTasks.length > 0) {
+//         const subTaskInstances = subTasks.map((eachSubTask) => {
+//           const subTask = subTaskRepository.create({
+//             taskId: eachTask.id, // Should this be eachTask.id?
+//             name: eachSubTask.name,
+//             plannedCost: eachSubTask.plannedCost,
+//             actualCost: eachSubTask.actualCost,
+//             status: eachSubTask.status,
+//             sleepingReason: eachSubTask.sleepingReason,
+//           });
+//           return subTask;
+//         });
+//      // Save the sub task instances
+//      const savedSubTaskInstances = await Promise.all(subTaskInstances);
+//      await subTaskRepository.save(savedSubTaskInstances);
+//       }
+  
+//       const taskInstance = taskRepository.create({
+//         milestoneId: milestone.id,
+//         name: eachTask.name,
+//         plannedCost: eachTask.plannedCost,
+//         actualCost: eachTask.actualCost,
+//         status: eachTask.status,
+//         sleepingReason: eachTask.sleepingReason,
+//         subTasks: subTasks,
+//       });
+  
+//       return taskInstance;
+//     });
+  
+//     // Save the task instances
+//     const savedTaskInstances = await Promise.all(taskInstances);
+//     await taskRepository.save(savedTaskInstances);
+//   }
+  
+//   milestone.tasks = tasks;
+//   return milestone;
+// };
+
+const createMilestone = async (milestoneBody, tasks) => {
   const milestone = milestoneRepository.create(milestoneBody);
-  //save milestone instance
   await milestoneRepository.save(milestone);
 
   if (tasks) {
-    const taskInstances = tasks.map((eachTasks) => {
-      return taskRepository.create({
+    const taskInstances = tasks.map(async (eachTask) => {
+      const subTasks = eachTask.subtasks || [];
+
+      const taskInstance = taskRepository.create({
         milestoneId: milestone.id,
-        name: eachTasks.name,
-        plannedCost: eachTasks.plannedCost,
-        actualCost: eachTasks.actualCost,
-        status: eachTasks.status,
-        sleepingReason: eachTasks.sleepingReason,
+        name: eachTask.name,
+        plannedCost: eachTask.plannedCost,
+        actualCost: eachTask.actualCost,
+        status: eachTask.status,
+        sleepingReason: eachTask.sleepingReason,
+        subTasks: subTasks, // Store subtasks in the task instance
       });
+
+      const savedTaskInstance = await taskRepository.save(taskInstance);
+
+      // Create and save subtasks
+      if (subTasks.length > 0) {
+        const subTaskInstances = subTasks.map((eachSubTask) => {
+          return subTaskRepository.create({
+            taskId: savedTaskInstance.id, // Use the saved task's ID
+            name: eachSubTask.name,
+            plannedCost: eachSubTask.plannedCost,
+            actualCost: eachSubTask.actualCost,
+            status: eachSubTask.status,
+            sleepingReason: eachSubTask.sleepingReason,
+          });
+        });
+
+         await subTaskRepository.save(subTaskInstances);
+      }
+
+      return savedTaskInstance;
     });
 
-    // Save the project member instances
-    await taskRepository.save(taskInstances);
-
-
-    if(subTasks){
-      const subTaskInstance = subTasks.map((eachSubTasks) => {
-        return subTaskRepository.create({
-          taskId: tasks.id,
-          name: eachSubTasks.name,
-          plannedCost: eachSubTasks.plannedCost,
-          actualCost: eachSubTasks.actualCost,
-          status: eachSubTasks.status,
-          sleepingReason: eachSubTasks.sleepingReason,
-        });
-      });
-
-      console.log(subTaskInstance);
-          // Save the subtask instances
-      await subTaskRepository.save(subTaskInstance);
-    }
-
+    // Save the task instances
+    const savedTaskInstances = await Promise.all(taskInstances);
+    
+     milestone.tasks = savedTaskInstances;
+    return milestone;
   }
-  milestone.tasks = tasks;
-  return milestone;
 };
 
 

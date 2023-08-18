@@ -5,22 +5,15 @@ const catchAsync = require('../utils/catchAsync');
 const { milestoneService, projectService} = require('../services');
 
 const createMilestone = catchAsync(async (req, res) => {
-  const milestone = await milestoneService.createMilestone(req.body);
   const Tasks = req.body.tasks;
-  const subTasks = req.body.subtasks;
+  const subTasks = req.body.subTasks;
+  // const taskInstances = Tasks.map((eachTask) => {
+  //   const subTasks = eachTask.subtasks || [];    
+  // });
   delete req.body.Tasks;
   delete req.body.subTasks; 
-
-  // relation with project
-  const project = await projectService.getProject(req.body.projectId);
-  if (!project) {
-    return res.status(404).json({ error: "Project not found" });
-  }
-  // milestone.project = project; // Associate the milestone with the project
-
-  // Save the milestone with the associated project
-  await milestoneService.createMilestone(req.body, Tasks, subTasks); // Replace with the appropriate method
-  res.status(httpStatus.CREATED).json(milestone); // Send the milestone in the response
+  const milestone = await milestoneService.createMilestone(req.body, Tasks, subTasks);
+  res.status(httpStatus.CREATED).json(milestone);
 });
 
 
