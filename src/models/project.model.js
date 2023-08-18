@@ -23,8 +23,8 @@ module.exports = new EntitySchema({
   relations: {
     projectContractValues: {
       type: 'one-to-many',
-      target: 'ProjectContractValue', // Corrected target entity name
-      inverseSide: 'project', // Corrected inverse side property name
+      target: 'ProjectContractValue',
+      inverseSide: 'project', 
     },
     projectMembers: {
       type: "many-to-many",

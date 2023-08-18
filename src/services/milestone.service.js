@@ -26,53 +26,6 @@ const subTaskRepository = dataSource.getRepository(Subtask).extend({
  * @param {Object} milestoneBody
  * @returns {Promise<Project>}
  */
-// const createMilestone = async (milestoneBody, tasks, subTasks) => {
-//   const milestone = milestoneRepository.create(milestoneBody);
-//   //save milestone instance
-//   await milestoneRepository.save(milestone);
-//   if (tasks) {
-//     const taskInstances = tasks.map(async (eachTask) => {
-//       const subTasks = eachTask.subtasks || [];
-//       console.log(eachTask);
-//       if (subTasks.length > 0) {
-//         const subTaskInstances = subTasks.map((eachSubTask) => {
-//           const subTask = subTaskRepository.create({
-//             taskId: eachTask.id, // Should this be eachTask.id?
-//             name: eachSubTask.name,
-//             plannedCost: eachSubTask.plannedCost,
-//             actualCost: eachSubTask.actualCost,
-//             status: eachSubTask.status,
-//             sleepingReason: eachSubTask.sleepingReason,
-//           });
-//           return subTask;
-//         });
-//      // Save the sub task instances
-//      const savedSubTaskInstances = await Promise.all(subTaskInstances);
-//      await subTaskRepository.save(savedSubTaskInstances);
-//       }
-  
-//       const taskInstance = taskRepository.create({
-//         milestoneId: milestone.id,
-//         name: eachTask.name,
-//         plannedCost: eachTask.plannedCost,
-//         actualCost: eachTask.actualCost,
-//         status: eachTask.status,
-//         sleepingReason: eachTask.sleepingReason,
-//         subTasks: subTasks,
-//       });
-  
-//       return taskInstance;
-//     });
-  
-//     // Save the task instances
-//     const savedTaskInstances = await Promise.all(taskInstances);
-//     await taskRepository.save(savedTaskInstances);
-//   }
-  
-//   milestone.tasks = tasks;
-//   return milestone;
-// };
-
 const createMilestone = async (milestoneBody, tasks) => {
   const milestone = milestoneRepository.create(milestoneBody);
   await milestoneRepository.save(milestone);

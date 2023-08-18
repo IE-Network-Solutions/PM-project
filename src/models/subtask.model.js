@@ -4,9 +4,8 @@ const {Base} = require('./BaseModel')
 
 
 class SubTask extends Base {
-  // Define additional properties specific to Post entity
   constructor() {
-    super(); // Call the constructor of the Base entity to inherit its properties
+    super(); 
     this.name = { type: 'varchar' };
     this.plannedStart = { type: 'date', nullable: true };
     this.plannedFinish = { type: 'date', nullable: true };
@@ -28,8 +27,8 @@ module.exports = new EntitySchema({
   relations: {
     task: {
         type: "many-to-one", 
-        target: "tasks", // Target entity name (name of the related entity)
-        inverseSide: "subtasks", // Property name on the related entity that points back to Post
+        target: "tasks", 
+        inverseSide: "subtasks", 
       },
   },
 });

@@ -4,7 +4,7 @@ const {Base} = require('./BaseModel')
 
 class minuteOfMeeting extends Base {
   constructor() {
-    super(); // Call the constructor of the Base entity to inherit its properties
+    super(); 
     this.title = { type: 'varchar' };
     this.meeting_date = { type: 'date', nullable: true };
     this.meeting_time = { type: 'varchar', nullable: true};
@@ -23,8 +23,8 @@ module.exports = new EntitySchema({
   relations: {
     project: {
         type: "many-to-one", 
-        target: "projects", // Target entity name (name of the related entity)
-        inverseSide: "minute_of_meetings", // Property name on the related entity that points back to Agenda
+        target: "projects", 
+        inverseSide: "minute_of_meetings", 
       },   
   },
 });
