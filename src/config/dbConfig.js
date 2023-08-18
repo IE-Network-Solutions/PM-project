@@ -5,11 +5,12 @@ const configs = require("./config");
 module.exports = {
 
   type: "postgres",
-  host: configs.postgres.host,
-  port: configs.postgres.port,
-  username: configs.postgres.userName,
-  password: configs.postgres.pswd,
-  database: configs.postgres.database,
+  url: `postgres://${configs.postgres.pg_user}:${configs.postgres.pg_pass}@${configs.postgres.pg_host}/${configs.postgres.pg_db}?sslmode=require&options=project%3D${configs.postgres.endpoint}`,
+  // host: configs.postgres.host,
+  // port: configs.postgres.port,
+  // username: configs.postgres.userName,
+  // password: configs.postgres.pswd,
+  // database: configs.postgres.database,
   entities: [__dirname + "/../models/*.js"],
   // entities: [Post,Project,Task,SubTask,Milestone,minuteOfMeeting,agenda,agendaTopic,momAction,momAttendees, Risk, Issue, AfterActionAnalysis, RelatedIssue, Action, AfterActionAnalysisIssueRelated],
   // entities: [Post,Project,Task,SubTask,Milestone,minuteOfMeeting,agenda,agendaTopic,momAction,momAttendees],

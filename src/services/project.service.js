@@ -4,7 +4,7 @@ const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
-
+const publishToRabbit = require('../utils/producer');
 const projectRepository = dataSource.getRepository(Project).extend({
   findAll,
   sortBy,
@@ -23,8 +23,7 @@ const projectContractValueRepository = dataSource.getRepository(ProjectContractV
 //   return await projectRepository.save(project);
 // };
 
-
-   // project.service.js
+// project.service.js
 const createProject = async (projectBody, projectMembers, projectContractValue) => {
   const project = projectRepository.create(projectBody);
 
@@ -46,27 +45,25 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
     await projectMemberRepository.save(projectMemberInstances);
   }
 
-  if(projectContractValue){
+  if (projectContractValue) {
     const projectContractValueInstance = projectContractValue.map((contract_value) => {
       return projectContractValueRepository.create({
         projectId: project.id,
         amount: contract_value.amount,
-        currency: contract_value.currency
+        currency: contract_value.currency,
       });
     });
-        // Save the project contract value instances
+    // Save the project contract value instances
     await projectContractValueRepository.save(projectContractValueInstance);
   }
 
   project.projectMembers = projectMembers;
   project.projectContractValue = projectContractValue;
 
+  publishToRabbit('project.create', project);
+
   return project;
 };
-
-
-
-
 
 /**
  * Query for users
@@ -83,12 +80,11 @@ const getProjects = async (filter, options) => {
 
   return await projectRepository.find({
     tableName: 'projects',
-    sortOptions: sortBy&&{ option: sortBy },
+    sortOptions: sortBy && { option: sortBy },
     paginationOptions: { limit: limit, page: page },
     relations: ['projectMembers', 'projectContractValues'],
   });
 };
-
 
 // project.service.js
 // const getProjects = async () => {
@@ -96,7 +92,6 @@ const getProjects = async (filter, options) => {
 //     relations: ['projectMembers'], // Load the projectMembers association
 //   });
 // };
-
 
 /**
  * Get post by id
@@ -119,7 +114,10 @@ const updateProject = async (projectId, updateBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
   }
   await projectRepository.update({ id: projectId }, updateBody);
-  return await getProject(projectId);
+
+  const updatedProject = await getProject(projectId);
+  publishToRabbit('project.update', project);
+  return updatedProject;
 };
 
 /**
