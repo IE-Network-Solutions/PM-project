@@ -4,6 +4,7 @@ const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const publishToRabbit = require('../utils/producer');
 
 const projectRepository = dataSource.getRepository(Project).extend({
   findAll,
@@ -60,6 +61,7 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
 
   project.projectMembers = projectMembers;
   project.projectContractValue = projectContractValue;
+  publishToRabbit('project.create', project);
 
   return project;
 };
@@ -119,7 +121,9 @@ const updateProject = async (projectId, updateBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
   }
   await projectRepository.update({ id: projectId }, updateBody);
-  return await getProject(projectId);
+  const updatedProject= await getProject(projectId);
+  publishToRabbit('project.update', updatedProject);
+  return updatedProject;
 };
 
 /**
