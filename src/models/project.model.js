@@ -21,15 +21,25 @@ module.exports = new EntitySchema({
   tableName: 'projects',
   columns: new Project(),
   relations: {
-    projectMembers: {
+    projectContractValues: {
       type: 'one-to-many',
-      target: 'ProjectMember',
-      inverseSide: 'project',
+      target: 'ProjectContractValue', // Corrected target entity name
+      inverseSide: 'project', // Corrected inverse side property name
     },
-    projectContractValues: { // Change to projectContractValues
-      type: 'one-to-many',
-      target: 'ProjectContractValue',
-      inverseSide: 'project', // Assuming this is the correct inverseSide property
+    projectMembers: {
+      type: "many-to-many",
+      target: "User",
+      joinTable: {
+        name: "project_member",
+        joinColumn: { name: "projectId", referencedColumnName: "id" },
+        inverseJoinColumn: {
+          name: "userId",
+          referencedColumnName: "id",
+        },
+      },
+      onDelete: "SET NULL",
+      onUpdate: "CASCADE",
     },
   },
+  
 });
