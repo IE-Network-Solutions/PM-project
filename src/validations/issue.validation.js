@@ -11,7 +11,8 @@ const createIssue = {
         impact: Joi.string().required(),
         control: Joi.string().valid("Avoided", "Mitigated", "Transfered", "Accepted").required(),
         controlOwner: Joi.string().required(),
-        residualImpact: Joi.string().required()
+        residualImpact: Joi.string().required(),
+        projectId: Joi.string().custom(objectId),
     }),
 };
 

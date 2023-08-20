@@ -59,8 +59,9 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
 
   project.projectMembers = projectMembers;
   project.projectContractValue = projectContractValue;
-
   publishToRabbit('project.create', project);
+
+
 
   return project;
 };
@@ -114,9 +115,8 @@ const updateProject = async (projectId, updateBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
   }
   await projectRepository.update({ id: projectId }, updateBody);
-
-  const updatedProject = await getProject(projectId);
-  publishToRabbit('project.update', project);
+  const updatedProject= await getProject(projectId);
+  publishToRabbit('project.update', updatedProject);
   return updatedProject;
 };
 

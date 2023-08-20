@@ -6,8 +6,6 @@ const findAll = require('./Plugins/findAll');
 
 const userRepository = dataSource.getRepository(User).extend({ findAll, sortBy });
 
-
-
 /**
  * Query for users
  * @param {Object} filter - Filter options
@@ -19,16 +17,14 @@ const userRepository = dataSource.getRepository(User).extend({ findAll, sortBy }
  */
 
 const queryUsers = async (filter, options) => {
-    const { limit, page, sortBy } = options;
+  const { limit, page, sortBy } = options;
 
-    return await userRepository.findAll({
-        tableName: 'user',
-        sortOptions: sortBy && { option: sortBy },
-        paginationOptions: { limit: limit, page: page },
-    });
-
+  return await userRepository.findAll({
+    tableName: 'user',
+    sortOptions: sortBy && { option: sortBy },
+    paginationOptions: { limit: limit, page: page },
+  });
 };
-
 
 /**
  * Get user by id
@@ -36,10 +32,21 @@ const queryUsers = async (filter, options) => {
  * @returns {Promise<Risk>}
  */
 const getUserById = async (id) => {
-    return await userRepository.findOneBy({ id: id });
+  return await userRepository.findOneBy({ id: id });
+};
+
+/**
+ * Get multiple users by array of ids
+ * @param {Array} userIds
+ * @returns {Promise<User>}
+ */
+const getUsersById = async (userIds) => {
+  console.log(userIds);
+  return await userRepository.findByIds(userIds);
 };
 
 module.exports = {
-    queryUsers,
-    getUserById
+  queryUsers,
+  getUserById,
+  getUsersById,
 };

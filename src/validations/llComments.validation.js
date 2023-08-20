@@ -7,7 +7,7 @@ const createLLComment = {
         userId: Joi.string().required(),
         comment: Joi.string().required(),
         date: Joi.string().required(),
-        LLId: Joi.string().custom(objectId),
+        lessonLearnedId: Joi.string().custom(objectId),
     }),
 };
 
