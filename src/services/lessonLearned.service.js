@@ -33,8 +33,8 @@ const queryLLs = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
     return await lessonLearnedRepository.find({
+        relations: ['individuals', 'llComments', 'project'],
         tableName: 'lessonLearned',
-        relations: ['individuals'],
         sortOptions: sortBy && { option: sortBy },
         paginationOptions: { limit: limit, page: page },
     });
@@ -44,8 +44,16 @@ const queryLLs = async (filter, options) => {
 const getAllLLByProjectId = async (id) => {
     return await lessonLearnedRepository.find(
         {
-            where: { id: id },
+            where: { projectId: id },
             relations: ['individuals', 'llComments']
+        });
+};
+
+const getAllLLByDepartmentId = async (id) => {
+    return await lessonLearnedRepository.find(
+        {
+            where: { departmentId: id },
+            relations: ['individuals', 'llComments', 'project']
         });
 };
 
@@ -55,10 +63,10 @@ const getAllLLByProjectId = async (id) => {
  * @returns {Promise<LessonLearned>}
  */
 const getLLById = async (id) => {
-    return await lessonLearnedRepository.find(
+    return await lessonLearnedRepository.findOne(
         {
             where: { id: id },
-            relations: ['individuals', 'llComments']
+            relations: ['individuals', 'llComments', 'project']
         });
 };
 
@@ -144,6 +152,7 @@ module.exports = {
     createLL,
     queryLLs,
     getAllLLByProjectId,
+    getAllLLByDepartmentId,
     getLLById,
     updateLLById,
     deleteLLById,

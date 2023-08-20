@@ -32,7 +32,8 @@ const createIssue = async (issueBody) => {
 const queryIssues = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
-    return await issueRepository.findAll({
+    return await issueRepository.find({
+        relations: ['project'],
         tableName: 'issue',
         sortOptions: sortBy && { option: sortBy },
         paginationOptions: { limit: limit, page: page },
@@ -46,7 +47,7 @@ const queryIssues = async (filter, options) => {
  * @returns {Promise<Issue>}
  */
 const getIssueById = async (id) => {
-    return await issueRepository.findOneBy({ id: id });
+    return await issueRepository.findOne({ where: { id: id }, relations: ['project'] });
 };
 
 /**

@@ -10,7 +10,7 @@ class LLComments extends Base {
         this.userName = { type: 'varchar' };
         this.userId = { type: 'varchar' };
         this.comment = { type: 'text' };
-        this.LLId = { type: 'varchar', nullable: true };
+        this.lessonLearnedId = { type: 'varchar', nullable: true };
         this.date = { type: 'varchar' };
     }
 }
@@ -23,7 +23,7 @@ module.exports = new EntitySchema({
         lessonLearned: {
             type: 'many-to-one',
             target: 'LessonLearned',
-            inverseSide:"llComments",
+            inverseSide: "llComments",
             onDelete: "SET NULL",
             onUpdate: 'CASCADE'
         },

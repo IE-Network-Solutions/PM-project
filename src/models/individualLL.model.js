@@ -12,7 +12,7 @@ class IndividualLL extends Base {
         this.problem = { type: 'text' };
         this.impact = { type: 'text' };
         this.lessonLearnedText = { type: 'text' };
-        // this.LLId = { type: 'varchar', nullable: true };
+        this.lessonLearnedId = { type: 'varchar', nullable: true };
     }
 }
 
