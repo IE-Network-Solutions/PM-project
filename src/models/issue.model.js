@@ -16,6 +16,7 @@ class Issue extends Base {
         this.control = { type: 'varchar' };
         this.controlOwner = { type: 'varchar' };
         this.residualImpact = { type: 'varchar' };
+        this.projectId = { type: "varchar", nullable: true }
     }
 }
 
@@ -23,4 +24,12 @@ module.exports = new EntitySchema({
     name: 'Issue',
     tableName: 'issues',
     columns: new Issue(),
+    relations: {
+        project: {
+            type: 'many-to-one',
+            target: 'Project',
+            onDelete: "SET NULL",
+            onUpdate: 'CASCADE'
+        },
+    }
 });

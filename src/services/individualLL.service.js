@@ -47,7 +47,10 @@ const queryIndividualLLs = async (filter, options) => {
  * @returns {Promise<IndividualLL>}
  */
 const getIndividualLLById = async (id) => {
-    return await individualLLRepository.findOneBy({ id: id });
+    return await individualLLRepository.findOne({
+        where: { id: id },
+        relations: ['lessonLearned']
+    });
 };
 
 /**

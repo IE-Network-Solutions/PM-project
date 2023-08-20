@@ -14,7 +14,7 @@ class LessonLearned extends Base {
         this.PMId = { type: 'varchar' };
         this.date = { type: 'varchar' };
         this.status = { type: 'varchar' };
-        this.projectId = { type: 'varchar' };
+        this.projectId = { type: 'varchar', nullable: true };
         this.departmentId = { type: 'varchar', nullable: true }
     }
 }
@@ -33,6 +33,12 @@ module.exports = new EntitySchema({
             type: 'one-to-many',
             target: 'LLComments',
             inverseSide: 'lessonLearned',
+        },
+        project: {
+            type: 'many-to-one',
+            target: 'Project',
+            onDelete: "SET NULL",
+            onUpdate: 'CASCADE'
         },
     },
     onDelete: "SET NULL",

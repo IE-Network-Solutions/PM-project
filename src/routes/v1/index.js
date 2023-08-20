@@ -10,7 +10,7 @@ const projectRoute = require('./project.route');
 const milestoneRoute = require('./milestone.route');
 const taskRoute = require('./task.route');
 const subTaskRoute = require('./subtask.route');
-const usersRoute=require('./user.route')
+const usersRoute = require('./user.route')
 const leasonLearnedRoute = require('./lessonLearned.route');
 const individualLLRoute = require('./individualLL.route');
 const LLCommentRoute = require('./llComment.route');
@@ -59,15 +59,15 @@ const defaultRoutes = [
     path: '/milestones',
     route: milestoneRoute,
   },
-  {  
+  {
     path: '/tasks',
     route: taskRoute,
   },
-  {  
+  {
     path: '/subtasks',
     route: subTaskRoute,
   },
-  {  
+  {
     path: '/users',
     route: usersRoute,
   },
@@ -83,7 +83,7 @@ const defaultRoutes = [
     path: '/llcomment',
     route: LLCommentRoute,
   },
-  
+
 ];
 
 const devRoutes = [

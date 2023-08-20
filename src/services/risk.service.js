@@ -32,7 +32,8 @@ const createRisk = async (riskBody) => {
 const queryRisks = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
-    return await riskRepository.findAll({
+    return await riskRepository.find({
+        relations: ['project'],
         tableName: 'risk',
         sortOptions: sortBy && { option: sortBy },
         paginationOptions: { limit: limit, page: page },
@@ -60,8 +61,21 @@ const getRiskByDate = async (startDate, endDate) => {
  * @param {ObjectId} id
  * @returns {Promise<Risk>}
  */
+
+const getRiskByProjectId = async (id) => {
+    return await riskRepository.find({ projectId: id, relations: ['project'] });
+};
+
 const getRiskById = async (id) => {
-    return await riskRepository.findOneBy({ id: id });
+    return await riskRepository.findOne(
+        {
+            where: { id: id },
+            relations: ['project']
+        });
+};
+
+const updateRiskStatus = async (riskId, status) => {
+    return await riskRepository.update({ id: "Transfered" })
 };
 
 /**
@@ -97,6 +111,8 @@ module.exports = {
     queryRisks,
     getRiskByDate,
     getRiskById,
+    getRiskByProjectId,
     updateRiskById,
     deleteRiskById,
+    updateRiskStatus
 };

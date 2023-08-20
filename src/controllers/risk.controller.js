@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { riskService } = require('../services');
+const { riskService, issueService } = require('../services');
 const { residualMapRiskRate } = require('../utils/riskMatrix');
 const { mapRiskRate } = require('././../utils/riskMatrix');
 
@@ -31,7 +31,7 @@ const getRisks = catchAsync(async (req, res) => {
 
 const getRiskByDate = catchAsync(async (req, res) => {
 
-    const startDate = new Date(req.body.startDate); 
+    const startDate = new Date(req.body.startDate);
     const endDate = new Date(req.body.endDate);
     const risk = await riskService.getRiskByDate(startDate, endDate);
 
@@ -39,6 +39,14 @@ const getRiskByDate = catchAsync(async (req, res) => {
         throw new ApiError(httpStatus.NOT_FOUND, 'Risk not found');
     }
     res.send(risk);
+});
+const getRiskByProjectId = catchAsync(async (req, res) => {
+    const result = await riskService.getRiskByProjectId(req.params.projectId);
+    console.log("result", result)
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Project id not found');
+    }
+    res.send(result);
 });
 
 const getRisk = catchAsync(async (req, res) => {
@@ -59,11 +67,29 @@ const deleteRisk = catchAsync(async (req, res) => {
     res.status(httpStatus.NO_CONTENT).send();
 });
 
+const moveRiskToIssue = catchAsync(async (req, res) => {
+    const riskId = req.params.riskId;
+    const result = await riskService.getRiskById(riskId);
+    if (result.status === 'Closed') {
+        throw new ApiError(httpStatus.NOT_FOUND, "Risk is Already Closed");
+    }
+    console.log(result);
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Risk id is not found");
+    }
+
+    await issueService.createIssue(result);
+    const status = await riskService.updateRiskById(riskId, { status: "Transfered" });
+    res.send(status)
+})
+
 module.exports = {
     createRisk,
     getRisks,
     getRisk,
+    getRiskByProjectId,
     getRiskByDate,
     updateRisk,
-    deleteRisk
+    deleteRisk,
+    moveRiskToIssue
 };

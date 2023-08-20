@@ -14,6 +14,7 @@ const createRisk = {
         controlOwner: Joi.string().required(),
         residualProbability: Joi.string().required(),
         residualImpact: Joi.string().required(),
+        projectId: Joi.string().custom(objectId),
     }),
 };
 
@@ -34,6 +35,12 @@ const getRisks = {
         sortBy: Joi.string(),
         limit: Joi.number().integer(),
         page: Joi.number().integer(),
+    }),
+};
+
+const getRiskByProjectId = {
+    params: Joi.object().keys({
+        projectId: Joi.string().custom(objectId),
     }),
 };
 
@@ -69,10 +76,18 @@ const deleteRisk = {
     }),
 };
 
+const moveRiskToIssue = {
+    params: Joi.object().keys({
+        riskId: Joi.string().custom(objectId),
+    }),
+};
+
 module.exports = {
     createRisk,
     getRisks,
     getRisk,
+    getRiskByProjectId,
     updateRisk,
-    deleteRisk
+    deleteRisk,
+    moveRiskToIssue
 };
