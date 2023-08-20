@@ -7,6 +7,7 @@ module.exports.actionValidation = require('./action.validation');
 module.exports.afterActionAnalysisIssueRelatedValidation = require('./afterActionAnalysisIssueRelated.validation');
 
 module.exports.projectValidation = require('./project.validation');
+module.exports.paymentTermValidation = require('./paymentTerm.validation');
 module.exports.milestoneValidation = require('./milestone.validation');
 module.exports.taskValidation = require('./task.validation');
 module.exports.subTaskValidation = require('./subtask.validation');

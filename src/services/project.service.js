@@ -88,12 +88,6 @@ const getProjects = async (filter, options) => {
 };
 
 
-// project.service.js
-// const getProjects = async () => {
-//   return await projectRepository.findAll({
-//     relations: ['projectMembers'], // Load the projectMembers association
-//   });
-// };
 
 
 /**

@@ -7,8 +7,9 @@ class Milestone extends Base {
     super(); 
     this.name = { type: 'varchar' };
     this.status = { type: 'varchar' };
-    this.weight = { type: 'int', default: () => "NULL"  };
-    this.projectId = { type: 'uuid',};
+    this.weight = { type: 'int', default: () => "NULL"};
+    this.projectId = { type: 'uuid'};
+    this.paymentTermId = { type: 'uuid', nullable: true};
   }
 }
 
@@ -20,6 +21,11 @@ module.exports = new EntitySchema({
     project: {
         type: "many-to-one", 
         target: "projects",
+        inverseSide: "milestones",
+      },  
+      paymentTerm: {
+        type: "many-to-one", 
+        target: "PaymentTerm",
         inverseSide: "milestones",
       },   
   },

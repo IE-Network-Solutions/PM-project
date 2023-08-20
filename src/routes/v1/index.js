@@ -14,6 +14,7 @@ const usersRoute=require('./user.route')
 const leasonLearnedRoute = require('./lessonLearned.route');
 const individualLLRoute = require('./individualLL.route');
 const LLCommentRoute = require('./llComment.route');
+const PaymentTermRoute = require('./paymentTerm.route');
 
 
 const docsRoute = require('./docs.route');
@@ -54,7 +55,10 @@ const defaultRoutes = [
     path: '/projects',
     route: projectRoute,
   }
-  ,
+  ,{
+    path: '/payment-terms',
+    route: PaymentTermRoute,
+  },
   {
     path: '/milestones',
     route: milestoneRoute,

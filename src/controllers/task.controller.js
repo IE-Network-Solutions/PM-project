@@ -5,8 +5,9 @@ const catchAsync = require('../utils/catchAsync');
 const { taskService} = require('../services');
 
 const createTask = catchAsync(async (req, res) => {
-const task = await taskService.createTask(req.body);
-res.status(httpStatus.CREATED).send(task);
+  console.log(req.body);
+// const task = await taskService.createTask(req.body);
+// res.status(httpStatus.CREATED).send(task);
 });
 
 const getTasks = catchAsync(async(req, res)=>{
@@ -14,7 +15,6 @@ const getTasks = catchAsync(async(req, res)=>{
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await taskService.getTasks(filter, options);
   res.send(result);
-// res.send("Routing working fine");
 });
 
 
