@@ -12,6 +12,7 @@ module.exports.ProjectContractValue = require('./projectContractValue.model');
 
 
 module.exports.Milestone = require('./milestone.model');
+module.exports.Baseline = require('./baseline.model');
 module.exports.Task = require('./task.model');
 module.exports.Subtask = require('./subtask.model');
 module.exports.User =require('./user.model')

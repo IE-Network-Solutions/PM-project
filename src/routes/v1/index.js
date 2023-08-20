@@ -8,6 +8,7 @@ const actionRoute = require('./action.route');
 const afterActionAnalysisActionRoute = require('./afterActionAnalysisIssueRelated.route');
 const projectRoute = require('./project.route');
 const milestoneRoute = require('./milestone.route');
+const baselineRoute = require('./baseline.route');
 const taskRoute = require('./task.route');
 const subTaskRoute = require('./subtask.route');
 const usersRoute=require('./user.route')
@@ -62,6 +63,10 @@ const defaultRoutes = [
   {
     path: '/milestones',
     route: milestoneRoute,
+  },
+  {
+    path: '/baselines',
+    route: baselineRoute,
   },
   {  
     path: '/tasks',

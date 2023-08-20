@@ -17,7 +17,8 @@ class Task extends Base {
     this.actualCost = { type: 'int' , nullable: true};
     this.status = { type: 'boolean' , nullable: true};
     this.sleepingReason = { type: 'varchar', nullable: true};
-    this.milestoneId = { type: 'uuid'};
+    // this.milestoneId = { type: 'uuid', nullable: true};
+    this.baselineId = { type: 'uuid'};
 
   }
 }
@@ -27,9 +28,14 @@ module.exports = new EntitySchema({
   tableName: 'tasks',
   columns: new Task(),
   relations: {
-    milestone: {
+    // milestone: {
+    //     type: "many-to-one", 
+    //     target: "milestones", 
+    //     inverseSide: "tasks", 
+    //   },
+      baseline: {
         type: "many-to-one", 
-        target: "milestones", 
+        target: "baselines", 
         inverseSide: "tasks", 
       },
   },

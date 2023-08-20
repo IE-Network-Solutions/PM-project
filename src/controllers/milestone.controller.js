@@ -5,14 +5,11 @@ const catchAsync = require('../utils/catchAsync');
 const { milestoneService, projectService} = require('../services');
 
 const createMilestone = catchAsync(async (req, res) => {
-  const Tasks = req.body.tasks;
-  const subTasks = req.body.subTasks;
-  // const taskInstances = Tasks.map((eachTask) => {
-  //   const subTasks = eachTask.subtasks || [];    
-  // });
-  delete req.body.Tasks;
-  delete req.body.subTasks; 
-  const milestone = await milestoneService.createMilestone(req.body, Tasks, subTasks);
+  // const Tasks = req.body.tasks;
+  // const subTasks = req.body.subTasks;
+  // delete req.body.Tasks;
+  // delete req.body.subTasks; 
+  const milestone = await milestoneService.createMilestone(req.body);
   res.status(httpStatus.CREATED).json(milestone);
 });
 
@@ -21,7 +18,7 @@ const createMilestone = catchAsync(async (req, res) => {
 const getMilestones = catchAsync(async(req, res)=>{
   const filter = pick(req.query, ['status']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const milestone = await milestoneService.getMilestones(filter, options, relation, ["project"]);
+  const milestone = await milestoneService.getMilestones(filter, options)
   res.send(milestone);
 });
 

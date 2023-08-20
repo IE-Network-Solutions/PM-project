@@ -7,6 +7,7 @@ module.exports.actionController = require('./action.controller');
 module.exports.afterActionAnalysisIssueRelatedController = require('./afterActionAnalysisIssueRelated.controller');
 module.exports.projectController = require('./project.controller');
 module.exports.milestoneController = require('./milestone.controller');
+module.exports.baselineController = require('./baseline.controller');
 module.exports.paymentTermController = require('./paymentTerm.controller')
 module.exports.taskController = require('./task.controller');
 module.exports.subTaskController = require('./subtask.controller');

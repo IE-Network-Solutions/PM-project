@@ -8,6 +8,7 @@ module.exports.afterActionAnalysisIssueRelatedService = require('./afterActionAn
 module.exports.projectService = require('./project.service');
 module.exports.paymentTermService = require('./paymentTerm.service')
 module.exports.milestoneService = require('./milestone.service');
+module.exports.baselineService = require('./baseline.service');
 module.exports.taskService = require('./task.service');
 module.exports.subTaskService = require('./subtask.service');
 module.exports.userService = require('./user.service')
