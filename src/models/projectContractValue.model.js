@@ -22,7 +22,6 @@ module.exports = new EntitySchema({
     project: {
         type: "many-to-one", 
         target: "projects", // Target entity name (name of the related entity)
-       
         inverseSide: "projectContractValues", // Property name on the related entity that points back to Post
       },   
   },

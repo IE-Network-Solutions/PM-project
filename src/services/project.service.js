@@ -36,10 +36,8 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
     const projectMemberInstances = projectMembers.map((member) => {
       return projectMemberRepository.create({
         projectId: project.id,
-        memberId: member.memberId,
-        memberName: member.memberName,
+        userId: member.memberId,
         roleId: member.roleId,
-        roleName: member.roleName,
       });
     });
 
@@ -106,8 +104,13 @@ const getProjects = async (filter, options) => {
  * @returns {Promise<Project>}
  */
 const getProject = async (id) => {
-  return await projectRepository.findOneBy({ id: id });
+  return await projectRepository.findOne({
+      where: { id: id},
+      relations: ['projectMembers', 'projectContractValues'], },
+    );
+  
 };
+
 
 /**
  * Update user by id
@@ -136,7 +139,8 @@ const deleteProject = async (projectId) => {
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
-  return await projectRepository.delete({ id: projectId });
+  // return await projectRepository.delete({ id: projectId });
+  return await projectRepository.update({ id: projectId }, updateBody);
 };
 
 module.exports = {

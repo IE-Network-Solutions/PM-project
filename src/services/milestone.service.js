@@ -1,11 +1,19 @@
 const httpStatus = require('http-status');
-const { Milestone } = require('../models');
+const { Milestone, Task, Subtask } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 
 const milestoneRepository = dataSource.getRepository(Milestone).extend({
+  findAll,
+  sortBy,
+});
+const taskRepository = dataSource.getRepository(Task).extend({
+  findAll,
+  sortBy,
+});
+const subTaskRepository = dataSource.getRepository(Subtask).extend({
   findAll,
   sortBy,
 });
@@ -18,10 +26,49 @@ const milestoneRepository = dataSource.getRepository(Milestone).extend({
  * @param {Object} milestoneBody
  * @returns {Promise<Project>}
  */
-const createMilestone = async (milestoneBody) => {
+const createMilestone = async (milestoneBody, tasks, subTasks) => {
   const milestone = milestoneRepository.create(milestoneBody);
-  return await milestoneRepository.save(milestone);
+  //save milestone instance
+  await milestoneRepository.save(milestone);
+
+  if (tasks) {
+    const taskInstances = tasks.map((eachTasks) => {
+      return taskRepository.create({
+        milestoneId: milestone.id,
+        name: eachTasks.name,
+        plannedCost: eachTasks.plannedCost,
+        actualCost: eachTasks.actualCost,
+        status: eachTasks.status,
+        sleepingReason: eachTasks.sleepingReason,
+      });
+    });
+
+    // Save the project member instances
+    await taskRepository.save(taskInstances);
+
+
+    if(subTasks){
+      const subTaskInstance = subTasks.map((eachSubTasks) => {
+        return subTaskRepository.create({
+          taskId: tasks.id,
+          name: eachSubTasks.name,
+          plannedCost: eachSubTasks.plannedCost,
+          actualCost: eachSubTasks.actualCost,
+          status: eachSubTasks.status,
+          sleepingReason: eachSubTasks.sleepingReason,
+        });
+      });
+
+      console.log(subTaskInstance);
+          // Save the subtask instances
+      await subTaskRepository.save(subTaskInstance);
+    }
+
+  }
+  milestone.tasks = tasks;
+  return milestone;
 };
+
 
 
 /**
