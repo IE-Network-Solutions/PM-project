@@ -58,7 +58,6 @@ const ProjectMember = new EntitySchema({
     },
      roleId: {
       type: "uuid",
-      primary: true,
       nullable: true
     },
   },

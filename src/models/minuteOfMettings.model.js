@@ -6,12 +6,12 @@ class minuteOfMeeting extends Base {
   constructor() {
     super(); 
     this.title = { type: 'varchar' };
-    this.meeting_date = { type: 'date', nullable: true };
-    this.meeting_time = { type: 'varchar', nullable: true};
+    this.meetingDate = { type: 'date', nullable: true };
+    this.meetingTime = { type: 'varchar', nullable: true};
     this.location = { type: 'varchar', nullable: true};
     this.facilitator = { type: 'varchar', nullable: true};
     this.objective = { type: 'varchar', nullable: true};
-    this.special_note = { type: 'varchar', nullable: true};
+    this.specialNote = { type: 'varchar', nullable: true};
   }
 }
 
