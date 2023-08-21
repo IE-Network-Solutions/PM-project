@@ -6,7 +6,7 @@ module.exports.Action = require('./action.model');
 // module.exports.AfterActionAnalysisIssueRelated = require('./afterActionAnalysisIssueRelated.model');
 module.exports.Project = require('./project.model');
 module.exports.paymentTerm = require('./PaymentTerm.model')
-module.exports.ProjectMembers = require('./ProjectMember.model');
+module.exports.ProjectMembers = require('./projectMember.model');
 module.exports.ProjectContractValue = require('./projectContractValue.model');
 
 module.exports.Milestone = require('./milestone.model');
