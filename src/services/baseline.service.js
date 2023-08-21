@@ -94,7 +94,6 @@ const getBaselines = async (filter, options) => {
     tableName: 'baselines',
     sortOptions: sortBy&&{ option: sortBy },
     paginationOptions: { limit: limit, page: page },
-    // relations: ['']
   });
 };
 
@@ -104,11 +103,15 @@ const getBaselines = async (filter, options) => {
  * @returns {Promise<Baseline>}
  */
 const getBaseline = async (milestoneId) => {
-  return await baselineRepository.findOneBy({ id: milestoneId });
+  return await baselineRepository.findOne({ 
+    where: {id: milestoneId},
+    relations: ['task.subtasks',]
+  });
 };
 
 const getByMilestone = async (milestoneId) => {
-  return await baselineRepository.findBy({ milestoneId: milestoneId});
+  return await baselineRepository.findBy({ milestoneId: milestoneId,
+  });
 };
 
 /**
