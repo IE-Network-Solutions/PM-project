@@ -18,6 +18,9 @@ const individualLLRoute = require('./individualLL.route');
 const LLCommentRoute = require('./llComment.route');
 const PaymentTermRoute = require('./paymentTerm.route');
 
+const budgetCategoryRoute = require('./budgetCategory.route');
+const budgetTypeRoute = require('./budgetType.route');
+const budgetTaskCategoryRoute = require('./budgetTaskCategory.route');
 
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
@@ -25,7 +28,6 @@ const config = require('../../config/config');
 const router = express.Router();
 
 const defaultRoutes = [
-
   {
     path: '/risks',
     route: riskRoute,
@@ -97,7 +99,18 @@ const defaultRoutes = [
     path: '/llcomment',
     route: LLCommentRoute,
   },
-
+  {
+    path: '/budgetCategory',
+    route: budgetCategoryRoute,
+  },
+  {
+    path: '/budgetTaskCategory',
+    route: budgetTaskCategoryRoute,
+  },
+  {
+    path: '/budgetType',
+    route: budgetTypeRoute,
+  },
 ];
 
 const devRoutes = [
