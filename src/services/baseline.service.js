@@ -107,6 +107,10 @@ const getBaseline = async (milestoneId) => {
   return await baselineRepository.findOneBy({ id: milestoneId });
 };
 
+const getByMilestone = async (milestoneId) => {
+  return await baselineRepository.findBy({ milestoneId: milestoneId});
+};
+
 /**
  * Update user by id
  * @param {ObjectId} baselineId
@@ -139,6 +143,7 @@ module.exports = {
   createBaseline,
   getBaselines,
   getBaseline,
+  getByMilestone,
   updateBaseline,
   deleteBaseline,
 };
