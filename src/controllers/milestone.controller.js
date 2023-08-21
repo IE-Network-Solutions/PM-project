@@ -29,6 +29,16 @@ const getMilestone = catchAsync(async(req, res)=>{
   }
   res.send(milestone);
 });
+
+const getByProject = catchAsync(async(req, res)=>{
+  const projectMilestone = await milestoneService.getByProject(req.params.projectId);
+  if(projectMilestone.length == 0){
+    throw new ApiError(httpStatus.NOT_FOUND, 'No Milestone in this project')
+  }
+  res.send(projectMilestone);
+});
+
+
 const updateMilestone = catchAsync(async(req, res)=>{
   const milestone = await milestoneService.updateMilestone(req.params.milestoneId, req.body);
   res.send(milestone);
@@ -41,6 +51,7 @@ const deleteMilestone = catchAsync(async(req, res)=>{
 module.exports = {
   createMilestone,
   getMilestones,
+  getByProject,
   getMilestone,
   updateMilestone,
   deleteMilestone,

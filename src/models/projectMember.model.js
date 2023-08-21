@@ -56,6 +56,11 @@ const ProjectMember = new EntitySchema({
       type: "uuid",
       primary: true,
     },
+     roleId: {
+      type: "uuid",
+      primary: true,
+      nullable: true
+    },
   },
   relations: {
     user: {
@@ -65,6 +70,10 @@ const ProjectMember = new EntitySchema({
     project: {
       type: 'many-to-one',
       target: 'Project',
+    },
+    role: {
+      type: 'many-to-one',
+      target: 'Role',
     },
   },
 });
