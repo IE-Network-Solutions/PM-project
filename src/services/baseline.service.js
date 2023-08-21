@@ -28,14 +28,18 @@ const createBaseline = async (baselineBody, tasks) => {
   const baseline = baselineRepository.create(baselineBody);
   await baselineRepository.save(baseline);
 
+  console.log(tasks);
+
   if (tasks) {
     const taskInstances = tasks.map(async (eachTask) => {
       const subTasks = eachTask.subtasks || [];
       const taskInstance = taskRepository.create({
         baselineId: baseline.id,
         name: eachTask.name,
-        plannedCost: eachTask.plannedCost,
-        actualCost: eachTask.actualCost,
+        plannedStart: eachTask.plannedStart,
+        plannedFinish: eachTask.plannedFinish,
+        // plannedCost: eachTask.plannedCost,
+        // actualCost: eachTask.actualCost,
         status: eachTask.status,
         sleepingReason: eachTask.sleepingReason,
         subTasks: subTasks, // Store subtasks in the task instance
@@ -49,8 +53,10 @@ const createBaseline = async (baselineBody, tasks) => {
           return subTaskRepository.create({
             taskId: savedTaskInstance.id, // Use the saved task's ID
             name: eachSubTask.name,
-            plannedCost: eachSubTask.plannedCost,
-            actualCost: eachSubTask.actualCost,
+            plannedStart: eachSubTask.plannedStart,
+            plannedFinish: eachSubTask.plannedFinish,
+            // plannedCost: eachSubTask.plannedCost,
+            // actualCost: eachSubTask.actualCost,
             status: eachSubTask.status,
             sleepingReason: eachSubTask.sleepingReason,
           });

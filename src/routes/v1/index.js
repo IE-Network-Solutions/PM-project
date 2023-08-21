@@ -11,6 +11,7 @@ const milestoneRoute = require('./milestone.route');
 const baselineRoute = require('./baseline.route');
 const taskRoute = require('./task.route');
 const subTaskRoute = require('./subtask.route');
+const momRoute = require('./mom.route');
 const usersRoute=require('./user.route')
 const leasonLearnedRoute = require('./lessonLearned.route');
 const individualLLRoute = require('./individualLL.route');
@@ -75,6 +76,10 @@ const defaultRoutes = [
   {  
     path: '/subtasks',
     route: subTaskRoute,
+  },
+  {  
+    path: '/mom',
+    route: momRoute,
   },
   {  
     path: '/users',
