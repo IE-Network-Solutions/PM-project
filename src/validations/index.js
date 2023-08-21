@@ -1,4 +1,3 @@
-
 module.exports.riskValidation = require('./risk.validation');
 module.exports.issueValidation = require('./issue.validation');
 module.exports.AAAValidation = require('./AAA.validation');
@@ -15,3 +14,5 @@ module.exports.userValidation = require('./user.validation');
 module.exports.lessonLearnedValidation = require('./lessonLearned.validation');
 module.exports.individualLLValidation = require('./individualLL.validation');
 module.exports.LLCommentValidation = require('./llComments.validation');
+module.exports.budgetCategoryValidation = require('./budgetCategory.validation');
+module.exports.budgetTypeValidation = require('./budgetType.validation');

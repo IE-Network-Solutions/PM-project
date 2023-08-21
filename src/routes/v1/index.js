@@ -10,11 +10,12 @@ const projectRoute = require('./project.route');
 const milestoneRoute = require('./milestone.route');
 const taskRoute = require('./task.route');
 const subTaskRoute = require('./subtask.route');
-const usersRoute=require('./user.route')
+const usersRoute = require('./user.route');
 const leasonLearnedRoute = require('./lessonLearned.route');
 const individualLLRoute = require('./individualLL.route');
 const LLCommentRoute = require('./llComment.route');
-
+const budgetCategoryRoute = require('./budgetCategory.route');
+const budgetTypeRoute = require('./budgetType.route');
 
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
@@ -22,7 +23,6 @@ const config = require('../../config/config');
 const router = express.Router();
 
 const defaultRoutes = [
-
   {
     path: '/risks',
     route: riskRoute,
@@ -53,21 +53,20 @@ const defaultRoutes = [
   {
     path: '/projects',
     route: projectRoute,
-  }
-  ,
+  },
   {
     path: '/milestones',
     route: milestoneRoute,
   },
-  {  
+  {
     path: '/tasks',
     route: taskRoute,
   },
-  {  
+  {
     path: '/subtasks',
     route: subTaskRoute,
   },
-  {  
+  {
     path: '/users',
     route: usersRoute,
   },
@@ -83,7 +82,14 @@ const defaultRoutes = [
     path: '/llcomment',
     route: LLCommentRoute,
   },
-  
+  {
+    path: '/budgetCategory',
+    route: budgetCategoryRoute,
+  },
+  {
+    path: '/budgetType',
+    route: budgetTypeRoute,
+  },
 ];
 
 const devRoutes = [

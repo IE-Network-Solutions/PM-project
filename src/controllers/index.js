@@ -1,4 +1,3 @@
-
 module.exports.riskController = require('./risk.controller');
 module.exports.issueController = require('./issue.controller');
 module.exports.AAAController = require('./AAA.controller');
@@ -14,3 +13,5 @@ module.exports.userController = require('./user.controller');
 module.exports.lessonLearnedController = require('./lessonLearned.controller');
 module.exports.individualLLController = require('./individualLL.controller');
 module.exports.LLCommentController = require('./LLComment.controller');
+module.exports.budgetCategoryController = require('./budgetCategory.controller');
+module.exports.budgetTypeController = require('./budgetType.controller');

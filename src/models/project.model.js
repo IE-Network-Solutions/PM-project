@@ -12,7 +12,7 @@ class Project extends Base {
     this.planned_end_date = { type: 'date' };
     this.lc_opening_date = { type: 'date' };
     this.advanced_payment_date = { type: 'date' };
-    this.status = { type: 'boolean'};
+    this.status = { type: 'boolean' };
   }
 }
 
@@ -26,7 +26,8 @@ module.exports = new EntitySchema({
       target: 'ProjectMember',
       inverseSide: 'project',
     },
-    projectContractValues: { // Change to projectContractValues
+    projectContractValues: {
+      // Change to projectContractValues
       type: 'one-to-many',
       target: 'ProjectContractValue',
       inverseSide: 'project', // Assuming this is the correct inverseSide property

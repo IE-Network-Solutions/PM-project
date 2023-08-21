@@ -14,3 +14,5 @@ module.exports.User = require('./user.model');
 module.exports.LessonLearned = require('./lessonLearned.model');
 module.exports.IndividualLL = require('./individualLL.model');
 module.exports.LLComments = require('./llComments.model');
+module.exports.BudgetCategory = require('./budgetCategory.model');
+module.exports.BudgetType = require('./budgetType.model');
