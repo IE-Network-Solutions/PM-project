@@ -21,7 +21,6 @@ module.exports = new EntitySchema({
     project: {
       type: 'many-to-one',
       target: 'Project',
-     
       inverseSide: 'projectMembers', // Assuming 'projectMembers' is the inverse side property in the Project entity
     },
   },

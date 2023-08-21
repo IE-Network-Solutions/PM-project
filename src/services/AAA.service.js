@@ -47,7 +47,7 @@ const queryAAAs = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
     return await AAARepository.find({
-        relations: ['actions'],
+        relations: ['actions', 'issueRelates'],
         tableName: 'afterActionAnalysis',
         sortOptions: sortBy && { option: sortBy },
         paginationOptions: { limit: limit, page: page }
@@ -64,7 +64,7 @@ const getAAAById = async (id) => {
         where: {
             id: id,
         },
-        relations: ['actions'],
+        relations: ['actions', 'issueRelates'],
         tableName: 'afterActionAnalysis'
     });
 };

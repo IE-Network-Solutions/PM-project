@@ -16,7 +16,7 @@ class Issue extends Base {
         this.control = { type: 'varchar' };
         this.controlOwner = { type: 'varchar' };
         this.residualImpact = { type: 'varchar' };
-        this.projectId = { type: "varchar", nullable: true }
+        this.projectId = { type: "varchar", nullable: true };
     }
 }
 

@@ -29,17 +29,20 @@ const getRisks = catchAsync(async (req, res) => {
     res.send(result);
 });
 
-const getRiskByDate = catchAsync(async (req, res) => {
+const getRisksByDate = catchAsync(async (req, res) => {
 
-    const startDate = new Date(req.body.startDate);
-    const endDate = new Date(req.body.endDate);
-    const risk = await riskService.getRiskByDate(startDate, endDate);
+    const { startDate, endDate } = req.query
+    console.log("start date :", startDate, "endDate", endDate)
+    const dates = await riskService.getRisksByDate(startDate, endDate);
 
-    if (!risk) {
+    console.log("date list", dates[0].id)
+
+    if (!dates) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Risk not found');
     }
-    res.send(risk);
+    res.send(dates);
 });
+
 const getRiskByProjectId = catchAsync(async (req, res) => {
     const result = await riskService.getRiskByProjectId(req.params.projectId);
     console.log("result", result)
@@ -51,6 +54,23 @@ const getRiskByProjectId = catchAsync(async (req, res) => {
 
 const getRisk = catchAsync(async (req, res) => {
     const risk = await riskService.getRiskById(req.params.riskId);
+    if (!risk) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Risk not found');
+    }
+    res.send(risk);
+});
+
+const getAllCriticalRisks = catchAsync(async (req, res) => {
+    const result = await riskService.getAllCriticalRisks();
+    console.log("result", result)
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Risk id not found');
+    }
+    res.send(result);
+});
+
+const getCriticalRiskById = catchAsync(async (req, res) => {
+    const risk = await riskService.getCriticalRiskById(req.params.riskId);
     if (!risk) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Risk not found');
     }
@@ -88,8 +108,10 @@ module.exports = {
     getRisks,
     getRisk,
     getRiskByProjectId,
-    getRiskByDate,
+    getRisksByDate,
     updateRisk,
     deleteRisk,
-    moveRiskToIssue
+    moveRiskToIssue,
+    getAllCriticalRisks,
+    getCriticalRiskById
 };

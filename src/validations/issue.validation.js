@@ -37,6 +37,12 @@ const getIssue = {
     }),
 };
 
+const getIssueByProjectId = {
+    params: Joi.object().keys({
+        projectId: Joi.string().custom(objectId),
+    }),
+};
+
 const updateIssue = {
     params: Joi.object().keys({
         issueId: Joi.string().custom(objectId),
@@ -61,10 +67,19 @@ const deleteIssue = {
     }),
 };
 
+const getIssuesByDate = {
+    query: Joi.object().keys({
+        startDate: Joi.date().iso().required(),
+        endDate: Joi.date().iso().required(),
+    }),
+};
+
 module.exports = {
     createIssue,
     getIssues,
     getIssue,
     updateIssue,
-    deleteIssue
+    deleteIssue,
+    getIssueByProjectId,
+    getIssuesByDate
 };
