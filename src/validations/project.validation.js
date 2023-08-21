@@ -27,6 +27,7 @@ const getProjects = {
 
 const getProject = {
   params: Joi.object().keys({
+    projectId: Joi.required(),
   }),
 };
 

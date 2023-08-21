@@ -14,7 +14,6 @@ const getTasks = catchAsync(async (req, res) => {
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await taskService.getTasks(filter, options);
   res.send(result);
-  // res.send("Routing working fine");
 });
 
 const getTask = catchAsync(async (req, res) => {

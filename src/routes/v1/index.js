@@ -8,12 +8,14 @@ const actionRoute = require('./action.route');
 const afterActionAnalysisActionRoute = require('./afterActionAnalysisIssueRelated.route');
 const projectRoute = require('./project.route');
 const milestoneRoute = require('./milestone.route');
+const baselineRoute = require('./baseline.route');
 const taskRoute = require('./task.route');
 const subTaskRoute = require('./subtask.route');
 const usersRoute = require('./user.route')
 const leasonLearnedRoute = require('./lessonLearned.route');
 const individualLLRoute = require('./individualLL.route');
 const LLCommentRoute = require('./llComment.route');
+const PaymentTermRoute = require('./paymentTerm.route');
 
 
 const docsRoute = require('./docs.route');
@@ -54,12 +56,19 @@ const defaultRoutes = [
     path: '/projects',
     route: projectRoute,
   }
-  ,
+  ,{
+    path: '/payment-terms',
+    route: PaymentTermRoute,
+  },
   {
     path: '/milestones',
     route: milestoneRoute,
   },
   {
+    path: '/baselines',
+    route: baselineRoute,
+  },
+  {  
     path: '/tasks',
     route: taskRoute,
   },

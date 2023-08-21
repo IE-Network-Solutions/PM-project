@@ -10,7 +10,7 @@ class User {
     this.emailVerifiedAt = { type: 'timestamp', nullable: true };
     this.password = { type: 'varchar' };
     this.avatar = { type: 'varchar', nullable: true };
-    this.signature = { type: 'varchar' };
+    this.signature = { type: 'varchar', nullable: true };
     this.isDeleted = { type: 'bool' };
     this.rememberToken = { type: 'text', nullable: true };
     this.createdAt = { type: 'timestamp' };
