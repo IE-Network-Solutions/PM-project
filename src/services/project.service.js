@@ -32,7 +32,7 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
   // Save the project instance
   await projectRepository.save(project);
 
-  if (projectMembers) {
+  if (projectMembers) { 
     const projectMemberInstances = projectMembers.map((member) => {
       return projectMemberRepository.create({
         projectId: project.id,
@@ -90,12 +90,6 @@ const getProjects = async (filter, options) => {
 };
 
 
-// project.service.js
-// const getProjects = async () => {
-//   return await projectRepository.findAll({
-//     relations: ['projectMembers'], // Load the projectMembers association
-//   });
-// };
 
 
 /**
@@ -108,7 +102,6 @@ const getProject = async (id) => {
       where: { id: id},
       relations: ['projectMembers', 'projectContractValues'], },
     );
-  
 };
 
 

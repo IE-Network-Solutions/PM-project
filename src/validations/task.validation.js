@@ -12,6 +12,7 @@ const createTask = {
     actualCost: Joi.number(),
     status: Joi.string(),
     sleepingReason: Joi.string(),
+    milestoneId: Joi.required(),
   }),
 };
 
