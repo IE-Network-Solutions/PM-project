@@ -18,10 +18,6 @@ module.exports = new EntitySchema({
     budgetType: {
       type: 'many-to-one',
       target: 'budgetType',
-      joinColumn: {
-        name: 'budgetTypeId',
-        referencedColumnName: 'id',
-      },
     },
   },
 });

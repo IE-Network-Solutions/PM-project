@@ -15,3 +15,4 @@ module.exports.individualLLController = require('./individualLL.controller');
 module.exports.LLCommentController = require('./LLComment.controller');
 module.exports.budgetCategoryController = require('./budgetCategory.controller');
 module.exports.budgetTypeController = require('./budgetType.controller');
+module.exports.budgetCategoryTaskController = require('./budgetTaskCategory.controller');

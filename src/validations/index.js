@@ -15,4 +15,5 @@ module.exports.lessonLearnedValidation = require('./lessonLearned.validation');
 module.exports.individualLLValidation = require('./individualLL.validation');
 module.exports.LLCommentValidation = require('./llComments.validation');
 module.exports.budgetCategoryValidation = require('./budgetCategory.validation');
+module.exports.budgetTaskCategoryValidation = require('./budgetTaskCategory.validation');
 module.exports.budgetTypeValidation = require('./budgetType.validation');

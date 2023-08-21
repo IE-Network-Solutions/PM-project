@@ -33,7 +33,7 @@ const getAllBudgetCategories = async (filter, options) => {
   const { limit, page, sortBy } = options;
 
   return await budgetCategoryRepository.findAll({
-    tableName: 'budget_category_name',
+    tableName: 'budget_category',
     sortOptions: sortBy && { option: sortBy },
     paginationOptions: { limit: limit, page: page },
   });
