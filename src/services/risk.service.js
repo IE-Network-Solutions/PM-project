@@ -4,6 +4,7 @@ const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const { Between } = require('typeorm');
 
 const riskRepository = dataSource.getRepository(Risk).extend({ findAll, sortBy });
 // .extend({ sortBy });
@@ -46,13 +47,16 @@ const queryRisks = async (filter, options) => {
  * @param {ObjectId} id
  * @returns {Promise<Risk>}
  */
-const getRiskByDate = async (startDate, endDate) => {
-    return await Risk.findAll({
+const getRisksByDate = async (startDate, endDate) => {
+
+    return await riskRepository.find({
         where: {
-            created_at: {
-                [Op.between]: [startDate, endDate],
-            },
+            createdAt: Between(
+                new Date(startDate).toISOString(),
+                new Date(endDate).toISOString()
+            ),
         },
+        relations: ['project']
     });
 };
 
@@ -63,13 +67,40 @@ const getRiskByDate = async (startDate, endDate) => {
  */
 
 const getRiskByProjectId = async (id) => {
-    return await riskRepository.find({ projectId: id, relations: ['project'] });
+    return await riskRepository.find(
+        {
+            where: {
+                projectId: id
+            },
+            relations: ['project']
+        });
 };
 
 const getRiskById = async (id) => {
     return await riskRepository.findOne(
         {
             where: { id: id },
+            relations: ['project']
+        });
+};
+
+const getAllCriticalRisks = async () => {
+    return await riskRepository.find(
+        {
+            where: {
+                riskRate: "Critical"
+            },
+            relations: ['project']
+        });
+};
+
+const getCriticalRiskById = async (id) => {
+    return await riskRepository.find(
+        {
+            where: {
+                id: id,
+                riskRate: "Critical"
+            },
             relations: ['project']
         });
 };
@@ -109,10 +140,12 @@ const deleteRiskById = async (riskId) => {
 module.exports = {
     createRisk,
     queryRisks,
-    getRiskByDate,
+    getRisksByDate,
     getRiskById,
     getRiskByProjectId,
     updateRiskById,
     deleteRiskById,
-    updateRiskStatus
+    updateRiskStatus,
+    getAllCriticalRisks,
+    getCriticalRiskById
 };

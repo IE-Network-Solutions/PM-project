@@ -35,6 +35,7 @@ module.exports = new EntitySchema({
             onDelete: "SET NULL",
             onUpdate: 'CASCADE'
         },
+        
     }
 
 });

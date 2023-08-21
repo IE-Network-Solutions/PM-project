@@ -7,6 +7,7 @@ class RelatedIssue extends Base {
     constructor() {
         super(); // Call the constructor of the Base entity to inherit its properties
         this.name = { type: 'varchar' };
+        this.afterActionAnalysisId = { type: "varchar", nullable: true }
     }
 }
 module.exports = new EntitySchema({
@@ -14,10 +15,16 @@ module.exports = new EntitySchema({
     tableName: 'relatedissues',
     columns: new RelatedIssue(),
     relations: {
-        afterActionAnalysis_issueRelated: {
-            type: 'one-to-many',
-            target: 'AfterActionAnalysis_IssueRelated',
-            inverseSide: 'afterActionAnalysis',
+        afterActionAnalysis: {
+            type: 'many-to-one',
+            target: 'AfterActionAnalysis',
+            onDelete: "SET NULL",
+            onUpdate: 'CASCADE'
         },
+        // afterActionAnalysis_issueRelated: {
+        //     type: 'one-to-many',
+        //     target: 'AfterActionAnalysis_IssueRelated',
+        //     inverseSide: 'afterActionAnalysis',
+        // },
     },
 });
