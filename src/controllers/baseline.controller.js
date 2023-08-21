@@ -29,6 +29,16 @@ const getBaseline = catchAsync(async(req, res)=>{
   }
   res.send(baseline);
 });
+
+
+const getByMilestone = catchAsync(async(req, res)=>{
+  const milestoneBaseline = await baselineService.getByMilestone(req.params.milestoneId);
+  if(milestoneBaseline.length == 0){
+    throw new ApiError(httpStatus.NOT_FOUND, 'No Baseline in this milestone')
+  }
+  res.send(milestoneBaseline);
+});
+
 const updateBaseline = catchAsync(async(req, res)=>{
   const baseline = await baselineService.updateBaseline(req.params.baselineId, req.body);
   res.send(baseline);
@@ -42,6 +52,7 @@ module.exports = {
   createBaseline,
   getBaselines,
   getBaseline,
+  getByMilestone,
   updateBaseline,
   deleteBaseline,
 };
