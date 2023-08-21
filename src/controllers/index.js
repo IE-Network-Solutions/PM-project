@@ -11,6 +11,7 @@ module.exports.baselineController = require('./baseline.controller');
 module.exports.paymentTermController = require('./paymentTerm.controller')
 module.exports.taskController = require('./task.controller');
 module.exports.subTaskController = require('./subtask.controller');
+module.exports.momController = require('./mom.controller');
 module.exports.userController = require('./user.controller');
 
 module.exports.lessonLearnedController = require('./lessonLearned.controller');

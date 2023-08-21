@@ -16,5 +16,13 @@ router
     .patch(validate(issueValidation.updateIssue), issueController.updateIssueById)
     .delete(validate(issueValidation.deleteIssue), issueController.deleteIssueById);
 
+router
+    .route('/issueByProjectId/:projectId')
+    .get(validate(issueValidation.getIssueByProjectId), issueController.getIssueByProjectId);
+router
+    .route('/getAllIssues/ByDate')
+    .get(validate(issueValidation.getIssuesByDate), issueController.getIssuesByDate);
+
+
 module.exports = router;
 

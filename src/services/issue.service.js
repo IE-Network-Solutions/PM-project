@@ -4,6 +4,7 @@ const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const { Between } = require('typeorm');
 
 const issueRepository = dataSource.getRepository(Issue).extend({ findAll, sortBy });
 // .extend({ sortBy });
@@ -50,6 +51,25 @@ const getIssueById = async (id) => {
     return await issueRepository.findOne({ where: { id: id }, relations: ['project'] });
 };
 
+const getIssueByProjectId = async (id) => {
+    return await issueRepository.find(
+        {
+            where: {
+                projectId: id
+            },
+            relations: ['project']
+        });
+};
+
+const getIssuesByDate = async (startDate, endDate) => {
+    return await issueRepository.find({
+        where: {
+            createdAt: Between(startDate, endDate),
+        },
+        relations: ['project']
+    });
+};
+
 /**
  * Update user by id
  * @param {ObjectId} issueId
@@ -84,4 +104,6 @@ module.exports = {
     getIssueById,
     updateIssueById,
     deleteIssueById,
+    getIssueByProjectId,
+    getIssuesByDate
 };

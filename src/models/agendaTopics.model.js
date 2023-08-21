@@ -5,10 +5,8 @@ const {Base} = require('./BaseModel')
 class AgendaTopic extends Base {
  constructor() {
     super(); 
-    this.agenda_points = { type: 'varchar' };
+    this.agendaPoints = { type: 'varchar' };
     this.userId = { type: 'varchar' };
-    this.userName = { type: 'varchar' };
-    this.signature = { type: 'varchar' };
   }
 }
 

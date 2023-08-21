@@ -6,6 +6,7 @@ class Project extends Base {
   constructor() {
     super();
     this.name = { type: 'varchar' };
+    this.clientId = {type: 'uuid', nullable: true};
     this.milestone = { type: 'int' };
     this.budget = { type: 'int' };
     this.contract_sign_date = { type: 'date' };
