@@ -103,6 +103,10 @@ const getMilestone = async (milestoenId) => {
   return await milestoneRepository.findOneBy({ id: milestoenId });
 };
 
+const getByProject = async (projectId) => {
+  return await milestoneRepository.findBy({ projectId: projectId,});
+};
+
 /**
  * Update user by id
  * @param {ObjectId} milestoneId
@@ -135,6 +139,7 @@ module.exports = {
   createMilestone,
   getMilestones,
   getMilestone,
+  getByProject,
   updateMilestone,
   deleteMilestone,
 };

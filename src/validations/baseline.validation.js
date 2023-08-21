@@ -4,7 +4,9 @@ const { objectId } = require('./custom.validation');
 const createBaseline = {
   body: Joi.object().keys({
     name: Joi.string().required(),
-    status: Joi.string(),
+    status: Joi.boolean(),
+    plannedStart: Joi.date(),
+    plannedFinish: Joi.date(),
     milestoneId: Joi.required(),
     tasks: Joi.array(),
     subtasks: Joi.array(),

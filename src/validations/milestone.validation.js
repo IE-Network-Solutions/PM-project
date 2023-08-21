@@ -4,11 +4,9 @@ const { objectId } = require('./custom.validation');
 const createMilestone = {
   body: Joi.object().keys({
     name: Joi.string().required(),
-    status: Joi.string().required(),
+    status: Joi.boolean(),
     weight: Joi.required(),
     projectId: Joi.string(),
-    tasks: Joi.array(),
-    subtasks: Joi.array(),
   }),
 };
 
@@ -22,6 +20,11 @@ const getMilestone = {
     milestoneId: Joi.string(),
   }),
 };
+const getByProject = {
+  params: Joi.object().keys({
+    projectId: Joi.string(),
+  }),
+};
 
 const updateMilestone = {
   params: Joi.object().keys({
@@ -30,6 +33,8 @@ const updateMilestone = {
   body: Joi.object()
     .keys({
       name: Joi.string(),
+      status: Joi.boolean(),
+      weight: Joi.number(),
     })
     .min(1),
 };
@@ -44,6 +49,7 @@ module.exports = {
   createMilestone,
   getMilestones,
   getMilestone,
+  getByProject,
   updateMilestone,
   deleteMilestone
 };
