@@ -16,5 +16,9 @@ router
     .patch(validate(AAAValidation.updateAAA), AAAController.updateAAAById)
     .delete(validate(AAAValidation.deleteAAA), AAAController.deleteAAAById);
 
+router
+    .route('/AAAByProjectId/:projectId')
+    .get(validate(AAAValidation.getAllAAAByProjectId), AAAController.getAllAAAByProjectId);
+
 module.exports = router;
 
