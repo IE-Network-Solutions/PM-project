@@ -5,8 +5,6 @@ const createBaseline = {
   body: Joi.object().keys({
     name: Joi.string().required(),
     status: Joi.boolean(),
-    plannedStart: Joi.date(),
-    plannedFinish: Joi.date(),
     milestoneId: Joi.required(),
     tasks: Joi.array(),
     subtasks: Joi.array(),
@@ -24,6 +22,12 @@ const getBaselines = {
 const getBaseline = {
   params: Joi.object().keys({
     baselineId: Joi.string()
+  }),
+};
+
+const getByMilestone = {
+  params: Joi.object().keys({
+    milestoneId: Joi.string(),
   }),
 };
 
@@ -48,6 +52,7 @@ module.exports = {
   createBaseline,
   getBaselines,
   getBaseline,
+  getByMilestone,
   updateBaseline,
   deleteBaseline
 };
