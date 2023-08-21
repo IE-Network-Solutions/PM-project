@@ -48,9 +48,13 @@ const queryRisks = async (filter, options) => {
  * @returns {Promise<Risk>}
  */
 const getRisksByDate = async (startDate, endDate) => {
+
     return await riskRepository.find({
         where: {
-            createdAt: Between(startDate, endDate),
+            createdAt: Between(
+                new Date(startDate).toISOString(),
+                new Date(endDate).toISOString()
+            ),
         },
         relations: ['project']
     });

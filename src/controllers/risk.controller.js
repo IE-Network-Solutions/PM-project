@@ -16,8 +16,6 @@ const createRisk = catchAsync(async (req, res) => {
     // req.body.residualRiskRate = residualRiskRate.rating;
     req.body.riskRate = mapRiskRate(impact, probability);
     req.body.residualRiskRate = residualMapRiskRate(residualImpact, residualProbability);
-
-
     const risk = await riskService.createRisk(req.body);
     res.status(httpStatus.CREATED).send(risk);
 });
@@ -35,7 +33,7 @@ const getRisksByDate = catchAsync(async (req, res) => {
     console.log("start date :", startDate, "endDate", endDate)
     const dates = await riskService.getRisksByDate(startDate, endDate);
 
-    console.log("date list", dates[0].id)
+    console.log("date list", dates)
 
     if (!dates) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Risk not found');
