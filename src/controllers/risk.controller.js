@@ -67,13 +67,7 @@ const getAllCriticalRisks = catchAsync(async (req, res) => {
     res.send(result);
 });
 
-const getCriticalRiskById = catchAsync(async (req, res) => {
-    const risk = await riskService.getCriticalRiskById(req.params.riskId);
-    if (!risk) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Risk not found');
-    }
-    res.send(risk);
-});
+
 
 const updateRisk = catchAsync(async (req, res) => {
     const risk = await riskService.updateRiskById(req.params.riskId, req.body);
@@ -99,7 +93,11 @@ const moveRiskToIssue = catchAsync(async (req, res) => {
     await issueService.createIssue(result);
     const status = await riskService.updateRiskById(riskId, { status: "Transfered" });
     res.send(status)
-})
+});
+const getAllRiskAndIssuesByProjectId = catchAsync(async (req, res) => {
+    const result = await riskService.getAllRiskAndIssuesByProjectId(req.params.projectId);
+    res.send(result);
+});
 
 module.exports = {
     createRisk,
@@ -111,5 +109,6 @@ module.exports = {
     deleteRisk,
     moveRiskToIssue,
     getAllCriticalRisks,
-    getCriticalRiskById
+    getAllRiskAndIssuesByProjectId
+
 };

@@ -5,9 +5,13 @@ const catchAsync = require('../utils/catchAsync');
 const { issueService } = require('../services');
 
 const createIssue = catchAsync(async (req, res) => {
-    console.log("message", req.body)
-    const issue = await issueService.createIssue(req.body);
-    res.status(httpStatus.CREATED).send(issue);
+    try {
+        console.log("message", req.body)
+        const issue = await issueService.createIssue(req.body);
+        res.status(httpStatus.CREATED).send(issue);
+    } catch (e) {
+        return new ApiError(httpStatus.NOT_FOUND, e);
+    }
 });
 
 const getIssues = catchAsync(async (req, res) => {
