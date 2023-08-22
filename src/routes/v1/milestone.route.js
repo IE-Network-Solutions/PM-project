@@ -11,7 +11,7 @@ router
   .get(validate(milestoneValidation.getMilestones),milestoneController.getMilestones);
 
   router
-  .route('/:projectId')
+  .route('/project/:projectId')
   .get(validate(milestoneValidation.getByProject), milestoneController.getByProject);
 
   router

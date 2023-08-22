@@ -58,11 +58,17 @@ const deleteAAA = {
         AAAId: Joi.string().custom(objectId),
     }),
 };
+const getAllAAAByProjectId = {
+    params: Joi.object().keys({
+        projectId: Joi.string().custom(objectId),
+    }),
+};
 
 module.exports = {
     createAAA,
     getAAAs,
     getAAA,
     updateAAA,
-    deleteAAA
+    deleteAAA,
+    getAllAAAByProjectId
 };

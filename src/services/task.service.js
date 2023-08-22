@@ -25,7 +25,6 @@ const taskUserRepository = dataSource.getRepository(TaskUser).extend({
  * @returns {Promise<Project>}
  */
 const createTask = async (taskBody) => {
-  console.log(taskBody);
   const task = taskRepository.create(taskBody);
   return await taskRepository.save(task);
 };

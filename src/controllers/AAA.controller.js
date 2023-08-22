@@ -43,10 +43,22 @@ const deleteAAAById = catchAsync(async (req, res) => {
     res.status(httpStatus.NO_CONTENT).send();
 });
 
+const getAllAAAByProjectId = catchAsync(async (req, res) => {
+    const result = await AfterActionAnalysisService.getAllAAAByProjectId(req.params.projectId);
+    if (!result) {
+        throw new ApiError(httpStatus.NO_CONTENT, "Project id Not Found")
+    }
+    console.log(result)
+    console.log(req.params.projectId)
+    res.send(result)
+});
+
+
 module.exports = {
     createAAA,
     getAAAs,
     getAAA,
     updateAAAById,
-    deleteAAAById
+    deleteAAAById,
+    getAllAAAByProjectId
 };

@@ -29,6 +29,13 @@ const getBaseline = catchAsync(async(req, res)=>{
   }
   res.send(baseline);
 });
+
+
+const getByMilestone = catchAsync(async(req, res)=>{
+  const milestoneBaseline = await baselineService.getByMilestone(req.params.milestoneId);
+  res.send(milestoneBaseline);
+});
+
 const updateBaseline = catchAsync(async(req, res)=>{
   const baseline = await baselineService.updateBaseline(req.params.baselineId, req.body);
   res.send(baseline);
@@ -42,6 +49,7 @@ module.exports = {
   createBaseline,
   getBaselines,
   getBaseline,
+  getByMilestone,
   updateBaseline,
   deleteBaseline,
 };
