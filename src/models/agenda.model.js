@@ -6,6 +6,7 @@ class Agenda extends Base {
   
   constructor() {
     super(); 
+    this.agenda = {type: 'varchar'}
   }
 }
 

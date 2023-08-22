@@ -26,9 +26,44 @@ const momRepository = dataSource.getRepository(Mom).extend({
  * @param {Object} momBody
  * @returns {Promise<Mom>}
  */
-const createMom = async (momBody) => {
-  const mom = momRepository.create(momBody);
- return await momRepository.save(mom);
+const createMom = async (Attendees, Action, Agenda) => {
+
+  console.log(req.body, Attendees, Action, Agenda)
+
+  // const project = projectRepository.create(projectBody);
+
+  // // Save the project instance
+  // await projectRepository.save(project);
+
+  // if (projectMembers) { 
+  //   const projectMemberInstances = projectMembers.map((member) => {
+  //     return projectMemberRepository.create({
+  //       projectId: project.id,
+  //       userId: member.memberId,
+  //       roleId: member.roleId,
+  //     });
+  //   });
+
+  //   // Save the project member instances
+  //   await projectMemberRepository.save(projectMemberInstances);
+  // }
+
+  // if(projectContractValue){
+  //   const projectContractValueInstance = projectContractValue.map((contract_value) => {
+  //     return projectContractValueRepository.create({
+  //       projectId: project.id,
+  //       amount: contract_value.amount,
+  //       currency: contract_value.currency
+  //     });
+  //   });
+  //       // Save the project contract value instances
+  //   await projectContractValueRepository.save(projectContractValueInstance);
+  // }
+
+  // project.projectMembers = projectMembers;
+  // project.projectContractValue = projectContractValue;
+
+  // return project;
 };
 
 

@@ -28,17 +28,12 @@ module.exports = new EntitySchema({
   tableName: 'tasks',
   columns: new Task(),
   relations: {
-    // milestone: {
-    //     type: "many-to-one", 
-    //     target: "milestones", 
-    //     inverseSide: "tasks", 
-    //   },
       baseline: {
         type: "many-to-one", 
         target: "Baseline", 
         inverseSide: "task", 
       },
-      subtasks: { // Define the subtask relation directly on Task
+      subtasks: {
         type: 'one-to-many',
         target: 'SubTask',
         inverseSide: 'task',

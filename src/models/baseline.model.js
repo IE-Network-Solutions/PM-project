@@ -22,7 +22,7 @@ module.exports = new EntitySchema({
         inverseSide: "baselines",
       },  
       
-      task: {
+      tasks: {
         type: "one-to-many", 
         target: "Task", 
         inverseSide: "baseline", 

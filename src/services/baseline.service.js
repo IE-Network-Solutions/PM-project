@@ -105,7 +105,7 @@ const getBaselines = async (filter, options) => {
 const getBaseline = async (milestoneId) => {
   return await baselineRepository.findOne({ 
     where: {id: milestoneId},
-    relations: ['task.subtasks',]
+    relations: ['tasks.subtasks',]
   });
 };
 

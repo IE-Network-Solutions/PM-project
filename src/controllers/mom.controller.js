@@ -5,11 +5,13 @@ const catchAsync = require('../utils/catchAsync');
 const { momService} = require('../services');
 
 const createMom = catchAsync(async (req, res) => {
-  // const Tasks = req.body.tasks;
-  // const subTasks = req.body.subTasks;
-  // delete req.body.Tasks;
-  // delete req.body.subTasks; 
-  const mom = await momService.createMom(req.body);
+  const Attendees = req.body.attendees;
+  const Action = req.body.action;
+  const Agenda = req.body.agenda;
+  delete req.body.attendees;
+  delete req.body.action; 
+  delete req.body.agenda; 
+  const mom = await momService.createMom(req.body, Attendees, Action, Agenda);
   res.status(httpStatus.CREATED).json(mom);
 });
 
