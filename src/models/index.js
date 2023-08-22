@@ -22,3 +22,4 @@ module.exports.LLComments = require('./llComments.model');
 module.exports.BudgetCategory = require('./budgetCategory.model');
 module.exports.BudgetType = require('./budgetType.model');
 module.exports.BudgetTaskCategory = require('./budgetTaskCategory.model');
+module.exports.Department=require('./department.model')
