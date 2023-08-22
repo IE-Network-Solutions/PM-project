@@ -16,5 +16,25 @@ router
     .patch(validate(riskValidation.updateRisk), riskController.updateRisk)
     .delete(validate(riskValidation.deleteRisk), riskController.deleteRisk);
 
+router
+    .route('/riskByProject/:projectId')
+    .get(validate(riskValidation.getRiskByProjectId), riskController.getRiskByProjectId);
+
+router
+    .route('/moveRiskToIssue/:riskId')
+    .delete(validate(riskValidation.moveRiskToIssue), riskController.moveRiskToIssue);
+
+
+router
+    .route('/getAll/CriticalRisks')
+    .get(validate(riskValidation.getAllCriticalRisks), riskController.getAllCriticalRisks);
+router
+    .route('/getAll/CriticalRisks/:riskId')
+    .get(validate(riskValidation.getCriticalRiskById), riskController.getCriticalRiskById);
+router
+    .route('/getAllRisks/ByDate')
+    .get(validate(riskValidation.getRisksByDate), riskController.getRisksByDate);
+
 module.exports = router;
+
 

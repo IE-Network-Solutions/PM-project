@@ -5,25 +5,20 @@ const catchAsync = require('../utils/catchAsync');
 const { milestoneService, projectService} = require('../services');
 
 const createMilestone = catchAsync(async (req, res) => {
+  // const Tasks = req.body.tasks;
+  // const subTasks = req.body.subTasks;
+  // delete req.body.Tasks;
+  // delete req.body.subTasks; 
   const milestone = await milestoneService.createMilestone(req.body);
-
-  // relation with project
-  const project = await projectService.getProject(req.body.projectId);
-  if (!project) {
-    return res.status(404).json({ error: "Project not found" });
-  }
-  milestone.project = project; // Associate the milestone with the project
-
-  // Save the milestone with the associated project
-  await milestoneService.createMilestone(milestone); // Replace with the appropriate method
-  res.status(httpStatus.CREATED).json(milestone); // Send the milestone in the response
+  res.status(httpStatus.CREATED).json(milestone);
 });
+
 
 
 const getMilestones = catchAsync(async(req, res)=>{
   const filter = pick(req.query, ['status']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const milestone = await milestoneService.getMilestones(filter, options, relation, ["project"]);
+  const milestone = await milestoneService.getMilestones(filter, options)
   res.send(milestone);
 });
 
@@ -34,6 +29,16 @@ const getMilestone = catchAsync(async(req, res)=>{
   }
   res.send(milestone);
 });
+
+const getByProject = catchAsync(async(req, res)=>{
+  const projectMilestone = await milestoneService.getByProject(req.params.projectId);
+  if(projectMilestone.length == 0){
+    throw new ApiError(httpStatus.NOT_FOUND, 'No Milestone in this project')
+  }
+  res.send(projectMilestone);
+});
+
+
 const updateMilestone = catchAsync(async(req, res)=>{
   const milestone = await milestoneService.updateMilestone(req.params.milestoneId, req.body);
   res.send(milestone);
@@ -46,6 +51,7 @@ const deleteMilestone = catchAsync(async(req, res)=>{
 module.exports = {
   createMilestone,
   getMilestones,
+  getByProject,
   getMilestone,
   updateMilestone,
   deleteMilestone,

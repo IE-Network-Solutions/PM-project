@@ -10,7 +10,7 @@ class User {
     this.emailVerifiedAt = { type: 'timestamp', nullable: true };
     this.password = { type: 'varchar' };
     this.avatar = { type: 'varchar', nullable: true };
-    this.signature = { type: 'varchar' };
+    this.signature = { type: 'varchar', nullable: true };
     this.isDeleted = { type: 'bool' };
     this.rememberToken = { type: 'text', nullable: true };
     this.createdAt = { type: 'timestamp' };
@@ -36,7 +36,30 @@ module.exports = new EntitySchema({
           name: 'taskId',
           referencedColumnName: 'id',
         },
+      }},
+    // projectMembers: {
+    //   type: 'one-to-many',
+    //   target: 'ProjectMember',
+    //   inverseSide: 'Project',
+    // },
+    // projectContractValues: { // Change to projectContractValues
+    //   type: 'one-to-many',
+    //   target: 'ProjectContractValue',
+    //   inverseSide: 'Project', // Assuming this is the correct inverseSide property
+    // },
+    projects: {
+      type: "many-to-many",
+      target: "Project",
+      joinTable: {
+        name: "project_member",
+        joinColumn: { name: "userId", referencedColumnName: "id" },
+        inverseJoinColumn: {
+          name: "projectId",
+          referencedColumnName: "id",
+        },
       },
+      onDelete: "SET NULL",
+      onUpdate: "CASCADE",
     },
   },
 });

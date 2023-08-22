@@ -3,10 +3,9 @@ const {Base} = require('./BaseModel')
 
 
 class Agenda extends Base {
-  // Define additional properties specific to Milestone entity
+  
   constructor() {
-    super(); // Call the constructor of the Base entity to inherit its properties
-    this.title = { type: 'varchar' };
+    super(); 
   }
 }
 
@@ -18,8 +17,8 @@ module.exports = new EntitySchema({
   relations: {
     mom: {
         type: "many-to-one", 
-        target: "minute_of_meetings", // Target entity name (name of the related entity)
-        inverseSide: "agendas", // Property name on the related entity that points back to Post
+        target: "minute_of_meetings", 
+        inverseSide: "agendas", 
       },   
   },
 });

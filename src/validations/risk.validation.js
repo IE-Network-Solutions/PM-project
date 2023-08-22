@@ -14,6 +14,7 @@ const createRisk = {
         controlOwner: Joi.string().required(),
         residualProbability: Joi.string().required(),
         residualImpact: Joi.string().required(),
+        projectId: Joi.string().custom(objectId),
     }),
 };
 
@@ -34,6 +35,38 @@ const getRisks = {
         sortBy: Joi.string(),
         limit: Joi.number().integer(),
         page: Joi.number().integer(),
+    }),
+};
+
+const getRiskByProjectId = {
+    params: Joi.object().keys({
+        projectId: Joi.string().custom(objectId),
+    }),
+};
+
+const getAllCriticalRisks = {
+    query: Joi.object().keys({
+        id: Joi.string(),
+        riskDescription: Joi.string(),
+        causedBy: Joi.string(),
+        consequences: Joi.string(),
+        probability: Joi.string(),
+        riskOwner: Joi.string(),
+        status: Joi.string(),
+        impact: Joi.string(),
+        control: Joi.string(),
+        controlOwner: Joi.string(),
+        residualProbability: Joi.string(),
+        residualImpact: Joi.string(),
+        sortBy: Joi.string(),
+        limit: Joi.number().integer(),
+        page: Joi.number().integer(),
+    }),
+};
+
+const getCriticalRiskById = {
+    params: Joi.object().keys({
+        riskId: Joi.string().custom(objectId),
     }),
 };
 
@@ -69,10 +102,28 @@ const deleteRisk = {
     }),
 };
 
+const moveRiskToIssue = {
+    params: Joi.object().keys({
+        riskId: Joi.string().custom(objectId),
+    }),
+};
+
+const getRisksByDate = {
+    query: Joi.object().keys({
+        startDate: Joi.date().iso().required(),
+        endDate: Joi.date().iso().required(),
+    }),
+};
+
 module.exports = {
     createRisk,
     getRisks,
     getRisk,
+    getRiskByProjectId,
     updateRisk,
-    deleteRisk
+    deleteRisk,
+    moveRiskToIssue,
+    getAllCriticalRisks,
+    getCriticalRiskById,
+    getRisksByDate
 };

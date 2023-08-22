@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Milestone } = require('../models');
+const { Milestone, Task, Subtask } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -9,6 +9,14 @@ const milestoneRepository = dataSource.getRepository(Milestone).extend({
   findAll,
   sortBy,
 });
+// const taskRepository = dataSource.getRepository(Task).extend({
+//   findAll,
+//   sortBy,
+// });
+// const subTaskRepository = dataSource.getRepository(Subtask).extend({
+//   findAll,
+//   sortBy,
+// });
 
 // .extend({ sortBy });
 //
@@ -20,8 +28,51 @@ const milestoneRepository = dataSource.getRepository(Milestone).extend({
  */
 const createMilestone = async (milestoneBody) => {
   const milestone = milestoneRepository.create(milestoneBody);
-  return await milestoneRepository.save(milestone);
+ return await milestoneRepository.save(milestone);
+
+  // if (tasks) {
+  //   const taskInstances = tasks.map(async (eachTask) => {
+  //     const subTasks = eachTask.subtasks || [];
+
+  //     const taskInstance = taskRepository.create({
+  //       milestoneId: milestone.id,
+  //       name: eachTask.name,
+  //       plannedCost: eachTask.plannedCost,
+  //       actualCost: eachTask.actualCost,
+  //       status: eachTask.status,
+  //       sleepingReason: eachTask.sleepingReason,
+  //       subTasks: subTasks, // Store subtasks in the task instance
+  //     });
+
+  //     const savedTaskInstance = await taskRepository.save(taskInstance);
+
+  //     // Create and save subtasks
+  //     if (subTasks.length > 0) {
+  //       const subTaskInstances = subTasks.map((eachSubTask) => {
+  //         return subTaskRepository.create({
+  //           taskId: savedTaskInstance.id, // Use the saved task's ID
+  //           name: eachSubTask.name,
+  //           plannedCost: eachSubTask.plannedCost,
+  //           actualCost: eachSubTask.actualCost,
+  //           status: eachSubTask.status,
+  //           sleepingReason: eachSubTask.sleepingReason,
+  //         });
+  //       });
+
+  //        await subTaskRepository.save(subTaskInstances);
+  //     }
+
+  //     return savedTaskInstance;
+  //   });
+
+  //   // Save the task instances
+  //   const savedTaskInstances = await Promise.all(taskInstances);
+    
+  //    milestone.tasks = savedTaskInstances;
+  //   return milestone;
+  // }
 };
+
 
 
 /**
@@ -50,6 +101,10 @@ const getMilestones = async (filter, options) => {
  */
 const getMilestone = async (milestoenId) => {
   return await milestoneRepository.findOneBy({ id: milestoenId });
+};
+
+const getByProject = async (projectId) => {
+  return await milestoneRepository.findBy({ projectId: projectId,});
 };
 
 /**
@@ -84,6 +139,7 @@ module.exports = {
   createMilestone,
   getMilestones,
   getMilestone,
+  getByProject,
   updateMilestone,
   deleteMilestone,
 };

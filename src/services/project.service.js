@@ -4,6 +4,7 @@ const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const publishToRabbit = require('../utils/producer');
 
 const projectRepository = dataSource.getRepository(Project).extend({
   findAll,
@@ -31,14 +32,12 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
   // Save the project instance
   await projectRepository.save(project);
 
-  if (projectMembers) {
+  if (projectMembers) { 
     const projectMemberInstances = projectMembers.map((member) => {
       return projectMemberRepository.create({
         projectId: project.id,
-        memberId: member.memberId,
-        memberName: member.memberName,
+        userId: member.memberId,
         roleId: member.roleId,
-        roleName: member.roleName,
       });
     });
 
@@ -60,6 +59,7 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
 
   project.projectMembers = projectMembers;
   project.projectContractValue = projectContractValue;
+  publishToRabbit('project.create', project);
 
   return project;
 };
@@ -90,12 +90,6 @@ const getProjects = async (filter, options) => {
 };
 
 
-// project.service.js
-// const getProjects = async () => {
-//   return await projectRepository.findAll({
-//     relations: ['projectMembers'], // Load the projectMembers association
-//   });
-// };
 
 
 /**
@@ -104,8 +98,12 @@ const getProjects = async (filter, options) => {
  * @returns {Promise<Project>}
  */
 const getProject = async (id) => {
-  return await projectRepository.findOneBy({ id: id });
+  return await projectRepository.findOne({
+      where: { id: id},
+      relations: ['projectMembers', 'projectContractValues'], },
+    );
 };
+
 
 /**
  * Update user by id
@@ -119,7 +117,9 @@ const updateProject = async (projectId, updateBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
   }
   await projectRepository.update({ id: projectId }, updateBody);
-  return await getProject(projectId);
+  const updatedProject= await getProject(projectId);
+  publishToRabbit('project.update', updatedProject);
+  return updatedProject;
 };
 
 /**
@@ -132,7 +132,8 @@ const deleteProject = async (projectId) => {
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
-  return await projectRepository.delete({ id: projectId });
+  // return await projectRepository.delete({ id: projectId });
+  return await projectRepository.update({ id: projectId }, updateBody);
 };
 
 module.exports = {

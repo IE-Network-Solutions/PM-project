@@ -11,6 +11,10 @@ router
   .get(validate(milestoneValidation.getMilestones),milestoneController.getMilestones);
 
   router
+  .route('/project/:projectId')
+  .get(validate(milestoneValidation.getByProject), milestoneController.getByProject);
+
+  router
   .route('/:milestoneId')
   .get(validate(milestoneValidation.getMilestone),milestoneController.getMilestone)
   .patch(validate(milestoneValidation.updateMilestone),milestoneController.updateMilestone)

@@ -1,4 +1,3 @@
-
 module.exports.riskController = require('./risk.controller');
 module.exports.issueController = require('./issue.controller');
 module.exports.AAAController = require('./AAA.controller');
@@ -7,10 +6,16 @@ module.exports.actionController = require('./action.controller');
 module.exports.afterActionAnalysisIssueRelatedController = require('./afterActionAnalysisIssueRelated.controller');
 module.exports.projectController = require('./project.controller');
 module.exports.milestoneController = require('./milestone.controller');
+module.exports.baselineController = require('./baseline.controller');
+module.exports.paymentTermController = require('./paymentTerm.controller')
 module.exports.taskController = require('./task.controller');
 module.exports.subTaskController = require('./subtask.controller');
+module.exports.momController = require('./mom.controller');
 module.exports.userController = require('./user.controller');
 
 module.exports.lessonLearnedController = require('./lessonLearned.controller');
 module.exports.individualLLController = require('./individualLL.controller');
 module.exports.LLCommentController = require('./LLComment.controller');
+module.exports.budgetCategoryController = require('./budgetCategory.controller');
+module.exports.budgetTypeController = require('./budgetType.controller');
+module.exports.budgetCategoryTaskController = require('./budgetTaskCategory.controller');

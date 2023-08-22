@@ -8,13 +8,19 @@ const actionRoute = require('./action.route');
 const afterActionAnalysisActionRoute = require('./afterActionAnalysisIssueRelated.route');
 const projectRoute = require('./project.route');
 const milestoneRoute = require('./milestone.route');
+const baselineRoute = require('./baseline.route');
 const taskRoute = require('./task.route');
 const subTaskRoute = require('./subtask.route');
+const momRoute = require('./mom.route');
 const usersRoute=require('./user.route')
 const leasonLearnedRoute = require('./lessonLearned.route');
 const individualLLRoute = require('./individualLL.route');
 const LLCommentRoute = require('./llComment.route');
+const PaymentTermRoute = require('./paymentTerm.route');
 
+const budgetCategoryRoute = require('./budgetCategory.route');
+const budgetTypeRoute = require('./budgetType.route');
+const budgetTaskCategoryRoute = require('./budgetTaskCategory.route');
 
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
@@ -22,7 +28,6 @@ const config = require('../../config/config');
 const router = express.Router();
 
 const defaultRoutes = [
-
   {
     path: '/risks',
     route: riskRoute,
@@ -54,18 +59,29 @@ const defaultRoutes = [
     path: '/projects',
     route: projectRoute,
   }
-  ,
+  ,{
+    path: '/payment-terms',
+    route: PaymentTermRoute,
+  },
   {
     path: '/milestones',
     route: milestoneRoute,
+  },
+  {
+    path: '/baselines',
+    route: baselineRoute,
   },
   {  
     path: '/tasks',
     route: taskRoute,
   },
-  {  
+  {
     path: '/subtasks',
     route: subTaskRoute,
+  },
+  {  
+    path: '/mom',
+    route: momRoute,
   },
   {  
     path: '/users',
@@ -83,7 +99,18 @@ const defaultRoutes = [
     path: '/llcomment',
     route: LLCommentRoute,
   },
-  
+  {
+    path: '/budgetCategory',
+    route: budgetCategoryRoute,
+  },
+  {
+    path: '/budgetTaskCategory',
+    route: budgetTaskCategoryRoute,
+  },
+  {
+    path: '/budgetType',
+    route: budgetTypeRoute,
+  },
 ];
 
 const devRoutes = [

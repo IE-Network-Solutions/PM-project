@@ -5,6 +5,8 @@ const catchAsync = require('../utils/catchAsync');
 const { lessonLearnedService } = require('../services');
 
 const createLL = catchAsync(async (req, res) => {
+    req.body.date = new Date().toString();
+    console.log(req.body)
     const result = await lessonLearnedService.createLL(req.body);
     res.status(httpStatus.CREATED).send(result);
 });
@@ -19,12 +21,20 @@ const getLLs = catchAsync(async (req, res) => {
 
 const getAllLLByProjectId = catchAsync(async (req, res) => {
     const result = await lessonLearnedService.getAllLLByProjectId(req.params.projectId);
+    console.log("result", result[0])
     if (!result) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Project id is not found');
     }
     res.send(result);
 });
 
+const getAllLLByDepartmentId = catchAsync(async (req, res) => {
+    const result = await lessonLearnedService.getAllLLByDepartmentId(req.params.departmentId);
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Department id is not found');
+    }
+    res.send(result);
+});
 
 const getLLById = catchAsync(async (req, res) => {
     const result = await lessonLearnedService.getLLById(req.params.LLId);
@@ -111,6 +121,7 @@ module.exports = {
     createLL,
     getLLs,
     getAllLLByProjectId,
+    getAllLLByDepartmentId,
     getLLById,
     updateLLById,
     deleteLLById,
