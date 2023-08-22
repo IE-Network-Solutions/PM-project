@@ -8,7 +8,7 @@ class momAction extends Base {
     this.action = { type: 'varchar', nullable: true };
     this.responsiblePersonId = { type: 'uuid', nullable: true };
     this.deadline = { type: 'varchar', nullable: true};
-    this.momId = { type: 'uuid',};
+    this.momId = { type: 'uuid',nullable: true};
   }
 }
 

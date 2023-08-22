@@ -13,6 +13,7 @@ class minuteOfMeeting extends Base {
     this.objective = { type: 'varchar', nullable: true};
     this.specialNote = { type: 'varchar', nullable: true};
     this.externalAttendees = {type: 'json', nullable: true}
+    this.projectId = {type: 'uuid'}
   }
 }
 

@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Mom, momAttendees,Action,momActionResponsible } = require('../models');
+const { Mom, momAttendees,MomAction,momActionResponsible,momAgenda,momAgendaTopic } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -12,28 +12,17 @@ const momRepository = dataSource.getRepository(Mom).extend({
 });
 
 const momAttendeesRepository = dataSource.getRepository(momAttendees);
-const momActionRepository = dataSource.getRepository(Action);
+const momActionRepository = dataSource.getRepository(MomAction);
 const momActionResponsibleRepository = dataSource.getRepository(momActionResponsible);
-
-// const taskRepository = dataSource.getRepository(Task).extend({
-//   findAll,
-//   sortBy,
-// });
-// const subTaskRepository = dataSource.getRepository(Subtask).extend({
-//   findAll,
-//   sortBy,
-// });
-
-// .extend({ sortBy });
-//
+const momAgendaRepository = dataSource.getRepository(momAgenda);
+const momAgendaTopicRepository = dataSource.getRepository(momAgendaTopic);
 
 /**
  * Create a user
  * @param {Object} momBody
  * @returns {Promise<Mom>}
  */
-const createMom = async (momBody, Attendees, Action, Agenda) => {
- 
+const createMom = async (momBody, Attendees,externalAttendees, Action, Agenda) => {
   const mom = momRepository.create(momBody);
 
   // Save the mom
@@ -48,41 +37,67 @@ const createMom = async (momBody, Attendees, Action, Agenda) => {
     });
       // Save the mom instances
       await momAttendeesRepository.save(momInstances);
-
-      if (Action) {
-        const actionInstances = Action.map(async (eachAction) => {
-          const responsiblePersonId = eachAction.responsiblePersonId || [];
-          const actionInstance = momActionRepository.create({
-            momId: mom.id,
-            action: eachAction.action,
-            deadline: eachAction.deadline,
-            responsiblePersonId: responsiblePersonId,
-          });
-    
-          const savedActionInstance = await momActionRepository.save(actionInstance);
-    
-          // Create and save responsible person
-          if (responsiblePersonId.length > 0) {
-            const responsiblePersonInstance = responsiblePersonId.map((eachResponsiblePersons) => {
-              return momActionResponsibleRepository.create({
-                userId: eachResponsiblePersons.id,
-                momActionId: savedActionInstance.id,
-              });
-            });
-    
-             await momActionResponsibleRepository.save(responsiblePersonInstance);
-          }
-    
-          return savedActionInstance;
-        });
-    
-        // Save action instances
-        const savedActionInstance = await Promise.all(actionInstances);
-        mom.action = savedActionInstance;
-      }
-
-      return mom;
   }
+
+
+  if (Action) {
+    const actionInstances = [];
+  
+    for (const eachAction of Action) {
+      const responsiblePersons = eachAction.responsiblePersonId || [];
+      for (const responsiblePerson of responsiblePersons) {
+        const actionInstance = momActionRepository.create({
+          momId: mom.id,
+          action: eachAction.action,
+          deadline: eachAction.deadline,
+          responsiblePersonId: responsiblePerson.id,
+        });
+  
+        const savedActionInstance = await momActionRepository.save(actionInstance);
+  
+        if (responsiblePerson.id) {
+          const responsiblePersonInstance = momActionResponsibleRepository.create({
+            userId: responsiblePerson.id,
+            momActionId: savedActionInstance.id,
+          });
+  
+          await momActionResponsibleRepository.save(responsiblePersonInstance);
+        }
+  
+        actionInstances.push(savedActionInstance);
+      }
+    }
+  
+    mom.action = actionInstances;
+  }
+
+  if(Agenda){
+    const agendaInstance = [];
+    for(const eachAgenda of Agenda){
+      
+      const agendaTopics = eachAgenda.agendaTopics || [];
+
+      const agendaInstance = momAgendaRepository.create({
+        momId: mom.id,
+        agenda: eachAgenda.agenda,
+      });
+      const savedAgendaInstance = await momAgendaRepository.save(agendaInstance);
+
+
+          for(const agendaTopic of agendaTopics){
+            const agendaTopicInstance = momAgendaTopicRepository.create({
+                agendaId: savedAgendaInstance.id,
+                agendaPoints: agendaTopic.agendaPoints,
+                userId: agendaTopic.userId 
+            });
+
+            const savedAgendaTopics = await momAgendaTopicRepository.save(agendaTopicInstance);
+
+          }
+    }
+  }
+  
+   return mom;
 };
 
 
