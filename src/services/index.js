@@ -11,6 +11,7 @@ module.exports.milestoneService = require('./milestone.service');
 module.exports.baselineService = require('./baseline.service');
 module.exports.taskService = require('./task.service');
 module.exports.subTaskService = require('./subtask.service');
+module.exports.momService = require('./mom.service');
 module.exports.userService = require('./user.service')
 module.exports.lessonLearnedService = require('./lessonLearned.service');
 module.exports.individualLLService = require('./individualLL.service');

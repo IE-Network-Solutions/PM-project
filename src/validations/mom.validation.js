@@ -10,8 +10,9 @@ const createMom = {
     location: Joi.string(),
     facilitator: Joi.string(),
     specialNote: Joi.string(),
-    specialNote: Joi.array(),
-    action: Joi.array(),
+    attendees: Joi.array(),
+    externalAttendees: Joi.array(),
+    action: Joi.array(), 
     agenda: Joi.array(),
   }),
 };

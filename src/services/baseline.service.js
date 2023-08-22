@@ -28,8 +28,6 @@ const createBaseline = async (baselineBody, tasks) => {
   const baseline = baselineRepository.create(baselineBody);
   await baselineRepository.save(baseline);
 
-  console.log(tasks);
-
   if (tasks) {
     const taskInstances = tasks.map(async (eachTask) => {
       const subTasks = eachTask.subtasks || [];
@@ -38,11 +36,14 @@ const createBaseline = async (baselineBody, tasks) => {
         name: eachTask.name,
         plannedStart: eachTask.plannedStart,
         plannedFinish: eachTask.plannedFinish,
+        actualStart: eachTask.actualStart,
+        actualFinish: eachTask.actualFinish,
+        completion: eachTask.completion,
         // plannedCost: eachTask.plannedCost,
         // actualCost: eachTask.actualCost,
         status: eachTask.status,
         sleepingReason: eachTask.sleepingReason,
-        subTasks: subTasks, // Store subtasks in the task instance
+        subTasks: subTasks,
       });
 
       const savedTaskInstance = await taskRepository.save(taskInstance);
@@ -55,6 +56,9 @@ const createBaseline = async (baselineBody, tasks) => {
             name: eachSubTask.name,
             plannedStart: eachSubTask.plannedStart,
             plannedFinish: eachSubTask.plannedFinish,
+            actualStart: eachTask.actualStart,
+            actualFinish: eachTask.actualFinish,
+            completion: eachTask.completion,
             // plannedCost: eachSubTask.plannedCost,
             // actualCost: eachSubTask.actualCost,
             status: eachSubTask.status,
@@ -70,10 +74,9 @@ const createBaseline = async (baselineBody, tasks) => {
 
     // Save the task instances
     const savedTaskInstances = await Promise.all(taskInstances);
-    
-     baseline.tasks = savedTaskInstances;
-    return baseline;
+    baseline.tasks = savedTaskInstances;
   }
+  return baseline;
 };
 
 

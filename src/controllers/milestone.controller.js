@@ -32,9 +32,6 @@ const getMilestone = catchAsync(async(req, res)=>{
 
 const getByProject = catchAsync(async(req, res)=>{
   const projectMilestone = await milestoneService.getByProject(req.params.projectId);
-  if(projectMilestone.length == 0){
-    throw new ApiError(httpStatus.NOT_FOUND, 'No Milestone in this project')
-  }
   res.send(projectMilestone);
 });
 

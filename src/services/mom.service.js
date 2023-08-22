@@ -1,14 +1,20 @@
 const httpStatus = require('http-status');
-const { Mom, Task, Subtask } = require('../models');
+const { Mom, momAttendees,Action,momActionResponsible } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const { all } = require('../routes/v1');
 
 const momRepository = dataSource.getRepository(Mom).extend({
   findAll,
   sortBy,
 });
+
+const momAttendeesRepository = dataSource.getRepository(momAttendees);
+const momActionRepository = dataSource.getRepository(Action);
+const momActionResponsibleRepository = dataSource.getRepository(momActionResponsible);
+
 // const taskRepository = dataSource.getRepository(Task).extend({
 //   findAll,
 //   sortBy,
@@ -26,44 +32,57 @@ const momRepository = dataSource.getRepository(Mom).extend({
  * @param {Object} momBody
  * @returns {Promise<Mom>}
  */
-const createMom = async (Attendees, Action, Agenda) => {
+const createMom = async (momBody, Attendees, Action, Agenda) => {
+ 
+  const mom = momRepository.create(momBody);
 
-  console.log(req.body, Attendees, Action, Agenda)
+  // Save the mom
+  await momRepository.save(mom);
 
-  // const project = projectRepository.create(projectBody);
+  if (Attendees) { 
+    const momInstances = Attendees.map((eachAttendees) => {
+      return momAttendeesRepository.create({
+        momId: mom.id,
+        userId: eachAttendees.userId,
+      });
+    });
+      // Save the mom instances
+      await momAttendeesRepository.save(momInstances);
 
-  // // Save the project instance
-  // await projectRepository.save(project);
+      if (Action) {
+        const actionInstances = Action.map(async (eachAction) => {
+          const responsiblePersonId = eachAction.responsiblePersonId || [];
+          const actionInstance = momActionRepository.create({
+            momId: mom.id,
+            action: eachAction.action,
+            deadline: eachAction.deadline,
+            responsiblePersonId: responsiblePersonId,
+          });
+    
+          const savedActionInstance = await momActionRepository.save(actionInstance);
+    
+          // Create and save responsible person
+          if (responsiblePersonId.length > 0) {
+            const responsiblePersonInstance = responsiblePersonId.map((eachResponsiblePersons) => {
+              return momActionResponsibleRepository.create({
+                userId: eachResponsiblePersons.id,
+                momActionId: savedActionInstance.id,
+              });
+            });
+    
+             await momActionResponsibleRepository.save(responsiblePersonInstance);
+          }
+    
+          return savedActionInstance;
+        });
+    
+        // Save action instances
+        const savedActionInstance = await Promise.all(actionInstances);
+        mom.action = savedActionInstance;
+      }
 
-  // if (projectMembers) { 
-  //   const projectMemberInstances = projectMembers.map((member) => {
-  //     return projectMemberRepository.create({
-  //       projectId: project.id,
-  //       userId: member.memberId,
-  //       roleId: member.roleId,
-  //     });
-  //   });
-
-  //   // Save the project member instances
-  //   await projectMemberRepository.save(projectMemberInstances);
-  // }
-
-  // if(projectContractValue){
-  //   const projectContractValueInstance = projectContractValue.map((contract_value) => {
-  //     return projectContractValueRepository.create({
-  //       projectId: project.id,
-  //       amount: contract_value.amount,
-  //       currency: contract_value.currency
-  //     });
-  //   });
-  //       // Save the project contract value instances
-  //   await projectContractValueRepository.save(projectContractValueInstance);
-  // }
-
-  // project.projectMembers = projectMembers;
-  // project.projectContractValue = projectContractValue;
-
-  // return project;
+      return mom;
+  }
 };
 
 

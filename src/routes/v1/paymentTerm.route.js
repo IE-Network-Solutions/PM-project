@@ -10,6 +10,11 @@ router
   .post(validate(paymentTermValidation.createPaymentTerm),paymentTermController.createPaymentTerm)
   .get(validate(paymentTermValidation.getPaymentTerms),paymentTermController.getPaymentTerms);
 
+router
+.route('/project/:projectId')
+.get(validate(paymentTermValidation.getByProject), paymentTermController.getByProject);
+
+
   router
   .route('/:paymentTermId')
   .get(validate(paymentTermValidation.getPaymentTerm),paymentTermController.getPaymentTerm)
