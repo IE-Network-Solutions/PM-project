@@ -13,6 +13,7 @@ class AfterActionAnalysis extends Base {
         this.rootCause = { type: 'text' };
         this.lessonLearned = { type: 'text' };
         this.remarks = { type: 'text' };
+        this.projectId = { type: "varchar", nullable: true };
     }
 }
 
@@ -30,6 +31,12 @@ module.exports = new EntitySchema({
             type: 'one-to-many',
             target: 'RelatedIssue',
             inverseSide: 'afterActionAnalysis',
+        },
+        project: {
+            type: 'many-to-one',
+            target: 'Project',
+            onDelete: "CASCADE",
+            onUpdate: 'CASCADE'
         },
     },
 });
