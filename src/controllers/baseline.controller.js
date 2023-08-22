@@ -33,9 +33,6 @@ const getBaseline = catchAsync(async(req, res)=>{
 
 const getByMilestone = catchAsync(async(req, res)=>{
   const milestoneBaseline = await baselineService.getByMilestone(req.params.milestoneId);
-  if(milestoneBaseline.length == 0){
-    throw new ApiError(httpStatus.NOT_FOUND, 'No Baseline in this milestone')
-  }
   res.send(milestoneBaseline);
 });
 
