@@ -4,13 +4,10 @@ const { Base } = require('./BaseModel')
 
 
 class Action extends Base {
-    // Define additional properties specific to Action entity
     constructor() {
-        super(); // Call the constructor of the Base entity to inherit its properties
-        this.responsiblePersonName = { type: 'varchar' };
+        super(); 
         this.responsiblePersonId = { type: 'varchar' };
-        this.authorizedPersonName = { type: 'varchar' };
-        this.authorizedPersonId = { type: 'varchar' };
+        // this.authorizedPersonId = { type: 'varchar' };
         this.action = { type: 'varchar' };
         this.afterActionAnalysisId = { type: 'varchar', nullable: true }
     }
