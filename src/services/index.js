@@ -20,4 +20,5 @@ module.exports.budgetCategoryService = require('./budgetCategory.service');
 module.exports.budgetTypeService = require('./budgetType.service');
 module.exports.budgetTaskCategoryService = require('./budgetTaskCategory.service');
 module.exports.departmentService = require('./department.service');
+module.exports.weeklyReportService = require('./weeklyReport.service');
 

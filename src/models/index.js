@@ -23,9 +23,6 @@ module.exports.LLComments = require('./llComments.model');
 module.exports.BudgetCategory = require('./budgetCategory.model');
 module.exports.BudgetType = require('./budgetType.model');
 module.exports.BudgetTaskCategory = require('./budgetTaskCategory.model');
-<<<<<<< HEAD
-module.exports.Department=require('./department.model')
-=======
+module.exports.Department = require('./department.model')
 module.exports.momAttendees = require('./momAttendees.model');
 
->>>>>>> 2beb12c0185ee148cdada08c4af9c2537c4c1d3f

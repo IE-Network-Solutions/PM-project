@@ -19,5 +19,5 @@ module.exports.LLCommentController = require('./LLComment.controller');
 module.exports.budgetCategoryController = require('./budgetCategory.controller');
 module.exports.budgetTypeController = require('./budgetType.controller');
 module.exports.budgetCategoryTaskController = require('./budgetTaskCategory.controller');
-
-module.exports.departmentController=require('./department.controller')
+module.exports.departmentController = require('./department.controller')
+module.exports.weeklyReportController = require('./weeklyReport.controller');
