@@ -16,7 +16,7 @@ const actionRepository = dataSource.getRepository(Action).extend({ findAll, sort
  * @returns {Promise<Action>}
  */
 const createAction = async (actionBody = []) => {
-   
+
     const action = actionRepository.create(actionBody);
     return await actionRepository.save(action);
 };
@@ -48,7 +48,11 @@ const queryActions = async (filter, options) => {
  * @returns {Promise<Action>}
  */
 const getActionById = async (id) => {
-    return await actionRepository.findOneBy({ id: id });
+    return await actionRepository.findOne(
+        {
+            where: { id: id },
+            relations: ['afterActionAnalysis']
+        });
 };
 
 /**

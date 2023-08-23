@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { riskService } = require('../services');
+const { riskService, issueService } = require('../services');
 const { residualMapRiskRate } = require('../utils/riskMatrix');
 const { mapRiskRate } = require('././../utils/riskMatrix');
 
@@ -16,8 +16,6 @@ const createRisk = catchAsync(async (req, res) => {
     // req.body.residualRiskRate = residualRiskRate.rating;
     req.body.riskRate = mapRiskRate(impact, probability);
     req.body.residualRiskRate = residualMapRiskRate(residualImpact, residualProbability);
-
-
     const risk = await riskService.createRisk(req.body);
     res.status(httpStatus.CREATED).send(risk);
 });
@@ -29,16 +27,27 @@ const getRisks = catchAsync(async (req, res) => {
     res.send(result);
 });
 
-const getRiskByDate = catchAsync(async (req, res) => {
+const getRisksByDate = catchAsync(async (req, res) => {
 
-    const startDate = new Date(req.body.startDate); 
-    const endDate = new Date(req.body.endDate);
-    const risk = await riskService.getRiskByDate(startDate, endDate);
+    const { startDate, endDate } = req.query
+    console.log("start date :", startDate, "endDate", endDate)
+    const dates = await riskService.getRisksByDate(startDate, endDate);
 
-    if (!risk) {
+    console.log("date list", dates)
+
+    if (!dates) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Risk not found');
     }
-    res.send(risk);
+    res.send(dates);
+});
+
+const getRiskByProjectId = catchAsync(async (req, res) => {
+    const result = await riskService.getRiskByProjectId(req.params.projectId);
+    console.log("result", result)
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Project id not found');
+    }
+    res.send(result);
 });
 
 const getRisk = catchAsync(async (req, res) => {
@@ -48,6 +57,17 @@ const getRisk = catchAsync(async (req, res) => {
     }
     res.send(risk);
 });
+
+const getAllCriticalRisks = catchAsync(async (req, res) => {
+    const result = await riskService.getAllCriticalRisks();
+    console.log("result", result)
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Risk id not found');
+    }
+    res.send(result);
+});
+
+
 
 const updateRisk = catchAsync(async (req, res) => {
     const risk = await riskService.updateRiskById(req.params.riskId, req.body);
@@ -59,11 +79,36 @@ const deleteRisk = catchAsync(async (req, res) => {
     res.status(httpStatus.NO_CONTENT).send();
 });
 
+const moveRiskToIssue = catchAsync(async (req, res) => {
+    const riskId = req.params.riskId;
+    const result = await riskService.getRiskById(riskId);
+    if (result.status === 'Closed') {
+        throw new ApiError(httpStatus.NOT_FOUND, "Risk is Already Closed");
+    }
+    console.log(result);
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Risk id is not found");
+    }
+
+    await issueService.createIssue(result);
+    const status = await riskService.updateRiskById(riskId, { status: "Transfered" });
+    res.send(status)
+});
+const getAllRiskAndIssuesByProjectId = catchAsync(async (req, res) => {
+    const result = await riskService.getAllRiskAndIssuesByProjectId(req.params.projectId);
+    res.send(result);
+});
+
 module.exports = {
     createRisk,
     getRisks,
     getRisk,
-    getRiskByDate,
+    getRiskByProjectId,
+    getRisksByDate,
     updateRisk,
-    deleteRisk
+    deleteRisk,
+    moveRiskToIssue,
+    getAllCriticalRisks,
+    getAllRiskAndIssuesByProjectId
+
 };

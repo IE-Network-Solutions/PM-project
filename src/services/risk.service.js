@@ -4,6 +4,8 @@ const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const issueService = require('./issue.service');
+const { Between } = require('typeorm');
 
 const riskRepository = dataSource.getRepository(Risk).extend({ findAll, sortBy });
 // .extend({ sortBy });
@@ -32,7 +34,8 @@ const createRisk = async (riskBody) => {
 const queryRisks = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
-    return await riskRepository.findAll({
+    return await riskRepository.find({
+        relations: ['project'],
         tableName: 'risk',
         sortOptions: sortBy && { option: sortBy },
         paginationOptions: { limit: limit, page: page },
@@ -45,13 +48,16 @@ const queryRisks = async (filter, options) => {
  * @param {ObjectId} id
  * @returns {Promise<Risk>}
  */
-const getRiskByDate = async (startDate, endDate) => {
-    return await Risk.findAll({
+const getRisksByDate = async (startDate, endDate) => {
+
+    return await riskRepository.find({
         where: {
-            created_at: {
-                [Op.between]: [startDate, endDate],
-            },
+            createdAt: Between(
+                new Date(startDate).toISOString(),
+                new Date(endDate).toISOString()
+            ),
         },
+        relations: ['project']
     });
 };
 
@@ -60,8 +66,39 @@ const getRiskByDate = async (startDate, endDate) => {
  * @param {ObjectId} id
  * @returns {Promise<Risk>}
  */
+
+const getRiskByProjectId = async (id) => {
+    return await riskRepository.find(
+        {
+            where: {
+                projectId: id
+            },
+            relations: ['project']
+        });
+};
+
 const getRiskById = async (id) => {
-    return await riskRepository.findOneBy({ id: id });
+    return await riskRepository.findOne(
+        {
+            where: { id: id },
+            relations: ['project']
+        });
+};
+
+const getAllCriticalRisks = async () => {
+    return await riskRepository.find(
+        {
+            where: {
+                riskRate: "Critical"
+            },
+            relations: ['project']
+        });
+};
+
+
+
+const updateRiskStatus = async (riskId, status) => {
+    return await riskRepository.update({ id: "Transfered" })
 };
 
 /**
@@ -92,11 +129,24 @@ const deleteRiskById = async (riskId) => {
     return await riskRepository.delete({ id: riskId });
 };
 
+const getAllRiskAndIssuesByProjectId = async (projectId) => {
+    const risksByProjectId = await getRiskByProjectId(projectId);
+    const issuesByProjectId = await issueService.getIssueByProjectId(projectId);
+    return {
+        Risks: risksByProjectId,
+        Issues: issuesByProjectId
+    };
+};
+
 module.exports = {
     createRisk,
     queryRisks,
-    getRiskByDate,
+    getRisksByDate,
     getRiskById,
+    getRiskByProjectId,
     updateRiskById,
     deleteRiskById,
+    updateRiskStatus,
+    getAllCriticalRisks,
+    getAllRiskAndIssuesByProjectId
 };

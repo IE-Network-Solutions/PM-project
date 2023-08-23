@@ -47,7 +47,7 @@ const queryAAAs = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
     return await AAARepository.find({
-        relations: ['actions'],
+        relations: ['actions', 'issueRelates', 'project'],
         tableName: 'afterActionAnalysis',
         sortOptions: sortBy && { option: sortBy },
         paginationOptions: { limit: limit, page: page }
@@ -60,11 +60,11 @@ const queryAAAs = async (filter, options) => {
  * @returns {Promise<AAA>}
  */
 const getAAAById = async (id) => {
-    return await AAARepository.findOne({
+    return await AAARepository.find({
         where: {
             id: id,
         },
-        relations: ['actions'],
+        relations: ['actions', 'issueRelates', 'project'],
         tableName: 'afterActionAnalysis'
     });
 };
@@ -80,7 +80,6 @@ const updateAAAById = async (AAAId, updateBody) => {
     if (!checkAAAId) {
         throw new ApiError(httpStatus.NOT_FOUND, 'AAA not found');
     }
-
     let requestActions = updateBody.actions
     const result = await AAARepository.update({ id: AAAId }, updateBody);
 
@@ -107,6 +106,14 @@ const deleteAAAById = async (AAAId) => {
     return await AAARepository.delete({ id: AAAId });
 };
 
+const getAllAAAByProjectId = async (id) => {
+    return await AAARepository.find({
+        where: { projectId: id },
+        relations: ['actions', 'issueRelates', 'project'],
+        tableName: 'afterActionAnalysis'
+    });
+};
+
 
 module.exports = {
     createAAA,
@@ -114,4 +121,5 @@ module.exports = {
     getAAAById,
     updateAAAById,
     deleteAAAById,
+    getAllAAAByProjectId
 };

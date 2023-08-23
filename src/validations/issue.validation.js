@@ -11,7 +11,8 @@ const createIssue = {
         impact: Joi.string().required(),
         control: Joi.string().valid("Avoided", "Mitigated", "Transfered", "Accepted").required(),
         controlOwner: Joi.string().required(),
-        residualImpact: Joi.string().required()
+        residualImpact: Joi.string().required(),
+        projectId: Joi.string().custom(objectId),
     }),
 };
 
@@ -33,6 +34,12 @@ const getIssues = {
 const getIssue = {
     params: Joi.object().keys({
         issueId: Joi.string().custom(objectId),
+    }),
+};
+
+const getIssueByProjectId = {
+    params: Joi.object().keys({
+        projectId: Joi.string().custom(objectId),
     }),
 };
 
@@ -60,10 +67,19 @@ const deleteIssue = {
     }),
 };
 
+const getIssuesByDate = {
+    query: Joi.object().keys({
+        startDate: Joi.date().iso().required(),
+        endDate: Joi.date().iso().required(),
+    }),
+};
+
 module.exports = {
     createIssue,
     getIssues,
     getIssue,
     updateIssue,
-    deleteIssue
+    deleteIssue,
+    getIssueByProjectId,
+    getIssuesByDate
 };

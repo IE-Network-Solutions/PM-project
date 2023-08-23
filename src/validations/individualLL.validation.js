@@ -8,7 +8,7 @@ const createIndividualLL = {
         problem: Joi.string().required(),
         impact: Joi.string().required(),
         lessonLearnedText: Joi.string().required(),
-        lessonLearnedId: Joi.required()
+        lessonLearnedId: Joi.required().required()
     }),
 };
 
@@ -18,7 +18,7 @@ const getIndividualLLs = {
         LLOwnerId: Joi.string(),
         problem: Joi.string(),
         impact: Joi.string(),
-        lessonLearned: Joi.string(),
+        lessonLearnedText: Joi.string(),
         IindividualLLId: Joi.string()
     }),
 };
@@ -38,7 +38,7 @@ const updateIndividualLLById = {
         LLOwnerId: Joi.string().required(),
         problem: Joi.string().required(),
         impact: Joi.string().required(),
-        lessonLearned: Joi.string().required(),
+        lessonLearnedText: Joi.string().required(),
     })
         .min(1),
 };

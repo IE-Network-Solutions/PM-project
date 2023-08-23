@@ -8,7 +8,7 @@ const createAction = {
         authorizedPersonName: Joi.string().required(),
         authorizedPersonId: Joi.string().required(),
         action: Joi.string().required(),
-        AAAId: Joi.string().required(),
+        afterActionAnalysisId: Joi.string().custom(objectId),
 
     }),
 };

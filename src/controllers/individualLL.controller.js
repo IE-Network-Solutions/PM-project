@@ -7,8 +7,9 @@ const { individualLLService, lessonLearnedService } = require('../services');
 const createIndividualLL = catchAsync(async (req, res) => {
 
     const checkLLId = await lessonLearnedService.getLLById(req.body.lessonLearnedId);
-    if (!checkLLId) {
-        return new ApiError(httpStatus.NOT_FOUND, 'Lesson learned Id Not Found');
+    console.log("request id", req.body.lessonLearnedId, "request ll body", checkLLId)
+    if (!checkLLId[0]) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Lesson learned Id Not Found');
     }
     const result = await individualLLService.createIndividualLL(req.body);
     res.status(httpStatus.CREATED).send(result);

@@ -20,6 +20,7 @@ class Risk extends Base {
         this.residualProbability = { type: 'varchar' };
         this.residualImpact = { type: 'varchar' };
         this.residualRiskRate = { type: 'varchar' };
+        this.projectId = { type: 'varchar', nullable: true };
     }
 }
 
@@ -27,4 +28,14 @@ module.exports = new EntitySchema({
     name: 'Risk',
     tableName: 'risks',
     columns: new Risk(),
+    relations: {
+        project: {
+            type: 'many-to-one',
+            target: 'Project',
+            onDelete: "SET NULL",
+            onUpdate: 'CASCADE'
+        },
+        
+    }
+
 });

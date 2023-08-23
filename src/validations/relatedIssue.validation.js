@@ -4,6 +4,7 @@ const { objectId } = require('./custom.validation');
 const createRelatedIssue = {
     body: Joi.object().keys({
         name: Joi.string().required(),
+        afterActionAnalysisId: Joi.string().custom(objectId),
     }),
 };
 
