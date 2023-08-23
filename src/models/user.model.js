@@ -61,5 +61,19 @@ module.exports = new EntitySchema({
       onDelete: "SET NULL",
       onUpdate: "CASCADE",
     },
+    mom: {
+      type: "many-to-many",
+      target: "minuteOfMeeting",
+      joinTable: {
+        name: "mom_attendees",
+        joinColumn: { name: "userId", referencedColumnName: "id" },
+        inverseJoinColumn: {
+          name: "momId",
+          referencedColumnName: "id",
+        },
+      },
+      onDelete: "SET NULL",
+      onUpdate: "CASCADE",
+    },
   },
 });

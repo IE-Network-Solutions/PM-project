@@ -29,7 +29,6 @@ const createPaymentTerm = async (paymentTermBody, milestone) => {
           paymentTermId: paymentTerm.id,
         };
       });
-      console.log(miletoneRepository);
       await miletoneRepository.save(milestoneInstances);
     }
   
@@ -77,6 +76,9 @@ const getPaymentTerm = async (id) => {
     );
 };
 
+const getByProject = async (projectId) => {
+  return await paymentTermRepository.findBy({ projectId: projectId,});
+};
 
 /**
  * Update user by id
@@ -100,16 +102,23 @@ const updatePaymentTerm = async (paymentTermId, updateBody) => {
  */
 const deletePaymentTerm = async (paymentTermId) => {
   const paymentTerm = await getPaymentTerm(paymentTermId);
-  if (!paymentTerm) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Payment Term not found');
-  }
-  return await paymentTermRepository.delete({ id: paymentTermId });
+
+
+    await miletoneRepository.update(
+      { paymentTermId: paymentTermId },
+      { paymentTermId: null } 
+    );
+
+  await paymentTermRepository.delete({ id: paymentTermId });
+
+  return paymentTerm;
 };
 
 module.exports = {
   createPaymentTerm,
   getPaymentTerms,
   getPaymentTerm,
+  getByProject,
   updatePaymentTerm,
   deletePaymentTerm,
 };

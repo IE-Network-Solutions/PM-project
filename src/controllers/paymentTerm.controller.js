@@ -30,6 +30,11 @@ const getPaymentTerm = catchAsync(async(req, res)=>{
   res.send(paymentTerm);
 });
 
+const getByProject = catchAsync(async(req, res)=>{
+  const projectPaymentTerm = await paymentTermService.getByProject(req.params.projectId);
+  res.send(projectPaymentTerm);
+});
+
 
 const updatePaymentTerm = catchAsync(async(req, res)=>{
   const paymentTerm = await paymentTermService.updatePaymentTerm(req.params.paymentTermId, req.body);
@@ -39,13 +44,14 @@ const updatePaymentTerm = catchAsync(async(req, res)=>{
 
 const deletePaymentTerm = catchAsync(async(req, res)=>{
   await paymentTermService.deletePaymentTerm(req.params.paymentTermId);
-  res.status(httpStatus.NO_CONTENT).send();
+  res.send("Payment Term Deleted");
 });
 
 module.exports = {
   createPaymentTerm,
   getPaymentTerms,
   getPaymentTerm,
+  getByProject,
   updatePaymentTerm,
   deletePaymentTerm,
 };
