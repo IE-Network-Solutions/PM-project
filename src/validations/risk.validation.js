@@ -20,18 +20,6 @@ const createRisk = {
 
 const getRisks = {
     query: Joi.object().keys({
-        id: Joi.string(),
-        riskDescription: Joi.string(),
-        causedBy: Joi.string(),
-        consequences: Joi.string(),
-        probability: Joi.string(),
-        riskOwner: Joi.string(),
-        status: Joi.string(),
-        impact: Joi.string(),
-        control: Joi.string(),
-        controlOwner: Joi.string(),
-        residualProbability: Joi.string(),
-        residualImpact: Joi.string(),
         sortBy: Joi.string(),
         limit: Joi.number().integer(),
         page: Joi.number().integer(),
