@@ -20,6 +20,11 @@ module.exports = new EntitySchema({
         type: "many-to-one", 
         target: "minuteOfMeeting", 
         inverseSide: "agenda", 
+      }, 
+      momTopics: {
+        type: "one-to-many", 
+        target: "MomAgendaTopic", 
+        inverseSide: "agenda", 
       },   
     // user: {
     //     type: "many-to-one", 

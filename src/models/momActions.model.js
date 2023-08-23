@@ -23,5 +23,10 @@ module.exports = new EntitySchema({
         target: "minute_of_meetings",
         inverseSide: "mom_actions",
       },   
+    responsiblePerson: {
+        type: "many-to-one", 
+        target: "User",
+        inverseSide: "momActionesponsiblePerson",
+      },   
   },
 });

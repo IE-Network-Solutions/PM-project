@@ -75,5 +75,10 @@ module.exports = new EntitySchema({
       onDelete: "SET NULL",
       onUpdate: "CASCADE",
     },
+    momFacilitator: {
+      type: "one-to-many", 
+      target: "minuteOfMeeting", 
+      inverseSide: "facilitator", 
+    }, 
   },
 });

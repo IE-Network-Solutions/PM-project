@@ -15,7 +15,7 @@ class Action extends Base {
 
 module.exports = new EntitySchema({
     name: 'Action',
-    tableName: 'mom_actions',
+    tableName: 'actions',
     columns: new Action(),
     relations: {
         afterActionAnalysis: {

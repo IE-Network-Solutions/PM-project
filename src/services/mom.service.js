@@ -85,13 +85,21 @@ const createMom = async (momBody, Attendees,externalAttendees, Action, Agenda) =
 
 
           for(const agendaTopic of agendaTopics){
-            const agendaTopicInstance = momAgendaTopicRepository.create({
+            if(agendaTopic.userId == ""){
+              const agendaTopicInstance = momAgendaTopicRepository.create({
+                agendaId: savedAgendaInstance.id,
+                agendaPoints: agendaTopic.agendaPoints,
+                otherUser: agendaTopic.otherUser 
+            });
+            const savedAgendaTopics = await momAgendaTopicRepository.save(agendaTopicInstance);
+            }else{
+              const agendaTopicInstance = momAgendaTopicRepository.create({
                 agendaId: savedAgendaInstance.id,
                 agendaPoints: agendaTopic.agendaPoints,
                 userId: agendaTopic.userId 
             });
-
             const savedAgendaTopics = await momAgendaTopicRepository.save(agendaTopicInstance);
+            }
 
           }
     }
@@ -126,8 +134,12 @@ const getMoms = async (filter, options) => {
  * @param {ObjectId} id
  * @returns {Promise<Mom>}
  */
-const getMom = async (milestoenId) => {
-  return await momRepository.findOneBy({ id: milestoenId });
+const getMom = async (momId) => {
+  return await momRepository.findOne({
+    where: { id: momId},
+    relations: ['facilitator', 'momAttendees', 'momAgenda.momTopics'],
+  },
+  );
 };
 
 const getByProject = async(projectId) =>{
