@@ -7,12 +7,13 @@ const createTask = {
     plannedStart: Joi.date(),
     plannedFinish: Joi.date(),
     actualStart: Joi.date(),
-    actualFinish: Joi.number(),
+    actualFinish: Joi.date(),
     plannedCost: Joi.number(),
     actualCost: Joi.number(),
     status: Joi.string(),
     sleepingReason: Joi.string(),
     milestoneId: Joi.required(),
+    completion: Joi.number(),
   }),
 };
 

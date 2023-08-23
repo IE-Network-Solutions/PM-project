@@ -28,9 +28,12 @@ router
 router
     .route('/getAll/CriticalRisks')
     .get(validate(riskValidation.getAllCriticalRisks), riskController.getAllCriticalRisks);
+
 router
-    .route('/getAll/CriticalRisks/:riskId')
-    .get(validate(riskValidation.getCriticalRiskById), riskController.getCriticalRiskById);
+    .route('/getAllRisksAndIssuesByProjectId/:projectId')
+    .get(validate(riskValidation.getAllRiskAndIssuesByProjectId),
+        riskController.getAllRiskAndIssuesByProjectId);
+
 router
     .route('/getAllRisks/ByDate')
     .get(validate(riskValidation.getRisksByDate), riskController.getRisksByDate);

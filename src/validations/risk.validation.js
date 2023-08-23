@@ -46,29 +46,13 @@ const getRiskByProjectId = {
 
 const getAllCriticalRisks = {
     query: Joi.object().keys({
-        id: Joi.string(),
-        riskDescription: Joi.string(),
-        causedBy: Joi.string(),
-        consequences: Joi.string(),
-        probability: Joi.string(),
-        riskOwner: Joi.string(),
-        status: Joi.string(),
-        impact: Joi.string(),
-        control: Joi.string(),
-        controlOwner: Joi.string(),
-        residualProbability: Joi.string(),
-        residualImpact: Joi.string(),
         sortBy: Joi.string(),
         limit: Joi.number().integer(),
         page: Joi.number().integer(),
     }),
 };
 
-const getCriticalRiskById = {
-    params: Joi.object().keys({
-        riskId: Joi.string().custom(objectId),
-    }),
-};
+
 
 const getRisk = {
     params: Joi.object().keys({
@@ -114,6 +98,11 @@ const getRisksByDate = {
         endDate: Joi.date().iso().required(),
     }),
 };
+const getAllRiskAndIssuesByProjectId = {
+    params: Joi.object().keys({
+        projectId: Joi.string().custom(objectId),
+    }),
+};
 
 module.exports = {
     createRisk,
@@ -124,6 +113,6 @@ module.exports = {
     deleteRisk,
     moveRiskToIssue,
     getAllCriticalRisks,
-    getCriticalRiskById,
-    getRisksByDate
+    getRisksByDate,
+    getAllRiskAndIssuesByProjectId
 };

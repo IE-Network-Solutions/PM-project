@@ -12,6 +12,7 @@ class minuteOfMeeting extends Base {
     this.facilitator = { type: 'varchar', nullable: true};
     this.objective = { type: 'varchar', nullable: true};
     this.specialNote = { type: 'varchar', nullable: true};
+    this.externalAttendees = {type: 'json', nullable: true}
   }
 }
 
@@ -26,5 +27,24 @@ module.exports = new EntitySchema({
         target: "projects", 
         inverseSide: "minute_of_meetings", 
       },   
+      momAttendees: {
+        type: "many-to-many",
+        target: "User",
+        joinTable: {
+          name: "mom_attendees",
+          joinColumn: { name: "momId", referencedColumnName: "id" },
+          inverseJoinColumn: {
+            name: "userId",
+            referencedColumnName: "id",
+          },
+        },
+        onDelete: "SET NULL",
+        onUpdate: "CASCADE",
+      },
+      agenda: {
+        type: "one-to-many", 
+        target: "MomAgenda", 
+        inverseSide: "mom", 
+      }, 
   },
 });

@@ -10,6 +10,7 @@ class PaymentTerm extends Base {
     this.plannedCollectionDate = {type: 'date', nullable: true}
     this.actualCollectionDate = {type: 'date', nullable: true}
     this.status = { type: 'boolean' };
+    this.projectId = {type: 'boolean'}
   }
 }
 
@@ -22,6 +23,15 @@ module.exports = new EntitySchema({
         type: "one-to-many", 
         target: "Milestone", 
         inverseSide: "paymentTerm",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
+      project: {
+        type: "many-to-one", 
+        target: "Project", 
+        inverseSide: "paymentTerm",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },   
   },
 });

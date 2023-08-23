@@ -7,6 +7,7 @@ const createPaymentTerm = {
     plannedCollectionDate: Joi.date().required(),
     actualCollectionDate: Joi.date(),
     status: Joi.boolean(),
+    projectId: Joi.string().required(),
     milestone: Joi.array().required(),
   }),
 };
@@ -22,6 +23,12 @@ const getPaymentTerms = {
 const getPaymentTerm = {
   params: Joi.object().keys({
     paymentTermId: Joi.required(),
+  }),
+};
+
+const getByProject = {
+  params: Joi.object().keys({
+    projectId: Joi.required(),
   }),
 };
 
@@ -46,6 +53,7 @@ module.exports = {
   createPaymentTerm,
   getPaymentTerms,
   getPaymentTerm,
+  getByProject,
   updatePaymentTerm,
   deletePaymentTerm
 };

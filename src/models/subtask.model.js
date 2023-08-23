@@ -27,7 +27,7 @@ module.exports = new EntitySchema({
   relations: {
     task: {
         type: "many-to-one", 
-        target: "tasks", 
+        target: "Task", 
         inverseSide: "subtasks", 
       },
   },

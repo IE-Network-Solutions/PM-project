@@ -4,6 +4,7 @@ const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const issueService = require('./issue.service');
 const { Between } = require('typeorm');
 
 const riskRepository = dataSource.getRepository(Risk).extend({ findAll, sortBy });
@@ -94,16 +95,7 @@ const getAllCriticalRisks = async () => {
         });
 };
 
-const getCriticalRiskById = async (id) => {
-    return await riskRepository.find(
-        {
-            where: {
-                id: id,
-                riskRate: "Critical"
-            },
-            relations: ['project']
-        });
-};
+
 
 const updateRiskStatus = async (riskId, status) => {
     return await riskRepository.update({ id: "Transfered" })
@@ -137,6 +129,15 @@ const deleteRiskById = async (riskId) => {
     return await riskRepository.delete({ id: riskId });
 };
 
+const getAllRiskAndIssuesByProjectId = async (projectId) => {
+    const risksByProjectId = await getRiskByProjectId(projectId);
+    const issuesByProjectId = await issueService.getIssueByProjectId(projectId);
+    return {
+        Risks: risksByProjectId,
+        Issues: issuesByProjectId
+    };
+};
+
 module.exports = {
     createRisk,
     queryRisks,
@@ -147,5 +148,5 @@ module.exports = {
     deleteRiskById,
     updateRiskStatus,
     getAllCriticalRisks,
-    getCriticalRiskById
+    getAllRiskAndIssuesByProjectId
 };
