@@ -28,3 +28,4 @@ module.exports.BudgetComment = require('./budgetComments.model');
 module.exports.BudgetGroup = require('./budgetGroup.model');
 module.exports.Budget = require('./budget.model');
 module.exports.momAttendees = require('./momAttendees.model');
+module.exports.ApprovalModule = require('./approvalModule.model');
