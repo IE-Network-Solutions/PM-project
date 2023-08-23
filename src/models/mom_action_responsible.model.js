@@ -6,12 +6,15 @@ const momActionResponsible = new EntitySchema({
     id: {
       type: "uuid",
       primary: true,
+      generated: "uuid"
     },
     userId: {
       type: "uuid",
+      primary: true
     },
      momActionId: {
       type: "uuid",
+      primary: true,
     },
   },
   relations: {
