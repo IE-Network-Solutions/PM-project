@@ -3,7 +3,7 @@ const { objectId } = require('./custom.validation');
 
 const createMom = {
   body: Joi.object().keys({
-    projectId: Joi.required(),
+    projectId: Joi.string().required(),
     title: Joi.string().required(),
     objective: Joi.string(),
     meetingDate: Joi.date(),

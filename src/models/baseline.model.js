@@ -6,7 +6,7 @@ class Baseline extends Base {
   constructor() {
     super(); 
     this.name = { type: 'varchar' };
-    this.status = { type: 'varchar' };
+    this.status = { type: 'boolean' };
     this.milestoneId = { type: 'uuid', nullable: true};
   }
 }

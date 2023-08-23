@@ -23,8 +23,8 @@ const momAgendaTopicRepository = dataSource.getRepository(momAgendaTopic);
  * @returns {Promise<Mom>}
  */
 const createMom = async (momBody, Attendees,externalAttendees, Action, Agenda) => {
+  console.log(momBody);
   const mom = momRepository.create(momBody);
-
   // Save the mom
   await momRepository.save(mom);
 
@@ -35,6 +35,7 @@ const createMom = async (momBody, Attendees,externalAttendees, Action, Agenda) =
         userId: eachAttendees.userId,
       });
     });
+
       // Save the mom instances
       await momAttendeesRepository.save(momInstances);
   }
@@ -143,7 +144,7 @@ const getMom = async (momId) => {
 };
 
 const getByProject = async(projectId) =>{
-  return await momRepository.find({projectId: projectId});
+  return await momRepository.findBy({projectId: projectId});
 }
 
 

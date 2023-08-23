@@ -26,7 +26,11 @@ const subTaskRepository = dataSource.getRepository(Subtask).extend({
  */
 const createBaseline = async (baselineBody, tasks) => {
   const baseline = baselineRepository.create(baselineBody);
-  await baselineRepository.save(baseline);
+  const savedBaseline = await baselineRepository.save(baseline);
+  // if(savedBaseline){
+  //   const milestoneId =  baselineBody.milestoneId;
+  //   getbaselineByMilestone = mile
+  // }
 
   if (tasks) {
     const taskInstances = tasks.map(async (eachTask) => {
@@ -39,8 +43,6 @@ const createBaseline = async (baselineBody, tasks) => {
         actualStart: eachTask.actualStart,
         actualFinish: eachTask.actualFinish,
         completion: eachTask.completion,
-        // plannedCost: eachTask.plannedCost,
-        // actualCost: eachTask.actualCost,
         status: eachTask.status,
         sleepingReason: eachTask.sleepingReason,
         subTasks: subTasks,
@@ -59,8 +61,6 @@ const createBaseline = async (baselineBody, tasks) => {
             actualStart: eachTask.actualStart,
             actualFinish: eachTask.actualFinish,
             completion: eachTask.completion,
-            // plannedCost: eachSubTask.plannedCost,
-            // actualCost: eachSubTask.actualCost,
             status: eachSubTask.status,
             sleepingReason: eachSubTask.sleepingReason,
           });
