@@ -7,6 +7,7 @@ class Agenda extends Base {
   constructor() {
     super(); 
     this.agenda = {type: 'varchar'}
+    this.momId = {type: 'uuid'}
   }
 }
 
@@ -19,11 +20,16 @@ module.exports = new EntitySchema({
         type: "many-to-one", 
         target: "minuteOfMeeting", 
         inverseSide: "agenda", 
-      },   
-    user: {
-        type: "many-to-one", 
-        target: "User", 
+      }, 
+      momTopics: {
+        type: "one-to-many", 
+        target: "MomAgendaTopic", 
         inverseSide: "agenda", 
       },   
+    // user: {
+    //     type: "many-to-one", 
+    //     target: "User", 
+    //     inverseSide: "agenda", 
+    //   },   
   },
 });
