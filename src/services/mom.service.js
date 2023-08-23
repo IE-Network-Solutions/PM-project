@@ -138,7 +138,7 @@ const getMoms = async (filter, options) => {
 const getMom = async (momId) => {
   return await momRepository.findOne({
     where: { id: momId},
-    relations: ['facilitator', 'momAttendees', 'momAgenda.momTopics'],
+    relations: ['facilitator', 'momAttendees', 'momAgenda.momTopics','momAction.responsiblePerson'],
   },
   );
 };

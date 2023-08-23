@@ -1,7 +1,6 @@
 const { EntitySchema } = require('typeorm');
 
 class User {
-  // Define additional properties specific to Project entity
   constructor() {
     this.id = { primary: true, type: 'uuid' };
     this.name = { type: 'varchar' };
@@ -37,16 +36,6 @@ module.exports = new EntitySchema({
           referencedColumnName: 'id',
         },
       }},
-    // projectMembers: {
-    //   type: 'one-to-many',
-    //   target: 'ProjectMember',
-    //   inverseSide: 'Project',
-    // },
-    // projectContractValues: { // Change to projectContractValues
-    //   type: 'one-to-many',
-    //   target: 'ProjectContractValue',
-    //   inverseSide: 'Project', // Assuming this is the correct inverseSide property
-    // },
     projects: {
       type: "many-to-many",
       target: "Project",
