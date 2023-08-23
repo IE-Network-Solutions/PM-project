@@ -5,7 +5,7 @@ module.exports.RelatedIssue = require('./relatedIssues.model');
 module.exports.Action = require('./action.model');
 // module.exports.AfterActionAnalysisIssueRelated = require('./afterActionAnalysisIssueRelated.model');
 module.exports.Project = require('./project.model');
-module.exports.paymentTerm = require('./PaymentTerm.model')
+module.exports.paymentTerm = require('./PaymentTerm.model');
 module.exports.ProjectMembers = require('./ProjectMember.model');
 module.exports.ProjectContractValue = require('./projectContractValue.model');
 
@@ -22,3 +22,6 @@ module.exports.LLComments = require('./llComments.model');
 module.exports.BudgetCategory = require('./budgetCategory.model');
 module.exports.BudgetType = require('./budgetType.model');
 module.exports.BudgetTaskCategory = require('./budgetTaskCategory.model');
+module.exports.BudgetComment = require('./budgetComments.model');
+module.exports.BudgetGroup = require('./budgetGroup.model');
+module.exports.Budget = require('./budget.model');

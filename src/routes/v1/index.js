@@ -12,7 +12,7 @@ const baselineRoute = require('./baseline.route');
 const taskRoute = require('./task.route');
 const subTaskRoute = require('./subtask.route');
 const momRoute = require('./mom.route');
-const usersRoute=require('./user.route')
+const usersRoute = require('./user.route');
 const leasonLearnedRoute = require('./lessonLearned.route');
 const individualLLRoute = require('./individualLL.route');
 const LLCommentRoute = require('./llComment.route');
@@ -21,6 +21,7 @@ const PaymentTermRoute = require('./paymentTerm.route');
 const budgetCategoryRoute = require('./budgetCategory.route');
 const budgetTypeRoute = require('./budgetType.route');
 const budgetTaskCategoryRoute = require('./budgetTaskCategory.route');
+const budgetRoute = require('./budget.route');
 
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
@@ -58,8 +59,8 @@ const defaultRoutes = [
   {
     path: '/projects',
     route: projectRoute,
-  }
-  ,{
+  },
+  {
     path: '/payment-terms',
     route: PaymentTermRoute,
   },
@@ -71,7 +72,7 @@ const defaultRoutes = [
     path: '/baselines',
     route: baselineRoute,
   },
-  {  
+  {
     path: '/tasks',
     route: taskRoute,
   },
@@ -79,11 +80,11 @@ const defaultRoutes = [
     path: '/subtasks',
     route: subTaskRoute,
   },
-  {  
+  {
     path: '/mom',
     route: momRoute,
   },
-  {  
+  {
     path: '/users',
     route: usersRoute,
   },
@@ -110,6 +111,10 @@ const defaultRoutes = [
   {
     path: '/budgetType',
     route: budgetTypeRoute,
+  },
+  {
+    path: '/budget',
+    route: budgetRoute,
   },
 ];
 
