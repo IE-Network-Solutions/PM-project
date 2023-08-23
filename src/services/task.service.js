@@ -97,12 +97,10 @@ const assignResource = async (taskId, userIds) => {
   if (!task) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
   }
-  console.log(userIds, 'testttttt');
   const users = await services.userService.getUsersById(userIds);
   if (!users) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Users not found');
   }
-
   const taskUsers = users.map((user) => {
     const taskUser = taskUserRepository.create({
       task: task,
@@ -114,6 +112,54 @@ const assignResource = async (taskId, userIds) => {
   return taskUsers;
 };
 
+/**
+ * Remove Resoure from the task
+ * @param {String} taskId
+ * @param {Array} usersId
+ * @returns {Promise<User>}
+ */
+const removeResource = async (taskId, userId) => {
+  // Fetch the TaskResource entity representing the association
+  const taskResource = await taskUserRepository.findOneBy({
+    taskId: taskId,
+    userId: userId,
+  });
+
+  if (!taskResource) {
+    new AppError('relation not found', 404);
+  }
+
+  // Remove the TaskUser association from the database
+  await taskUserRepository.remove(taskResource);
+
+  return await getTask(taskId);
+};
+
+/**
+ * Filter Tsks by planedStartDate
+ * @param {String} taskId
+ * @param {Array} usersId
+ * @returns {Promise<User>}
+ */
+
+const filterTaskByPlanedDate = async (projectId, startDate, endDate) => {
+  const tasks = await taskRepository
+    .createQueryBuilder('task')
+    .leftJoin('task.baseline', 'baseline')
+    .leftJoin('baseline.milestone', 'milestone')
+    .leftJoin('milestone.project', 'project')
+    .where('project.id = :projectId', { projectId })
+    .andWhere('task.plannedStart >= :startDate', {
+      startDate,
+    })
+    .andWhere('task.plannedStart <= :endDate', {
+      endDate,
+    })
+    .getMany();
+
+  return tasks;
+};
+
 module.exports = {
   createTask,
   getTasks,
@@ -121,4 +167,6 @@ module.exports = {
   updateTask,
   deleteTask,
   assignResource,
+  removeResource,
+  filterTaskByPlanedDate,
 };

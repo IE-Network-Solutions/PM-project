@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { taskService } = require('../services');
+const { taskService, userService, projectService } = require('../services');
 
 const createTask = catchAsync(async (req, res) => {
   const task = await taskService.createTask(req.body);
@@ -41,6 +41,36 @@ const assignResource = catchAsync(async (req, res) => {
   res.send(assinedUsers);
 });
 
+const removeResource = catchAsync(async (req, res) => {
+  const taskId = req.params.id;
+  const userId = req.body.userId;
+  const task = await taskService.getTask(taskId);
+  if (!task) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
+  }
+
+  const user = await userService.getUserById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  const removeUser = await taskService.removeResource(taskId, userId);
+  res.send(removeUser);
+});
+
+const getTasksByPlandStartDate = catchAsync(async (req, res) => {
+  const projectId = req.params.projectId;
+  const startDate = req.body.startDate;
+  const endDate = req.body.endDate;
+
+  const project = await projectService.getProject(req.body.projectId);
+  if (!project) {
+    throw ApiError(httpStatus.NOT_FOUND, 'Project not found');
+  }
+  const tasks = await taskService.filterTaskByPlanedDate(projectId, startDate, endDate);
+  res.send(tasks);
+});
+
 module.exports = {
   createTask,
   getTasks,
@@ -48,4 +78,6 @@ module.exports = {
   updateTask,
   deleteTask,
   assignResource,
+  removeResource,
+  getTasksByPlandStartDate,
 };

@@ -17,5 +17,9 @@ router
   .delete(validate(taskValidation.deleteTask), taskController.deleteTask);
 
 router.route('/assign-resource/:taskId').post(validate(taskValidation.assignResource), taskController.assignResource);
+router.route('/remove-resource/:taskId').post(validate(taskValidation.removeResource), taskController.removeResource);
+router
+  .route('/by-planed-date/:projectId')
+  .get(validate(taskValidation.getByPlnedDate), taskController.getTasksByPlandStartDate);
 
 module.exports = router;

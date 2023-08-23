@@ -58,6 +58,23 @@ const assignResource = {
     })
     .min(1),
 };
+const removeResource = {
+  params: Joi.object().keys({
+    taskId: Joi.string(),
+  }),
+  body: Joi.object().keys({
+    userId: Joi.string().guid().required(),
+  }),
+};
+const getByPlnedDate = {
+  params: Joi.object().keys({
+    projectId: Joi.string(),
+  }),
+  body: Joi.object().keys({
+    startDate: Joi.date().required(),
+    endDate: Joi.date().required(),
+  }),
+};
 
 module.exports = {
   createTask,
@@ -66,4 +83,6 @@ module.exports = {
   updateTask,
   deleteTask,
   assignResource,
+  removeResource,
+  getByPlnedDate,
 };
