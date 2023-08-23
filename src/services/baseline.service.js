@@ -52,7 +52,7 @@ const createBaseline = async (baselineBody, tasks) => {
       if (subTasks.length > 0) {
         const subTaskInstances = subTasks.map((eachSubTask) => {
           return subTaskRepository.create({
-            taskId: savedTaskInstance.id, // Use the saved task's ID
+            taskId: savedTaskInstance.id,
             name: eachSubTask.name,
             plannedStart: eachSubTask.plannedStart,
             plannedFinish: eachSubTask.plannedFinish,

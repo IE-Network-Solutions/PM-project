@@ -130,6 +130,10 @@ const getMom = async (milestoenId) => {
   return await momRepository.findOneBy({ id: milestoenId });
 };
 
+const getByProject = async(projectId) =>{
+  return await momRepository.find({projectId: projectId});
+}
+
 
 /**
  * Update user by id
@@ -163,6 +167,7 @@ module.exports = {
   createMom,
   getMoms,
   getMom,
+  getByProject,
   updateMom,
   deleteMom,
 };
