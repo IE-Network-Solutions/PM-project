@@ -66,7 +66,6 @@ const defaultRoutes = [
     path: '/projects',
     route: projectRoute,
   },
-  {},
   {
     path: '/payment-terms',
     route: PaymentTermRoute,
@@ -154,6 +153,7 @@ const devRoutes = [
 ];
 
 defaultRoutes.forEach((route) => {
+  console.log(route);
   router.use(route.path, route.route);
 });
 
