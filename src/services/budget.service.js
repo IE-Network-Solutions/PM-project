@@ -26,6 +26,7 @@ const createBudget = async (budgetBody) => {
   const budgetGroup = budgetGroupRepository.create({
     from: budgetBody.from,
     to: budgetBody.to,
+    project: budgetBody.project,
   });
   await budgetGroupRepository.save(budgetGroup);
 

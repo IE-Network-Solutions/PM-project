@@ -5,6 +5,7 @@ class ApprovalModule extends Base {
   constructor() {
     super();
     this.moduleName = { type: 'varchar' };
+    this.max_level = { type: 'int', nullable: true };
   }
 }
 

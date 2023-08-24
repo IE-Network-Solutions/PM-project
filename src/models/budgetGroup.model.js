@@ -9,7 +9,6 @@ class BudgetGroup extends Base {
     this.to = { type: 'date' };
     this.approved = { type: 'boolean', default: false };
     this.rejected = { type: 'boolean', default: false };
-    this.approval_stage = { type: 'varchar', nullable: true };
   }
 }
 
@@ -21,6 +20,14 @@ module.exports = new EntitySchema({
     comments: {
       type: 'many-to-one',
       target: 'BudgetComment',
+    },
+    approvalStage: {
+      type: 'many-to-many',
+      target: 'ApprovalStage',
+    },
+    project: {
+      type: 'many-to-many',
+      target: 'Project',
     },
   },
 });

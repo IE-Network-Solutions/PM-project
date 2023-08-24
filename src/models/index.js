@@ -29,3 +29,6 @@ module.exports.BudgetGroup = require('./budgetGroup.model');
 module.exports.Budget = require('./budget.model');
 module.exports.momAttendees = require('./momAttendees.model');
 module.exports.ApprovalModule = require('./approvalModule.model');
+module.exports.ApprovalLevel = require('./approvalLevels.model');
+module.exports.ApprovalStage = require('./approvalStage.model');
+module.exports.Role = require('./roles.model');

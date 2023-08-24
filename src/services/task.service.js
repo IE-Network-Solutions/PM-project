@@ -113,6 +113,37 @@ const assignResource = async (taskId, userIds) => {
 };
 
 /**
+ * Assign All Resoure to the task
+ * @param {String} taskId
+ * @param {Array} usersId
+ * @returns {Promise<User>}
+ */
+const assignAllResource = async (resourceBody) => {
+  let taskUsersData = [];
+  for (const resource of resourceBody.resources) {
+    const task = await getTask(resource.taskId);
+    if (!task) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
+    }
+    const users = await services.userService.getUsersById(resource.userIds);
+    if (!users) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Users not found');
+    }
+    let taskUsers = users.map((user) => {
+      const taskUser = taskUserRepository.create({
+        task: task,
+        user,
+      });
+      return taskUser;
+    });
+    const data = await taskUserRepository.save(taskUsers);
+    taskUsersData.push(data);
+  }
+
+  return taskUsersData;
+};
+
+/**
  * Remove Resoure from the task
  * @param {String} taskId
  * @param {Array} usersId
@@ -169,4 +200,5 @@ module.exports = {
   assignResource,
   removeResource,
   filterTaskByPlanedDate,
+  assignAllResource,
 };

@@ -20,3 +20,7 @@ module.exports.budgetCategoryController = require('./budgetCategory.controller')
 module.exports.budgetTypeController = require('./budgetType.controller');
 module.exports.budgetCategoryTaskController = require('./budgetTaskCategory.controller');
 module.exports.budgetController = require('./budget.controller');
+module.exports.approvalModuleController = require('./approvalModule.controller');
+module.exports.approvalLevelController = require('./approvalLevel.controller');
+module.exports.approvalStageController = require('./approvalStage.controller');
+module.exports.approvalController = require('./approval.controller');

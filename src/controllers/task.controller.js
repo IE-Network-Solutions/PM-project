@@ -35,9 +35,15 @@ const deleteTask = catchAsync(async (req, res) => {
 });
 
 const assignResource = catchAsync(async (req, res) => {
-  const taskId = req.params.id;
+  const taskId = req.body.taskId;
   const userIds = req.body.userIds;
   const assinedUsers = await taskService.assignResource(taskId, userIds);
+  res.send(assinedUsers);
+});
+
+const assignAllResource = catchAsync(async (req, res) => {
+  console.log(req.body);
+  const assinedUsers = await taskService.assignAllResource(req.body);
   res.send(assinedUsers);
 });
 
@@ -60,8 +66,8 @@ const removeResource = catchAsync(async (req, res) => {
 
 const getTasksByPlandStartDate = catchAsync(async (req, res) => {
   const projectId = req.params.projectId;
-  const startDate = req.body.startDate;
-  const endDate = req.body.endDate;
+  const startDate = req.query.startDate;
+  const endDate = req.query.endDate;
 
   const project = await projectService.getProject(req.body.projectId);
   if (!project) {
@@ -80,4 +86,5 @@ module.exports = {
   assignResource,
   removeResource,
   getTasksByPlandStartDate,
+  assignAllResource,
 };

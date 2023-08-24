@@ -16,16 +16,21 @@ const approvalModuleRepository = dataSource.getRepository(ApprovalModule).extend
  * @param {Object} approvalModuleBody
  * @returns {Promise<ApprovalModule>}
  */
-const createApprovalModule = async (budgetBody) => {
+const createApprovalModule = async () => {
   const approvalModules = [{ moduleName: 'ProjectBudget' }, { moduleName: 'OfficeProjectBudget' }];
 
   const modules = approvalModules.map((approvalModule) => {
-    const module = getApprovalModuleByModuleName(approvalModule.moduleName);
-    if (!module) {
-      const moduleData = approvalModuleRepository.create(approvalModule);
-      return moduleData;
-    }
+    // console.log(approvalModule);
+    // const module = await getApprovalModuleByModuleName(approvalModule.moduleName);
+    // console.log('return dataaa', module);
+    // if (!module) {
+    const moduleData = approvalModuleRepository.create(approvalModule);
+    console.log('created data', moduleData);
+
+    return moduleData;
+    // }
   });
+  console.log(modules);
 
   const moduleDatas = await approvalModuleRepository.save(modules);
   return moduleDatas;
