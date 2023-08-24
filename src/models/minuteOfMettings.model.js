@@ -62,6 +62,11 @@ module.exports = new EntitySchema({
         type: "one-to-many",
         target: "momAction",
         inverseSide: "mom"
-      }
+      },
+      momComment: {
+        type: "one-to-many", 
+        target: "MomComment", 
+        inverseSide: "mom", 
+      },   
   },
 });

@@ -6,6 +6,7 @@ module.exports.momAgenda = require("./momAgenda.model")
 module.exports.momAgendaTopic = require("./momAgendaTopics.model")
 module.exports.MomAction = require('./momActions.model');
 module.exports.momActionResponsible = require('./mom_action_responsible.model');
+module.exports.momComment = require('./momComment.model');
 // module.exports.AfterActionAnalysisIssueRelated = require('./afterActionAnalysisIssueRelated.model');
 module.exports.Project = require('./project.model');
 module.exports.paymentTerm = require('./PaymentTerm.model')

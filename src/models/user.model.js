@@ -69,5 +69,15 @@ module.exports = new EntitySchema({
       target: "minuteOfMeeting", 
       inverseSide: "facilitator", 
     }, 
+    userComment: {
+      type: "one-to-many", 
+      target: "MomComment", 
+      inverseSide: "user", 
+    }, 
+    commentMentioned: {
+      type: "one-to-many", 
+      target: "MomComment", 
+      inverseSide: "mentioned", 
+    }, 
   },
 });

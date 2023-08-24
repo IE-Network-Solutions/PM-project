@@ -18,6 +18,10 @@ router
   .route('/:momId')
   .get(validate(momValidation.getMom),momController.getMom)
   .patch(validate(momValidation.updateMom),momController.updateMom)
-  .delete(validate(momValidation.deleteMom),momController.deleteMom);
+  .delete(validate(momValidation.deleteMom),momController.deleteMom)
+  
+  router
+  .route('/comment')
+  .post(validate(momValidation.addComment), momController.addComment);
 
 module.exports = router;
