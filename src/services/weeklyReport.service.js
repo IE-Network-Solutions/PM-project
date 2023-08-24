@@ -1,5 +1,7 @@
 const httpStatus = require('http-status');
-
+const { getRiskByProjectId } = require('./risk.service');
+const { getIssueByProjectId } = require('./issue.service');
+const { riskService, issueService } = require('.');
 /**
  * Query for users
  * @param {Object} filter - Filter options
@@ -10,10 +12,17 @@ const httpStatus = require('http-status');
  * @returns {Promise<QueryResult>}
  */
 
-const getWeeklyReportByDate = async (startDate, endDate) => {
+const getWeeklyReportByProjectByDate = async (id, startDate, endDate) => {
 
+    const riskResult = await riskService.getAllRisksByProjectIdAndByDate(id, startDate, endDate);
+    const issueResult = await issueService.getAllIssuesByProjectIdAndByDate(id, startDate, endDate);
+
+    return {
+        Risk: riskResult,
+        Issue: issueResult
+    }
 };
 
 module.exports = {
-    getWeeklyReportByDate,
+    getWeeklyReportByProjectByDate,
 };

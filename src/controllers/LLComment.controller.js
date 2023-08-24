@@ -28,6 +28,14 @@ const getLLCommentById = catchAsync(async (req, res) => {
     res.send(result);
 });
 
+const getIndividualLLByLLId = catchAsync(async (req, res) => {
+    const result = await LLCommentService.getLLCommentByLLId(req.params.LLId);
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Lesson learned not found');
+    }
+    res.send(result);
+});
+
 const updateLLCommentById = catchAsync(async (req, res) => {
     const result = await LLCommentService.updateLLCommentById(req.params.commentId, req.body);
     res.send(result);
@@ -44,4 +52,5 @@ module.exports = {
     getLLCommentById,
     updateLLCommentById,
     deleteLLCommentById,
+    getIndividualLLByLLId
 };
