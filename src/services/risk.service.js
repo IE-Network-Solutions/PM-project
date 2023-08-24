@@ -5,7 +5,7 @@ const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 const issueService = require('./issue.service');
-const { Between } = require('typeorm');
+const { Between, In } = require('typeorm');
 
 const riskRepository = dataSource.getRepository(Risk).extend({ findAll, sortBy });
 // .extend({ sortBy });
@@ -33,7 +33,6 @@ const createRisk = async (riskBody) => {
 
 const queryRisks = async (filter, options) => {
     const { limit, page, sortBy } = options;
-
     return await riskRepository.find({
         relations: ['project'],
         tableName: 'risk',
@@ -67,11 +66,16 @@ const getRisksByDate = async (startDate, endDate) => {
  * @returns {Promise<Risk>}
  */
 
-const getRiskByProjectId = async (id) => {
+const getAllRisksByProjectIdAndByDate = async (id, status, startDate, endDate) => {
     return await riskRepository.find(
         {
             where: {
-                projectId: id
+                projectId: id,
+                status: status[0],
+                createdAt: Between(
+                    new Date(startDate).toISOString(),
+                    new Date(endDate).toISOString()
+                ),
             },
             relations: ['project']
         });
@@ -80,16 +84,18 @@ const getRiskByProjectId = async (id) => {
 const getRiskById = async (id) => {
     return await riskRepository.findOne(
         {
-            where: { id: id },
+            where: {
+                id: id,
+            },
             relations: ['project']
         });
 };
 
-const getAllCriticalRisks = async () => {
+const getAllCriticalRisks = async (status) => {
     return await riskRepository.find(
         {
             where: {
-                riskRate: "Critical"
+                riskRate: "Critical",
             },
             relations: ['project']
         });
@@ -129,9 +135,9 @@ const deleteRiskById = async (riskId) => {
     return await riskRepository.delete({ id: riskId });
 };
 
-const getAllRiskAndIssuesByProjectId = async (projectId) => {
-    const risksByProjectId = await getRiskByProjectId(projectId);
-    const issuesByProjectId = await issueService.getIssueByProjectId(projectId);
+const getAllRiskAndIssuesByProjectIdByDate = async (projectId, status, startDate, endDate) => {
+    const risksByProjectId = await getAllRisksByProjectIdAndByDate(projectId, status, startDate, endDate);
+    const issuesByProjectId = await issueService.getAllIssuesByProjectIdAndByDate(projectId, "Transfered", startDate, endDate);
     return {
         Risks: risksByProjectId,
         Issues: issuesByProjectId
@@ -143,10 +149,10 @@ module.exports = {
     queryRisks,
     getRisksByDate,
     getRiskById,
-    getRiskByProjectId,
+    getAllRisksByProjectIdAndByDate,
     updateRiskById,
     deleteRiskById,
     updateRiskStatus,
     getAllCriticalRisks,
-    getAllRiskAndIssuesByProjectId
+    getAllRiskAndIssuesByProjectIdByDate
 };

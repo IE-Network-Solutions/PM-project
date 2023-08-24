@@ -55,6 +55,14 @@ const getLLCommentById = async (id) => {
         });
 };
 
+const getLLCommentByLLId = async (id) => {
+    return await LLCommentsRepository.find(
+        {
+            where: { lessonLearnedId: id },
+            relations: ['lessonLearned']
+        });
+};
+
 /**
  * Update user by id
  * @param {ObjectId} commentId
@@ -90,4 +98,5 @@ module.exports = {
     getLLCommentById,
     updateLLCommentById,
     deleteLLCommentById,
+    getLLCommentByLLId
 };

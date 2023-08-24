@@ -7,7 +7,7 @@ const router = express.Router();
 router
     .route('/:projectId')
     .get(validate(weeklyReportValidation.getWeeklyReportByDate),
-        weeklyReportController.getWeeklyReportByDate)
+        weeklyReportController.getWeeklyReportByProjectByDate)
 
 module.exports = router;
 

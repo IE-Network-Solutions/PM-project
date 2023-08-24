@@ -17,6 +17,11 @@ router
     .delete(validate(issueValidation.deleteIssue), issueController.deleteIssueById);
 
 router
+    .route('/issueByProjectIdByDate/:projectId')
+    .get(validate(issueValidation.getIssueByProjectIdByDate), issueController.getAllIssuesByProjectIdAndByDate);
+
+
+router
     .route('/issueByProjectId/:projectId')
     .get(validate(issueValidation.getIssueByProjectId), issueController.getIssueByProjectId);
 router

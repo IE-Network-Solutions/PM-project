@@ -54,5 +54,5 @@ module.exports = {
     getIndividualLLs,
     getIndividualLLById,
     updateIndividualLLById,
-    deleteIndividualLLById
+    deleteIndividualLLById,
 };
