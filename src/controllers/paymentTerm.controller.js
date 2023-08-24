@@ -37,7 +37,9 @@ const getByProject = catchAsync(async(req, res)=>{
 
 
 const updatePaymentTerm = catchAsync(async(req, res)=>{
-  const paymentTerm = await paymentTermService.updatePaymentTerm(req.params.paymentTermId, req.body);
+  const milestone = req.body.milestone;
+  delete req.body.milestone;
+  const paymentTerm = await paymentTermService.updatePaymentTerm(req.params.paymentTermId, req.body, milestone);
   res.send(paymentTerm);
 });
 

@@ -16,6 +16,10 @@ router
   .patch(validate(taskValidation.updateTask), taskController.updateTask)
   .delete(validate(taskValidation.deleteTask), taskController.deleteTask);
 
+  router
+  .route('/milestone/:milestoneId')
+  .get(validate(taskValidation.getTasksByMileston), taskController.getTasksByMileston);
+
 router.route('/assign-resource/:taskId').post(validate(taskValidation.assignResource), taskController.assignResource);
 
 module.exports = router;

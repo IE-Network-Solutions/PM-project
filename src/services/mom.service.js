@@ -55,7 +55,7 @@ const createMom = async (momBody, Attendees,externalAttendees, Action, Agenda) =
         });
   
         const savedActionInstance = await momActionRepository.save(actionInstance);
-  
+        console.log('Saved Action ID:', savedActionInstance.id);
         if (responsiblePerson.id) {
           const responsiblePersonInstance = momActionResponsibleRepository.create({
             userId: responsiblePerson.id,
@@ -138,7 +138,7 @@ const getMoms = async (filter, options) => {
 const getMom = async (momId) => {
   return await momRepository.findOne({
     where: { id: momId},
-    relations: ['facilitator', 'momAttendees', 'momAgenda.momTopics','momAction.responsiblePerson'],
+    relations: ['facilitator', 'momAttendees', 'momAgenda.momTopics','momAction'],
   },
   );
 };

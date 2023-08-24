@@ -8,7 +8,6 @@ class MomComment extends Base {
     this.comment = { type: 'varchar' };
     this.momId = { type: 'uuid'};
     this.userId = { type: 'uuid'};
-    this.mentionedId = { type: 'uuid'};
   }
 }
 
@@ -29,13 +28,6 @@ module.exports = new EntitySchema({
         inverseSide: "userComment",
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
-      },   
-      mentioned: {
-        type: "many-to-one", 
-        target: "User", 
-        inverseSide: "commentMentioned",
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
-      },   
+      },      
   },
 });
