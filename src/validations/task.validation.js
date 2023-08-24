@@ -24,6 +24,16 @@ const getTasks = {
     page: Joi.number().integer(),
   }),
 };
+const getTasksByMileston = {
+  query: Joi.object().keys({
+    sortBy: Joi.string(),
+    limit: Joi.number().integer(),
+    page: Joi.number().integer(),
+  }),
+  params: Joi.object().keys({
+    milestoneId: Joi.string().required(),
+  })
+};
 
 const getTask = {
   params: Joi.object().keys({
@@ -92,8 +102,10 @@ module.exports = {
   getTask,
   updateTask,
   deleteTask,
+  getTasksByMileston,
   assignResource,
   removeResource,
   getByPlnedDate,
   assignAllResource,
+
 };

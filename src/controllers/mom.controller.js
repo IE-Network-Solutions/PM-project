@@ -3,6 +3,7 @@ const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { momService} = require('../services');
+const { momComment } = require('../models');
 
 const createMom = catchAsync(async (req, res) => {
   const Attendees = req.body.attendees;
@@ -49,6 +50,12 @@ const deleteMom = catchAsync(async(req, res)=>{
     res.status(httpStatus.NO_CONTENT).send();
 });
 
+const addComment = catchAsync(async(req, res)=>{
+  const momComment = await momService.addComment(req.body);
+  res.status(httpStatus.CREATED).send(momComment);
+});
+
+
 module.exports = {
   createMom,
   getMoms,
@@ -56,4 +63,5 @@ module.exports = {
   getByProject,
   updateMom,
   deleteMom,
+  addComment
 };
