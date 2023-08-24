@@ -41,8 +41,10 @@ const getRisksByDate = catchAsync(async (req, res) => {
     res.send(dates);
 });
 
-const getRiskByProjectId = catchAsync(async (req, res) => {
-    const result = await riskService.getRiskByProjectId(req.params.projectId);
+const getAllRisksByProjectIdAndByDate = catchAsync(async (req, res) => {
+    const { startDate, endDate } = req.query
+    const projectId = req.params.projectId;
+    const result = await riskService.getAllRisksByProjectIdAndByDate(projectId, ["Open", "Closed"], startDate, endDate);
     console.log("result", result)
     if (!result) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Project id not found');
@@ -90,12 +92,15 @@ const moveRiskToIssue = catchAsync(async (req, res) => {
         throw new ApiError(httpStatus.NOT_FOUND, "Risk id is not found");
     }
 
+    result.createdAt = new Date(); //create new timeStamp for the transfered Risks to Issue Pages
     await issueService.createIssue(result);
     const status = await riskService.updateRiskById(riskId, { status: "Transfered" });
     res.send(status)
 });
-const getAllRiskAndIssuesByProjectId = catchAsync(async (req, res) => {
-    const result = await riskService.getAllRiskAndIssuesByProjectId(req.params.projectId);
+const getAllRiskAndIssuesByProjectIdByDate = catchAsync(async (req, res) => {
+    const { startDate, endDate } = req.query
+    const result = await riskService.getAllRiskAndIssuesByProjectIdByDate(
+        req.params.projectId, ["Open", "Closed"], startDate, endDate);
     res.send(result);
 });
 
@@ -103,12 +108,12 @@ module.exports = {
     createRisk,
     getRisks,
     getRisk,
-    getRiskByProjectId,
+    getAllRisksByProjectIdAndByDate,
     getRisksByDate,
     updateRisk,
     deleteRisk,
     moveRiskToIssue,
     getAllCriticalRisks,
-    getAllRiskAndIssuesByProjectId
+    getAllRiskAndIssuesByProjectIdByDate
 
 };

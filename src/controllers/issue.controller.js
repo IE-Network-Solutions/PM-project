@@ -49,6 +49,17 @@ const getIssuesByDate = catchAsync(async (req, res) => {
     res.send(dates);
 });
 
+const getAllIssuesByProjectIdAndByDate = catchAsync(async (req, res) => {
+    const { startDate, endDate } = req.query
+    const projectId = req.params.projectId;
+
+    const result = await issueService.getAllIssuesByProjectIdAndByDate(projectId, "Transfered", startDate, endDate);
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Project id not found');
+    }
+    res.send(result);
+});
+
 const updateIssueById = catchAsync(async (req, res) => {
     const issue = await issueService.updateIssueById(req.params.issueId, req.body);
     res.send(issue);
@@ -65,6 +76,7 @@ module.exports = {
     getIssue,
     updateIssueById,
     deleteIssueById,
+    getAllIssuesByProjectIdAndByDate,
     getIssueByProjectId,
     getIssuesByDate
 };
