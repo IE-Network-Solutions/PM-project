@@ -70,6 +70,21 @@ const getIssuesByDate = async (startDate, endDate) => {
     });
 };
 
+const getAllIssuesByProjectIdAndByDate = async (id, status, startDate, endDate) => {
+    return await issueRepository.find(
+        {
+            where: {
+                projectId: id,
+                status: status,
+                createdAt: Between(
+                    new Date(startDate).toISOString(),
+                    new Date(endDate).toISOString()
+                ),
+            },
+            relations: ['project']
+        });
+};
+
 /**
  * Update user by id
  * @param {ObjectId} issueId
@@ -104,6 +119,7 @@ module.exports = {
     getIssueById,
     updateIssueById,
     deleteIssueById,
+    getAllIssuesByProjectIdAndByDate,
     getIssueByProjectId,
     getIssuesByDate
 };

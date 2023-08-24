@@ -34,6 +34,12 @@ const getMom = catchAsync(async(req, res)=>{
 });
 
 
+const getByProject = catchAsync(async(req, res)=>{
+  const projectMom = await momService.getByProject(req.params.projectId);
+  res.send(projectMom);
+});
+
+
 const updateMom = catchAsync(async(req, res)=>{
   const mom = await momService.updateMom(req.params.momId, req.body);
   res.send(mom);
@@ -47,6 +53,7 @@ module.exports = {
   createMom,
   getMoms,
   getMom,
+  getByProject,
   updateMom,
   deleteMom,
 };

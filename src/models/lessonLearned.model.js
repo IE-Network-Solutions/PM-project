@@ -40,6 +40,12 @@ module.exports = new EntitySchema({
             onDelete: "SET NULL",
             onUpdate: 'CASCADE'
         },
+        department: {
+            type: 'many-to-one',
+            target: 'Department',
+            onDelete: "SET NULL",
+            onUpdate: 'CASCADE'
+        },
     },
     onDelete: "SET NULL",
     onUpdate: 'CASCADE'

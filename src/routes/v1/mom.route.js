@@ -10,6 +10,9 @@ router
   .post(validate(momValidation.createMom),momController.createMom)
   .get(validate(momValidation.getMoms),momController.getMoms);
 
+  router
+  .route('/project/:projectId')
+  .get(validate(momValidation.getByProject), momController.getByProject);
 
   router
   .route('/:momId')
