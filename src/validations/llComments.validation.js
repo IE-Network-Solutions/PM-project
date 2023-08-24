@@ -46,11 +46,17 @@ const deleteLLComment = {
         commentId: Joi.string().custom(objectId),
     }),
 };
+const getIndividualLLByLLId = {
+    params: Joi.object().keys({
+        LLId: Joi.string().custom(objectId),
+    }),
+};
 
 module.exports = {
     createLLComment,
     getLLComments,
     getLLComment,
     updateLLComment,
-    deleteLLComment
+    deleteLLComment,
+    getIndividualLLByLLId
 };

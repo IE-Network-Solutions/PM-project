@@ -15,5 +15,9 @@ router
     .patch(validate(LLCommentValidation.updateLLComment), LLCommentController.updateLLCommentById)
     .delete(validate(LLCommentValidation.deleteLLComment), LLCommentController.deleteLLCommentById);
 
+router
+    .route('/LLComment/:LLId')
+    .get(validate(LLCommentValidation.getIndividualLLByLLId), LLCommentController.getIndividualLLByLLId);
+
 module.exports = router;
 
