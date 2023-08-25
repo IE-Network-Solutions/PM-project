@@ -1,7 +1,5 @@
 const httpStatus = require('http-status');
-const { getRiskByProjectId } = require('./risk.service');
-const { getIssueByProjectId } = require('./issue.service');
-const { riskService, issueService } = require('.');
+const { riskService, issueService, projectService, milestoneService } = require('../services');
 /**
  * Query for users
  * @param {Object} filter - Filter options
@@ -11,15 +9,21 @@ const { riskService, issueService } = require('.');
  * @param {number} [options.page] - Current page (default = 1)
  * @returns {Promise<QueryResult>}
  */
+// const getAllMilestones = async (filter, options) => {
+//     const { limit, page, sortBy } = options;
 
-const getWeeklyReportByProjectByDate = async (id, startDate, endDate) => {
+//     return await milestoneService.getMilestones({
+//         sortOptions: sortBy && { option: sortBy },
+//         paginationOptions: { limit: limit, page: page },
+//     });
+// }
+const getWeeklyReportByProjectByDate = async (id, status, startDate, endDate) => {
 
-    const riskResult = await riskService.getAllRisksByProjectIdAndByDate(id, startDate, endDate);
-    const issueResult = await issueService.getAllIssuesByProjectIdAndByDate(id, startDate, endDate);
-
+    const riskResult = await riskService.getAllRisksByProjectIdAndByDate(id, status, startDate, endDate);
+    const issueResult = await issueService.getAllIssuesByProjectIdAndByDate(id, "Transfered", startDate, endDate);
     return {
         Risk: riskResult,
-        Issue: issueResult
+        Issue: issueResult,
     }
 };
 

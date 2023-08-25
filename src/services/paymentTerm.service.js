@@ -86,13 +86,37 @@ const getByProject = async (projectId) => {
  * @param {Object} updateBody
  * @returns {Promise<Project>}
  */
-const updatePaymentTerm = async (paymentTermId, updateBody) => {
+const updatePaymentTerm = async (paymentTermId, updateBody, requestedMilestone) => {
   const paymentTerm = await getPaymentTerm(paymentTermId);
   if (!paymentTerm) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Payment term not found');
   }
-  await paymentTermRepository.update({ id: paymentTermId }, updateBody);
-  return await getPaymentTerm(paymentTermId); 
+
+
+  const paymentTermMilestone = await paymentTermRepository.findBy({paymentTermId: paymentTermId});
+  return paymentTermMilestone; 
+
+  const updateMilestone = await paymentTermRepository.update({ id: paymentTermId }, updateBody);
+
+
+
+
+  const updatedPaymentTerm = await paymentTermRepository.update({ id: paymentTermId }, updateBody);
+
+    if (requestedMilestone && updatedPaymentTerm) {
+      const milestonetoUpdate = requestedMilestone.map((eachMilestone) => {
+        return {
+          id: eachMilestone.id,
+          paymentTermId: paymentTerm.id,
+        };
+      });
+      await miletoneRepository.save(milestonetoUpdate);
+    }
+
+   await getPaymentTerm(paymentTermId); 
+
+   return paymentTerm;
+
 };
 
 /**

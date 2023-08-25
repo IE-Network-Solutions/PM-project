@@ -21,5 +21,10 @@ router.route('/remove-resource/:taskId').post(validate(taskValidation.removeReso
 router
   .route('/by-planed-date/:projectId')
   .get(validate(taskValidation.getByPlnedDate), taskController.getTasksByPlandStartDate);
+  router
+  .route('/milestone/:milestoneId')
+  .get(validate(taskValidation.getTasksByMileston), taskController.getTasksByMileston);
+
+router.route('/assign-resource/:taskId').post(validate(taskValidation.assignResource), taskController.assignResource);
 
 module.exports = router;

@@ -39,6 +39,12 @@ const updatePaymentTerm = {
   body: Joi.object()
     .keys({
       name: Joi.string(),
+      amount: Joi.number(),
+      plannedCollectionDate: Joi.date(),
+      actualCollectionDate: Joi.date(),
+      status: Joi.boolean(),
+      milestone: Joi.array(),
+      projectId: Joi.string()
     })
     .min(1),
 };

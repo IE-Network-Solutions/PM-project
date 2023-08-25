@@ -25,11 +25,6 @@ module.exports = new EntitySchema({
         type: "one-to-many", 
         target: "MomAgendaTopic", 
         inverseSide: "agenda", 
-      },   
-    // user: {
-    //     type: "many-to-one", 
-    //     target: "User", 
-    //     inverseSide: "agenda", 
-    //   },   
+      },      
   },
 });

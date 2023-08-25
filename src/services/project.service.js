@@ -30,7 +30,7 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
   // Save the project instance
   await projectRepository.save(project);
 
-  if (projectMembers) { 
+  if (projectMembers) {
     const projectMemberInstances = projectMembers.map((member) => {
       return projectMemberRepository.create({
         projectId: project.id,
@@ -93,9 +93,10 @@ const getProjects = async (filter, options) => {
  */
 const getProject = async (id) => {
   return await projectRepository.findOne({
-      where: { id: id},
-      relations: ['projectMembers', 'projectContractValues'], },
-    );
+    where: { id: id },
+    relations: ['projectMembers', 'projectContractValues'],
+  },
+  );
 };
 
 
@@ -111,7 +112,7 @@ const updateProject = async (projectId, updateBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
   }
   await projectRepository.update({ id: projectId }, updateBody);
-  const updatedProject= await getProject(projectId);
+  const updatedProject = await getProject(projectId);
   publishToRabbit('project.update', updatedProject);
   return updatedProject;
 };

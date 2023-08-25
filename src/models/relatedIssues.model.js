@@ -18,13 +18,8 @@ module.exports = new EntitySchema({
         afterActionAnalysis: {
             type: 'many-to-one',
             target: 'AfterActionAnalysis',
-            onDelete: "SET NULL",
+            onDelete: "CASCADE",
             onUpdate: 'CASCADE'
         },
-        // afterActionAnalysis_issueRelated: {
-        //     type: 'one-to-many',
-        //     target: 'AfterActionAnalysis_IssueRelated',
-        //     inverseSide: 'afterActionAnalysis',
-        // },
     },
 });

@@ -5,7 +5,7 @@ const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 const { createAction, getIssueRelatedById } = require('./action.service');
-const { createAfterActionAnalysisIssueRelated } = require('./afterActionAnalysisIssueRelated.service');
+const { updateRelatedIssueById } = require('./relatedIssues.service');
 
 const AAARepository = dataSource.getRepository(AfterActionAnalysis).extend({ findAll, sortBy });
 // .extend({ sortBy });
@@ -17,20 +17,22 @@ const AAARepository = dataSource.getRepository(AfterActionAnalysis).extend({ fin
  * @returns {Promise<AAA>}
  */
 const createAAA = async (AAABody) => {
-    let requestActions = AAABody.actions
-    let requestRelatedIssue = AAABody.relatedIssueId;
-    const result = AAARepository.create(AAABody);
-    await AAARepository.save(result);
+
+    let requestActions = AAABody.actions;
+    let relatedIssues = AAABody.issueRelatesId;
+
+    const createdAAA = AAARepository.create(AAABody)
+    const resultAAA = await AAARepository.save(createdAAA);
 
     requestActions.forEach(async (action) => {
-        action.afterActionAnalysis = result;
+        action.afterActionAnalysis = createdAAA;
         await createAction(action);
     });
-
-    requestRelatedIssue.forEach(async (issue) => {
-        await createAfterActionAnalysisIssueRelated(result.id, issue);
-    });
-    return result;
+    relatedIssues.forEach(async (ids) => {
+        await updateRelatedIssueById(ids, { afterActionAnalysisId: resultAAA.id });
+    })
+    console.log(await getAAAById(resultAAA.id));
+    return getAAAById(resultAAA.id);
 };
 
 /**

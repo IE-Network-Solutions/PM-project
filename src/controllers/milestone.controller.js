@@ -40,6 +40,7 @@ const updateMilestone = catchAsync(async(req, res)=>{
   const milestone = await milestoneService.updateMilestone(req.params.milestoneId, req.body);
   res.send(milestone);
 });
+
 const deleteMilestone = catchAsync(async(req, res)=>{
     await milestoneService.deleteMilestone(req.params.milestoneId);
     res.status(httpStatus.NO_CONTENT).send();
