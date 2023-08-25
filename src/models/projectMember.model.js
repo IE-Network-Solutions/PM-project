@@ -21,6 +21,7 @@ const ProjectMember = new EntitySchema({
     user: {
       type: 'many-to-one',
       target: 'User',
+      inverseSide: 'role',
     },
     project: {
       type: 'many-to-one',
@@ -29,6 +30,7 @@ const ProjectMember = new EntitySchema({
     role: {
       type: 'many-to-one',
       target: 'Role',
+      inverseSide: 'user'
     },
   },
 });

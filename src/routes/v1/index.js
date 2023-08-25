@@ -21,6 +21,7 @@ const PaymentTermRoute = require('./paymentTerm.route');
 const budgetCategoryRoute = require('./budgetCategory.route');
 const budgetTypeRoute = require('./budgetType.route');
 const budgetTaskCategoryRoute = require('./budgetTaskCategory.route');
+const weeklyReportRoute = require('./weeklyReport.route')
 
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
@@ -111,6 +112,10 @@ const defaultRoutes = [
     path: '/budgetType',
     route: budgetTypeRoute,
   },
+  {
+    path: '/weekly-report',
+    route: weeklyReportRoute,
+  }
 ];
 
 const devRoutes = [

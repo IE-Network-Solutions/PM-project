@@ -23,7 +23,7 @@ const momAgendaTopicRepository = dataSource.getRepository(momAgendaTopic);
  * @param {Object} momBody
  * @returns {Promise<Mom>}
  */
-const createMom = async (momBody, Attendees,externalAttendees, Action, Agenda) => {
+const createMom = async (momBody, Attendees, Action, Agenda) => {
   const mom = momRepository.create(momBody);
   // Save the mom
   await momRepository.save(mom);
@@ -55,7 +55,6 @@ const createMom = async (momBody, Attendees,externalAttendees, Action, Agenda) =
         });
   
         const savedActionInstance = await momActionRepository.save(actionInstance);
-        console.log('Saved Action ID:', savedActionInstance.id);
         if (responsiblePerson.id) {
           const responsiblePersonInstance = momActionResponsibleRepository.create({
             userId: responsiblePerson.id,

@@ -63,16 +63,20 @@ const getTask = async (id) => {
 };
 
 const getTasksByMileston = async (milestoneId, filter, options) => {
-  const baseline = await baselineRepository.findOneBy(
-    {
+  const baseline = await baselineRepository.findOne({
+    where: {
       milestoneId: milestoneId,
       status: true
-    },
-  );
+    }
+  });
+  
 
   const { limit, page, sortBy } = options;
-  return await taskRepository.findBy({
-    baselineId: baseline.id,
+  return await taskRepository.find({
+    where:{
+      baselineId: baseline.id,
+    },
+    relations: ['resources'],
     sortOptions: sortBy && { option: sortBy },
     // paginationOptions: { limit: limit, page: page },
   });
@@ -117,7 +121,7 @@ const assignResource = async (taskId, userIds) => {
   if (!task) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
   }
-  console.log(userIds, 'testttttt');
+  
   const users = await services.userService.getUsersById(userIds);
   if (!users) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Users not found');
