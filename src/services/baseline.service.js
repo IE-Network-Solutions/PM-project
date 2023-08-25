@@ -66,7 +66,7 @@ const createBaseline = async (baselineBody, tasks) => {
           });
         });
 
-         await subTaskRepository.save(subTaskInstances);
+        await subTaskRepository.save(subTaskInstances);
       }
 
       return savedTaskInstance;
@@ -95,7 +95,7 @@ const getBaselines = async (filter, options) => {
   const { limit, page, sortBy } = options;
   return await baselineRepository.findAll({
     tableName: 'baselines',
-    sortOptions: sortBy&&{ option: sortBy },
+    sortOptions: sortBy && { option: sortBy },
     paginationOptions: { limit: limit, page: page },
   });
 };
@@ -106,14 +106,15 @@ const getBaselines = async (filter, options) => {
  * @returns {Promise<Baseline>}
  */
 const getBaseline = async (milestoneId) => {
-  return await baselineRepository.findOne({ 
-    where: {id: milestoneId},
+  return await baselineRepository.findOne({
+    where: { id: milestoneId },
     relations: ['tasks.subtasks',]
   });
 };
 
 const getByMilestone = async (milestoneId) => {
-  return await baselineRepository.findBy({ milestoneId: milestoneId,
+  return await baselineRepository.findBy({
+    milestoneId: milestoneId,
   });
 };
 

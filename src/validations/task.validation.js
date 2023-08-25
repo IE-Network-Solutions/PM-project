@@ -10,10 +10,11 @@ const createTask = {
     actualFinish: Joi.date(),
     plannedCost: Joi.number(),
     actualCost: Joi.number(),
-    status: Joi.string(),
+    status: Joi.boolean(),
     sleepingReason: Joi.string(),
     milestoneId: Joi.required(),
     completion: Joi.number(),
+    tasks: Joi.array()
   }),
 };
 

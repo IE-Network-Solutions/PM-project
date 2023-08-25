@@ -25,14 +25,14 @@ const projectContractValueRepository = dataSource.getRepository(ProjectContractV
 // };
 
 
-   // project.service.js
+// project.service.js
 const createProject = async (projectBody, projectMembers, projectContractValue) => {
   const project = projectRepository.create(projectBody);
 
   // Save the project instance
   await projectRepository.save(project);
 
-  if (projectMembers) { 
+  if (projectMembers) {
     const projectMemberInstances = projectMembers.map((member) => {
       return projectMemberRepository.create({
         projectId: project.id,
@@ -45,7 +45,7 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
     await projectMemberRepository.save(projectMemberInstances);
   }
 
-  if(projectContractValue){
+  if (projectContractValue) {
     const projectContractValueInstance = projectContractValue.map((contract_value) => {
       return projectContractValueRepository.create({
         projectId: project.id,
@@ -53,7 +53,7 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
         currency: contract_value.currency
       });
     });
-        // Save the project contract value instances
+    // Save the project contract value instances
     await projectContractValueRepository.save(projectContractValueInstance);
   }
 
@@ -83,7 +83,7 @@ const getProjects = async (filter, options) => {
 
   return await projectRepository.find({
     tableName: 'projects',
-    sortOptions: sortBy&&{ option: sortBy },
+    sortOptions: sortBy && { option: sortBy },
     paginationOptions: { limit: limit, page: page },
     relations: ['projectMembers', 'projectContractValues'],
   });
@@ -99,9 +99,10 @@ const getProjects = async (filter, options) => {
  */
 const getProject = async (id) => {
   return await projectRepository.findOne({
-      where: { id: id},
-      relations: ['projectMembers', 'projectContractValues'], },
-    );
+    where: { id: id },
+    relations: ['projectMembers', 'projectContractValues'],
+  },
+  );
 };
 
 
@@ -117,7 +118,7 @@ const updateProject = async (projectId, updateBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
   }
   await projectRepository.update({ id: projectId }, updateBody);
-  const updatedProject= await getProject(projectId);
+  const updatedProject = await getProject(projectId);
   publishToRabbit('project.update', updatedProject);
   return updatedProject;
 };
