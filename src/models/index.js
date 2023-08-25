@@ -1,6 +1,7 @@
 module.exports.Risk = require('./risk.model');
 module.exports.Issue = require('./issue.model');
 module.exports.AfterActionAnalysis = require('./AAA.model');
+module.exports.Action = require('./action.model');
 module.exports.RelatedIssue = require('./relatedIssues.model');
 module.exports.momAgenda = require("./momAgenda.model")
 module.exports.momAgendaTopic = require("./momAgendaTopics.model")
