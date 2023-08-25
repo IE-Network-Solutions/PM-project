@@ -17,8 +17,8 @@ router
     .delete(validate(riskValidation.deleteRisk), riskController.deleteRisk);
 
 router
-    .route('/riskByProject/:projectId')
-    .get(validate(riskValidation.getRiskByProjectId), riskController.getRiskByProjectId);
+    .route('/riskByProjectIdByDate/:projectId')
+    .get(validate(riskValidation.getRiskByProjectId), riskController.getAllRisksByProjectIdAndByDate);
 
 router
     .route('/moveRiskToIssue/:riskId')
@@ -30,13 +30,13 @@ router
     .get(validate(riskValidation.getAllCriticalRisks), riskController.getAllCriticalRisks);
 
 router
-    .route('/getAllRisksAndIssuesByProjectId/:projectId')
+    .route('/getAllRisksAndIssuesByProjectIdByDate/:projectId')
     .get(validate(riskValidation.getAllRiskAndIssuesByProjectId),
-        riskController.getAllRiskAndIssuesByProjectId);
+        riskController.getAllRiskAndIssuesByProjectIdByDate);
 
-router
-    .route('/getAllRisks/ByDate')
-    .get(validate(riskValidation.getRisksByDate), riskController.getRisksByDate);
+// router
+//     .route('/getAllRisks/ByDate')
+//     .get(validate(riskValidation.getRisksByDate), riskController.getRisksByDate);
 
 module.exports = router;
 

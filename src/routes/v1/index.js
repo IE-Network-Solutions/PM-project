@@ -12,7 +12,7 @@ const baselineRoute = require('./baseline.route');
 const taskRoute = require('./task.route');
 const subTaskRoute = require('./subtask.route');
 const momRoute = require('./mom.route');
-const usersRoute=require('./user.route');
+const usersRoute = require('./user.route');
 const leasonLearnedRoute = require('./lessonLearned.route');
 const individualLLRoute = require('./individualLL.route');
 const LLCommentRoute = require('./llComment.route');
@@ -21,7 +21,13 @@ const PaymentTermRoute = require('./paymentTerm.route');
 const budgetCategoryRoute = require('./budgetCategory.route');
 const budgetTypeRoute = require('./budgetType.route');
 const budgetTaskCategoryRoute = require('./budgetTaskCategory.route');
-const weeklyReportRoute = require('./weeklyReport.route')
+const budgetRoute = require('./budget.route');
+const approvalModuleRoute = require('./approvalModule.route');
+const approvalLevelRoute = require('./approvalLevel.route');
+const approvalStageRoute = require('./approvalStage.route');
+
+const departmentRoute = require('./department.route');
+const weeklyReportRoute = require('./weeklyReport.route');
 
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
@@ -59,8 +65,8 @@ const defaultRoutes = [
   {
     path: '/projects',
     route: projectRoute,
-  }
-  ,{
+  },
+  {
     path: '/payment-terms',
     route: PaymentTermRoute,
   },
@@ -72,7 +78,7 @@ const defaultRoutes = [
     path: '/baselines',
     route: baselineRoute,
   },
-  {  
+  {
     path: '/tasks',
     route: taskRoute,
   },
@@ -80,11 +86,11 @@ const defaultRoutes = [
     path: '/subtasks',
     route: subTaskRoute,
   },
-  {  
+  {
     path: '/mom',
     route: momRoute,
   },
-  {  
+  {
     path: '/users',
     route: usersRoute,
   },
@@ -113,9 +119,29 @@ const defaultRoutes = [
     route: budgetTypeRoute,
   },
   {
-    path: '/weekly-report',
+    path: '/budget',
+    route: budgetRoute,
+  },
+  {
+    path: '/approvalModule',
+    route: approvalModuleRoute,
+  },
+  {
+    path: '/approvalLevel',
+    route: approvalLevelRoute,
+  },
+  {
+    path: '/approvalStage',
+    route: approvalStageRoute,
+  },
+  {
+    path: '/departments',
+    route: departmentRoute,
+  },
+  {
+    path: '/weeklyReport',
     route: weeklyReportRoute,
-  }
+  },
 ];
 
 const devRoutes = [
