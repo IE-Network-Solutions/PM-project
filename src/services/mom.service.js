@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Mom, momAttendees,MomAction,momActionResponsible,momAgenda,momAgendaTopic } = require('../models');
+const { Mom, momAttendees,MomAction,momActionResponsible,momAgenda,momAgendaTopic,momComment } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -10,6 +10,7 @@ const momRepository = dataSource.getRepository(Mom).extend({
   findAll,
   sortBy,
 });
+const momCommentRepository = dataSource.getRepository(momComment);
 
 const momAttendeesRepository = dataSource.getRepository(momAttendees);
 const momActionRepository = dataSource.getRepository(MomAction);
@@ -23,7 +24,6 @@ const momAgendaTopicRepository = dataSource.getRepository(momAgendaTopic);
  * @returns {Promise<Mom>}
  */
 const createMom = async (momBody, Attendees,externalAttendees, Action, Agenda) => {
-  console.log(momBody);
   const mom = momRepository.create(momBody);
   // Save the mom
   await momRepository.save(mom);
@@ -55,7 +55,7 @@ const createMom = async (momBody, Attendees,externalAttendees, Action, Agenda) =
         });
   
         const savedActionInstance = await momActionRepository.save(actionInstance);
-  
+        console.log('Saved Action ID:', savedActionInstance.id);
         if (responsiblePerson.id) {
           const responsiblePersonInstance = momActionResponsibleRepository.create({
             userId: responsiblePerson.id,
@@ -138,7 +138,7 @@ const getMoms = async (filter, options) => {
 const getMom = async (momId) => {
   return await momRepository.findOne({
     where: { id: momId},
-    relations: ['facilitator', 'momAttendees', 'momAgenda.momTopics'],
+    relations: ['facilitator', 'momAttendees', 'momAgenda.momTopics','momAction'],
   },
   );
 };
@@ -176,6 +176,17 @@ const deleteMom = async (momId) => {
   return await momRepository.delete({ id: momId });
 };
 
+const addComment = async(momBody) =>{
+  const momComment = momCommentRepository.create({
+    momId: momBody.momId,
+    userId: momBody.userId,
+    comment: momBody.comment,
+    mentionedId: momBody.mentionedId,
+  });
+
+  return await momCommentRepository.save(momComment);
+}
+
 module.exports = {
   createMom,
   getMoms,
@@ -183,4 +194,5 @@ module.exports = {
   getByProject,
   updateMom,
   deleteMom,
+  addComment
 };

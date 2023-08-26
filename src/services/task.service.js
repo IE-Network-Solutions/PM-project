@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Task, TaskUser } = require('../models');
+const { Task, TaskUser, Baseline } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -12,6 +12,10 @@ const taskRepository = dataSource.getRepository(Task).extend({
 });
 
 const taskUserRepository = dataSource.getRepository(TaskUser).extend({
+  findAll,
+  sortBy,
+});
+const baselineRepository = dataSource.getRepository(Baseline).extend({
   findAll,
   sortBy,
 });
@@ -56,6 +60,22 @@ const getTasks = async (filter, options) => {
  */
 const getTask = async (id) => {
   return await taskRepository.findOneBy({ id: id });
+};
+
+const getTasksByMileston = async (milestoneId, filter, options) => {
+  const baseline = await baselineRepository.findOneBy(
+    {
+      milestoneId: milestoneId,
+      status: true
+    },
+  );
+
+  const { limit, page, sortBy } = options;
+  return await taskRepository.findBy({
+    baselineId: baseline.id,
+    sortOptions: sortBy && { option: sortBy },
+    // paginationOptions: { limit: limit, page: page },
+  });
 };
 
 /**
@@ -195,6 +215,7 @@ module.exports = {
   createTask,
   getTasks,
   getTask,
+  getTasksByMileston,
   updateTask,
   deleteTask,
   assignResource,

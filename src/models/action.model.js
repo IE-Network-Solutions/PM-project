@@ -5,9 +5,11 @@ const { Base } = require('./BaseModel')
 
 class Action extends Base {
     constructor() {
-        super(); 
-        this.responsiblePersonId = { type: 'varchar' };
-        // this.authorizedPersonId = { type: 'varchar' };
+        super();
+        this.responsiblePersonId = { type: 'varchar', nullable: true };
+        this.authorizedPersonId = { type: 'varchar', nullable: true };
+        this.responsiblePersonName = { type: 'varchar', nullable: true };
+        this.authorizedPersonName = { type: 'varchar', nullable: true };
         this.action = { type: 'varchar' };
         this.afterActionAnalysisId = { type: 'varchar', nullable: true }
     }

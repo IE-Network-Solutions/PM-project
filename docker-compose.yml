@@ -4,21 +4,33 @@ services:
   node-app:
     build: .
     image: node-app
+    env_file:
+      - .env
     environment:
-      - MONGODB_URL=mongodb://mongodb:27017/node-boilerplate
+      PG_USER_NAME: postgres
+      PG_PASSWORD: 1234567890
+      PG_HOST: postgresdb
+      PG_PORT: 5432
+      PG_DATABASE: postgres
     ports:
-      - '3000:3000'
+      - '9000:5000'
     depends_on:
-      - mongodb
+      - postgresdb
     volumes:
       - .:/usr/src/node-app
     networks:
       - node-network
 
-  mongodb:
-    image: mongo:4.2.1-bionic
+  postgresdb:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 1234567890
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      PG_HOST: localhost
     ports:
-      - '27017:27017'
+      - '5432:5432'
     volumes:
       - dbdata:/data/db
     networks:

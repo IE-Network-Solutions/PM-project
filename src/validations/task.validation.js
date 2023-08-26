@@ -10,10 +10,11 @@ const createTask = {
     actualFinish: Joi.date(),
     plannedCost: Joi.number(),
     actualCost: Joi.number(),
-    status: Joi.string(),
+    status: Joi.boolean(),
     sleepingReason: Joi.string(),
     milestoneId: Joi.required(),
     completion: Joi.number(),
+    tasks: Joi.array()
   }),
 };
 
@@ -23,6 +24,16 @@ const getTasks = {
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
   }),
+};
+const getTasksByMileston = {
+  query: Joi.object().keys({
+    sortBy: Joi.string(),
+    limit: Joi.number().integer(),
+    page: Joi.number().integer(),
+  }),
+  params: Joi.object().keys({
+    milestoneId: Joi.string().required(),
+  })
 };
 
 const getTask = {
@@ -92,8 +103,10 @@ module.exports = {
   getTask,
   updateTask,
   deleteTask,
+  getTasksByMileston,
   assignResource,
   removeResource,
   getByPlnedDate,
   assignAllResource,
+
 };
