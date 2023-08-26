@@ -25,9 +25,9 @@ const budgetRoute = require('./budget.route');
 const approvalModuleRoute = require('./approvalModule.route');
 const approvalLevelRoute = require('./approvalLevel.route');
 const approvalStageRoute = require('./approvalStage.route');
-
 const departmentRoute = require('./department.route');
 const weeklyReportRoute = require('./weeklyReport.route');
+const approval = require('./approval.route');
 
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
@@ -142,6 +142,10 @@ const defaultRoutes = [
     path: '/weeklyReport',
     route: weeklyReportRoute,
   },
+  {
+    path: '/approval',
+    route: approval,
+  },
 ];
 
 const devRoutes = [
@@ -153,7 +157,6 @@ const devRoutes = [
 ];
 
 defaultRoutes.forEach((route) => {
-  console.log(route);
   router.use(route.path, route.route);
 });
 

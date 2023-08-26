@@ -1,20 +1,20 @@
-
-const { EntitySchema } = require("typeorm");
+const { EntitySchema } = require('typeorm');
 
 const ProjectMember = new EntitySchema({
-  name: "ProjectMember",
+  name: 'ProjectMember',
   columns: {
     userId: {
-      type: "uuid",
+      type: 'uuid',
       primary: true,
     },
-     projectId: {
-      type: "uuid",
+    projectId: {
+      type: 'uuid',
       primary: true,
     },
-     roleId: {
-      type: "uuid",
-      nullable: true
+    roleId: {
+      type: 'uuid',
+      nullable: true,
+      // primary: true,
     },
   },
   relations: {

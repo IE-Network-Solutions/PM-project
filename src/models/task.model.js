@@ -7,8 +7,8 @@ class Task extends Base {
     super(); // Call the constructor of the Base entity to inherit its properties
     this.name = { type: 'varchar' };
     this.plannedStart = { type: 'date' };
-    this.plannedFinish = { type: 'date'};
-    this.actualStart = { type: 'date' , nullable: true};
+    this.plannedFinish = { type: 'date' };
+    this.actualStart = { type: 'date', nullable: true };
     this.actualFinish = { type: 'date', nullable: true };
     this.completion = { type: 'int', nullable: true };
     this.plannedCost = { type: 'int', nullable: true };
@@ -33,7 +33,12 @@ module.exports = new EntitySchema({
     subtasks: {
       type: 'one-to-many',
       target: 'SubTask',
-      inverseSide: 'task'
+      inverseSide: 'task',
+    },
+    budgets: {
+      type: 'one-to-many',
+      target: 'Budget',
+      inverseSide: 'task',
     },
     resources: {
       type: 'many-to-many',
