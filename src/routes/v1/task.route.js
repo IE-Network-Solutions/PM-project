@@ -16,6 +16,15 @@ router
   .patch(validate(taskValidation.updateTask), taskController.updateTask)
   .delete(validate(taskValidation.deleteTask), taskController.deleteTask);
 
+router.route('/assign-resource').post(validate(taskValidation.assignAllResource), taskController.assignAllResource);
+router.route('/remove-resource/:taskId').post(validate(taskValidation.removeResource), taskController.removeResource);
+router
+  .route('/by-planed-date/:projectId')
+  .get(validate(taskValidation.getByPlnedDate), taskController.getTasksByPlandStartDate);
+  router
+  .route('/milestone/:milestoneId')
+  .get(validate(taskValidation.getTasksByMileston), taskController.getTasksByMileston);
+
 router.route('/assign-resource/:taskId').post(validate(taskValidation.assignResource), taskController.assignResource);
 
 module.exports = router;

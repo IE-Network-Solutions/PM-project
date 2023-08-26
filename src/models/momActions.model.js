@@ -6,7 +6,7 @@ class momAction extends Base {
   constructor() {
     super(); 
     this.action = { type: 'varchar', nullable: true };
-    this.responsiblePersonId = { type: 'uuid', nullable: true };
+    // this.responsiblePersonId = { type: 'uuid', nullable: true };
     this.deadline = { type: 'varchar', nullable: true};
     this.momId = { type: 'uuid',nullable: true};
   }
@@ -22,11 +22,6 @@ module.exports = new EntitySchema({
         type: "many-to-one", 
         target: "minute_of_meetings",
         inverseSide: "mom_actions",
-      },   
-    responsiblePerson: {
-        type: "many-to-one", 
-        target: "User",
-        inverseSide: "momActionesponsiblePerson",
-      },   
+      },      
   },
 });

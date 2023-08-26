@@ -58,5 +58,15 @@ module.exports = new EntitySchema({
         target: "MomAgenda", 
         inverseSide: "mom", 
       }, 
+      momAction:{
+        type: "one-to-many",
+        target: "momAction",
+        inverseSide: "mom"
+      },
+      momComment: {
+        type: "one-to-many", 
+        target: "MomComment", 
+        inverseSide: "mom", 
+      },   
   },
 });

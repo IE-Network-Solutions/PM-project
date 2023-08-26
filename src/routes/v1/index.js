@@ -21,8 +21,13 @@ const PaymentTermRoute = require('./paymentTerm.route');
 const budgetCategoryRoute = require('./budgetCategory.route');
 const budgetTypeRoute = require('./budgetType.route');
 const budgetTaskCategoryRoute = require('./budgetTaskCategory.route');
+const budgetRoute = require('./budget.route');
+const approvalModuleRoute = require('./approvalModule.route');
+const approvalLevelRoute = require('./approvalLevel.route');
+const approvalStageRoute = require('./approvalStage.route');
 
-const departmentRoute = require('./department.route')
+const departmentRoute = require('./department.route');
+
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
@@ -59,8 +64,8 @@ const defaultRoutes = [
   {
     path: '/projects',
     route: projectRoute,
-  }
-  , {
+  },
+  {
     path: '/payment-terms',
     route: PaymentTermRoute,
   },
@@ -113,8 +118,24 @@ const defaultRoutes = [
     route: budgetTypeRoute,
   },
   {
+    path: '/budget',
+    route: budgetRoute,
+  },
+  {
+    path: '/approvalModule',
+    route: approvalModuleRoute,
+  },
+  {
+    path: '/approvalLevel',
+    route: approvalLevelRoute,
+  },
+  {
+    path: '/approvalStage',
+    route: approvalStageRoute,
+  },
+  {
     path: '/departments',
-    route: departmentRoute
+    route: departmentRoute,
   },
 ];
 
