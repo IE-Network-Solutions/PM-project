@@ -19,19 +19,23 @@ const AAARepository = dataSource.getRepository(AfterActionAnalysis).extend({ fin
 const createAAA = async (AAABody) => {
 
     let requestActions = AAABody.actions;
+    delete AAABody.actions;
     let relatedIssues = AAABody.issueRelatesId;
     const createdAAA = AAARepository.create(AAABody)
     const resultAAA = await AAARepository.save(createdAAA);
 
-    requestActions.forEach(async (action) => {
-        action.afterActionAnalysis = createdAAA;
+    for (let action of requestActions) {
+        action.afterActionAnalysis = resultAAA;
         await createAction(action);
-    });
-    console.log(requestActions)
-    relatedIssues.forEach(async (ids) => {
+    }
+
+    for (const ids of relatedIssues) {
         await updateRelatedIssueById(ids, { afterActionAnalysisId: resultAAA.id });
-    })
-    return getAAAById(resultAAA.id);
+    }
+
+
+
+    return await getAAAById(resultAAA.id);
 };
 
 /**
@@ -48,7 +52,7 @@ const queryAAAs = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
     return await AAARepository.find({
-        relations: ['actions.responsiblePerson', 'issueRelates', 'project'],
+        relations: ['actions.responsiblePerson', 'actions.authorizedPerson', 'issueRelates', 'project'],
         tableName: 'afterActionAnalysis',
         sortOptions: sortBy && { option: sortBy },
         paginationOptions: { limit: limit, page: page }
@@ -61,11 +65,11 @@ const queryAAAs = async (filter, options) => {
  * @returns {Promise<AAA>}
  */
 const getAAAById = async (id) => {
-    return await AAARepository.find({
+    return await AAARepository.findOne({
         where: {
             id: id,
         },
-        relations: ['actions.responsiblePerson', 'actions.authorizedPerson', 'issueRelates', 'project'],
+        relations: ['actions.responsiblePerson', 'actions.authorizedPerson', "actions", 'issueRelates', 'project'],
         tableName: 'afterActionAnalysis'
     });
 };
