@@ -48,8 +48,8 @@ const getAllAAAByProjectId = catchAsync(async (req, res) => {
     if (!result) {
         throw new ApiError(httpStatus.NO_CONTENT, "Project id Not Found")
     }
-    console.log(result)
-    console.log(req.params.projectId)
+    // console.log(result)
+    // console.log(req.params.projectId)
     res.send(result)
 });
 

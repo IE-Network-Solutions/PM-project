@@ -6,11 +6,9 @@ const { Base } = require('./BaseModel')
 class Action extends Base {
     constructor() {
         super();
+        this.action = { type: 'varchar' };
         this.responsiblePersonId = { type: 'varchar', nullable: true };
         this.authorizedPersonId = { type: 'varchar', nullable: true };
-        this.responsiblePersonName = { type: 'varchar', nullable: true };
-        this.authorizedPersonName = { type: 'varchar', nullable: true };
-        this.action = { type: 'varchar' };
         this.afterActionAnalysisId = { type: 'varchar', nullable: true }
     }
 }
@@ -23,6 +21,18 @@ module.exports = new EntitySchema({
         afterActionAnalysis: {
             type: 'many-to-one',
             target: 'AfterActionAnalysis',
+            onDelete: "SET NULL",
+            onUpdate: 'CASCADE'
+        },
+        responsiblePerson: {
+            type: 'many-to-one',
+            target: 'User',
+            onDelete: "CASCADE",
+            onUpdate: 'CASCADE'
+        },
+        authorizedPerson: {
+            type: 'many-to-one',
+            target: 'User',
             onDelete: "CASCADE",
             onUpdate: 'CASCADE'
         },

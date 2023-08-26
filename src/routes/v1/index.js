@@ -23,8 +23,6 @@ const budgetTypeRoute = require('./budgetType.route');
 const budgetTaskCategoryRoute = require('./budgetTaskCategory.route');
 
 const departmentRoute = require('./department.route')
-const weeklyReportRoute = require('./weeklyReport.route');
-
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
@@ -118,10 +116,6 @@ const defaultRoutes = [
     path: '/departments',
     route: departmentRoute
   },
-  {
-    path: '/weeklyReport',
-    route: weeklyReportRoute
-  }
 ];
 
 const devRoutes = [

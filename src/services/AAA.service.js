@@ -20,7 +20,6 @@ const createAAA = async (AAABody) => {
 
     let requestActions = AAABody.actions;
     let relatedIssues = AAABody.issueRelatesId;
-
     const createdAAA = AAARepository.create(AAABody)
     const resultAAA = await AAARepository.save(createdAAA);
 
@@ -28,10 +27,10 @@ const createAAA = async (AAABody) => {
         action.afterActionAnalysis = createdAAA;
         await createAction(action);
     });
+    console.log(requestActions)
     relatedIssues.forEach(async (ids) => {
         await updateRelatedIssueById(ids, { afterActionAnalysisId: resultAAA.id });
     })
-    console.log(await getAAAById(resultAAA.id));
     return getAAAById(resultAAA.id);
 };
 
@@ -49,7 +48,7 @@ const queryAAAs = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
     return await AAARepository.find({
-        relations: ['actions', 'issueRelates', 'project'],
+        relations: ['actions.responsiblePerson', 'issueRelates', 'project'],
         tableName: 'afterActionAnalysis',
         sortOptions: sortBy && { option: sortBy },
         paginationOptions: { limit: limit, page: page }
@@ -66,7 +65,7 @@ const getAAAById = async (id) => {
         where: {
             id: id,
         },
-        relations: ['actions', 'issueRelates', 'project'],
+        relations: ['actions.responsiblePerson', 'actions.authorizedPerson', 'issueRelates', 'project'],
         tableName: 'afterActionAnalysis'
     });
 };

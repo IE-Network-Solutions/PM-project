@@ -16,7 +16,6 @@ const actionRepository = dataSource.getRepository(Action).extend({ findAll, sort
  * @returns {Promise<Action>}
  */
 const createAction = async (actionBody = []) => {
-
     const action = actionRepository.create(actionBody);
     return await actionRepository.save(action);
 };
