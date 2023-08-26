@@ -28,13 +28,9 @@ const createAAA = async (AAABody) => {
         action.afterActionAnalysis = resultAAA;
         await createAction(action);
     }
-
     for (const ids of relatedIssues) {
         await updateRelatedIssueById(ids, { afterActionAnalysisId: resultAAA.id });
     }
-
-
-
     return await getAAAById(resultAAA.id);
 };
 
