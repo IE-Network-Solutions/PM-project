@@ -2,12 +2,14 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { riskService, issueService } = require('../services');
+const { riskService, issueService, projectService} = require('../services');
 const { residualMapRiskRate } = require('../utils/riskMatrix');
 const { mapRiskRate } = require('././../utils/riskMatrix');
 
 const createRisk = catchAsync(async (req, res) => {
     const { impact, probability, residualImpact, residualProbability } = req.body;
+
+    console.log(req.body)
 
     // const riskRate = riskImpactkMatrixRules.find(rules => rules.impact === impact && rules.probability === probability);
     // req.body.riskRate = riskRate.rating;
@@ -41,9 +43,24 @@ const getRisksByDate = catchAsync(async (req, res) => {
     res.send(dates);
 });
 
+const getAllRisksByProjectId = catchAsync(async (req, res) => {
+    const { startDate, endDate } = req.query
+    const projectId = req.params.projectId;
+    const project=projectService.getProject(projectId)
+    if (!project) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
+    }
+    const result = await riskService.getAllRisksByProjectId(projectId, ["Open", "Closed"]);
+
+    res.send(result);
+});
+
+
 const getAllRisksByProjectIdAndByDate = catchAsync(async (req, res) => {
     const { startDate, endDate } = req.query
     const projectId = req.params.projectId;
+    
+
     const result = await riskService.getAllRisksByProjectIdAndByDate(projectId, ["Open", "Closed"], startDate, endDate);
     console.log("result", result)
     if (!result) {
@@ -114,6 +131,7 @@ module.exports = {
     deleteRisk,
     moveRiskToIssue,
     getAllCriticalRisks,
-    getAllRiskAndIssuesByProjectIdByDate
+    getAllRiskAndIssuesByProjectIdByDate,
+    getAllRisksByProjectId
 
 };
