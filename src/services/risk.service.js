@@ -66,6 +66,17 @@ const getRisksByDate = async (startDate, endDate) => {
  * @returns {Promise<Risk>}
  */
 
+const getAllRisksByProjectId= async (id, status) => {
+    return await riskRepository.find(
+        {
+            where: {
+                projectId: id,
+                status: status[0],
+            },
+            relations: ['project']
+        });
+};
+
 const getAllRisksByProjectIdAndByDate = async (id, status, startDate, endDate) => {
     return await riskRepository.find(
         {
@@ -154,5 +165,6 @@ module.exports = {
     deleteRiskById,
     updateRiskStatus,
     getAllCriticalRisks,
-    getAllRiskAndIssuesByProjectIdByDate
+    getAllRiskAndIssuesByProjectIdByDate,
+    getAllRisksByProjectId
 };
