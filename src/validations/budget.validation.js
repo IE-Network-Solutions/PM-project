@@ -31,6 +31,11 @@ const getBudget = {
     budgetId: Joi.string(),
   }),
 };
+const getBudgetByProject = {
+  params: Joi.object().keys({
+    projectId: Joi.string(),
+  }),
+};
 
 const updateBudget = {
   params: Joi.object().keys({
@@ -52,4 +57,4 @@ const deleteBudget = {
   }),
 };
 
-module.exports = { createBudget, getBudgets, getBudget, updateBudget };
+module.exports = { createBudget, getBudgets, getBudget, updateBudget, getBudgetByProject };

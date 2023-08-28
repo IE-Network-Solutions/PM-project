@@ -33,7 +33,12 @@ module.exports = new EntitySchema({
     subtasks: {
       type: 'one-to-many',
       target: 'SubTask',
-      inverseSide: 'task'
+      inverseSide: 'task',
+    },
+    budgets: {
+      type: 'one-to-many',
+      target: 'Budget',
+      inverseSide: 'task',
     },
     resources: {
       type: 'many-to-many',

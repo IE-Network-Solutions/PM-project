@@ -37,3 +37,4 @@ module.exports.ApprovalModule = require('./approvalModule.model');
 module.exports.ApprovalLevel = require('./approvalLevels.model');
 module.exports.ApprovalStage = require('./approvalStage.model');
 module.exports.Role = require('./roles.model');
+module.exports.User = require('./user.model');

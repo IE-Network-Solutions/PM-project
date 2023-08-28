@@ -1,13 +1,12 @@
 const { EntitySchema } = require('typeorm');
-const {Base} = require('./BaseModel')
-
+const { Base } = require('./BaseModel');
 
 class Baseline extends Base {
   constructor() {
-    super(); 
+    super();
     this.name = { type: 'varchar' };
-    this.status = { type: 'boolean' };
-    this.milestoneId = { type: 'uuid', nullable: true};
+    this.status = { type: 'boolean', nullable: true };
+    this.milestoneId = { type: 'uuid', nullable: true };
   }
 }
 
@@ -17,15 +16,15 @@ module.exports = new EntitySchema({
   columns: new Baseline(),
   relations: {
     milestone: {
-        type: "many-to-one", 
-        target: "milestones",
-        inverseSide: "baselines",
-      },  
-      
-      tasks: {
-        type: "one-to-many", 
-        target: "Task", 
-        inverseSide: "baseline", 
-      },
+      type: 'many-to-one',
+      target: 'milestones',
+      inverseSide: 'baselines',
+    },
+
+    tasks: {
+      type: 'one-to-many',
+      target: 'Task',
+      inverseSide: 'baseline',
+    },
   },
 });

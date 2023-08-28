@@ -22,11 +22,11 @@ module.exports = new EntitySchema({
       target: 'BudgetComment',
     },
     approvalStage: {
-      type: 'many-to-many',
+      type: 'many-to-one',
       target: 'ApprovalStage',
     },
     project: {
-      type: 'many-to-many',
+      type: 'many-to-one',
       target: 'Project',
     },
   },

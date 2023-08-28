@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { ApprovalLevel, ApprovalModule, ApprovalStage } = require('../models');
+const { ApprovalLevel, ApprovalModule, ApprovalStage, BudgetGroup, ProjectMembers, User } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -14,7 +14,15 @@ const approvalModuleRepository = dataSource.getRepository(ApprovalModule).extend
   findAll,
   sortBy,
 });
-const approvalGroupRepository = dataSource.getRepository(ApprovalStage).extend({
+const approvalGroupRepository = dataSource.getRepository(BudgetGroup).extend({
+  findAll,
+  sortBy,
+});
+const approvalProjectMemebrsRepository = dataSource.getRepository(ProjectMembers).extend({
+  findAll,
+  sortBy,
+});
+const userRepository = dataSource.getRepository(User).extend({
   findAll,
   sortBy,
 });
@@ -25,25 +33,38 @@ const approvalGroupRepository = dataSource.getRepository(ApprovalStage).extend({
  * @returns {Promise<>}
  */
 const sendForApproval = async (approvalModuleName, moduleId) => {
+  let approvalModuleNamee = approvalModuleName;
+  let moduleIdd = moduleId;
   const approvalModule = await approvalModuleRepository.findOneBy({ moduleName: approvalModuleName });
   let updatedModule = null;
   if (!approvalModule) {
     throw new ApiError(httpStatus.NOT_FOUND, 'approval module does not exist');
   }
-
-  const approvalStage = await approvalStageRepository.findOneBy({ approvalModule: approvalModule, level: 1 });
+  console.log(approvalModule.id, 'tersttttttttt');
+  let level = 1;
+  let moduleName = approvalModule.moduleName;
+  const approvalStage = await approvalStageRepository
+    .createQueryBuilder('approval_stage')
+    .leftJoin('approval_stage.approvalModule', 'approvalModule')
+    .leftJoin('approval_stage.role', 'role')
+    .where('approvalModule.moduleName = :moduleName', { moduleName })
+    .andWhere('approval_stage.level = :level', { level })
+    .getOne();
   if (!approvalStage) {
     throw new ApiError(httpStatus.NOT_FOUND, 'approval Stage does not exist');
   }
-
-  if (approvalModuleName == 'ProjectBudget') {
-    const module = await approvalGroupRepository.findOneBy({ id: moduleId });
+  // console.log(approvalModule.moduleName, 'cccccccccccccc');
+  if (approvalModule.moduleName == 'ProjectBudget') {
+    const module = await approvalGroupRepository.findOne({ where: { id: moduleId } });
+    console.log(module, 'mmmmmmmmm');
     if (!module) {
       throw new ApiError(httpStatus.NOT_FOUND, 'approval module(group) does not exist');
     }
     updatedModule = await approvalGroupRepository.update({ id: moduleId }, { approvalStage: approvalStage });
+    console.log(updatedModule);
   }
-  let currentApprover = getCurrentApprover(approvalModuleName, moduleId);
+  let currentApprover = await getCurrentApprover(approvalModuleNamee, moduleIdd);
+  console.log(currentApprover);
   return currentApprover;
 };
 
@@ -58,8 +79,65 @@ const sendForApproval = async (approvalModuleName, moduleId) => {
  */
 
 const getCurrentApprover = async (moduleName, moduleId) => {
-  const approvalModule = await approvalModuleRepository.findOneBy({ moduleName: approvalModuleName });
+  console.log('tttttttttt');
+  const approvalModule = await approvalModuleRepository.findOneBy({ moduleName: moduleName });
   let currentApprover = {};
+  if (!approvalModule) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'approval module does not exist');
+  }
+  if (approvalModule.moduleName == 'ProjectBudget') {
+    const module = await approvalGroupRepository
+      .createQueryBuilder('budget_group')
+      .leftJoin('budget_group.approvalStage', 'approvalStage')
+      .leftJoin('approvalStage.role', 'role')
+      .leftJoin('budget_group.project', 'project')
+      .leftJoin('project.projectMembers', 'projectMembers')
+      .select(['budget_group', 'approvalStage', 'project', 'projectMembers', 'role'])
+      .where('budget_group.id = :moduleId', { moduleId })
+      .getOne();
+
+    if (!module) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'approval module(group) does not exist');
+    }
+    console.log(module.approvalStage.role.isProjectRole, 'oooooooooooooooo');
+    if (module.approvalStage.role.isProjectRole) {
+      let project = await module.project;
+      let projectId = project.id;
+      let ProjectMemebrsRoleData = await approvalProjectMemebrsRepository
+        .createQueryBuilder('project_member')
+        .leftJoin('project_member.project', 'project')
+        .leftJoin('project_member.user', 'user')
+        .leftJoin('project_member.role', 'role')
+        .select(['project_member', 'project', 'user', 'role'])
+        .where('project.id = :projectId', { projectId })
+        .getOne();
+      currentApprover = ProjectMemebrsRoleData.filter((item) => item.roleId === module.approvalStage.role.id);
+      console.log(module.approvalStage.role.id, 'roleeeeeeeee');
+      currentApprover = ProjectMemebrsRoleData;
+    } else {
+      // currentApprover = ProjectMemebrsRoleData.filter((item) => item.roleId === module.approvalStage.role.id);
+      console.log(module.approvalStage.role.id);
+      currentApprover = userRepository.findOne({ where: { roleId: module.approvalStage.role.id } });
+      // console.log(module.approvalStage.role.id, 'roleeeeeeeee');
+      // currentApprover = ProjectMemebrsRoleData;
+    }
+  }
+  return currentApprover;
+};
+
+/**
+ * Query for approval level
+ * @param {Object} filter - Filter options
+ * @param {Object} options - Query options
+ * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
+ * @param {number} [options.limit] - Maximum number of results per page (default = 10)
+ * @param {number} [options.page] - Current page (default = 1)
+ * @returns {Promise<QueryResult>}
+ */
+
+const approve = async (moduleName, moduleId) => {
+  const approvalModule = await approvalModuleRepository.findOneBy({ moduleName: moduleName });
+  let updatedModule;
   if (!approvalModule) {
     throw new ApiError(httpStatus.NOT_FOUND, 'approval module does not exist');
   }
@@ -68,9 +146,23 @@ const getCurrentApprover = async (moduleName, moduleId) => {
     if (!module) {
       throw new ApiError(httpStatus.NOT_FOUND, 'approval module(group) does not exist');
     }
-    currentApprover = module.project.projectMembers;
+    if (approvalModule.max_level == module.level) {
+      // approve
+      updatedModule = await approvalGroupRepository.update({ id: moduleId }, { approved: true });
+    } else {
+      level = module.level + 1;
+      const approvalStage = await approvalStageRepository
+        .createQueryBuilder('approval_stage')
+        .leftJoin('approval_stage.approvalModule', 'approvalModule')
+        .leftJoin('approval_stage.role', 'role')
+        .where('approvalModule.moduleName = :moduleName', { moduleName })
+        .andWhere('approval_stage.level = :level', { level })
+        .getOne();
+      updatedModule = await approvalGroupRepository.update({ id: moduleId }, { approvalStage: approvalStage });
+      // ++approval
+    }
   }
-  return currentApprover;
+  return updatedModule;
 };
 
 /**
@@ -84,4 +176,5 @@ const getApprovalModule = async (id) => {
 
 module.exports = {
   sendForApproval,
+  getCurrentApprover,
 };

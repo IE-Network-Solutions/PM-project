@@ -25,8 +25,8 @@ const budgetRoute = require('./budget.route');
 const approvalModuleRoute = require('./approvalModule.route');
 const approvalLevelRoute = require('./approvalLevel.route');
 const approvalStageRoute = require('./approvalStage.route');
-
-const departmentRoute = require('./department.route')
+const departmentRoute = require('./department.route');
+const approval = require('./approval.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
@@ -139,6 +139,10 @@ const defaultRoutes = [
   {
     path: '/weekly-report',
     route: weeklyReportRoute,
+  },
+  {
+    path: '/approval',
+    route: approval,
   },
 ];
 

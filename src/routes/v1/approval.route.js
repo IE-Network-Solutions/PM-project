@@ -7,5 +7,6 @@ const { route } = require('./risk.route');
 const router = express.Router();
 
 router.route('/').post(approvalController.sendForApproval);
+router.route('/getCurrentApprover').get(approvalController.getCurrentApprover);
 
 module.exports = router;
