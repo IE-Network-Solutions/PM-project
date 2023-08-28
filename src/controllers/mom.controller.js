@@ -7,13 +7,13 @@ const { momComment } = require('../models');
 
 const createMom = catchAsync(async (req, res) => {
   const Attendees = req.body.attendees;
-  const externalAttendees =  req.body.otherAttendees;
+  // const externalAttendees =  req.body.otherAttendees;
   const Agenda = req.body.agenda;
   const Action = req.body.action;
   delete req.body.attendees;
   delete req.body.action; 
   delete req.body.agenda; 
-  const mom = await momService.createMom(req.body, Attendees,externalAttendees, Action, Agenda);
+  const mom = await momService.createMom(req.body, Attendees, Action, Agenda);
   res.status(httpStatus.CREATED).json(mom);
 });
 
@@ -55,6 +55,10 @@ const addComment = catchAsync(async(req, res)=>{
   res.status(httpStatus.CREATED).send(momComment);
 });
 
+const getComments = catchAsync(async (req, res)=>{
+    const momComment = await momService.getComments(req.params.momId);
+    res.send(momComment);
+});
 
 module.exports = {
   createMom,
@@ -63,5 +67,6 @@ module.exports = {
   getByProject,
   updateMom,
   deleteMom,
-  addComment
+  addComment,
+  getComments
 };

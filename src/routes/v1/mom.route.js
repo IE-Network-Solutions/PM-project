@@ -24,4 +24,8 @@ router
   .route('/comment')
   .post(validate(momValidation.addComment), momController.addComment);
 
+  router
+  .route('/comment/:momId')
+  .get(validate(momValidation.getComments), momController.getComments);
+
 module.exports = router;

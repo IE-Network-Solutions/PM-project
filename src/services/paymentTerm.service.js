@@ -92,18 +92,18 @@ const updatePaymentTerm = async (paymentTermId, updateBody, requestedMilestone) 
     throw new ApiError(httpStatus.NOT_FOUND, 'Payment term not found');
   }
 
+  const paymentTermMilestone = await miletoneRepository.findBy({paymentTermId: paymentTermId});
+    if (paymentTermMilestone) {
+      const milestoneToRemove = paymentTermMilestone.map((eachMilestone) => {
+        return {
+          id: eachMilestone.id,
+          paymentTermId: null,
+        };
+      });
+      const updatedPaymentTermMilestone = await miletoneRepository.save(milestoneToRemove);
+    }
 
-  const paymentTermMilestone = await paymentTermRepository.findBy({paymentTermId: paymentTermId});
-  return paymentTermMilestone; 
-
-  const updateMilestone = await paymentTermRepository.update({ id: paymentTermId }, updateBody);
-
-
-
-
-  const updatedPaymentTerm = await paymentTermRepository.update({ id: paymentTermId }, updateBody);
-
-    if (requestedMilestone && updatedPaymentTerm) {
+    if (requestedMilestone) {
       const milestonetoUpdate = requestedMilestone.map((eachMilestone) => {
         return {
           id: eachMilestone.id,

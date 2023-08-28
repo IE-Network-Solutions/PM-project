@@ -136,6 +136,10 @@ const defaultRoutes = [
     path: '/departments',
     route: departmentRoute,
   },
+  {
+    path: '/weekly-report',
+    route: weeklyReportRoute,
+  },
 ];
 
 const devRoutes = [

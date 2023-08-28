@@ -63,6 +63,12 @@ const addComment = {
     }),
   };
 
+  const getComments = {
+    params: Joi.object().keys({
+        momId: Joi.string().required(),
+    }),
+  };
+
 module.exports = {
   createMom,
   getMoms,
@@ -70,5 +76,6 @@ module.exports = {
   getByProject,
   updateMom,
   deleteMom,
-  addComment
+  addComment,
+  getComments
 };

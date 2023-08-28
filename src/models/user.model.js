@@ -22,6 +22,11 @@ module.exports = new EntitySchema({
   tableName: 'users',
   columns: new User(),
   relations: {
+    role:{
+      type: 'one-to-many',
+      target: 'Role',
+      inverseSide: 'user'
+    },
     tasks: {
       type: 'many-to-many',
       target: 'Task',
