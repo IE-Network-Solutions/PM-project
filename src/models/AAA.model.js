@@ -38,5 +38,19 @@ module.exports = new EntitySchema({
             onDelete: "CASCADE",
             onUpdate: 'CASCADE'
         },
+        department: {
+            type: "many-to-many",
+            target: "Department",
+            joinTable: {
+                name: "AAA_Department",
+                joinColumn: { name: "afterActionAnalysisId", referencedColumnName: "id" },
+                inverseJoinColumn: {
+                    name: "departmentId",
+                    referencedColumnName: "id",
+                },
+            },
+            onDelete: "SET NULL",
+            onUpdate: "CASCADE",
+        },
     },
 });

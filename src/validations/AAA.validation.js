@@ -11,8 +11,8 @@ const createAAA = {
         remarks: Joi.string().required(),
         projectId: Joi.string().required(),
         actions: Joi.array().required(),
-        issueRelatesId: Joi.array().items(Joi.string().custom(objectId))  // Assuming objectId is your custom validation function
-            .required(),
+        departments: Joi.array().required(),
+        issueRelatesId: Joi.array().items(Joi.string().custom(objectId)).required(),
     }),
 };
 

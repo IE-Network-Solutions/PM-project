@@ -34,9 +34,9 @@ router
     .get(validate(riskValidation.getAllRiskAndIssuesByProjectId),
         riskController.getAllRiskAndIssuesByProjectIdByDate);
 
-// router
-//     .route('/getAllRisks/ByDate')
-//     .get(validate(riskValidation.getRisksByDate), riskController.getRisksByDate);
+router
+    .route('/getAll/CriticalRisks/groupByProject')
+    .get(riskController.groupCriticalRiskByProject);
 
 module.exports = router;
 

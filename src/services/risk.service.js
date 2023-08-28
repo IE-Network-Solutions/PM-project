@@ -91,6 +91,34 @@ const getRiskById = async (id) => {
         });
 };
 
+const groupCriticalRiskByProject = async (filter, options) => {
+    const groupedResults = await riskRepository
+        .createQueryBuilder('cr')
+        .leftJoinAndSelect('cr.project', 'project')
+        .andWhere('cr.status = :status', { status: 'Critical' })
+        .select([
+            'cr.projectId AS projectId',
+            'project.createdAt AS createdAt',
+            'project.updatedAt AS updatedAt',
+            'project.createdBy AS createdBy',
+            'project.updatedBy AS updatedBy',
+            'project.name AS name',
+            'project.clientId AS clientId',
+            'project.milestone AS _milestone',
+            'project.budget AS budget',
+            'project.contract_sign_date AS contract_sign_date',
+            'project.planned_end_date AS planned_end_date',
+            'project.lc_opening_date AS lc_opening_date',
+            'project.advanced_payment_date AS advanced_payment_date',
+            'project.status AS status',
+            'json_agg(cr.*) AS LessonLearned',
+        ])
+        .groupBy('cr.projectId, project.id, project.name')
+        .getRawMany();
+
+    return groupedResults;
+};
+
 const getAllCriticalRisks = async (status) => {
     return await riskRepository.find(
         {
@@ -154,5 +182,6 @@ module.exports = {
     deleteRiskById,
     updateRiskStatus,
     getAllCriticalRisks,
-    getAllRiskAndIssuesByProjectIdByDate
+    getAllRiskAndIssuesByProjectIdByDate,
+    groupCriticalRiskByProject
 };

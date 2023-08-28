@@ -60,6 +60,17 @@ const getRisk = catchAsync(async (req, res) => {
     res.send(risk);
 });
 
+const groupCriticalRiskByProject = catchAsync(async (req, res) => {
+    const criticalRisks = await riskService.groupCriticalRiskByProject();
+    if (!criticalRisks) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Risk not found');
+    }
+    res.status(200).json({
+        status: "Success",
+        data: criticalRisks
+    });
+});
+
 const getAllCriticalRisks = catchAsync(async (req, res) => {
     const result = await riskService.getAllCriticalRisks();
     console.log("result", result)
@@ -114,6 +125,7 @@ module.exports = {
     deleteRisk,
     moveRiskToIssue,
     getAllCriticalRisks,
-    getAllRiskAndIssuesByProjectIdByDate
+    getAllRiskAndIssuesByProjectIdByDate,
+    groupCriticalRiskByProject
 
 };
