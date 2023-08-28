@@ -8,6 +8,10 @@ const sendForApproval = catchAsync(async (req, res) => {
   const approval = await approvalService.sendForApproval(req.body.approvalModule, req.body.moduleId);
   res.status(httpStatus.CREATED).json(approval);
 });
+const getCurrentApprover = catchAsync(async (req, res) => {
+  const currentApprover = await approvalService.getCurrentApprover(req.query.approvalModule, req.query.moduleId);
+  res.send(currentApprover);
+});
 
 // const getApprovalLevels = catchAsync(async (req, res) => {
 //   const approvalModules = await approvalLevelService.getApprovalLevels();
@@ -16,5 +20,6 @@ const sendForApproval = catchAsync(async (req, res) => {
 
 module.exports = {
   sendForApproval,
+  getCurrentApprover,
   //   getApprovalLevels,
 };

@@ -22,7 +22,7 @@ const approvalProjectMemebrsRepository = dataSource.getRepository(ProjectMembers
   findAll,
   sortBy,
 });
-const approvalUserRepository = dataSource.getRepository(User).extend({
+const userRepository = dataSource.getRepository(User).extend({
   findAll,
   sortBy,
 });
@@ -41,7 +41,15 @@ const sendForApproval = async (approvalModuleName, moduleId) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'approval module does not exist');
   }
   console.log(approvalModule.id, 'tersttttttttt');
-  const approvalStage = await approvalStageRepository.findOne({ where: { level: 1 } });
+  let level = 1;
+  let moduleName = approvalModule.moduleName;
+  const approvalStage = await approvalStageRepository
+    .createQueryBuilder('approval_stage')
+    .leftJoin('approval_stage.approvalModule', 'approvalModule')
+    .leftJoin('approval_stage.role', 'role')
+    .where('approvalModule.moduleName = :moduleName', { moduleName })
+    .andWhere('approval_stage.level = :level', { level })
+    .getOne();
   if (!approvalStage) {
     throw new ApiError(httpStatus.NOT_FOUND, 'approval Stage does not exist');
   }
@@ -102,24 +110,16 @@ const getCurrentApprover = async (moduleName, moduleId) => {
         .leftJoin('project_member.role', 'role')
         .select(['project_member', 'project', 'user', 'role'])
         .where('project.id = :projectId', { projectId })
-        .getMany();
+        .getOne();
       currentApprover = ProjectMemebrsRoleData.filter((item) => item.roleId === module.approvalStage.role.id);
       console.log(module.approvalStage.role.id, 'roleeeeeeeee');
       currentApprover = ProjectMemebrsRoleData;
     } else {
-      let project = await module.project;
-      let projectId = project.id;
-      let ProjectMemebrsRoleData = await approvalProjectMemebrsRepository
-        .createQueryBuilder('project_member')
-        .leftJoin('project_member.project', 'project')
-        .leftJoin('project_member.user', 'user')
-        .leftJoin('project_member.role', 'role')
-        .select(['project_member', 'project', 'user', 'role'])
-        .where('project.id = :projectId', { projectId })
-        .getMany();
-      currentApprover = ProjectMemebrsRoleData.filter((item) => item.roleId === module.approvalStage.role.id);
+      // currentApprover = ProjectMemebrsRoleData.filter((item) => item.roleId === module.approvalStage.role.id);
+      console.log(module.approvalStage.role.id);
+      currentApprover = userRepository.findOne({ where: { roleId: module.approvalStage.role.id } });
       // console.log(module.approvalStage.role.id, 'roleeeeeeeee');
-      currentApprover = ProjectMemebrsRoleData;
+      // currentApprover = ProjectMemebrsRoleData;
     }
   }
   return currentApprover;
@@ -136,7 +136,8 @@ const getCurrentApprover = async (moduleName, moduleId) => {
  */
 
 const approve = async (moduleName, moduleId) => {
-  const approvalModule = await approvalModuleRepository.findOneBy({ moduleName: approvalModuleName });
+  const approvalModule = await approvalModuleRepository.findOneBy({ moduleName: moduleName });
+  let updatedModule;
   if (!approvalModule) {
     throw new ApiError(httpStatus.NOT_FOUND, 'approval module does not exist');
   }
@@ -147,12 +148,21 @@ const approve = async (moduleName, moduleId) => {
     }
     if (approvalModule.max_level == module.level) {
       // approve
+      updatedModule = await approvalGroupRepository.update({ id: moduleId }, { approved: true });
     } else {
       level = module.level + 1;
-      const approvalStage = await approvalStageRepository.findOneBy({ approvalModule: approvalModule, level: 1 });
+      const approvalStage = await approvalStageRepository
+        .createQueryBuilder('approval_stage')
+        .leftJoin('approval_stage.approvalModule', 'approvalModule')
+        .leftJoin('approval_stage.role', 'role')
+        .where('approvalModule.moduleName = :moduleName', { moduleName })
+        .andWhere('approval_stage.level = :level', { level })
+        .getOne();
+      updatedModule = await approvalGroupRepository.update({ id: moduleId }, { approvalStage: approvalStage });
       // ++approval
     }
   }
+  return updatedModule;
 };
 
 /**
@@ -166,4 +176,5 @@ const getApprovalModule = async (id) => {
 
 module.exports = {
   sendForApproval,
+  getCurrentApprover,
 };
