@@ -101,6 +101,56 @@ const getBudgetsOfProject = async (projectId) => {
 };
 
 /**
+ * Query for budget for the project
+ * @param {Object} filter - Filter options
+ * @param {Object} options - Query options
+ * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
+ * @param {number} [options.limit] - Maximum number of results per page (default = 10)
+ * @param {number} [options.page] - Current page (default = 1)
+ * @returns {Promise<QueryResult>}
+ */
+
+const getBudgetsOfProjects = async () => {
+  const approval = false;
+
+  const budgets = await budgetRepository
+    .createQueryBuilder('budget')
+    .leftJoin('budget.project', 'project')
+    .leftJoin('budget.task', 'task')
+    .leftJoin('budget.group', 'group')
+    .leftJoin('budget.budgetCategory', 'budgetCategory')
+    .leftJoin('budget.taskCategory', 'taskCategory')
+    .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory'])
+    .where('group.approved = :approval', { approval })
+    .getMany();
+
+  const groupedData = {};
+
+  budgets.forEach((entry) => {
+    const projectId = entry.project.id;
+    const groupId = entry.group.id;
+
+    if (!groupedData[projectId]) {
+      groupedData[projectId] = {
+        project: {
+          id: entry.project.id,
+          name: entry.project.name, // Include project name
+        },
+        groups: {},
+      };
+    }
+
+    if (!groupedData[projectId].groups[groupId]) {
+      groupedData[projectId].groups[groupId] = [];
+    }
+
+    groupedData[projectId].groups[groupId].push(entry);
+  });
+
+  return groupedData;
+};
+
+/**
  * Query for budget for the project by task level
  * @param {Object} filter - Filter options
  * @param {Object} options - Query options
@@ -179,4 +229,5 @@ module.exports = {
   deleteBudget,
   getBudgetsOfProject,
   getTasksOfProject,
+  getBudgetsOfProjects,
 };
