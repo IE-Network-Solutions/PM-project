@@ -7,6 +7,18 @@ const weeklyReport = {
   }),
 };
 
+const sleepingTasks = Joi.object({
+  addSleepingReason: Joi.array().items(
+    Joi.object({
+      id: Joi.string().required(),
+      
+      sleepingReason: Joi.string().required(),
+    })
+  ),
+});
+
+
 module.exports = {
-  weeklyReport
+  weeklyReport,
+  sleepingTasks
 };

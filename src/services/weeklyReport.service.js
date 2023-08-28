@@ -1,10 +1,17 @@
 const httpStatus = require('http-status');
+const { startOfWeek, endOfWeek, addWeeks } = require('date-fns');
+const { Between } = require('typeorm');
 const { Task, TaskUser, Baseline, Milestone, Risk, Issue } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 const services = require('./index');
+
+const startOfWeekDate = startOfWeek(new Date());
+const endOfWeekDate = endOfWeek(new Date());
+const startOfNextWeek = startOfWeek(addWeeks(new Date(), 1));
+const endOfNextWeek = endOfWeek(addWeeks(new Date(), 1));
 
 
 const taskRepository = dataSource.getRepository(Task).extend({
@@ -53,39 +60,92 @@ const weeklyReport = async (projectId) => {
   }
 
 
-  const allActiveTasks = [];
+  const sleepingTasks = [];
 
   for (const eachAllActiveBaselines of allActiveBaselines){
     const activeTasks = await taskRepository.findBy({
       baselineId: eachAllActiveBaselines.id,
-      status: true
+      plannedStart: Between(startOfWeekDate, endOfWeekDate),
+      actualStart: null
     });
 
-    allActiveTasks.push(activeTasks); 
+    if(activeTasks.length > 0){
+      sleepingTasks.push(...activeTasks); 
+      
+    }
+  }
+  
+  
+  const nextWeekTasks = [];
+
+  for (const eachAllActiveBaselines of allActiveBaselines){
+    const activeTasks = await taskRepository.findBy({
+      baselineId: eachAllActiveBaselines.id,
+      plannedStart: Between(startOfNextWeek, endOfNextWeek),
+      actualStart: null
+    });
+
+    if(activeTasks.length > 0){
+      nextWeekTasks.push(...activeTasks); 
+    }
   }
 
-  const risks = await riskRepository.findBy({
-    projectId: projectId
+  const issues = await issueRepository.find({
+    
+    where: {
+      projectId: projectId,
+      createdAt: Between(startOfWeekDate, endOfWeekDate),
+    },
   });
 
-  const issues = await issueRepository.findBy({
-    projectId: projectId
-  });
 
-  const weeklyTasks = allActiveTasks;
-  const nextWeekTasks = allActiveTasks;
+
+const risks = await riskRepository.find({
+  where: {
+    projectId: projectId,
+    createdAt: Between(startOfWeekDate, endOfWeekDate),
+  },
+});
+
 
   const weeklyReport = {
+    sleepingTasks: sleepingTasks,
+    nextWeekTasks: nextWeekTasks,
     risks: risks,
     issues: issues,
-    weeklyTasks: weeklyTasks,
-    nextWeekTasks: nextWeekTasks
   };
 
   return weeklyReport;
 
 };
 
+
+const addSleepingReason = async (tasks) => {
+  const updatedTasks = [];
+
+  for (const taskData of tasks) {
+    const taskId = taskData.id;
+    const sleepingReason = taskData.sleepingReason;
+
+    const updateFields = { sleepingReason: sleepingReason };
+
+    const updateResult = await taskRepository.update(taskId, updateFields);
+
+    if (updateResult.affected > 0) {
+      const updatedTask = await taskRepository.findOneBy({id: taskId}); 
+      if (updatedTask) {
+        updatedTasks.push(updatedTask);
+      }
+    }
+  }
+
+  return updatedTasks;
+};
+
+
+
+
 module.exports = {
   weeklyReport,
+  addSleepingReason
 };

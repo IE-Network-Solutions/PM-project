@@ -139,7 +139,7 @@ const defaultRoutes = [
     route: departmentRoute,
   },
   {
-    path: '/weeklyReport',
+    path: '/weekly-report',
     route: weeklyReportRoute,
   },
 ];

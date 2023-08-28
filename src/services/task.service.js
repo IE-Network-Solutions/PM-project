@@ -69,8 +69,9 @@ const getTasksByMileston = async (milestoneId, filter, options) => {
       status: true
     }
   });
-  
 
+  
+ if(baseline){
   const { limit, page, sortBy } = options;
   return await taskRepository.find({
     where:{
@@ -80,6 +81,10 @@ const getTasksByMileston = async (milestoneId, filter, options) => {
     sortOptions: sortBy && { option: sortBy },
     // paginationOptions: { limit: limit, page: page },
   });
+ }
+ else{
+  return [];
+ }
 };
 
 /**

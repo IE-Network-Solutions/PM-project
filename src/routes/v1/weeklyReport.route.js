@@ -8,4 +8,8 @@ const router = express.Router();
   .route('/:projectId')
   .get(validate(weeklyReportValidation.weeklyReport), weeklyReportController.weeklyReport);
 
+  router
+  .route('/add-sleeping-reason')
+  .patch(validate(weeklyReportValidation.sleepingTasks), weeklyReportController.addSleepingReason);
+
 module.exports = router;

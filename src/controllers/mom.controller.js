@@ -55,6 +55,10 @@ const addComment = catchAsync(async(req, res)=>{
   res.status(httpStatus.CREATED).send(momComment);
 });
 
+const getComments = catchAsync(async (req, res)=>{
+    const momComment = await momService.getComments(req.params.momId);
+    res.send(momComment);
+});
 
 module.exports = {
   createMom,
@@ -63,5 +67,6 @@ module.exports = {
   getByProject,
   updateMom,
   deleteMom,
-  addComment
+  addComment,
+  getComments
 };

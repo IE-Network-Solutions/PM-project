@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Mom, momAttendees,MomAction,momActionResponsible,momAgenda,momAgendaTopic,momComment } = require('../models');
+const { Mom, momAttendees,MomAction,momActionResponsible,momAgenda,momAgendaTopic,momComment, User } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -17,6 +17,7 @@ const momActionRepository = dataSource.getRepository(MomAction);
 const momActionResponsibleRepository = dataSource.getRepository(momActionResponsible);
 const momAgendaRepository = dataSource.getRepository(momAgenda);
 const momAgendaTopicRepository = dataSource.getRepository(momAgendaTopic);
+const userRepository = dataSource.getRepository(User);
 
 /**
  * Create a user
@@ -137,7 +138,7 @@ const getMoms = async (filter, options) => {
 const getMom = async (momId) => {
   return await momRepository.findOne({
     where: { id: momId},
-    relations: ['facilitator', 'momAttendees', 'momAgenda.momTopics','momAction'],
+    relations: ['facilitator', 'momAttendees', 'momAgenda.momTopics','momAction','momComment'],
   },
   );
 };
@@ -183,7 +184,27 @@ const addComment = async(momBody) =>{
     mentionedId: momBody.mentionedId,
   });
 
-  return await momCommentRepository.save(momComment);
+  const savedComment = await momCommentRepository.save(momComment);
+  const sender = await userRepository.findOne({
+    where : {
+      id: savedComment.userId
+    }
+  }
+  );
+
+  savedComment.user = sender;
+  return savedComment;
+}
+
+const getComments = async(momId) =>{
+
+  return await momCommentRepository.find(
+    {
+      where:{momId: momId, },
+      relations: ['user'],
+      order: { createdAt: 'ASC' },
+    }
+  );
 }
 
 module.exports = {
@@ -193,5 +214,6 @@ module.exports = {
   getByProject,
   updateMom,
   deleteMom,
-  addComment
+  addComment,
+  getComments
 };

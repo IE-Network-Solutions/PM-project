@@ -10,6 +10,18 @@ const weeklyReport = catchAsync(async (req, res) => {
   res.send(project);
 });
 
+const addSleepingReason = catchAsync(async (req, res) => {
+  const updatedTasks = await weeklyReportService.addSleepingReason(req.body);
+  res.send(updatedTasks);
+});
+
+
+
+
+
+
+
 module.exports = {
-  weeklyReport
+  weeklyReport,
+  addSleepingReason
 };
