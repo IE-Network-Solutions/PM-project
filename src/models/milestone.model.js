@@ -6,8 +6,8 @@ class Milestone extends Base {
   constructor() {
     super(); 
     this.name = { type: 'varchar' };
-    this.status = { type: 'boolean', default: () => true };
-    this.weight = { type: 'int', default: () => "NULL"};
+    this.status = { type: 'boolean', default: true };
+    this.weight = { type: 'int', nullable: true};
     this.projectId = { type: 'uuid'};
     this.paymentTermId = { type: 'uuid', nullable: true};
   }
