@@ -17,7 +17,7 @@ const leasonLearnedRoute = require('./lessonLearned.route');
 const individualLLRoute = require('./individualLL.route');
 const LLCommentRoute = require('./llComment.route');
 const PaymentTermRoute = require('./paymentTerm.route');
-
+const weeklyReportRoute = require("./weeklyReport.route")
 const budgetCategoryRoute = require('./budgetCategory.route');
 const budgetTypeRoute = require('./budgetType.route');
 const budgetTaskCategoryRoute = require('./budgetTaskCategory.route');
