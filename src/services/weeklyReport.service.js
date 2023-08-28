@@ -47,7 +47,6 @@ const allActiveBaselineTasks = async (projectId) => {
     status: true
   });
 
-
   const allActiveBaselines = [];
 
   for (const eachMilestone of getMilestoneByProject){
@@ -71,7 +70,6 @@ const allActiveBaselineTasks = async (projectId) => {
       
     }
   }
-  
   
   const nextWeekTasks = [];
 
@@ -106,7 +104,7 @@ const risks = await riskRepository.find({
 
 
   const weeklyReport = {
-    allTasks: nextWeekTasks,
+    allTasks: allTasks,
     nextWeekTasks: nextWeekTasks,
     risks: risks,
     issues: issues,
