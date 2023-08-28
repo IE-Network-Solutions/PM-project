@@ -41,6 +41,83 @@ const issueRepository = dataSource.getRepository(Issue).extend({
 });
 
 
+const allActiveBaselineTasks = async (projectId) => {
+  const getMilestoneByProject = await milestoneRepository.findBy({
+    projectId: projectId,
+    status: true
+  });
+
+
+  const allActiveBaselines = [];
+
+  for (const eachMilestone of getMilestoneByProject){
+    const activeBaselines = await baselineRepository.findBy({
+      milestoneId: eachMilestone.id,
+      status: true
+    });
+
+    allActiveBaselines.push(...activeBaselines); 
+  }
+
+  const allTasks = [];
+
+  for (const eachAllActiveBaselines of allActiveBaselines){
+    const activeTasks = await taskRepository.findBy({
+      baselineId: eachAllActiveBaselines.id,
+    });
+
+    if(activeTasks.length > 0){
+      allTasks.push(...activeTasks); 
+      
+    }
+  }
+  
+  
+  const nextWeekTasks = [];
+
+  for (const eachAllActiveBaselines of allActiveBaselines){
+    const activeTasks = await taskRepository.findBy({
+      baselineId: eachAllActiveBaselines.id,
+      plannedStart: Between(startOfNextWeek, endOfNextWeek),
+      actualStart: null
+    });
+
+    if(activeTasks.length > 0){
+      nextWeekTasks.push(...activeTasks); 
+    }
+  }
+
+  const issues = await issueRepository.find({
+    
+    where: {
+      projectId: projectId,
+      createdAt: Between(startOfWeekDate, endOfWeekDate),
+    },
+  });
+
+
+
+const risks = await riskRepository.find({
+  where: {
+    projectId: projectId,
+    createdAt: Between(startOfWeekDate, endOfWeekDate),
+  },
+});
+
+
+  const weeklyReport = {
+    allTasks: nextWeekTasks,
+    nextWeekTasks: nextWeekTasks,
+    risks: risks,
+    issues: issues,
+  };
+
+  return weeklyReport;
+
+};
+
+
+
 const weeklyReport = async (projectId) => {
   const getMilestoneByProject = await milestoneRepository.findBy({
     projectId: projectId,
@@ -147,5 +224,6 @@ const addSleepingReason = async (tasks) => {
 
 module.exports = {
   weeklyReport,
-  addSleepingReason
+  addSleepingReason,
+  allActiveBaselineTasks
 };

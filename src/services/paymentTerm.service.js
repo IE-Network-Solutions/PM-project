@@ -77,7 +77,11 @@ const getPaymentTerm = async (id) => {
 };
 
 const getByProject = async (projectId) => {
-  return await paymentTermRepository.findBy({ projectId: projectId,});
+  const paymentTerm =  await paymentTermRepository.find({
+    where: { projectId: projectId,},
+    relations: ['milestone'],
+  });
+  return paymentTerm;
 };
 
 /**
@@ -87,12 +91,15 @@ const getByProject = async (projectId) => {
  * @returns {Promise<Project>}
  */
 const updatePaymentTerm = async (paymentTermId, updateBody, requestedMilestone) => {
-  const paymentTerm = await getPaymentTerm(paymentTermId);
-  if (!paymentTerm) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Payment term not found');
+
+
+  if(updateBody){
+     await paymentTermRepository.update({ id: paymentTermId }, updateBody);
   }
 
   const paymentTermMilestone = await miletoneRepository.findBy({paymentTermId: paymentTermId});
+
+  //Remove all payment term id in milestone table
     if (paymentTermMilestone) {
       const milestoneToRemove = paymentTermMilestone.map((eachMilestone) => {
         return {
@@ -103,11 +110,12 @@ const updatePaymentTerm = async (paymentTermId, updateBody, requestedMilestone) 
       const updatedPaymentTermMilestone = await miletoneRepository.save(milestoneToRemove);
     }
 
+//add payment term id in milestone table with the updated value
     if (requestedMilestone) {
       const milestonetoUpdate = requestedMilestone.map((eachMilestone) => {
         return {
           id: eachMilestone.id,
-          paymentTermId: paymentTerm.id,
+          paymentTermId: paymentTermId,
         };
       });
       await miletoneRepository.save(milestonetoUpdate);
@@ -115,7 +123,11 @@ const updatePaymentTerm = async (paymentTermId, updateBody, requestedMilestone) 
 
    await getPaymentTerm(paymentTermId); 
 
-   return paymentTerm;
+   return await paymentTermRepository.findOne({
+    where: { id: paymentTermId},
+    relations: ['milestone'],
+  },
+  );
 
 };
 

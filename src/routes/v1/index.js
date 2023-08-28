@@ -13,6 +13,7 @@ const taskRoute = require('./task.route');
 const subTaskRoute = require('./subtask.route');
 const momRoute = require('./mom.route');
 const usersRoute = require('./user.route');
+const weeklyReportRoute = require('./weeklyReport.route');
 const leasonLearnedRoute = require('./lessonLearned.route');
 const individualLLRoute = require('./individualLL.route');
 const LLCommentRoute = require('./llComment.route');

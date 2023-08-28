@@ -5,6 +5,11 @@ const catchAsync = require('../utils/catchAsync');
 const {weeklyReportService} = require('../services');
 
 
+const allTasks = catchAsync(async (req, res) => {
+  const project = await weeklyReportService.allActiveBaselineTasks(req.params.projectId);
+  res.send(project);
+});
+
 const weeklyReport = catchAsync(async (req, res) => {
   const project = await weeklyReportService.weeklyReport(req.params.projectId);
   res.send(project);
@@ -23,5 +28,6 @@ const addSleepingReason = catchAsync(async (req, res) => {
 
 module.exports = {
   weeklyReport,
-  addSleepingReason
+  addSleepingReason,
+  allTasks
 };
