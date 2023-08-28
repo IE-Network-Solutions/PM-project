@@ -69,6 +69,33 @@ const getLLById = async (id) => {
         });
 };
 
+const groupLLByProject = async (filter, options) => {
+    const groupedResults = await lessonLearnedRepository
+        .createQueryBuilder('ll')
+        .leftJoinAndSelect('ll.project', 'project')
+        .select([
+            'll.projectId AS projectId',
+            'project.createdAt AS createdAt',
+            'project.updatedAt AS updatedAt',
+            'project.createdBy AS createdBy',
+            'project.updatedBy AS updatedBy',
+            'project.name AS name',
+            'project.clientId AS clientId',
+            'project.milestone AS _milestone',
+            'project.budget AS budget',
+            'project.contract_sign_date AS contract_sign_date',
+            'project.planned_end_date AS planned_end_date',
+            'project.lc_opening_date AS lc_opening_date',
+            'project.advanced_payment_date AS advanced_payment_date',
+            'project.status AS status',
+            'json_agg(ll.*) AS LessonLearned',
+        ])
+        .groupBy('ll.projectId, project.id, project.name')
+        .getRawMany();
+
+    return groupedResults;
+};
+
 /**
  * Update user by id
  * @param {ObjectId} issueId
@@ -98,53 +125,6 @@ const deleteLLById = async (LLId) => {
     return await lessonLearnedRepository.delete({ id: LLId });
 };
 
-//Addional API's for listing and approval requests by different levels [CEO, PMOM]
-
-const approvalRequestByPM = async (LLId) => {
-    return await lessonLearnedRepository.find({
-        where: { id: LLId },
-        relations: ['individuals']
-    })
-}
-const getPendingApprovalRequestByPMOMById = async (LLId) => {
-    return await lessonLearnedRepository.find({
-        where: { id: LLId, status: "Pending" },
-        relations: ['individuals']
-    })
-}
-
-const getAllPendingApprovalRequestByPMOM = async (LLId) => {
-    return await lessonLearnedRepository.find({
-        where: { status: "Pending" },
-        relations: ['individuals']
-    })
-}
-const approvalRequestByPMOM = async (LLId) => {
-    return await lessonLearnedRepository.find({
-        where: { id: LLId },
-        relations: ['individuals']
-    });
-}
-const getPendingApprovalRequestByCEOById = async (LLId) => {
-    return await lessonLearnedRepository.find({
-        where: { id: LLId, status: "Pending" },
-        relations: ['individuals']
-    });
-}
-
-const getAllPendingApprovalRequestByCEO = async () => {
-    return await lessonLearnedRepository.find({
-        where: { status: "Pending" },
-        relations: ['individuals']
-    });
-}
-
-const approveByCEO = async (LLId) => {
-    return await lessonLearnedRepository.find({
-        where: { id: LLId },
-        relations: ['individuals']
-    });
-}
 
 module.exports = {
     createLL,
@@ -154,12 +134,6 @@ module.exports = {
     getLLById,
     updateLLById,
     deleteLLById,
+    groupLLByProject
 
-    getPendingApprovalRequestByPMOMById,
-    getAllPendingApprovalRequestByPMOM,
-    approvalRequestByPM,
-    getPendingApprovalRequestByCEOById,
-    getAllPendingApprovalRequestByCEO,
-    approvalRequestByPMOM,
-    approveByCEO,
 };
