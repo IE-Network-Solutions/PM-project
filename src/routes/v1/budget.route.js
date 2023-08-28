@@ -11,6 +11,7 @@ router
   .post(validate(budgetValidation.createBudget), budgetController.createBudget)
   .get(validate(budgetValidation.getBudgets), budgetController.getBudgets);
 
+router.route('/project').get(budgetController.getBudgetsOfProjects);
 router.route('/project/:projectId').get(validate(budgetValidation.getBudgetByProject), budgetController.getBudgetsOfProject);
 
 router
