@@ -1,10 +1,10 @@
 const { EntitySchema } = require('typeorm');
-const {Base} = require('./BaseModel')
+const { Base } = require('./BaseModel')
 
 
 class Milestone extends Base {
   constructor() {
-    super(); 
+    super();
     this.name = { type: 'varchar' };
     this.status = { type: 'boolean', default: true };
     this.weight = { type: 'int'};
@@ -19,14 +19,14 @@ module.exports = new EntitySchema({
   columns: new Milestone(),
   relations: {
     project: {
-        type: "many-to-one", 
-        target: "projects",
-        inverseSide: "milestones",
-      },  
-      paymentTerm: {
-        type: "many-to-one", 
-        target: "PaymentTerm",
-        inverseSide: "milestones",
-      },   
+      type: "many-to-one",
+      target: "projects",
+      inverseSide: "milestones",
+    },
+    paymentTerm: {
+      type: "many-to-one",
+      target: "PaymentTerm",
+      inverseSide: "milestones",
+    },
   },
 });
