@@ -3,6 +3,7 @@ const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { projectService} = require('../services');
+const { User } = require('../models');
 
 
 
@@ -39,10 +40,22 @@ const deleteProject = catchAsync(async(req, res)=>{
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const addMember = catchAsync(async (req, res) =>  {
+  const projectMember = await projectService.addMember(req.params.projectId, req.body);
+  res.status(httpStatus.CREATED).json(projectMember);
+});
+
+const removeMember =catchAsync(async(req, res)=>{
+  const projectId = await projectService.removeMember(req.params.projectId, req.body);
+  res.send(projectId);
+});
+
 module.exports = {
   createProject,
   getProjects,
   getProject,
   updateProject,
   deleteProject,
+  addMember,
+  removeMember
 };
