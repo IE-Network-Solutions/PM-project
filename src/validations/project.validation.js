@@ -12,7 +12,7 @@ const createProject = {
     advanced_payment_date: Joi.date(),
     status: Joi.boolean(),
     planned_end_date: Joi.required(),
-    projectMembers: Joi.array(), 
+    projectMembers: Joi.array(),
     projectContractValue: Joi.array()
   }),
 };
@@ -43,15 +43,22 @@ const updateProject = {
 };
 
 const deleteProject = {
-    params: Joi.object().keys({
-      projectId: Joi.string(),
-    }),
-  };
+  params: Joi.object().keys({
+    projectId: Joi.string(),
+  }),
+};
+
+const getProjectVariance = {
+  params: Joi.object().keys({
+    projectId: Joi.string().custom(objectId),
+  }),
+};
 
 module.exports = {
   createProject,
   getProjects,
   getProject,
   updateProject,
-  deleteProject
+  deleteProject,
+  getProjectVariance
 };

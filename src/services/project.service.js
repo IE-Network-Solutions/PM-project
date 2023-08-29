@@ -5,6 +5,7 @@ const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 const publishToRabbit = require('../utils/producer');
+const { allActiveBaselineTasks } = require('./weeklyReport.service');
 
 const projectRepository = dataSource.getRepository(Project).extend({
   findAll,
@@ -137,10 +138,21 @@ const deleteProject = async (projectId) => {
   return await projectRepository.update({ id: projectId }, updateBody);
 };
 
+/**
+ * Delete user by id
+ * @param {ObjectId} ProjectId
+ * @returns {Promise<Project>}
+ */
+const getProjectVariance = async (projectId) => {
+  const listOfAllTasks = await allActiveBaselineTasks(projectId);
+  return listOfAllTasks;
+};
+
 module.exports = {
   createProject,
   getProjects,
   getProject,
   updateProject,
   deleteProject,
+  getProjectVariance
 };

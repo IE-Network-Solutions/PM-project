@@ -89,6 +89,7 @@ const groupAAAByProject = async (filter, options) => {
         .leftJoinAndSelect('aaa.actions', 'actions')
         .leftJoinAndSelect('aaa.issueRelates', 'issueRelates')
         .leftJoinAndSelect('aaa.project', 'project')
+        .leftJoinAndSelect('aaa.department', 'department')
         .select([
             'aaa.projectId AS projectId',
             'project.createdAt AS createdAt',
@@ -106,7 +107,7 @@ const groupAAAByProject = async (filter, options) => {
             'project.status AS status',
             'json_agg(aaa.*) AS AfterActionAnalysis',
         ])
-        .groupBy('aaa.projectId, project.id, project.name')
+        .groupBy('aaa.projectId, project.id, actions.id, project.name')
         .getRawMany();
 
     return groupedResults;

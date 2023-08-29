@@ -66,7 +66,7 @@ const getRisksByDate = async (startDate, endDate) => {
  * @returns {Promise<Risk>}
  */
 
-const getAllRisksByProjectId= async (id, status) => {
+const getAllRisksByProjectId = async (id, status) => {
     return await riskRepository.find(
         {
             where: {
@@ -106,7 +106,7 @@ const groupCriticalRiskByProject = async (filter, options) => {
     const groupedResults = await riskRepository
         .createQueryBuilder('cr')
         .leftJoinAndSelect('cr.project', 'project')
-        .andWhere('cr.status = :status', { status: 'Critical' })
+        .andWhere('(cr.riskRate = :rate OR cr.residualRiskRate = :rate)', { rate: 'Critical' })
         .select([
             'cr.projectId AS projectId',
             'project.createdAt AS createdAt',
@@ -122,7 +122,7 @@ const groupCriticalRiskByProject = async (filter, options) => {
             'project.lc_opening_date AS lc_opening_date',
             'project.advanced_payment_date AS advanced_payment_date',
             'project.status AS status',
-            'json_agg(cr.*) AS LessonLearned',
+            'json_agg(cr.*) AS Risks',
         ])
         .groupBy('cr.projectId, project.id, project.name')
         .getRawMany();

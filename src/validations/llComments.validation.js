@@ -3,18 +3,15 @@ const { objectId } = require('./custom.validation');
 
 const createLLComment = {
     body: Joi.object().keys({
-        userName: Joi.string().required(),
         userId: Joi.string().required(),
         comment: Joi.string().required(),
-        date: Joi.string().required(),
-        lessonLearnedId: Joi.string().custom(objectId),
+        id: Joi.string().custom(objectId),
     }),
 };
 
 const getLLComments = {
     query: Joi.object().keys({
         id: Joi.string(),
-        userName: Joi.string(),
         userId: Joi.string(),
         comment: Joi.string(),
         LLId: Joi.string(),
@@ -33,8 +30,6 @@ const updateLLComment = {
         commentId: Joi.string().custom(objectId),
     }),
     body: Joi.object().keys({
-        userName: Joi.string().required(),
-        userId: Joi.string().required(),
         comment: Joi.string().required(),
         date: Joi.string().required(),
     })
