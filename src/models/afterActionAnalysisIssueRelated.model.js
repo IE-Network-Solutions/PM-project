@@ -11,22 +11,22 @@ module.exports = new EntitySchema({
     name: 'AfterActionAnalysis_IssueRelated',
     tableName: 'after_action_analysis_issue_related',
     columns: new AfterActionAnalysis_IssueRelated(),
-    relations: {
-        afterActionAnalysis: {
-            type: 'many-to-one',
-            target: 'AfterActionAnalysis',
-            joinColumn: {
-                name: 'afterActionAnalysisId',
-                referencedColumnName: 'id',
-            },
-        },
-        issueRelated: {
-            type: 'many-to-one',
-            target: 'RelatedIssue',
-            joinColumn: {
-                name: 'relatedIssueId',
-                referencedColumnName: 'id',
-            },
-        },
-    },
+    // relations: {
+    //     afterActionAnalysis: {
+    //         type: 'many-to-one',
+    //         target: 'AfterActionAnalysis',
+    //         joinColumn: {
+    //             name: 'afterActionAnalysisId',
+    //             referencedColumnName: 'id',
+    //         },
+    //     },
+    //     issueRelated: {
+    //         type: 'many-to-one',
+    //         target: 'RelatedIssue',
+    //         joinColumn: {
+    //             name: 'relatedIssueId',
+    //             referencedColumnName: 'id',
+    //         },
+    //     },
+    // },
 });

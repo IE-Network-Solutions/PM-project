@@ -5,7 +5,6 @@ const createAAA = {
     body: Joi.object().keys({
         title: Joi.string().required(),
         description: Joi.string().required(),
-        // teamInvolves: Joi.string().required(),
         rootCause: Joi.string().required(),
         lessonLearned: Joi.string().required(),
         remarks: Joi.string().required(),
