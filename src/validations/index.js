@@ -13,6 +13,7 @@ module.exports.taskValidation = require('./task.validation');
 module.exports.subTaskValidation = require('./subtask.validation');
 module.exports.momValidation = require('./mom.validation');
 module.exports.userValidation = require('./user.validation');
+module.exports.weeklyReportValidation = require('./weeklyReport.validation');
 
 module.exports.lessonLearnedValidation = require('./lessonLearned.validation');
 module.exports.individualLLValidation = require('./individualLL.validation');

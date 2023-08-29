@@ -100,6 +100,15 @@ const deleteBudget = catchAsync(async (req, res) => {
   await budgetService.deleteBudget(req.params.budgetId);
   res.status(httpStatus.NO_CONTENT).send();
 });
+const getBudgetsOfProject = catchAsync(async (req, res) => {
+  console.log(req.params.projectId);
+  const data = await budgetService.getBudgetsOfProject(req.params.projectId);
+  res.send(data);
+});
+const getBudgetsOfProjects = catchAsync(async (req, res) => {
+  const data = await budgetService.getBudgetsOfProjects();
+  res.send(data);
+});
 
 module.exports = {
   createBudget,
@@ -107,4 +116,6 @@ module.exports = {
   getBudget,
   updateBudget,
   deleteBudget,
+  getBudgetsOfProject,
+  getBudgetsOfProjects,
 };

@@ -1,11 +1,16 @@
 const httpStatus = require('http-status');
-const { Baseline, Task, Subtask } = require('../models');
+const { Baseline, Task, Subtask, Milestone } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const { all } = require('../routes/v1');
 
 const baselineRepository = dataSource.getRepository(Baseline).extend({
+  findAll,
+  sortBy,
+});
+const milestoneRepository = dataSource.getRepository(Milestone).extend({
   findAll,
   sortBy,
 });
@@ -25,12 +30,24 @@ const subTaskRepository = dataSource.getRepository(Subtask).extend({
  * @returns {Promise<Project>}
  */
 const createBaseline = async (baselineBody, tasks) => {
+
+  if (baselineBody) {
+    const lastActiveBaseline = await baselineRepository.findOne({
+      where: {
+        milestoneId: baselineBody.milestoneId,
+        status: true
+      }
+    });
+  
+    if (lastActiveBaseline) {
+      await baselineRepository.update(lastActiveBaseline.id, { status: false });
+    }
+  }
+
   const baseline = baselineRepository.create(baselineBody);
   const savedBaseline = await baselineRepository.save(baseline);
-  // if(savedBaseline){
-  //   const milestoneId =  baselineBody.milestoneId;
-  //   getbaselineByMilestone = mile
-  // }
+  
+  
 
   if (tasks) {
     const taskInstances = tasks.map(async (eachTask) => {

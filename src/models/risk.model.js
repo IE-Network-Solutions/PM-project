@@ -16,10 +16,10 @@ class Risk extends Base {
         this.control = { type: 'varchar' };
         this.probability = { type: 'varchar' };
         this.impact = { type: 'varchar' };
-        this.riskRate = { type: 'varchar' };
+        this.riskRate = { type: 'varchar' , nullable: true};
         this.residualProbability = { type: 'varchar' };
         this.residualImpact = { type: 'varchar' };
-        this.residualRiskRate = { type: 'varchar' };
+        this.residualRiskRate = { type: 'varchar', nullable: true };
         this.projectId = { type: 'varchar', nullable: true };
     }
 }

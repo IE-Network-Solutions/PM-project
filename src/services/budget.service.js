@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Budget, BudgetGroup } = require('../models');
+const { Budget, BudgetGroup, Task } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -7,6 +7,10 @@ const findAll = require('./Plugins/findAll');
 const services = require('./index');
 
 const budgetRepository = dataSource.getRepository(Budget).extend({
+  findAll,
+  sortBy,
+});
+const taskRepository = dataSource.getRepository(Task).extend({
   findAll,
   sortBy,
 });
@@ -52,11 +56,136 @@ const createBudget = async (budgetBody) => {
 const getBudgets = async (filter, options) => {
   const { limit, page, sortBy } = options;
 
-  return await budgetRepository.findAll({
-    tableName: 'budget',
-    sortOptions: sortBy && { option: sortBy },
-    paginationOptions: { limit: limit, page: page },
+  return await budgetRepository.find({
+    relations: ['group', 'task', 'budgetCategory', 'taskCategory', 'project'],
   });
+};
+
+/**
+ * Query for budget for the project
+ * @param {Object} filter - Filter options
+ * @param {Object} options - Query options
+ * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
+ * @param {number} [options.limit] - Maximum number of results per page (default = 10)
+ * @param {number} [options.page] - Current page (default = 1)
+ * @returns {Promise<QueryResult>}
+ */
+
+const getBudgetsOfProject = async (projectId) => {
+  // const { limit, page, sortBy } = options;
+
+  const budgets = await budgetRepository
+    .createQueryBuilder('budget')
+    .leftJoin('budget.project', 'project')
+    .leftJoin('budget.task', 'task')
+    .leftJoin('budget.group', 'group')
+    .leftJoin('budget.budgetCategory', 'budgetCategory')
+    .leftJoin('budget.taskCategory', 'taskCategory')
+    .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory'])
+    .where('project.id = :projectId', { projectId })
+    .getMany();
+
+  const groupedData = {};
+  budgets.forEach((entry) => {
+    const groupId = entry.group.id;
+    if (!groupedData[groupId]) {
+      groupedData[groupId] = [];
+    }
+    groupedData[groupId].push(entry);
+  });
+
+  const groupedResult = Object.values(groupedData);
+
+  // console.log(groupedResult);
+  return groupedData;
+};
+
+/**
+ * Query for budget for the project
+ * @param {Object} filter - Filter options
+ * @param {Object} options - Query options
+ * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
+ * @param {number} [options.limit] - Maximum number of results per page (default = 10)
+ * @param {number} [options.page] - Current page (default = 1)
+ * @returns {Promise<QueryResult>}
+ */
+
+const getBudgetsOfProjects = async () => {
+  const approval = false;
+
+  const budgets = await budgetRepository
+    .createQueryBuilder('budget')
+    .leftJoin('budget.project', 'project')
+    .leftJoin('budget.task', 'task')
+    .leftJoin('budget.group', 'group')
+    .leftJoin('budget.budgetCategory', 'budgetCategory')
+    .leftJoin('budget.taskCategory', 'taskCategory')
+    .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory'])
+    .where('group.approved = :approval', { approval })
+    .getMany();
+
+  const groupedData = {};
+
+  budgets.forEach((entry) => {
+    const projectId = entry.project.id;
+    const groupId = entry.group.id;
+
+    if (!groupedData[projectId]) {
+      groupedData[projectId] = {
+        project: {
+          id: entry.project.id,
+          name: entry.project.name, // Include project name
+        },
+        groups: {},
+      };
+    }
+
+    if (!groupedData[projectId].groups[groupId]) {
+      groupedData[projectId].groups[groupId] = [];
+    }
+
+    groupedData[projectId].groups[groupId].push(entry);
+  });
+
+  return groupedData;
+};
+
+/**
+ * Query for budget for the project by task level
+ * @param {Object} filter - Filter options
+ * @param {Object} options - Query options
+ * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
+ * @param {number} [options.limit] - Maximum number of results per page (default = 10)
+ * @param {number} [options.page] - Current page (default = 1)
+ * @returns {Promise<QueryResult>}
+ */
+
+const getTasksOfProject = async (projectId) => {
+  // const { limit, page, sortBy } = options;
+
+  const budgets = await taskRepository
+    .createQueryBuilder('tasks')
+    .leftJoin('tasks.budgets', 'budget')
+    .leftJoin('budget.project', 'project')
+    .leftJoin('budget.group', 'group')
+    .leftJoin('budget.budgetCategory', 'budgetCategory')
+    .leftJoin('budget.taskCategory', 'taskCategory')
+    .select(['budget', 'tasks', 'project', 'group', 'budgetCategory', 'taskCategory'])
+    .getMany();
+
+  // const groupedData = {};
+  // budgets.forEach((entry) => {
+  //   const groupId = entry.group.id;
+  //   if (!groupedData[groupId]) {
+  //     groupedData[groupId] = [];
+  //   }
+  //   groupedData[groupId].push(entry);
+  // });
+
+  // const groupedResult = Object.values(groupedData);
+
+  // console.log(groupedResult);
+  return budgets;
 };
 
 /**
@@ -98,4 +227,7 @@ module.exports = {
   getBudget,
   updateBudget,
   deleteBudget,
+  getBudgetsOfProject,
+  getTasksOfProject,
+  getBudgetsOfProjects,
 };
