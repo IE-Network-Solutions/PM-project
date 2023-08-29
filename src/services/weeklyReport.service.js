@@ -137,8 +137,11 @@ const weeklyReport = async (projectId) => {
   const allTasks = [];
 
   for (const eachAllActiveBaselines of allActiveBaselines){
-    const activeTasks = await taskRepository.findBy({
-      baselineId: eachAllActiveBaselines.id,
+    const activeTasks = await taskRepository.find({
+      where: {
+        baselineId: eachAllActiveBaselines.id,
+      },
+      relations: ['baseline.milestone']
     });
 
     if(activeTasks.length > 0){
