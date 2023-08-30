@@ -79,10 +79,12 @@ const getBudgetsOfProject = async (projectId) => {
     .leftJoin('budget.project', 'project')
     .leftJoin('budget.task', 'task')
     .leftJoin('budget.group', 'group')
+    .leftJoin('group.approvalStage', 'approvalStage')
     .leftJoin('budget.budgetCategory', 'budgetCategory')
     .leftJoin('budget.taskCategory', 'taskCategory')
     .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory'])
     .where('project.id = :projectId', { projectId })
+    .andWhere('group.approvalStage IS NOT NULL')
     .getMany();
 
   const groupedData = {};
