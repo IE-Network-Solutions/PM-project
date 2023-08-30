@@ -15,6 +15,9 @@ const LLCommentsRepository = dataSource.getRepository(LLComments).extend({ findA
  * @returns {Promise<LLComments>}
  */
 const createLLComment = async (LLCommentBody) => {
+    LLCommentBody.lessonLearnedId = LLCommentBody.id;
+    LLCommentBody.date = new Date();
+    delete LLCommentBody.id
     const result = LLCommentsRepository.create(LLCommentBody);
     return await LLCommentsRepository.save(result);
 };
@@ -34,7 +37,7 @@ const queryLLComments = async (filter, options) => {
 
     return await LLCommentsRepository.find(
         {
-            relations: ['lessonLearned'],
+            relations: ['lessonLearned', 'user'],
             tableName: 'llComments',
             sortOptions: sortBy && { option: sortBy },
             paginationOptions: { limit: limit, page: page },
@@ -71,6 +74,7 @@ const getLLCommentByLLId = async (id) => {
  */
 const updateLLCommentById = async (LLCommentId, updateBody) => {
     const result = await getLLCommentById(LLCommentId);
+    updateBody.date = new Date();
     if (!result) {
         throw new ApiError(httpStatus.NOT_FOUND, 'LL comment id is not found');
     }

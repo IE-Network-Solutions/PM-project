@@ -63,19 +63,28 @@ const getTask = async (id) => {
 };
 
 const getTasksByMileston = async (milestoneId, filter, options) => {
-  const baseline = await baselineRepository.findOneBy(
-    {
+  const baseline = await baselineRepository.findOne({
+    where: {
       milestoneId: milestoneId,
       status: true
-    },
-  );
+    }
+  });
 
+  
+ if(baseline){
   const { limit, page, sortBy } = options;
-  return await taskRepository.findBy({
-    baselineId: baseline.id,
+  return await taskRepository.find({
+    where:{
+      baselineId: baseline.id,
+    },
+    relations: ['resources'],
     sortOptions: sortBy && { option: sortBy },
     // paginationOptions: { limit: limit, page: page },
   });
+ }
+ else{
+  return [];
+ }
 };
 
 /**

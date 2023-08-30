@@ -15,10 +15,16 @@ module.exports = new EntitySchema({
 tableName: 'roles',
   columns: new Role(),
   relations: {
-    //   milestone: {
-    //     type: "one-to-many", 
-    //     target: "Milestone", 
-    //     inverseSide: "paymentTerm",
-    //   },   
+      user: {
+        type: "many-to-one", 
+        target: "User", 
+        inverseSide: "role",
+      },   
+
+      projectMember: {
+        type: "one-to-many", 
+        target: "ProjectMember", 
+        inverseSide: "role",
+      },   
   },
 });

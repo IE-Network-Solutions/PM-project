@@ -23,4 +23,20 @@ module.exports = new EntitySchema({
     name: 'Department',
     tableName: 'department',
     columns: new Department(),
+    relations: {
+        AAA_Department: {
+            type: "many-to-many",
+            target: "AfterActionAnalysis",
+            joinTable: {
+                name: "AAA_Department",
+                joinColumn: { name: "departmentId", referencedColumnName: "id" },
+                inverseJoinColumn: {
+                    name: "afterActionAnalysisId",
+                    referencedColumnName: "id",
+                },
+            },
+            onDelete: "SET NULL",
+            onUpdate: "CASCADE",
+        },
+    }
 });
