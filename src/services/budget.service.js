@@ -82,9 +82,8 @@ const getBudgetsOfProject = async (projectId) => {
     .leftJoin('group.approvalStage', 'approvalStage')
     .leftJoin('budget.budgetCategory', 'budgetCategory')
     .leftJoin('budget.taskCategory', 'taskCategory')
-    .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory'])
+    .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory', 'approvalStage'])
     .where('project.id = :projectId', { projectId })
-    .andWhere('group.approvalStage IS NOT NULL')
     .getMany();
 
   const groupedData = {};
@@ -211,6 +210,18 @@ const updateBudget = async (budgetId, updateBody) => {
   const budget = await budgetRepository.update({ id: budgetId }, updateBody);
   return await getBudget(budgetId);
 };
+
+/**
+ * Update budget by id
+ * @param {ObjectId} budgetId
+ * @param {Object} updateBody
+ * @returns {Promise<Project>}
+ */
+// const addBudget = async (budget, updateBody) => {
+//   const
+//   const budgetData = budgetRepository.create(budget);
+//     return budgetData;
+// };
 
 /**
  * Delete budget by id
