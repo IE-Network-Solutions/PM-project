@@ -20,5 +20,9 @@ const router = express.Router();
   .route ('/add/:projectId')
   .post(validate(weeklyReportValidation.addWeeklyReport), weeklyReportController.addWeeklyReport);
 
+  router
+  .route('/saved/:projectId')
+  .get(validate(weeklyReportValidation.savedWeeklyReport), weeklyReportController.getAddedWeeklyReport);
+
 
 module.exports = router;

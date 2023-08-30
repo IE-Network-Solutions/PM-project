@@ -23,8 +23,15 @@ const addWeeklyReport ={
   }), 
 }
 
+const savedWeeklyReport ={
+  params: Joi.object().keys({
+    projectId: Joi.string().required(),
+  }), 
+}
+
 module.exports = {
   weeklyReport,
   sleepingTasks,
-  addWeeklyReport
+  addWeeklyReport,
+  savedWeeklyReport
 };

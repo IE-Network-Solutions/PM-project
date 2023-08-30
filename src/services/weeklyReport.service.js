@@ -275,6 +275,20 @@ const currentMonthName = monthNames[currentMonthNumber - 1];
   return savedWeeklyReport;
 }
 
+const getAddedWeeklyReport = async (projectId) => {
+  const savedWeeklyReport = await weeklyReportRepository.findBy({ projectId });
+
+  // Group the fetched reports by week and fetch only the first item in each group
+  const groupedWeeklyReports = savedWeeklyReport.reduce((result, report) => {
+    if (!result[report.week]) {
+      result[report.week] = report; // Fetch the first report in the group
+    }
+    return result;
+  }, {});
+
+  return groupedWeeklyReports;
+};
+
 
 
 
@@ -282,5 +296,6 @@ module.exports = {
   getWeeklyReport,
   addSleepingReason,
   allActiveBaselineTasks,
-  addWeeklyReport
+  addWeeklyReport,
+  getAddedWeeklyReport
 };

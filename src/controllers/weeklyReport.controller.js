@@ -26,6 +26,11 @@ const addWeeklyReport = catchAsync(async(req, res)=>{
 });
 
 
+const getAddedWeeklyReport = catchAsync(async(req, res)=>{
+  const savedWeeklyReport = await weeklyReportService.getAddedWeeklyReport(req.params.projectId);
+  res.send(savedWeeklyReport);
+});
+
 
 
 
@@ -33,5 +38,6 @@ module.exports = {
   weeklyReport,
   addSleepingReason,
   allTasks,
-  addWeeklyReport
+  addWeeklyReport,
+  getAddedWeeklyReport
 };
