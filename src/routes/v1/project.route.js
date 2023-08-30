@@ -21,4 +21,12 @@ router
   .route('/getProjectVariance/:projectId')
   .get(validate(projectValidation.getProjectVariance), projectController.getProjectVariance);
 
+  router
+  .route('/add-member/:projectId')
+  .post(validate(projectValidation.addMember),projectController.addMember);
+
+  router
+  .route('/remove-member/:projectId')
+  .delete(validate(projectValidation.removeMember),projectController.removeMember);
+
 module.exports = router;

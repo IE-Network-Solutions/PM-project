@@ -2,7 +2,8 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { projectService } = require('../services');
+const { projectService} = require('../services');
+const { User } = require('../models');
 
 const createProject = catchAsync(async (req, res) => {
   const projectMembers = req.body.projectMembers;
@@ -74,6 +75,15 @@ const DateVariationOfFinish = (plannedFinish, actualFinish) => {
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return diffDays;
 }
+const addMember = catchAsync(async (req, res) =>  {
+  const projectMember = await projectService.addMember(req.params.projectId, req.body);
+  res.status(httpStatus.CREATED).json(projectMember);
+});
+
+const removeMember =catchAsync(async(req, res)=>{
+  const projectId = await projectService.removeMember(req.params.projectId, req.body);
+  res.send(projectId);
+});
 
 module.exports = {
   createProject,
@@ -81,5 +91,7 @@ module.exports = {
   getProject,
   updateProject,
   deleteProject,
-  getProjectVariance
+  getProjectVariance,
+  addMember,
+  removeMember
 };

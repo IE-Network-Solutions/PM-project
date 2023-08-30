@@ -20,5 +20,11 @@ tableName: 'roles',
         target: "User", 
         inverseSide: "role",
       },   
+
+      projectMember: {
+        type: "one-to-many", 
+        target: "ProjectMember", 
+        inverseSide: "role",
+      },   
   },
 });

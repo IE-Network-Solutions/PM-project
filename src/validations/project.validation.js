@@ -54,11 +54,33 @@ const getProjectVariance = {
   }),
 };
 
+const addMember = Joi.object().keys({
+  params: Joi.object().keys({
+    projectId: Joi.string().required()
+  }),
+  body: Joi.array().items(
+    Joi.object().keys({
+      memberId: Joi.string().required(),
+      roleId: Joi.string().required()
+    })
+  ).required()
+});
+
+const removeMember = {
+  params: Joi.object().keys({
+    projectId: Joi.string(),
+  }),
+};
+
+  
+
 module.exports = {
   createProject,
   getProjects,
   getProject,
   updateProject,
   deleteProject,
-  getProjectVariance
+  getProjectVariance,
+  addMember,
+  removeMember
 };
