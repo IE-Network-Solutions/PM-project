@@ -1,3 +1,4 @@
+
 const { EntitySchema } = require('typeorm');
 
 const ProjectMember = new EntitySchema({
@@ -13,8 +14,6 @@ const ProjectMember = new EntitySchema({
     },
     roleId: {
       type: 'uuid',
-      nullable: true,
-      // primary: true,
     },
   },
   relations: {
@@ -30,7 +29,7 @@ const ProjectMember = new EntitySchema({
     role: {
       type: 'many-to-one',
       target: 'Role',
-      inverseSide: 'user'
+      joinColumn: { name: 'roleId', referencedColumnName: 'id' },
     },
   },
 });
