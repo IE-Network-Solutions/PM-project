@@ -56,12 +56,11 @@ const sendForApproval = async (approvalModuleName, moduleId) => {
   let moduleIdd = moduleId;
 
   // find the approval module which identifis for which module we are approving for which is seeded to the db(ProjectBudget,OfficeProjectBudget)
-  const approvalModule = await approvalModuleRepository.findOneBy({ moduleName: approvalModuleName });
+  const approvalModule = await approvalModuleRepository.findOne({ where: { moduleName: approvalModuleNamee } });
   let updatedModule = null;
   if (!approvalModule) {
     throw new ApiError(httpStatus.NOT_FOUND, 'approval module does not exist');
   }
-
   // since it is about to sent for approval for the first time we will set the level to one(Approval Stage is the stage which holds the level with approving role)
   let level = 1;
   let moduleName = approvalModule.moduleName;
@@ -105,7 +104,7 @@ const getCurrentApprover = async (moduleName, moduleId) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'approval module does not exist');
   }
   if (approvalModule.moduleName == 'ProjectBudget') {
-    const module = await approvalGroupRepository
+    const moduleData = await approvalGroupRepository
       .createQueryBuilder('budget_group')
       .leftJoin('budget_group.approvalStage', 'approvalStage')
       .leftJoin('approvalStage.role', 'role')
@@ -114,11 +113,12 @@ const getCurrentApprover = async (moduleName, moduleId) => {
       .select(['budget_group', 'approvalStage', 'project', 'projectMembers', 'role'])
       .where('budget_group.id = :moduleId', { moduleId })
       .getOne();
-    if (!module) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'approval module(group) does not exist');
+    if (!moduleData) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'approval moduleData(group) does not exist');
     }
-    if (module.approvalStage.role.isProjectRole) {
-      let project = await module.project;
+    console.log(moduleData);
+    if (moduleData.approvalStage.role.isProjectRole) {
+      let project = await moduleData.project;
       let projectId = project.id;
       let ProjectMemebrsRoleData = await approvalProjectMemebrsRepository
         .createQueryBuilder('project_member')
@@ -128,10 +128,10 @@ const getCurrentApprover = async (moduleName, moduleId) => {
         .select(['project_member', 'project', 'user', 'role'])
         .where('project.id = :projectId', { projectId })
         .getOne();
-      currentApprover = ProjectMemebrsRoleData.filter((item) => item.roleId === module.approvalStage.role.id);
+      currentApprover = ProjectMemebrsRoleData.filter((item) => item.roleId === moduleData.approvalStage.role.id);
       currentApprover = ProjectMemebrsRoleData;
     } else {
-      currentApprover = userRepository.findOne({ where: { roleId: module.approvalStage.role.id } });
+      currentApprover = userRepository.findOne({ where: { roleId: moduleData.approvalStage.role.id } });
     }
   }
   return currentApprover;
