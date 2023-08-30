@@ -8,7 +8,7 @@ const logger = require('./config/logger');
 
 let server;
 
-rabbitConsumer('user.*').catch((error) => {
+rabbitConsumer(['user.*']).catch((error) => {
   console.error('Error consuming messages:', error);
 });
 
