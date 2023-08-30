@@ -250,12 +250,6 @@ const addWeeklyReport = async(projectId, weeklyReportData)=>{
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonthNumber = currentDate.getMonth() + 1;
-const monthNames = [
-  'January', 'February', 'March', 'April', 'May', 'June', 
-  'July', 'August', 'September', 'October', 'November', 'December'
-];
-
-const currentMonthName = monthNames[currentMonthNumber - 1];
 
   const risks = weeklyReportData.risks;
   const issues = weeklyReportData.issues;
@@ -308,8 +302,6 @@ const getReportByWeek = async(week) =>{
 
 
 const addComment = async(comment) =>{
-  // return comment;
-
     const weeklyReportComment = weeklyCommentReportRepository.create({
       weeklyReportId: comment.id,
       userId: comment.userId,

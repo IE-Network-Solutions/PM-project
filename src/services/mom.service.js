@@ -47,15 +47,16 @@ const createMom = async (momBody, Attendees, Action, Agenda) => {
   
     for (const eachAction of Action) {
       const responsiblePersons = eachAction.responsiblePersonId || [];
+      
+      const actionInstance = momActionRepository.create({
+        momId: mom.id,
+        action: eachAction.action,
+        deadline: eachAction.deadline,
+      });
+
+      const savedActionInstance = await momActionRepository.save(actionInstance);
+
       for (const responsiblePerson of responsiblePersons) {
-        const actionInstance = momActionRepository.create({
-          momId: mom.id,
-          action: eachAction.action,
-          deadline: eachAction.deadline,
-          responsiblePersonId: responsiblePerson.id,
-        });
-  
-        const savedActionInstance = await momActionRepository.save(actionInstance);
         if (responsiblePerson.id) {
           const responsiblePersonInstance = momActionResponsibleRepository.create({
             userId: responsiblePerson.id,
@@ -68,6 +69,7 @@ const createMom = async (momBody, Attendees, Action, Agenda) => {
         actionInstances.push(savedActionInstance);
       }
     }
+
   
     mom.action = actionInstances;
   }

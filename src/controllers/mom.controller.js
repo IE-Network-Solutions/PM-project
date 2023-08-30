@@ -7,7 +7,6 @@ const { momComment } = require('../models');
 
 const createMom = catchAsync(async (req, res) => {
   const Attendees = req.body.attendees;
-  // const externalAttendees =  req.body.otherAttendees;
   const Agenda = req.body.agenda;
   const Action = req.body.action;
   delete req.body.attendees;
@@ -45,6 +44,8 @@ const updateMom = catchAsync(async(req, res)=>{
   const mom = await momService.updateMom(req.params.momId, req.body);
   res.send(mom);
 });
+
+
 const deleteMom = catchAsync(async(req, res)=>{
     await momService.deleteMom(req.params.momId);
     res.status(httpStatus.NO_CONTENT).send();
