@@ -54,12 +54,10 @@ const getProjectVariance = async (req, res) => {
     startVariance: startVariance,
     finishVariance: finishVariance,
     project: taskList.tasksForVariance[0].baseline.milestone.project,
-    task: task
   }
 
   res.send(response);
 };
-
 const DateVariationOfStart = (plannedStart, actualStart) => {
   const plannedStart1 = new Date(plannedStart);
   const actualStart1 = new Date(actualStart);
@@ -75,11 +73,17 @@ const DateVariationOfFinish = (plannedFinish, actualFinish) => {
   return diffDays;
 }
 
+const getAllTasksByProject = async (req, res) => {
+  const projectIds = await projectService.getAllTasksByProject();
+  res.send(projectIds);
+}
+
 module.exports = {
   createProject,
   getProjects,
   getProject,
   updateProject,
   deleteProject,
-  getProjectVariance
+  getProjectVariance,
+  getAllTasksByProject
 };

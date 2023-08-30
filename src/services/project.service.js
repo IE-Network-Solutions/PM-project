@@ -148,11 +148,26 @@ const getProjectVariance = async (projectId) => {
   return listOfAllTasks;
 };
 
+const getAllTasksByProject = async () => {
+  const projects = await projectRepository.find({
+    tableName: 'projects'
+  });
+
+  const allprojecttasks = [];
+  const projectIds = projects.map((project) => { return project.id });
+  for (const ids of projectIds) {
+    const tasks = await allActiveBaselineTasks(ids)
+    allprojecttasks.push(tasks.tasksForVariance)
+  }
+  return allprojecttasks;
+};
+
 module.exports = {
   createProject,
   getProjects,
   getProject,
   updateProject,
   deleteProject,
-  getProjectVariance
+  getProjectVariance,
+  getAllTasksByProject
 };

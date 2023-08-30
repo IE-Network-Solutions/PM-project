@@ -21,4 +21,8 @@ router
   .route('/getProjectVariance/:projectId')
   .get(validate(projectValidation.getProjectVariance), projectController.getProjectVariance);
 
+router
+  .route('/getProjectVariance/groupByProject/all')
+  .get(projectController.getAllTasksByProject);
+
 module.exports = router;

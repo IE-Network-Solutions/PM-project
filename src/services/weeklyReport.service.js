@@ -18,7 +18,6 @@ const taskRepository = dataSource.getRepository(Task).extend({
   findAll,
   sortBy,
 });
-
 const taskUserRepository = dataSource.getRepository(TaskUser).extend({
   findAll,
   sortBy,
@@ -133,8 +132,6 @@ const allActiveBaselineTasks = async (projectId) => {
 
 };
 
-
-
 const weeklyReport = async (projectId) => {
   const getMilestoneByProject = await milestoneRepository.findBy({
     projectId: projectId,
@@ -236,11 +233,27 @@ const addSleepingReason = async (tasks) => {
   return updatedTasks;
 };
 
+// const getAllTasksByProject = async () => {
+//   const projectIds = await getProjects();
+//   return projectIds;
+// }
+// allprojecttasks = []
+
+// project = await projectService.getallprojects
+
+// pid_array = project.map((p) => {
+//   return p.id
+// })
+
+// for (const ids of pid_array) {
+//   let tasks = allActiveBaselineTasks(ids)
+//   allprojecttasks.push(tasks)
+// }
 
 
 
 module.exports = {
   weeklyReport,
   addSleepingReason,
-  allActiveBaselineTasks
+  allActiveBaselineTasks,
 };
