@@ -52,15 +52,6 @@ const getApprovalLevels = async () => {
   return await approvalLevelRepository.find();
 };
 
-// /**
-//  * Get budget by id
-//  * @param {ObjectId} id
-//  * @returns {Promise<Project>}
-//  */
-// const getApprovalModule = async (id) => {
-//   return await approvalModuleRepository.findOneBy({ id: id });
-// };
-
 module.exports = {
   createApprovalLevel,
   getApprovalLevels,
