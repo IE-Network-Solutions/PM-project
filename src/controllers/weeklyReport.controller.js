@@ -11,7 +11,7 @@ const allTasks = catchAsync(async (req, res) => {
 });
 
 const weeklyReport = catchAsync(async (req, res) => {
-  const project = await weeklyReportService.weeklyReport(req.params.projectId);
+  const project = await weeklyReportService.getWeeklyReport(req.params.projectId);
   res.send(project);
 });
 
@@ -20,7 +20,10 @@ const addSleepingReason = catchAsync(async (req, res) => {
   res.send(updatedTasks);
 });
 
-
+const addWeeklyReport = catchAsync(async(req, res)=>{
+   const weeklyReport = await weeklyReportService.addWeeklyReport(req.params.projectId, req.body);
+   res.status(httpStatus.CREATED).send(weeklyReport);
+});
 
 
 
@@ -29,5 +32,6 @@ const addSleepingReason = catchAsync(async (req, res) => {
 module.exports = {
   weeklyReport,
   addSleepingReason,
-  allTasks
+  allTasks,
+  addWeeklyReport
 };

@@ -14,6 +14,7 @@ const ProjectMember = new EntitySchema({
     },
     roleId: {
       type: 'uuid',
+      nullable: true,
     },
   },
   relations: {

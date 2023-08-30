@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const { startOfWeek, endOfWeek, addWeeks } = require('date-fns');
 const { Between } = require('typeorm');
-const { Task, TaskUser, Baseline, Milestone, Risk, Issue } = require('../models');
+const { Task, TaskUser, Baseline, Milestone, Risk, Issue, WeeklyReport } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -36,6 +36,10 @@ const riskRepository = dataSource.getRepository(Risk).extend({
   sortBy,
 });
 const issueRepository = dataSource.getRepository(Issue).extend({
+  findAll,
+  sortBy,
+});
+const weeklyReportRepository = dataSource.getRepository(WeeklyReport).extend({
   findAll,
   sortBy,
 });
@@ -116,7 +120,7 @@ const risks = await riskRepository.find({
 
 
 
-const weeklyReport = async (projectId) => {
+const getWeeklyReport = async (projectId) => {
   const getMilestoneByProject = await milestoneRepository.findBy({
     projectId: projectId,
     status: true
@@ -141,7 +145,7 @@ const weeklyReport = async (projectId) => {
       where: {
         baselineId: eachAllActiveBaselines.id,
       },
-      relations: ['baseline.milestone']
+      relations: ['baseline.milestone.project']
     });
 
     if(activeTasks.length > 0){
@@ -234,11 +238,49 @@ const addSleepingReason = async (tasks) => {
   return updatedTasks;
 };
 
+const addWeeklyReport = async(projectId, weeklyReportData)=>{
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonthNumber = currentDate.getMonth() + 1;
+const monthNames = [
+  'January', 'February', 'March', 'April', 'May', 'June', 
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
+
+const currentMonthName = monthNames[currentMonthNumber - 1];
+
+  const risks = weeklyReportData.risks;
+  const issues = weeklyReportData.issues;
+  const sleepingTasks = weeklyReportData.sleepingTasks;
+  const nextWeekTasks = weeklyReportData.nextWeekTasks;
+
+  // return [projectId, currentMonthNumber, risks, issues, sleepingTasks, nextWeekTasks,]
+
+
+  const dayOfMonth = currentDate.getDate();
+  const weekOfMonth = Math.ceil(dayOfMonth / 7);
+  
+  const addedWeeklyReport =  weeklyReportRepository.create({
+    projectId: projectId,
+    year: currentYear,
+    month: currentMonthNumber,
+    week: weekOfMonth, // Add the calculated week of the month
+    issues: issues,
+    risks: risks,
+    sleepingTasks: sleepingTasks,
+    nextWeekTasks: nextWeekTasks,
+  });
+
+  const savedWeeklyReport = await weeklyReportRepository.save(addedWeeklyReport);
+  return savedWeeklyReport;
+}
+
 
 
 
 module.exports = {
-  weeklyReport,
+  getWeeklyReport,
   addSleepingReason,
-  allActiveBaselineTasks
+  allActiveBaselineTasks,
+  addWeeklyReport
 };

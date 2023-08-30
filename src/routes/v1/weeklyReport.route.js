@@ -16,4 +16,9 @@ const router = express.Router();
   .route('/add-sleeping-reason')
   .patch(validate(weeklyReportValidation.sleepingTasks), weeklyReportController.addSleepingReason);
 
+  router
+  .route ('/add/:projectId')
+  .post(validate(weeklyReportValidation.addWeeklyReport), weeklyReportController.addWeeklyReport);
+
+
 module.exports = router;
