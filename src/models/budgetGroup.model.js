@@ -18,8 +18,19 @@ module.exports = new EntitySchema({
   columns: new BudgetGroup(),
   relations: {
     comments: {
-      type: 'many-to-one',
+      type: 'many-to-many',
       target: 'BudgetComment',
+      joinTable: {
+        name: 'budgetGroupComment',
+        joinColumn: {
+          name: 'budgetGroupId',
+          referencedColumnName: 'id',
+        },
+        inverseJoinColumn: {
+          name: 'budgetCommentId',
+          referencedColumnName: 'id',
+        },
+      },
     },
     approvalStage: {
       type: 'many-to-one',

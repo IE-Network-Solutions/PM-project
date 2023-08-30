@@ -29,6 +29,7 @@ module.exports.BudgetCategory = require('./budgetCategory.model');
 module.exports.BudgetType = require('./budgetType.model');
 module.exports.BudgetTaskCategory = require('./budgetTaskCategory.model');
 module.exports.BudgetComment = require('./budgetComments.model');
+module.exports.BudgetGroupComment = require('./budgetGroupComment.model');
 module.exports.BudgetGroup = require('./budgetGroup.model');
 module.exports.Budget = require('./budget.model');
 module.exports.Department = require('./department.model');
