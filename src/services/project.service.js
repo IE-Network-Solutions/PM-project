@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Project, ProjectMembers, ProjectContractValue } = require('../models');
+const { Project, ProjectMembers, ProjectContractValue, User } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -86,8 +86,14 @@ const getProjects = async (filter, options) => {
     tableName: 'projects',
     sortOptions: sortBy && { option: sortBy },
     paginationOptions: { limit: limit, page: page },
-    relations: ['projectMembers', 'projectContractValues'],
+    relations: ['projectMembers.role', 'projectContractValues'],
   });
+  // return await projectRepository.createQueryBuilder('project')
+  //   .leftJoin('project.projectMembers', 'projectMember')
+  //   .leftJoin('projectMember.role', 'role')
+  //   .leftJoin('project.projectContractValues', 'projectContractValue')
+  //   .addSelect(['projectMember', 'role', 'projectContractValue'])
+  //   .getMany();
 };
 
 
@@ -135,7 +141,7 @@ const deleteProject = async (projectId) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
   // return await projectRepository.delete({ id: projectId });
-  return await projectRepository.update({ id: projectId }, updateBody);
+  return await projectRepository.delete({ id: projectId }, updateBody);
 };
 
 /**
@@ -162,6 +168,38 @@ const getAllTasksByProject = async () => {
   return allprojecttasks;
 };
 
+const addMember = async (projectId, projectMembers) => {
+  const project = await projectRepository.findOneBy({id: projectId});
+
+  if (projectMembers) {
+    const projectMemberInstances = projectMembers.map((member) => {
+      return projectMemberRepository.create({
+        projectId: projectId,
+        userId: member.memberId,
+        roleId: member.roleId,
+      });
+    });
+
+    await projectMemberRepository.save(projectMemberInstances);
+    project.projectMembers = projectMembers;
+  }
+  return project;
+};
+
+const removeMember = async(projectId, memberToRemove)=>{
+  const projectMembersToRemove = await projectMemberRepository.find({
+    where: {
+      projectId: projectId,
+      userId: memberToRemove.memberId,
+      roleId: memberToRemove.roleId,
+    }
+  });
+  
+  return await projectMemberRepository.remove(projectMembersToRemove);
+  
+
+}
+
 module.exports = {
   createProject,
   getProjects,
@@ -169,5 +207,7 @@ module.exports = {
   updateProject,
   deleteProject,
   getProjectVariance,
-  getAllTasksByProject
+  getAllTasksByProject,
+  addMember,
+  removeMember
 };

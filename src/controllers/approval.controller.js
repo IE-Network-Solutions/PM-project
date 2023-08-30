@@ -13,13 +13,19 @@ const getCurrentApprover = catchAsync(async (req, res) => {
   res.send(currentApprover);
 });
 
-// const getApprovalLevels = catchAsync(async (req, res) => {
-//   const approvalModules = await approvalLevelService.getApprovalLevels();
-//   res.send(approvalModules);
-// });
+const approve = catchAsync(async (req, res) => {
+  const updatedData = await approvalService.approve(req.body.moduleName, req.body.moduleId);
+  res.send(updatedData);
+});
+const reject = catchAsync(async (req, res) => {
+  const budgetComment = req.body.comment;
+  const updatedData = await approvalService.reject(req.body.moduleName, req.body.moduleId, budgetComment);
+  res.send(updatedData);
+});
 
 module.exports = {
   sendForApproval,
   getCurrentApprover,
-  //   getApprovalLevels,
+  approve,
+  reject,
 };

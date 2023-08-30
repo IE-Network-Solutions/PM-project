@@ -150,6 +150,22 @@ const weeklyReport = async (projectId) => {
     allActiveBaselines.push(...activeBaselines);
   }
 
+  const allTasks = [];
+
+  for (const eachAllActiveBaselines of allActiveBaselines){
+    const activeTasks = await taskRepository.find({
+      where: {
+        baselineId: eachAllActiveBaselines.id,
+      },
+      relations: ['baseline.milestone']
+    });
+
+    if(activeTasks.length > 0){
+      allTasks.push(...activeTasks); 
+      
+    }
+  }
+
 
   const sleepingTasks = [];
 
@@ -200,6 +216,7 @@ const weeklyReport = async (projectId) => {
 
 
   const weeklyReport = {
+    allTasks: allTasks,
     sleepingTasks: sleepingTasks,
     nextWeekTasks: nextWeekTasks,
     risks: risks,
