@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const { startOfWeek, endOfWeek, addWeeks } = require('date-fns');
 const { Between } = require('typeorm');
-const { Task, TaskUser, Baseline, Milestone, Risk, Issue, WeeklyReport } = require('../models');
+const { Task, TaskUser, Baseline, Milestone, Risk, Issue, WeeklyReport,WeeklyReportComment, User } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -40,6 +40,14 @@ const issueRepository = dataSource.getRepository(Issue).extend({
   sortBy,
 });
 const weeklyReportRepository = dataSource.getRepository(WeeklyReport).extend({
+  findAll,
+  sortBy,
+});
+const weeklyCommentReportRepository = dataSource.getRepository(WeeklyReportComment).extend({
+  findAll,
+  sortBy,
+});
+const userRepository = dataSource.getRepository(User).extend({
   findAll,
   sortBy,
 });
@@ -289,7 +297,48 @@ const getAddedWeeklyReport = async (projectId) => {
   return groupedWeeklyReports;
 };
 
+const getReportByWeek = async(week) =>{
 
+  const reportByWeek = weeklyReportRepository.find({
+    where: {week: week.week},
+    relations: ['project']
+  });
+  return reportByWeek;
+}
+
+
+const addComment = async(comment) =>{
+  // return comment;
+
+    const weeklyReportComment = weeklyCommentReportRepository.create({
+      weeklyReportId: comment.id,
+      userId: comment.userId,
+      comment: comment.comment,
+    });
+  
+    const savedComment = await weeklyCommentReportRepository.save(weeklyReportComment);
+
+    const sender = await userRepository.findOne({
+      where : {
+        id: savedComment.userId
+      }
+    }
+    );
+  
+    savedComment.user = sender;
+    return savedComment;
+}
+
+const getComments = async(weeklyReportId) =>{
+
+  return await weeklyCommentReportRepository.find(
+    {
+      where:{weeklyReportId: weeklyReportId, },
+      relations: ['user'],
+      order: { createdAt: 'ASC' },
+    }
+  );
+}
 
 
 module.exports = {
@@ -297,5 +346,8 @@ module.exports = {
   addSleepingReason,
   allActiveBaselineTasks,
   addWeeklyReport,
-  getAddedWeeklyReport
+  getAddedWeeklyReport,
+  getReportByWeek,
+  addComment,
+  getComments
 };

@@ -28,10 +28,25 @@ const savedWeeklyReport ={
     projectId: Joi.string().required(),
   }), 
 }
+const getReportByWeek ={
+  params: Joi.object().keys({
+    week: Joi.string().required(),
+  }), 
+}
+
+const addComment = {
+  body: Joi.object().keys({
+    id: Joi.string().required(),
+    comment: Joi.string().required(),
+    userId: Joi.string().required(),
+  }),
+};
 
 module.exports = {
   weeklyReport,
   sleepingTasks,
   addWeeklyReport,
-  savedWeeklyReport
+  savedWeeklyReport,
+  getReportByWeek,
+  addComment
 };

@@ -22,6 +22,7 @@ module.exports.Subtask = require('./subtask.model');
 module.exports.Subtask = require('./subtask.model');
 module.exports.Mom = require('./minuteOfMettings.model');
 module.exports.WeeklyReport = require('./weeklyReport.model');
+module.exports.WeeklyReportComment = require('./weeklyReportComment.model');
 module.exports.User = require('./user.model');
 module.exports.LessonLearned = require('./lessonLearned.model');
 module.exports.IndividualLL = require('./individualLL.model');

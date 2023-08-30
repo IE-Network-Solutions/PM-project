@@ -31,6 +31,21 @@ const getAddedWeeklyReport = catchAsync(async(req, res)=>{
   res.send(savedWeeklyReport);
 });
 
+const getReportByWeek = catchAsync(async(req, res)=>{
+  const reportByWeek = await weeklyReportService.getReportByWeek(req.params);
+  res.send(reportByWeek);
+});
+
+const addComment = catchAsync(async(req, res) =>{
+  const weeklyReportComment = await weeklyReportService.addComment(req.body);
+  res.status(httpStatus.CREATED).send(weeklyReportComment);
+});
+
+const getComments = catchAsync(async (req, res)=>{
+  const weeklyReportComment = await weeklyReportService.getComments(req.params.weeklyReportId);
+  res.send(weeklyReportComment);
+});
+
 
 
 
@@ -39,5 +54,8 @@ module.exports = {
   addSleepingReason,
   allTasks,
   addWeeklyReport,
-  getAddedWeeklyReport
+  getAddedWeeklyReport,
+  getReportByWeek,
+  addComment,
+  getComments
 };

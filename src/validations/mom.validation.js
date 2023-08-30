@@ -56,7 +56,7 @@ const deleteMom = {
 
 const addComment = {
     body: Joi.object().keys({
-      momId: Joi.string().required(),
+      id: Joi.string().required(),
       comment: Joi.string().required(),
       userId: Joi.string().required(),
       mentionedId: Joi.string(),

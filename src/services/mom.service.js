@@ -178,7 +178,7 @@ const deleteMom = async (momId) => {
 
 const addComment = async(momBody) =>{
   const momComment = momCommentRepository.create({
-    momId: momBody.momId,
+    momId: momBody.id,
     userId: momBody.userId,
     comment: momBody.comment,
     mentionedId: momBody.mentionedId,

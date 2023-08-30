@@ -26,5 +26,10 @@ module.exports = new EntitySchema({
         target: "Project",
         inverseSide: "weeklyReport",
     },   
+    weeklyReportComment: {
+      type: "one-to-many", 
+      target: "WeeklyReportComment", 
+      inverseSide: "weeklyReport", 
+    },  
   },
 });
