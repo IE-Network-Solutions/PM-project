@@ -79,14 +79,15 @@ const allActiveBaselineTasks = async (projectId) => {
       .leftJoinAndSelect('milestone.project', 'project')
       .where('task.baselineId = :baselineId', { baselineId: eachAllActiveBaselines.id })
       .orderBy('task.plannedStart', 'ASC')
-      .groupBy('task.id, baseline.id, milestone.id, project.id')
+      .groupBy('task.id, baseline.id, project.id, milestone.id')
       .getMany();
+
 
     if (activeTasks.length > 0) {
       tasksForVariance.push(...activeTasks);
-
     }
   }
+
 
   const nextWeekTasks = [];
 
@@ -152,7 +153,7 @@ const weeklyReport = async (projectId) => {
 
   const allTasks = [];
 
-  for (const eachAllActiveBaselines of allActiveBaselines){
+  for (const eachAllActiveBaselines of allActiveBaselines) {
     const activeTasks = await taskRepository.find({
       where: {
         baselineId: eachAllActiveBaselines.id,
@@ -160,9 +161,9 @@ const weeklyReport = async (projectId) => {
       relations: ['baseline.milestone']
     });
 
-    if(activeTasks.length > 0){
-      allTasks.push(...activeTasks); 
-      
+    if (activeTasks.length > 0) {
+      allTasks.push(...activeTasks);
+
     }
   }
 

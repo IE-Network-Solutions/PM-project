@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { projectService} = require('../services');
+const { projectService } = require('../services');
 const { User } = require('../models');
 
 const createProject = catchAsync(async (req, res) => {
@@ -41,8 +41,7 @@ const deleteProject = catchAsync(async (req, res) => {
 const getProjectVariance = async (req, res) => {
 
   const taskList = await projectService.getProjectVariance(req.params.projectId);
-  const task = taskList;
-  console.log(taskList)
+
   const plannedStart1 = taskList.tasksForVariance[0].plannedStart;
   const actualStart1 = taskList.tasksForVariance[taskList.tasksForVariance.length - 1].actualStart;
   const startVariance = DateVariationOfStart(plannedStart1, actualStart1);
@@ -73,12 +72,12 @@ const DateVariationOfFinish = (plannedFinish, actualFinish) => {
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return diffDays;
 }
-const addMember = catchAsync(async (req, res) =>  {
+const addMember = catchAsync(async (req, res) => {
   const projectMember = await projectService.addMember(req.params.projectId, req.body);
   res.status(httpStatus.CREATED).json(projectMember);
 });
 
-const removeMember =catchAsync(async(req, res)=>{
+const removeMember = catchAsync(async (req, res) => {
   const projectId = await projectService.removeMember(req.params.projectId, req.body);
   res.send(projectId);
 });

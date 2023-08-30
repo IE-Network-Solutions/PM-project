@@ -22,7 +22,7 @@ module.exports = new EntitySchema({
   tableName: 'users',
   columns: new User(),
   relations: {
-    role:{
+    role: {
       type: 'one-to-many',
       target: 'Role',
       inverseSide: 'user'
@@ -40,7 +40,8 @@ module.exports = new EntitySchema({
           name: 'taskId',
           referencedColumnName: 'id',
         },
-      }},
+      }
+    },
     projects: {
       type: "many-to-many",
       target: "Project",
@@ -70,19 +71,24 @@ module.exports = new EntitySchema({
       onUpdate: "CASCADE",
     },
     momFacilitator: {
-      type: "one-to-many", 
-      target: "minuteOfMeeting", 
-      inverseSide: "facilitator", 
-    }, 
+      type: "one-to-many",
+      target: "minuteOfMeeting",
+      inverseSide: "facilitator",
+    },
     userComment: {
-      type: "one-to-many", 
-      target: "MomComment", 
-      inverseSide: "user", 
-    }, 
+      type: "one-to-many",
+      target: "MomComment",
+      inverseSide: "user",
+    },
     commentMentioned: {
-      type: "one-to-many", 
-      target: "MomComment", 
-      inverseSide: "mentioned", 
-    }, 
+      type: "one-to-many",
+      target: "MomComment",
+      inverseSide: "mentioned",
+    },
+    llcomment: {
+      type: "one-to-many",
+      target: "LLComments",
+      inverseSide: "user",
+    },
   },
 });

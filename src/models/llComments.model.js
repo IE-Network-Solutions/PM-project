@@ -26,11 +26,12 @@ module.exports = new EntitySchema({
             onDelete: "SET NULL",
             onUpdate: 'CASCADE'
         },
-        // user: {
-        //     type: 'many-to-one',
-        //     target: 'User',
-        //     onDelete: "SET NULL",
-        //     onUpdate: 'CASCADE'
-        // },
+        user: {
+            type: 'many-to-one',
+            target: 'User',
+            inverseSide: "llcomment",
+            onDelete: "SET NULL",
+            onUpdate: 'CASCADE'
+        },
     },
 });

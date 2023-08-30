@@ -150,8 +150,7 @@ const deleteProject = async (projectId) => {
  * @returns {Promise<Project>}
  */
 const getProjectVariance = async (projectId) => {
-  const listOfAllTasks = await allActiveBaselineTasks(projectId);
-  return listOfAllTasks;
+  return await allActiveBaselineTasks(projectId);
 };
 
 const getAllTasksByProject = async () => {
@@ -159,17 +158,22 @@ const getAllTasksByProject = async () => {
     tableName: 'projects'
   });
 
-  const allprojecttasks = [];
-  const projectIds = projects.map((project) => { return project.id });
+  const allProjectTasks = [];
+
+  const projectIds = projects.map((project) => {
+    return project.id
+  });
+
   for (const ids of projectIds) {
     const tasks = await allActiveBaselineTasks(ids)
-    allprojecttasks.push(tasks.tasksForVariance)
+    allProjectTasks.push(tasks.tasksForVariance)
   }
-  return allprojecttasks;
-};
+  console.log("lists", allProjectTasks)
+  return allProjectTasks;
+}
 
 const addMember = async (projectId, projectMembers) => {
-  const project = await projectRepository.findOneBy({id: projectId});
+  const project = await projectRepository.findOneBy({ id: projectId });
 
   if (projectMembers) {
     const projectMemberInstances = projectMembers.map((member) => {
@@ -186,7 +190,7 @@ const addMember = async (projectId, projectMembers) => {
   return project;
 };
 
-const removeMember = async(projectId, memberToRemove)=>{
+const removeMember = async (projectId, memberToRemove) => {
   const projectMembersToRemove = await projectMemberRepository.find({
     where: {
       projectId: projectId,
@@ -194,9 +198,9 @@ const removeMember = async(projectId, memberToRemove)=>{
       roleId: memberToRemove.roleId,
     }
   });
-  
+
   return await projectMemberRepository.remove(projectMembersToRemove);
-  
+
 
 }
 
