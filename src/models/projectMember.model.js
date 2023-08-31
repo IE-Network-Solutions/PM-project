@@ -1,4 +1,3 @@
-
 const { EntitySchema } = require('typeorm');
 
 const ProjectMember = new EntitySchema({

@@ -25,7 +25,6 @@ const projectContractValueRepository = dataSource.getRepository(ProjectContractV
 //   return await projectRepository.save(project);
 // };
 
-
 // project.service.js
 const createProject = async (projectBody, projectMembers, projectContractValue) => {
   const project = projectRepository.create(projectBody);
@@ -51,7 +50,7 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
       return projectContractValueRepository.create({
         projectId: project.id,
         amount: contract_value.amount,
-        currency: contract_value.currency
+        currency: contract_value.currency,
       });
     });
     // Save the project contract value instances
@@ -64,10 +63,6 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
 
   return project;
 };
-
-
-
-
 
 /**
  * Query for users
@@ -96,9 +91,6 @@ const getProjects = async (filter, options) => {
   //   .getMany();
 };
 
-
-
-
 /**
  * Get post by id
  * @param {ObjectId} id
@@ -108,10 +100,8 @@ const getProject = async (id) => {
   return await projectRepository.findOne({
     where: { id: id },
     relations: ['projectMembers', 'projectContractValues'],
-  },
-  );
+  });
 };
-
 
 /**
  * Update user by id
@@ -155,7 +145,7 @@ const getProjectVariance = async (projectId) => {
 };
 
 const addMember = async (projectId, projectMembers) => {
-  const project = await projectRepository.findOneBy({id: projectId});
+  const project = await projectRepository.findOneBy({ id: projectId });
 
   if (projectMembers) {
     const projectMemberInstances = projectMembers.map((member) => {
@@ -172,19 +162,17 @@ const addMember = async (projectId, projectMembers) => {
   return project;
 };
 
-const removeMember = async(projectId, memberToRemove)=>{
+const removeMember = async (projectId, memberToRemove) => {
   const projectMembersToRemove = await projectMemberRepository.find({
     where: {
       projectId: projectId,
       userId: memberToRemove.memberId,
       roleId: memberToRemove.roleId,
-    }
+    },
   });
-  
-  return await projectMemberRepository.remove(projectMembersToRemove);
-  
 
-}
+  return await projectMemberRepository.remove(projectMembersToRemove);
+};
 
 module.exports = {
   createProject,
@@ -194,5 +182,5 @@ module.exports = {
   deleteProject,
   getProjectVariance,
   addMember,
-  removeMember
+  removeMember,
 };
