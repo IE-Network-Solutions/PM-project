@@ -25,7 +25,7 @@ const router = express.Router();
   .get(validate(weeklyReportValidation.savedWeeklyReport), weeklyReportController.getAddedWeeklyReport);
 
   router
-  .route('/week/:week')
+  .route('/:projectId/week/:week')
   .get(validate(weeklyReportValidation.getReportByWeek), weeklyReportController.getReportByWeek);
   
   router

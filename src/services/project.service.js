@@ -85,7 +85,7 @@ const getProjects = async (filter, options) => {
     tableName: 'projects',
     sortOptions: sortBy && { option: sortBy },
     paginationOptions: { limit: limit, page: page },
-    relations: ['projectMembers.role', 'projectContractValues'],
+    relations: ['projectMembers', 'projectContractValues'],
   });
   // return await projectRepository.createQueryBuilder('project')
   //   .leftJoin('project.projectMembers', 'projectMember')

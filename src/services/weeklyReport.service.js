@@ -255,6 +255,7 @@ const addWeeklyReport = async(projectId, weeklyReportData)=>{
   const issues = weeklyReportData.issues;
   const sleepingTasks = weeklyReportData.sleepingTasks;
   const nextWeekTasks = weeklyReportData.nextWeekTasks;
+  const overAllProgress = weeklyReportData.overAllProgress;
 
   // return [projectId, currentMonthNumber, risks, issues, sleepingTasks, nextWeekTasks,]
 
@@ -271,6 +272,7 @@ const addWeeklyReport = async(projectId, weeklyReportData)=>{
     risks: risks,
     sleepingTasks: sleepingTasks,
     nextWeekTasks: nextWeekTasks,
+    overAllProgress: overAllProgress,
   });
 
   const savedWeeklyReport = await weeklyReportRepository.save(addedWeeklyReport);
@@ -291,14 +293,13 @@ const getAddedWeeklyReport = async (projectId) => {
   return groupedWeeklyReports;
 };
 
-const getReportByWeek = async(week) =>{
-
-  const reportByWeek = weeklyReportRepository.find({
-    where: {week: week.week},
+const getReportByWeek = async (projectId, week) => {
+  const reportByWeek = await weeklyReportRepository.find({
+    where: { projectId: projectId, id: week }, 
     relations: ['project']
   });
   return reportByWeek;
-}
+};
 
 
 const addComment = async(comment) =>{

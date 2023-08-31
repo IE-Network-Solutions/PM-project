@@ -41,7 +41,18 @@ const getByProject = catchAsync(async(req, res)=>{
 
 
 const updateMom = catchAsync(async(req, res)=>{
-  const mom = await momService.updateMom(req.params.momId, req.body);
+  const attendees = req.body.attendees;
+  const externalAttendees = req.body.externalAttendees;
+  const action = req.body.action;
+  const agenda = req.body.agenda;
+
+  delete req.body.attendees;
+  delete req.body.action;
+  delete req.body.agenda;
+
+  const momBody = req.body;
+
+  const mom = await momService.updateMom(req.params.momId, momBody,  attendees, externalAttendees, action, agenda);
   res.send(mom);
 });
 

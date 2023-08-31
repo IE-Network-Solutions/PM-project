@@ -12,6 +12,7 @@ class weeklyReport extends Base {
     this.nextWeekTasks = { type: 'json', nullable: true };
     this.risks = { type: 'json', nullable: true };
     this.issues = { type: 'json', nullable: true };
+    this.overAllProgress = { type: 'json', nullable: true };
     this.isApproved = { type: 'boolean', default: false};
     this.projectId = { type: 'uuid', };
   }

@@ -32,7 +32,7 @@ const getAddedWeeklyReport = catchAsync(async(req, res)=>{
 });
 
 const getReportByWeek = catchAsync(async(req, res)=>{
-  const reportByWeek = await weeklyReportService.getReportByWeek(req.params);
+  const reportByWeek = await weeklyReportService.getReportByWeek(req.params.projectId, req.params.week);
   res.send(reportByWeek);
 });
 

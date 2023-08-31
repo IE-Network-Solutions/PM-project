@@ -30,6 +30,7 @@ const savedWeeklyReport ={
 }
 const getReportByWeek ={
   params: Joi.object().keys({
+    projectId: Joi.string().required(),
     week: Joi.string().required(),
   }), 
 }
