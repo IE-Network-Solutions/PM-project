@@ -153,25 +153,47 @@ const getProjectVariance = async (projectId) => {
   return await allActiveBaselineTasks(projectId);
 };
 
-const getAllTasksByProject = async () => {
+const getAllProjectTasksVarianceByProject = async () => {
   const projects = await projectRepository.find({
     tableName: 'projects'
   });
-
   const allProjectTasks = [];
 
-  const projectIds = projects.map((project) => {
-    return project.id
-  });
-
-  for (const ids of projectIds) {
-    const tasks = await allActiveBaselineTasks(ids)
-    allProjectTasks.push(tasks.tasksForVariance)
+  for (const project of projects) {
+    const tasks = await allActiveBaselineTasks(project.id);
+    project.tasks = tasks.tasksForVariance;
+    allProjectTasks.push(project);
   }
-  console.log("lists", allProjectTasks)
-  return allProjectTasks;
-}
 
+  allProjectTasks.map((task) => {
+    let startVariance = '';
+    let finishVariance = '';
+
+    let firstTask = task?.tasks[0];
+    let lastTask = task?.tasks[task.tasks.length - 1];
+
+    if (firstTask?.actualStart) {
+      console.log("planned start", firstTask?.plannedStart, "actual start", firstTask?.actualStart)
+      startVariance = new Date(firstTask.plannedStart).getTime() - new Date(firstTask.actualStart).getTime();
+      startVariance = Math.ceil(startVariance / (1000 * 60 * 60 * 24));
+    }
+
+    if (lastTask?.actualFinish) {
+      console.log("planned finish", firstTask?.plannedFinish, "actual finish", firstTask?.actualFinish)
+      finishVariance = new Date(lastTask.plannedFinish).getTime() - new Date(lastTask.actualFinish).getTime();
+      finishVariance = Math.ceil(finishVariance / (1000 * 60 * 60 * 24));
+    }
+
+    task.startVariance = startVariance;
+    task.finishVariance = finishVariance;
+
+    // delete p.tasks;
+    return task;
+  });
+  return {
+    allProjectTasks
+  };
+}
 const addMember = async (projectId, projectMembers) => {
   const project = await projectRepository.findOneBy({ id: projectId });
 
@@ -211,7 +233,7 @@ module.exports = {
   updateProject,
   deleteProject,
   getProjectVariance,
-  getAllTasksByProject,
+  getAllProjectTasksVarianceByProject,
   addMember,
   removeMember
 };

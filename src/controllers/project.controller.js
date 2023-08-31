@@ -38,40 +38,6 @@ const deleteProject = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
-const getProjectVariance = async (req, res) => {
-
-  const taskList = await projectService.getProjectVariance(req.params.projectId);
-
-  const plannedStart1 = taskList.tasksForVariance[0].plannedStart;
-  const actualStart1 = taskList.tasksForVariance[taskList.tasksForVariance.length - 1].actualStart;
-  const startVariance = DateVariationOfStart(plannedStart1, actualStart1);
-
-  const plannedFinish2 = taskList.tasksForVariance[0].plannedFinish;
-  const actualFinish2 = taskList.tasksForVariance[taskList.tasksForVariance.length - 1].actualFinish;
-  const finishVariance = DateVariationOfFinish(plannedFinish2, actualFinish2);
-
-  const response = {
-    startVariance: startVariance,
-    finishVariance: finishVariance,
-    project: taskList.tasksForVariance[0].baseline.milestone.project,
-  }
-
-  res.send(response);
-};
-const DateVariationOfStart = (plannedStart, actualStart) => {
-  const plannedStart1 = new Date(plannedStart);
-  const actualStart1 = new Date(actualStart);
-  const diffTime = actualStart1.getTime() - plannedStart1.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays;
-}
-const DateVariationOfFinish = (plannedFinish, actualFinish) => {
-  const plannedFinish1 = new Date(plannedFinish);
-  const actualFinish1 = new Date(actualFinish);
-  const diffTime = plannedFinish1.getTime() - actualFinish1.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays;
-}
 const addMember = catchAsync(async (req, res) => {
   const projectMember = await projectService.addMember(req.params.projectId, req.body);
   res.status(httpStatus.CREATED).json(projectMember);
@@ -82,8 +48,8 @@ const removeMember = catchAsync(async (req, res) => {
   res.send(projectId);
 });
 
-const getAllTasksByProject = async (req, res) => {
-  const projectIds = await projectService.getAllTasksByProject();
+const getAllProjectTasksVarianceByProject = async (req, res) => {
+  const projectIds = await projectService.getAllProjectTasksVarianceByProject();
   res.send(projectIds);
 }
 
@@ -93,8 +59,7 @@ module.exports = {
   getProject,
   updateProject,
   deleteProject,
-  getProjectVariance,
-  getAllTasksByProject,
+  getAllProjectTasksVarianceByProject,
   addMember,
   removeMember
 };
