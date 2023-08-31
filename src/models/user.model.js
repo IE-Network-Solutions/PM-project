@@ -23,9 +23,9 @@ module.exports = new EntitySchema({
   columns: new User(),
   relations: {
     role: {
-      type: 'one-to-many',
+      type: 'many-to-one',
       target: 'Role',
-      inverseSide: 'user'
+      inverseSide: 'user',
     },
     tasks: {
       type: 'many-to-many',
@@ -40,35 +40,35 @@ module.exports = new EntitySchema({
           name: 'taskId',
           referencedColumnName: 'id',
         },
-      }
+      },
     },
     projects: {
-      type: "many-to-many",
-      target: "Project",
+      type: 'many-to-many',
+      target: 'Project',
       joinTable: {
-        name: "project_member",
-        joinColumn: { name: "userId", referencedColumnName: "id" },
+        name: 'project_member',
+        joinColumn: { name: 'userId', referencedColumnName: 'id' },
         inverseJoinColumn: {
-          name: "projectId",
-          referencedColumnName: "id",
+          name: 'projectId',
+          referencedColumnName: 'id',
         },
       },
-      onDelete: "SET NULL",
-      onUpdate: "CASCADE",
+      onDelete: 'SET NULL',
+      onUpdate: 'CASCADE',
     },
     mom: {
-      type: "many-to-many",
-      target: "minuteOfMeeting",
+      type: 'many-to-many',
+      target: 'minuteOfMeeting',
       joinTable: {
-        name: "mom_attendees",
-        joinColumn: { name: "userId", referencedColumnName: "id" },
+        name: 'mom_attendees',
+        joinColumn: { name: 'userId', referencedColumnName: 'id' },
         inverseJoinColumn: {
-          name: "momId",
-          referencedColumnName: "id",
+          name: 'momId',
+          referencedColumnName: 'id',
         },
       },
-      onDelete: "SET NULL",
-      onUpdate: "CASCADE",
+      onDelete: 'SET NULL',
+      onUpdate: 'CASCADE',
     },
     momFacilitator: {
       type: "one-to-many",
