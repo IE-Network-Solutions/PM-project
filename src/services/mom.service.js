@@ -167,7 +167,7 @@ const updateMom = async (momId, momBody, attendees, externalAttendees, action, a
 
   if(attendees){
 
-    //  create attendees
+    //  remove all attendees
     for(const eachAttendees of attendees){
       const momAttendees = await momAttendeesRepository.findBy({momId: momId});
       await momAttendeesRepository.remove(momAttendees);

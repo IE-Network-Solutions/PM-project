@@ -141,13 +141,84 @@ const getByMilestone = async (milestoneId) => {
  * @param {Object} updateBody
  * @returns {Promise<Project>}
  */
-const updateBaseline = async (baselineId, updateBody) => {
-  const baseline = await getBaseline(baselineId);
-  if (!baseline) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Baseline not found');
+const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
+
+  if (baselineBody) {
+  await baselineRepository.update({ id: baselineId }, {name: baselineBody.name});
   }
-  await baselineRepository.update({ id: baselineId }, updateBody);
-  return await getBaseline(baselineId);
+
+
+  if (tasksBody) {
+    for (const taskBody of tasksBody) {
+      const requestedTask = taskBody;
+  
+      if (requestedTask.id) {
+        const subTasks = taskBody.subtasks || [];
+  
+        // Update the main task
+        await taskRepository.update({ id: requestedTask.id }, {
+          name: requestedTask.name,
+          status: requestedTask.status,
+          sleepingReason: requestedTask.sleepingReason,
+          plannedStart: requestedTask.plannedStart,
+          plannedFinish: requestedTask.plannedFinish,
+          actualStart: requestedTask.actualStart,
+          actualFinish: requestedTask.actualFinish,
+          completion: requestedTask.completion,
+          subTasks: requestedTask.subTasks,
+        });
+  
+        // Create and save subtasks
+        if (subTasks.length > 0) {
+          const subTaskInstances = subTasks.map((eachSubTask) => ({
+            taskId: requestedTask.id, // Use the taskId of the main task
+            name: eachSubTask.name,
+            plannedStart: eachSubTask.plannedStart,
+            plannedFinish: eachSubTask.plannedFinish,
+            actualStart: eachSubTask.actualStart,
+            actualFinish: eachSubTask.actualFinish,
+            completion: eachSubTask.completion,
+            status: eachSubTask.status,
+            sleepingReason: eachSubTask.sleepingReason,
+          }));
+          await subTaskRepository.save(subTaskInstances);
+        }
+      } else {
+        const subTasks = taskBody.subtasks || [];
+        const createTask = taskRepository.create({
+          baselineId: baselineId,
+          name: requestedTask.name,
+          status: requestedTask.status,
+          sleepingReason: requestedTask.sleepingReason,
+          plannedStart: requestedTask.plannedStart,
+          plannedFinish: requestedTask.plannedFinish,
+          actualStart: requestedTask.actualStart,
+          actualFinish: requestedTask.actualFinish,
+          completion: requestedTask.completion,
+          subTasks: requestedTask.subTasks,
+        });
+        const savedTask = await taskRepository.save(createTask);
+  
+        // Create and save subtasks
+        if (subTasks.length > 0) {
+          const subTaskInstances = subTasks.map((eachSubTask) => ({
+            taskId: savedTask.id, // Use the taskId of the newly created task
+            name: eachSubTask.name,
+            plannedStart: eachSubTask.plannedStart,
+            plannedFinish: eachSubTask.plannedFinish,
+            actualStart: eachSubTask.actualStart,
+            actualFinish: eachSubTask.actualFinish,
+            completion: eachSubTask.completion,
+            status: eachSubTask.status,
+            sleepingReason: eachSubTask.sleepingReason,
+          }));
+          await subTaskRepository.save(subTaskInstances);
+        }
+      }
+    }
+  }
+  
+return baselineBody;
 };
 
 /**
