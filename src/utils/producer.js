@@ -12,7 +12,6 @@ async function publishToRabbit(routingKey, data) {
     channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(data)), {});
 
     logger.info(`Published data to queue with ${routingKey} key`);
-
     await channel.close();
     await connection.close();
   } catch (error) {

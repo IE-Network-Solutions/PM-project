@@ -7,10 +7,10 @@ class User {
     this.roleId = { type: 'varchar', nullable: true };
     this.email = { type: 'varchar' };
     this.emailVerifiedAt = { type: 'timestamp', nullable: true };
-    this.password = { type: 'varchar' };
+    this.password = { type: 'varchar',nullable: true };
     this.avatar = { type: 'varchar', nullable: true };
     this.signature = { type: 'varchar', nullable: true };
-    this.isDeleted = { type: 'bool' };
+    this.isDeleted = { type: 'bool',nullable: true };
     this.rememberToken = { type: 'text', nullable: true };
     this.createdAt = { type: 'timestamp' };
     this.updatedAt = { type: 'timestamp' };

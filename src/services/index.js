@@ -27,3 +27,4 @@ module.exports.approvalStageService = require('./approvalStage.service');
 module.exports.roleService = require('./role.service');
 module.exports.approvalService = require('./approval.service');
 module.exports.departmentService = require('./department.service');
+module.exports.currencyService = require('./currency.service');

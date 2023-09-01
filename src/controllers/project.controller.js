@@ -2,12 +2,22 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { projectService} = require('../services');
+const { projectService, currencyService} = require('../services');
 const { User } = require('../models');
 
 const createProject = catchAsync(async (req, res) => {
   const projectMembers = req.body.projectMembers;
-  const projectContractValue = req.body.projectContractValue;
+  const projectContractValueData = req.body.projectContractValue;
+  const projectContractValue = [];
+  for (const data of projectContractValueData) {
+    const currency = await currencyService.getCurrencyById(data.currency);
+    const contractValueData = {
+      amount: data.amount,
+      currency: currency
+    }
+    projectContractValue.push(contractValueData);
+  }
+  console.log(projectContractValue,"ppppppppppppp");
   delete req.body.projectMembers;
   delete req.body.projectContractValue;
   const project = await projectService.createProject(req.body, projectMembers, projectContractValue);

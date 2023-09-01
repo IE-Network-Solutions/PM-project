@@ -7,6 +7,8 @@ const findAll = require('./Plugins/findAll');
 const publishToRabbit = require('../utils/producer');
 const { allActiveBaselineTasks } = require('./weeklyReport.service');
 
+
+
 const projectRepository = dataSource.getRepository(Project).extend({
   findAll,
   sortBy,
@@ -47,22 +49,22 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
   }
 
   if (projectContractValue) {
-    const projectContractValueInstance = projectContractValue.map((contract_value) => {
-      return projectContractValueRepository.create({
-        projectId: project.id,
-        amount: contract_value.amount,
-        currency: contract_value.currency
-      });
+    console.log(projectContractValue,"tttttttttttttt")
+    const projectContractValueInstance =  projectContractValue.map((contract_value) => {
+      contract_value.project = project;
+      return contract_value
     });
     // Save the project contract value instances
     await projectContractValueRepository.save(projectContractValueInstance);
   }
 
-  project.projectMembers = projectMembers;
-  project.projectContractValue = projectContractValue;
-  publishToRabbit('project.create', project);
+  let newProject=await getProject(project.id)
+  newProject.projectMembers = projectMembers;
+  // project.projectContractValue = projectContractValue;
+  publishToRabbit('project.create', newProject);
 
-  return project;
+  return newProject;
+  // return await getProject(project.id)
 };
 
 
@@ -86,7 +88,7 @@ const getProjects = async (filter, options) => {
     tableName: 'projects',
     sortOptions: sortBy && { option: sortBy },
     paginationOptions: { limit: limit, page: page },
-    relations: ['projectMembers', 'projectContractValues'],
+    relations: ['projectMembers','projectContractValues'],
   });
   // return await projectRepository.createQueryBuilder('project')
   //   .leftJoin('project.projectMembers', 'projectMember')
@@ -107,7 +109,7 @@ const getProjects = async (filter, options) => {
 const getProject = async (id) => {
   return await projectRepository.findOne({
     where: { id: id },
-    relations: ['projectMembers', 'projectContractValues'],
+    relations: ['projectMembers', 'projectContractValues.currency'],
   },
   );
 };
@@ -122,10 +124,11 @@ const getProject = async (id) => {
 const updateProject = async (projectId, updateBody) => {
   const project = await getProject(projectId);
   if (!project) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
   await projectRepository.update({ id: projectId }, updateBody);
   const updatedProject = await getProject(projectId);
+  updatedProject.members = await getMembers(updatedProject.id);
   publishToRabbit('project.update', updatedProject);
   return updatedProject;
 };
@@ -172,6 +175,13 @@ const addMember = async (projectId, projectMembers) => {
   return project;
 };
 
+const getMembers = async(projectId)=>{
+ return await projectMemberRepository
+      .createQueryBuilder('project_member')
+      .where('project_member.projectId = :projectId', { projectId })
+      .getMany();
+}
+
 const removeMember = async(projectId, memberToRemove)=>{
   const projectMembersToRemove = await projectMemberRepository.find({
     where: {
@@ -180,6 +190,8 @@ const removeMember = async(projectId, memberToRemove)=>{
       roleId: memberToRemove.roleId,
     }
   });
+
+
   
   return await projectMemberRepository.remove(projectMembersToRemove);
   
@@ -194,5 +206,5 @@ module.exports = {
   deleteProject,
   getProjectVariance,
   addMember,
-  removeMember
+  removeMember,getMembers
 };

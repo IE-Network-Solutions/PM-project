@@ -113,6 +113,26 @@ const getBudgetsOfProject = async (projectId) => {
  * @returns {Promise<QueryResult>}
  */
 
+const getBudgetGroupByCategory = async()=>{
+  const budgets = await budgetRepository
+  .createQueryBuilder('budget')
+  .leftJoinAndSelect('budget.taskCategory', 'taskCategory')
+  .select('SUM(budget.amount)', 'sum')
+  .addSelect('taskCategory', 'taskCategory')
+  // .where('group.id = :groupId', { accountNumber: '12345' })
+  .groupBy('taskCategory.id')
+  .getRawMany();
+  // .createQueryBuilder('budget')
+  // .leftJoinAndSelect('budget.taskCategory', 'taskCategory')
+  // .select('SUM(budget.amount)', 'sum')
+  // .addSelect('taskCategory', 'taskCategory')
+  // .where('taskCategory.accountNumber = :accountNumber', { accountNumber: '12345' })
+  // .groupBy('taskCategory.id')
+  // .getRawOne();
+  return budgets
+}
+
+
 const getBudgetsOfProjects = async () => {
   const approval = false;
 
@@ -255,4 +275,5 @@ module.exports = {
   getBudgetsOfProjects,
   addBudget,
   getBudgetGroup,
+  getBudgetGroupByCategory
 };
