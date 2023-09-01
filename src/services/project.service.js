@@ -149,9 +149,6 @@ const deleteProject = async (projectId) => {
  * @param {ObjectId} ProjectId
  * @returns {Promise<Project>}
  */
-const getProjectVariance = async (projectId) => {
-  return await allActiveBaselineTasks(projectId);
-};
 
 const getAllProjectTasksVarianceByProject = async () => {
   const projects = await projectRepository.find({
@@ -192,6 +189,26 @@ const getAllProjectTasksVarianceByProject = async () => {
 
   return { Projects: allProjectTasks };
 }
+
+const getAllProjectsDetailOnMasterSchedule = async () => {
+  const projects = await projectRepository.find({
+    tableName: 'projects'
+  });
+  const allProjectTasks = [];
+  let project;
+  for (project of projects) {
+    const tasks = await allActiveBaselineTasks(project.id);
+    project.tasks = tasks.tasksForVariance;
+    allProjectTasks.push(project);
+  }
+
+  allProjectTasks.map((task) => {
+    // delete task.tasks?.map(task => task?.baseline?.milestone);
+  });
+  return { Projects: allProjectTasks };
+}
+
+
 const addMember = async (projectId, projectMembers) => {
   const project = await projectRepository.findOneBy({ id: projectId });
 
@@ -230,8 +247,8 @@ module.exports = {
   getProject,
   updateProject,
   deleteProject,
-  getProjectVariance,
   getAllProjectTasksVarianceByProject,
+  getAllProjectsDetailOnMasterSchedule,
   addMember,
   removeMember
 };

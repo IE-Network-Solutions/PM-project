@@ -53,6 +53,11 @@ const getAllProjectTasksVarianceByProject = async (req, res) => {
   res.send(projectIds);
 }
 
+const getAllProjectsDetailOnMasterSchedule = async (req, res) => {
+  const projectDetail = await projectService.getAllProjectsDetailOnMasterSchedule();
+  res.send(projectDetail);
+}
+
 module.exports = {
   createProject,
   getProjects,
@@ -60,6 +65,7 @@ module.exports = {
   updateProject,
   deleteProject,
   getAllProjectTasksVarianceByProject,
+  getAllProjectsDetailOnMasterSchedule,
   addMember,
   removeMember
 };

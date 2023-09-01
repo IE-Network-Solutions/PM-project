@@ -20,6 +20,9 @@ router
   .route('/getProjectVariance/groupByProject/all')
   .get(projectController.getAllProjectTasksVarianceByProject);
 router
+  .route('/getProjectDetail/onMasterSchedule/all')
+  .get(projectController.getAllProjectsDetailOnMasterSchedule);
+router
   .route('/add-member/:projectId')
   .post(validate(projectValidation.addMember), projectController.addMember);
 
