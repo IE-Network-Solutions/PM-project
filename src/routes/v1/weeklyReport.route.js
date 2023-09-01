@@ -16,4 +16,25 @@ const router = express.Router();
   .route('/add-sleeping-reason')
   .patch(validate(weeklyReportValidation.sleepingTasks), weeklyReportController.addSleepingReason);
 
+  router
+  .route ('/add/:projectId')
+  .post(validate(weeklyReportValidation.addWeeklyReport), weeklyReportController.addWeeklyReport);
+
+  router
+  .route('/saved/:projectId')
+  .get(validate(weeklyReportValidation.savedWeeklyReport), weeklyReportController.getAddedWeeklyReport);
+
+  router
+  .route('/:projectId/week/:week')
+  .get(validate(weeklyReportValidation.getReportByWeek), weeklyReportController.getReportByWeek);
+  
+  router
+  .route('/comment')
+  .post(validate(weeklyReportValidation.addComment), weeklyReportController.addComment);
+
+  router
+  .route('/comment/:weeklyReportId')
+  .get(validate(weeklyReportValidation.getComment), weeklyReportController.getComments);
+
+
 module.exports = router;

@@ -76,14 +76,14 @@ module.exports = new EntitySchema({
       inverseSide: 'facilitator',
     },
     userComment: {
-      type: 'one-to-many',
-      target: 'MomComment',
-      inverseSide: 'user',
-    },
-    commentMentioned: {
-      type: 'one-to-many',
-      target: 'MomComment',
-      inverseSide: 'mentioned',
-    },
+      type: "one-to-many", 
+      target: "MomComment", 
+      inverseSide: "user", 
+    }, 
+    reportComment: {
+      type: "one-to-many", 
+      target: "WeeklyReportComment", 
+      inverseSide: "user", 
+    }, 
   },
 });

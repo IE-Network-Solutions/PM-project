@@ -11,7 +11,7 @@ module.exports.momComment = require('./momComment.model');
 // module.exports.AfterActionAnalysisIssueRelated = require('./afterActionAnalysisIssueRelated.model');
 module.exports.Project = require('./project.model');
 module.exports.paymentTerm = require('./PaymentTerm.model');
-module.exports.ProjectMembers = require('./ProjectMember.model');
+// module.exports.ProjectMembers = require('./ProjectMember.model');
 module.exports.ProjectContractValue = require('./projectContractValue.model');
 
 module.exports.Milestone = require('./milestone.model');
@@ -21,6 +21,8 @@ module.exports.TaskUser = require('./taskUser.model');
 module.exports.Subtask = require('./subtask.model');
 module.exports.Subtask = require('./subtask.model');
 module.exports.Mom = require('./minuteOfMettings.model');
+module.exports.WeeklyReport = require('./weeklyReport.model');
+module.exports.WeeklyReportComment = require('./weeklyReportComment.model');
 module.exports.User = require('./user.model');
 module.exports.LessonLearned = require('./lessonLearned.model');
 module.exports.IndividualLL = require('./individualLL.model');

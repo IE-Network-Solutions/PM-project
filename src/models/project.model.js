@@ -27,6 +27,11 @@ module.exports = new EntitySchema({
       target: 'ProjectContractValue',
       inverseSide: 'project',
     },
+    weeklyReport: {
+      type: 'one-to-many',
+      target: 'WeeklyReport',
+      inverseSide: 'project',
+    },
     projectMembers: {
       type: 'many-to-many',
       target: 'User',

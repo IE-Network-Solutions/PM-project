@@ -5,11 +5,15 @@ const {Base} = require('./BaseModel')
 class weeklyReport extends Base {
   constructor() {
     super(); 
-    this.sleepingTasks = { type: 'json' };
-    this.nextWeekTasks = { type: 'json', };
-    this.risks = { type: 'json', };
-    this.issues = { type: 'json', };
-    this.isApproved = { type: 'boolean', };
+    this.year = {type: 'int'}
+    this.month = {type: 'int'}
+    this.week = {type: 'int'}
+    this.sleepingTasks = { type: 'json', nullable: true };
+    this.nextWeekTasks = { type: 'json', nullable: true };
+    this.risks = { type: 'json', nullable: true };
+    this.issues = { type: 'json', nullable: true };
+    this.overAllProgress = { type: 'json', nullable: true };
+    this.isApproved = { type: 'boolean', default: false};
     this.projectId = { type: 'uuid', };
   }
 }
@@ -20,8 +24,13 @@ module.exports = new EntitySchema({
   relations: {
     project: {
         type: "many-to-one", 
-        target: "projects",
-        inverseSide: "milestones",
+        target: "Project",
+        inverseSide: "weeklyReport",
     },   
+    weeklyReportComment: {
+      type: "one-to-many", 
+      target: "WeeklyReportComment", 
+      inverseSide: "weeklyReport", 
+    },  
   },
 });
