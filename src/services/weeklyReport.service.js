@@ -72,15 +72,21 @@ const allActiveBaselineTasks = async (projectId) => {
 
   const tasksForVariance = [];
 
-  for (const eachAllActiveBaselines of allActiveBaselines) {
-    const activeTasks = await taskRepository.createQueryBuilder('task')
+  for (const projectId of getMilestoneByProject) {
+    const activeTasks = await taskRepository
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.baseline', 'baseline')
+      .leftJoinAndSelect('baseline.milestone', 'milestone')
+      .leftJoinAndSelect('milestone.project', 'project')
+      .where('project.id = :projectId', { projectId: projectId.projectId })
       .orderBy('task.plannedStart', 'ASC')
-      .groupBy('task.id')
+      .groupBy('baseline.id, milestone.id, project.id, task.id')
       .getMany();
     if (activeTasks.length > 0) {
       tasksForVariance.push(...activeTasks);
     }
   }
+
   const nextWeekTasks = [];
 
   for (const eachAllActiveBaselines of allActiveBaselines) {

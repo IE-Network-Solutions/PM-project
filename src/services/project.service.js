@@ -158,13 +158,12 @@ const getAllProjectTasksVarianceByProject = async () => {
     tableName: 'projects'
   });
   const allProjectTasks = [];
-
-  for (const project of projects) {
+  let project;
+  for (project of projects) {
     const tasks = await allActiveBaselineTasks(project.id);
     project.tasks = tasks.tasksForVariance;
     allProjectTasks.push(project);
   }
-
   allProjectTasks.map((task) => {
     let startVariance = '';
     let finishVariance = '';
@@ -173,26 +172,25 @@ const getAllProjectTasksVarianceByProject = async () => {
     let lastTask = task?.tasks[task.tasks.length - 1];
 
     if (firstTask?.actualStart) {
-      console.log("planned start", firstTask?.plannedStart, "actual start", firstTask?.actualStart)
-      startVariance = new Date(firstTask.plannedStart).getTime() - new Date(firstTask.actualStart).getTime();
+      startVariance =
+        new Date(firstTask.plannedStart).getTime() -
+        new Date(firstTask.actualStart).getTime();
       startVariance = Math.ceil(startVariance / (1000 * 60 * 60 * 24));
     }
 
     if (lastTask?.actualFinish) {
-      console.log("planned finish", firstTask?.plannedFinish, "actual finish", firstTask?.actualFinish)
-      finishVariance = new Date(lastTask.plannedFinish).getTime() - new Date(lastTask.actualFinish).getTime();
+      finishVariance =
+        new Date(lastTask.plannedFinish).getTime() -
+        new Date(lastTask.actualFinish).getTime();
       finishVariance = Math.ceil(finishVariance / (1000 * 60 * 60 * 24));
     }
 
     task.startVariance = startVariance;
     task.finishVariance = finishVariance;
-
-    // delete p.tasks;
-    return task;
+    delete task.tasks;
   });
-  return {
-    allProjectTasks
-  };
+
+  return { Projects: allProjectTasks };
 }
 const addMember = async (projectId, projectMembers) => {
   const project = await projectRepository.findOneBy({ id: projectId });
