@@ -28,5 +28,11 @@ module.exports = new EntitySchema({
         target: "PaymentTerm",
         inverseSide: "milestones",
       },   
+      baseline: { 
+        type: "one-to-many",
+        target: "Baseline", 
+        inverseSide: "milestone",
+        onDelete: 'CASCADE',
+      },
   },
 });
