@@ -14,6 +14,8 @@ const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 const services = require('./index');
+const publishToRabbit = require('../utils/producer');
+ 
 
 const approvalStageRepository = dataSource.getRepository(ApprovalStage).extend({
   findAll,
@@ -162,6 +164,11 @@ const approve = async (moduleName, moduleId) => {
       // approve
       await approvalGroupRepository.update({ id: moduleId }, { approved: true });
       updatedModule = await approvalGroupRepository.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
+// Rabit Mq Producer
+      let approvedByGroup=await services.budgetService.getBudgetGroupByCategory(moduleId)
+      publishToRabbit('budget.create',approvedByGroup)
+      
+
     } else {
       level = moduleData.approvalStage.level + 1;
       const approvalStage = await approvalStageRepository

@@ -7,6 +7,8 @@ const budgetSchema = Joi.object({
   taskId: Joi.string().guid().required(),
   budgetCategoryId: Joi.string().guid().required(),
   taskCategoryId: Joi.string().guid().required(),
+  currencyId:Joi.string().required(),
+
 });
 const addBudget = {
   body: Joi.object().keys({
@@ -16,6 +18,7 @@ const addBudget = {
     budgetCategoryId: Joi.string().guid().required(),
     taskCategoryId: Joi.string().guid().required(),
     groupId: Joi.string().guid().required(),
+    currencyId:Joi.string().required(),
   }),
 };
 
