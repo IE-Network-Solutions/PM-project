@@ -61,44 +61,62 @@ const allActiveBaselineTasks = async (projectId) => {
 
   const allActiveBaselines = [];
 
-  for (const eachMilestone of getMilestoneByProject){
+  for (const eachMilestone of getMilestoneByProject) {
     const activeBaselines = await baselineRepository.findBy({
       milestoneId: eachMilestone.id,
       status: true
     });
 
-    allActiveBaselines.push(...activeBaselines); 
+    allActiveBaselines.push(...activeBaselines);
   }
 
   const allTasks = [];
 
-  for (const eachAllActiveBaselines of allActiveBaselines){
+  for (const eachAllActiveBaselines of allActiveBaselines) {
     const activeTasks = await taskRepository.findBy({
       baselineId: eachAllActiveBaselines.id,
     });
 
-    if(activeTasks.length > 0){
-      allTasks.push(...activeTasks); 
-      
+    if (activeTasks.length > 0) {
+      allTasks.push(...activeTasks);
+
     }
   }
-  
+
+  const tasksForVariance = [];
+
+  for (const eachAllActiveBaselines of allActiveBaselines) {
+    const activeTasks = await taskRepository.createQueryBuilder('task')
+      .leftJoinAndSelect('task.baseline', 'baseline')
+      .leftJoinAndSelect('baseline.milestone', 'milestone')
+      .leftJoinAndSelect('milestone.project', 'project')
+      .where('task.baselineId = :baselineId', { baselineId: eachAllActiveBaselines.id })
+      .orderBy('task.plannedStart', 'ASC')
+      .groupBy('task.id, baseline.id, milestone.id, project.id')
+      .getMany();
+
+    if (activeTasks.length > 0) {
+      tasksForVariance.push(...activeTasks);
+
+    }
+  }
+
   const nextWeekTasks = [];
 
-  for (const eachAllActiveBaselines of allActiveBaselines){
+  for (const eachAllActiveBaselines of allActiveBaselines) {
     const activeTasks = await taskRepository.findBy({
       baselineId: eachAllActiveBaselines.id,
       plannedStart: Between(startOfNextWeek, endOfNextWeek),
       actualStart: null
     });
 
-    if(activeTasks.length > 0){
-      nextWeekTasks.push(...activeTasks); 
+    if (activeTasks.length > 0) {
+      nextWeekTasks.push(...activeTasks);
     }
   }
 
   const issues = await issueRepository.find({
-    
+
     where: {
       projectId: projectId,
       createdAt: Between(startOfWeekDate, endOfWeekDate),
@@ -107,12 +125,12 @@ const allActiveBaselineTasks = async (projectId) => {
 
 
 
-const risks = await riskRepository.find({
-  where: {
-    projectId: projectId,
-    createdAt: Between(startOfWeekDate, endOfWeekDate),
-  },
-});
+  const risks = await riskRepository.find({
+    where: {
+      projectId: projectId,
+      createdAt: Between(startOfWeekDate, endOfWeekDate),
+    },
+  });
 
 
   const weeklyReport = {
@@ -120,6 +138,7 @@ const risks = await riskRepository.find({
     nextWeekTasks: nextWeekTasks,
     risks: risks,
     issues: issues,
+    tasksForVariance: tasksForVariance
   };
 
   return weeklyReport;
@@ -137,13 +156,13 @@ const getWeeklyReport = async (projectId) => {
 
   const allActiveBaselines = [];
 
-  for (const eachMilestone of getMilestoneByProject){
+  for (const eachMilestone of getMilestoneByProject) {
     const activeBaselines = await baselineRepository.findBy({
       milestoneId: eachMilestone.id,
       status: true
     });
 
-    allActiveBaselines.push(...activeBaselines); 
+    allActiveBaselines.push(...activeBaselines);
   }
 
   const allTasks = [];
@@ -165,36 +184,36 @@ const getWeeklyReport = async (projectId) => {
 
   const sleepingTasks = [];
 
-  for (const eachAllActiveBaselines of allActiveBaselines){
+  for (const eachAllActiveBaselines of allActiveBaselines) {
     const activeTasks = await taskRepository.findBy({
       baselineId: eachAllActiveBaselines.id,
       plannedStart: Between(startOfWeekDate, endOfWeekDate),
       actualStart: null
     });
 
-    if(activeTasks.length > 0){
-      sleepingTasks.push(...activeTasks); 
-      
+    if (activeTasks.length > 0) {
+      sleepingTasks.push(...activeTasks);
+
     }
   }
-  
-  
+
+
   const nextWeekTasks = [];
 
-  for (const eachAllActiveBaselines of allActiveBaselines){
+  for (const eachAllActiveBaselines of allActiveBaselines) {
     const activeTasks = await taskRepository.findBy({
       baselineId: eachAllActiveBaselines.id,
       plannedStart: Between(startOfNextWeek, endOfNextWeek),
       actualStart: null
     });
 
-    if(activeTasks.length > 0){
-      nextWeekTasks.push(...activeTasks); 
+    if (activeTasks.length > 0) {
+      nextWeekTasks.push(...activeTasks);
     }
   }
 
   const issues = await issueRepository.find({
-    
+
     where: {
       projectId: projectId,
       createdAt: Between(startOfWeekDate, endOfWeekDate),
@@ -203,12 +222,12 @@ const getWeeklyReport = async (projectId) => {
 
 
 
-const risks = await riskRepository.find({
-  where: {
-    projectId: projectId,
-    createdAt: Between(startOfWeekDate, endOfWeekDate),
-  },
-});
+  const risks = await riskRepository.find({
+    where: {
+      projectId: projectId,
+      createdAt: Between(startOfWeekDate, endOfWeekDate),
+    },
+  });
 
 
   const weeklyReport = {
@@ -236,7 +255,7 @@ const addSleepingReason = async (tasks) => {
     const updateResult = await taskRepository.update(taskId, updateFields);
 
     if (updateResult.affected > 0) {
-      const updatedTask = await taskRepository.findOneBy({id: taskId}); 
+      const updatedTask = await taskRepository.findOneBy({ id: taskId });
       if (updatedTask) {
         updatedTasks.push(updatedTask);
       }

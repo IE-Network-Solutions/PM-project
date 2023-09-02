@@ -146,7 +146,6 @@ const deletePaymentTerm = async (paymentTermId) => {
     );
 
   await paymentTermRepository.delete({ id: paymentTermId });
-
   return paymentTerm;
 };
 

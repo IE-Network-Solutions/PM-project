@@ -29,7 +29,7 @@ const createMom = async (momBody, Attendees, Action, Agenda) => {
   // Save the mom
   await momRepository.save(mom);
 
-  if (Attendees) { 
+  if (Attendees) {
     const momInstances = Attendees.map((eachAttendees) => {
       return momAttendeesRepository.create({
         momId: mom.id,
@@ -37,14 +37,14 @@ const createMom = async (momBody, Attendees, Action, Agenda) => {
       });
     });
 
-      // Save the mom instances
-      await momAttendeesRepository.save(momInstances);
+    // Save the mom instances
+    await momAttendeesRepository.save(momInstances);
   }
 
 
   if (Action) {
     const actionInstances = [];
-  
+
     for (const eachAction of Action) {
       const responsiblePersons = eachAction.responsiblePersonId || [];
       
@@ -62,10 +62,10 @@ const createMom = async (momBody, Attendees, Action, Agenda) => {
             userId: responsiblePerson.id,
             momActionId: savedActionInstance.id,
           });
-  
+
           await momActionResponsibleRepository.save(responsiblePersonInstance);
         }
-  
+
         actionInstances.push(savedActionInstance);
       }
     }
@@ -74,10 +74,10 @@ const createMom = async (momBody, Attendees, Action, Agenda) => {
     mom.action = actionInstances;
   }
 
-  if(Agenda){
+  if (Agenda) {
     const agendaInstance = [];
-    for(const eachAgenda of Agenda){
-      
+    for (const eachAgenda of Agenda) {
+
       const agendaTopics = eachAgenda.agendaTopics || [];
 
       const agendaInstance = momAgendaRepository.create({
@@ -87,28 +87,28 @@ const createMom = async (momBody, Attendees, Action, Agenda) => {
       const savedAgendaInstance = await momAgendaRepository.save(agendaInstance);
 
 
-          for(const agendaTopic of agendaTopics){
-            if(agendaTopic.userId == ""){
-              const agendaTopicInstance = momAgendaTopicRepository.create({
-                agendaId: savedAgendaInstance.id,
-                agendaPoints: agendaTopic.agendaPoints,
-                otherUser: agendaTopic.otherUser 
-            });
-            const savedAgendaTopics = await momAgendaTopicRepository.save(agendaTopicInstance);
-            }else{
-              const agendaTopicInstance = momAgendaTopicRepository.create({
-                agendaId: savedAgendaInstance.id,
-                agendaPoints: agendaTopic.agendaPoints,
-                userId: agendaTopic.userId 
-            });
-            const savedAgendaTopics = await momAgendaTopicRepository.save(agendaTopicInstance);
-            }
+      for (const agendaTopic of agendaTopics) {
+        if (agendaTopic.userId == "") {
+          const agendaTopicInstance = momAgendaTopicRepository.create({
+            agendaId: savedAgendaInstance.id,
+            agendaPoints: agendaTopic.agendaPoints,
+            otherUser: agendaTopic.otherUser
+          });
+          const savedAgendaTopics = await momAgendaTopicRepository.save(agendaTopicInstance);
+        } else {
+          const agendaTopicInstance = momAgendaTopicRepository.create({
+            agendaId: savedAgendaInstance.id,
+            agendaPoints: agendaTopic.agendaPoints,
+            userId: agendaTopic.userId
+          });
+          const savedAgendaTopics = await momAgendaTopicRepository.save(agendaTopicInstance);
+        }
 
-          }
+      }
     }
   }
-  
-   return mom;
+
+  return mom;
 };
 
 
@@ -127,7 +127,7 @@ const getMoms = async (filter, options) => {
   const { limit, page, sortBy } = options;
   return await momRepository.findAll({
     tableName: 'moms',
-    sortOptions: sortBy&&{ option: sortBy },
+    sortOptions: sortBy && { option: sortBy },
     paginationOptions: { limit: limit, page: page },
   });
 };
@@ -145,8 +145,35 @@ const getMom = async (momId) => {
   );
 };
 
-const getByProject = async(projectId) =>{
-  return await momRepository.findBy({projectId: projectId});
+const groupMOMByProject = async (filter, options) => {
+  const groupedResults = await momRepository
+    .createQueryBuilder('mom')
+    .leftJoinAndSelect('mom.project', 'project')
+    .select([
+      'mom.projectId AS projectId',
+      'project.createdAt AS createdAt',
+      'project.updatedAt AS updatedAt',
+      'project.createdBy AS createdBy',
+      'project.updatedBy AS updatedBy',
+      'project.name AS name',
+      'project.clientId AS clientId',
+      'project.milestone AS _milestone',
+      'project.budget AS budget',
+      'project.contract_sign_date AS contract_sign_date',
+      'project.planned_end_date AS planned_end_date',
+      'project.lc_opening_date AS lc_opening_date',
+      'project.advanced_payment_date AS advanced_payment_date',
+      'project.status AS status',
+      'json_agg(mom.*) AS MOM',
+    ])
+    .groupBy('mom.projectId, project.id, project.name')
+    .getRawMany();
+
+  return groupedResults;
+};
+
+const getByProject = async (projectId) => {
+  return await momRepository.findBy({ projectId: projectId });
 }
 
 
@@ -267,7 +294,7 @@ const deleteMom = async (momId) => {
   return await momRepository.delete({ id: momId });
 };
 
-const addComment = async(momBody) =>{
+const addComment = async (momBody) => {
   const momComment = momCommentRepository.create({
     momId: momBody.id,
     userId: momBody.userId,
@@ -306,5 +333,6 @@ module.exports = {
   updateMom,
   deleteMom,
   addComment,
-  getComments
+  getComments,
+  groupMOMByProject
 };

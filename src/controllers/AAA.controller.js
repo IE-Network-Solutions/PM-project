@@ -6,12 +6,8 @@ const teamList = require('../utils/teamList');
 const { AfterActionAnalysisService } = require('../services');
 
 const createAAA = catchAsync(async (req, res) => {
-    const checkTeams = req.body.teamInvolves;
-    console.log(checkTeams)
-    if (!teamList.some(teams => teams === req.body.teamInvolves)) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'AAA not found');
-    }
-    const AAA = await AfterActionAnalysisService.createAAA(req.body);
+    const departments = req.body.departments;
+    const AAA = await AfterActionAnalysisService.createAAA(req.body, departments);
     res.status(httpStatus.CREATED).send(AAA);
 });
 
@@ -24,6 +20,17 @@ const getAAAs = catchAsync(async (req, res) => {
 
 const getAAA = catchAsync(async (req, res) => {
     const AAA = await AfterActionAnalysisService.getAAAById(req.params.AAAId);
+    if (!AAA) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'AAA not found');
+    }
+    res.status(200).json({
+        status: "Success",
+        data: AAA
+    });
+});
+
+const groupAAAByProject = catchAsync(async (req, res) => {
+    const AAA = await AfterActionAnalysisService.groupAAAByProject();
     if (!AAA) {
         throw new ApiError(httpStatus.NOT_FOUND, 'AAA not found');
     }
@@ -60,5 +67,6 @@ module.exports = {
     getAAA,
     updateAAAById,
     deleteAAAById,
-    getAllAAAByProjectId
+    getAllAAAByProjectId,
+    groupAAAByProject
 };

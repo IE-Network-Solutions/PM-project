@@ -1,10 +1,10 @@
 const { EntitySchema } = require('typeorm');
-const {Base} = require('./BaseModel')
+const { Base } = require('./BaseModel')
 
 
 class Milestone extends Base {
   constructor() {
-    super(); 
+    super();
     this.name = { type: 'varchar' };
     this.status = { type: 'boolean', default: true };
     this.weight = { type: 'int', nullable: true};

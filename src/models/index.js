@@ -31,6 +31,7 @@ module.exports.BudgetCategory = require('./budgetCategory.model');
 module.exports.BudgetType = require('./budgetType.model');
 module.exports.BudgetTaskCategory = require('./budgetTaskCategory.model');
 module.exports.BudgetComment = require('./budgetComments.model');
+module.exports.BudgetGroupComment = require('./budgetGroupComment.model');
 module.exports.BudgetGroup = require('./budgetGroup.model');
 module.exports.Budget = require('./budget.model');
 module.exports.Department = require('./department.model');
@@ -39,4 +40,6 @@ module.exports.ApprovalModule = require('./approvalModule.model');
 module.exports.ApprovalLevel = require('./approvalLevels.model');
 module.exports.ApprovalStage = require('./approvalStage.model');
 module.exports.Role = require('./roles.model');
-module.exports.User = require('./user.model');
+module.exports.AAADepartment = require('./AAADepartment.model');
+module.exports.Currency = require('./currency.model');
+

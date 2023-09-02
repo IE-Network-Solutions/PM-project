@@ -19,7 +19,6 @@ async function calculate(budget) {
 
 const createBudget = catchAsync(async (req, res) => {
   const data = req.body;
-
   async function returnBudgetData(data) {
     const budgetData = [];
 
@@ -105,6 +104,52 @@ const getBudgetsOfProject = catchAsync(async (req, res) => {
   const data = await budgetService.getBudgetsOfProject(req.params.projectId);
   res.send(data);
 });
+const getBudgetsOfProjects = catchAsync(async (req, res) => {
+  const data = await budgetService.getBudgetsOfProjects();
+  res.send(data);
+});
+
+const getBudgetGroupByCategory= catchAsync(async (req,res)=>{
+  const data = await budgetService.getBudgetGroupByCategory()
+  res.send(data)
+})
+
+const addBudget = catchAsync(async (req, res) => {
+  data = req.body;
+
+  const task = await taskService.getTask(data.taskId);
+  if (!task) {
+    throw new ApiError(httpStatus.NOT_FOUND, `task with id: ${data.taskId} not found`);
+  }
+  const group = await budgetService.getBudgetGroup(data.groupId);
+  if (!group) {
+    throw new ApiError(httpStatus.NOT_FOUND, `group with id: ${data.groupId} not found`);
+  }
+  const project = await group.project;
+  if (!project) {
+    throw new ApiError(httpStatus.NOT_FOUND, `no project in the group please update the group`);
+  }
+  const budgetCategory = await budgetCategoryService.getBudgetCategory(data.budgetCategoryId);
+  if (!budgetCategory) {
+    throw new ApiError(httpStatus.NOT_FOUND, `budgetCategory with id: ${data.budgetCategoryId} not found`);
+  }
+  const taskCategory = await budgetTaskCategoryService.getBudgetTaskCategory(data.taskCategoryId);
+  if (!taskCategory) {
+    throw new ApiError(httpStatus.NOT_FOUND, `taskCategory with id: ${data.taskCategoryId} not found`);
+  }
+  const singleBudgetData = {
+    amount: data.amount,
+    description: data.description,
+    task: task,
+    project: project,
+    budgetCategory: budgetCategory,
+    taskCategory: taskCategory,
+    group: group,
+  };
+  console.log(singleBudgetData, 'pppppppppppp');
+  const budget = await budgetService.addBudget(singleBudgetData);
+  res.status(httpStatus.CREATED).send(budget);
+});
 
 module.exports = {
   createBudget,
@@ -113,4 +158,7 @@ module.exports = {
   updateBudget,
   deleteBudget,
   getBudgetsOfProject,
+  getBudgetsOfProjects,
+  addBudget,
+  getBudgetGroupByCategory
 };

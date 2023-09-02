@@ -20,5 +20,9 @@ router
     .route('/AAAByProjectId/:projectId')
     .get(validate(AAAValidation.getAllAAAByProjectId), AAAController.getAllAAAByProjectId);
 
+router
+    .route('/getAllAAA/groupByProject')
+    .get(validate(AAAValidation.getAllAAAByProjectId), AAAController.groupAAAByProject);
+
 module.exports = router;
 

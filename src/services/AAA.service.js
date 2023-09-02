@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { AfterActionAnalysis } = require('../models');
+const { AfterActionAnalysis, AAADepartment } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -8,6 +8,8 @@ const { createAction, getIssueRelatedById } = require('./action.service');
 const { updateRelatedIssueById } = require('./relatedIssues.service');
 
 const AAARepository = dataSource.getRepository(AfterActionAnalysis).extend({ findAll, sortBy });
+const AAADepartmentRepository = dataSource.getRepository(AAADepartment).extend({ findAll, sortBy });
+
 // .extend({ sortBy });
 //
 
@@ -16,25 +18,32 @@ const AAARepository = dataSource.getRepository(AfterActionAnalysis).extend({ fin
  * @param {Object} userBody
  * @returns {Promise<AAA>}
  */
-const createAAA = async (AAABody) => {
+const createAAA = async (AAABody, departments) => {
 
     let requestActions = AAABody.actions;
     delete AAABody.actions;
     let relatedIssues = AAABody.issueRelatesId;
+
     const createdAAA = AAARepository.create(AAABody)
-    const resultAAA = await AAARepository.save(createdAAA);
+    const resultAAA = await AAARepository.save(createdAAA)
+
+    if (departments) {
+        const AAADeparmentInstance = departments.map((department) => {
+            return AAADepartmentRepository.create({
+                afterActionAnalysisId: createdAAA.id,
+                departmentId: department,
+            });
+        });
+        await AAADepartmentRepository.save(AAADeparmentInstance);
+    }
 
     for (let action of requestActions) {
         action.afterActionAnalysis = resultAAA;
         await createAction(action);
     }
-
     for (const ids of relatedIssues) {
         await updateRelatedIssueById(ids, { afterActionAnalysisId: resultAAA.id });
     }
-
-
-
     return await getAAAById(resultAAA.id);
 };
 
@@ -52,7 +61,7 @@ const queryAAAs = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
     return await AAARepository.find({
-        relations: ['actions.responsiblePerson', 'actions.authorizedPerson', 'issueRelates', 'project'],
+        relations: ['actions.responsiblePerson', 'actions.authorizedPerson', 'issueRelates', 'project', 'department'],
         tableName: 'afterActionAnalysis',
         sortOptions: sortBy && { option: sortBy },
         paginationOptions: { limit: limit, page: page }
@@ -69,9 +78,39 @@ const getAAAById = async (id) => {
         where: {
             id: id,
         },
-        relations: ['actions.responsiblePerson', 'actions.authorizedPerson', "actions", 'issueRelates', 'project'],
+        relations: ['actions.responsiblePerson', 'actions.authorizedPerson', "actions", 'issueRelates', 'project', 'department'],
         tableName: 'afterActionAnalysis'
     });
+};
+
+const groupAAAByProject = async (filter, options) => {
+    const groupedResults = await AAARepository
+        .createQueryBuilder('aaa')
+        .leftJoinAndSelect('aaa.actions', 'actions')
+        .leftJoinAndSelect('aaa.issueRelates', 'issueRelates')
+        .leftJoinAndSelect('aaa.project', 'project')
+        .leftJoinAndSelect('aaa.department', 'department')
+        .select([
+            'aaa.projectId AS projectId',
+            'project.createdAt AS createdAt',
+            'project.updatedAt AS updatedAt',
+            'project.createdBy AS createdBy',
+            'project.updatedBy AS updatedBy',
+            'project.name AS name',
+            'project.clientId AS clientId',
+            'project.milestone AS _milestone',
+            'project.budget AS budget',
+            'project.contract_sign_date AS contract_sign_date',
+            'project.planned_end_date AS planned_end_date',
+            'project.lc_opening_date AS lc_opening_date',
+            'project.advanced_payment_date AS advanced_payment_date',
+            'project.status AS status',
+            'json_agg(aaa.*) AS AfterActionAnalysis',
+        ])
+        .groupBy('aaa.projectId, project.id, actions.id, project.name')
+        .getRawMany();
+
+    return groupedResults;
 };
 
 /**
@@ -126,5 +165,6 @@ module.exports = {
     getAAAById,
     updateAAAById,
     deleteAAAById,
-    getAllAAAByProjectId
+    getAllAAAByProjectId,
+    groupAAAByProject
 };

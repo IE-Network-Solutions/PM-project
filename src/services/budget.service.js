@@ -79,9 +79,12 @@ const getBudgetsOfProject = async (projectId) => {
     .leftJoin('budget.project', 'project')
     .leftJoin('budget.task', 'task')
     .leftJoin('budget.group', 'group')
+    .leftJoin('group.comments', 'comments')
+    .leftJoin('group.approvalStage', 'approvalStage')
+    .leftJoin('approvalStage.role', 'role')
     .leftJoin('budget.budgetCategory', 'budgetCategory')
     .leftJoin('budget.taskCategory', 'taskCategory')
-    .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory'])
+    .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory', 'approvalStage', 'role', 'comments'])
     .where('project.id = :projectId', { projectId })
     .getMany();
 
@@ -97,6 +100,80 @@ const getBudgetsOfProject = async (projectId) => {
   const groupedResult = Object.values(groupedData);
 
   // console.log(groupedResult);
+  return groupedData;
+};
+
+/**
+ * Query for budget for the project
+ * @param {Object} filter - Filter options
+ * @param {Object} options - Query options
+ * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
+ * @param {number} [options.limit] - Maximum number of results per page (default = 10)
+ * @param {number} [options.page] - Current page (default = 1)
+ * @returns {Promise<QueryResult>}
+ */
+
+const getBudgetGroupByCategory = async()=>{
+  const budgets = await budgetRepository
+  .createQueryBuilder('budget')
+  .leftJoinAndSelect('budget.taskCategory', 'taskCategory')
+  .select('SUM(budget.amount)', 'sum')
+  .addSelect('taskCategory', 'taskCategory')
+  // .where('group.id = :groupId', { accountNumber: '12345' })
+  .groupBy('taskCategory.id')
+  .getRawMany();
+  // .createQueryBuilder('budget')
+  // .leftJoinAndSelect('budget.taskCategory', 'taskCategory')
+  // .select('SUM(budget.amount)', 'sum')
+  // .addSelect('taskCategory', 'taskCategory')
+  // .where('taskCategory.accountNumber = :accountNumber', { accountNumber: '12345' })
+  // .groupBy('taskCategory.id')
+  // .getRawOne();
+  return budgets
+}
+
+
+const getBudgetsOfProjects = async () => {
+  const approval = false;
+
+  const budgets = await budgetRepository
+    .createQueryBuilder('budget')
+    .leftJoin('budget.project', 'project')
+    .leftJoin('budget.task', 'task')
+    .leftJoin('budget.group', 'group')
+    .leftJoin('group.comments', 'comments')
+    .leftJoin('group.approvalStage', 'approvalStage')
+    .leftJoin('approvalStage.role', 'role')
+    .leftJoin('budget.budgetCategory', 'budgetCategory')
+    .leftJoin('budget.taskCategory', 'taskCategory')
+    .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory', 'approvalStage', 'role', 'comments'])
+    .where('group.approved = :approval', { approval })
+    .andWhere('group.approvalStage IS NOT NULL')
+    .getMany();
+
+  const groupedData = {};
+
+  budgets.forEach((entry) => {
+    const projectId = entry.project.id;
+    const groupId = entry.group.id;
+
+    if (!groupedData[projectId]) {
+      groupedData[projectId] = {
+        project: {
+          id: entry.project.id,
+          name: entry.project.name, // Include project name
+        },
+        groups: {},
+      };
+    }
+
+    if (!groupedData[projectId].groups[groupId]) {
+      groupedData[projectId].groups[groupId] = [];
+    }
+
+    groupedData[projectId].groups[groupId].push(entry);
+  });
+
   return groupedData;
 };
 
@@ -159,6 +236,18 @@ const updateBudget = async (budgetId, updateBody) => {
 };
 
 /**
+ * Update budget by id
+ * @param {ObjectId} budgetId
+ * @param {Object} updateBody
+ * @returns {Promise<Project>}
+ */
+const addBudget = async (budget) => {
+  const budgetData = budgetRepository.create(budget);
+
+  return await budgetRepository.save(budgetData);
+};
+
+/**
  * Delete budget by id
  * @param {ObjectId} budgetId
  * @returns {Promise<Budget>}
@@ -171,6 +260,10 @@ const deleteBudget = async (budgetId) => {
   return await budgetRepository.delete({ id: budgetId });
 };
 
+const getBudgetGroup = async (groupId) => {
+  return await budgetGroupRepository.findOne({ where: { id: groupId }, relations: ['project'] });
+};
+
 module.exports = {
   createBudget,
   getBudgets,
@@ -179,4 +272,8 @@ module.exports = {
   deleteBudget,
   getBudgetsOfProject,
   getTasksOfProject,
+  getBudgetsOfProjects,
+  addBudget,
+  getBudgetGroup,
+  getBudgetGroupByCategory
 };
