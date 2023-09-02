@@ -7,7 +7,7 @@ class Baseline extends Base {
     this.name = { type: 'varchar' };
     this.status = { type: 'boolean', default: true };
     this.milestoneId = { type: 'uuid' };
-  }
+  } 
 }
 
 module.exports = new EntitySchema({

@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { paymentTerm, Milestone} = require('../models');
+const { paymentTerm, Milestone, Project} = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -11,6 +11,7 @@ const paymentTermRepository = dataSource.getRepository(paymentTerm).extend({
 });
 
 const miletoneRepository = dataSource.getRepository(Milestone);
+const projectRepository = dataSource.getRepository(Project);
 
 /**
  * Create a user
@@ -19,8 +20,26 @@ const miletoneRepository = dataSource.getRepository(Milestone);
  */
 
 const createPaymentTerm = async (paymentTermBody, milestone) => {
-    const paymentTerm = paymentTermRepository.create(paymentTermBody);
-    await paymentTermRepository.save(paymentTerm);
+
+  if(paymentTermBody.percent){
+    const project = await projectRepository.findOne({
+      where: { id: paymentTermBody.projectId },
+      relations: ['projectContractValues'],
+    });
+
+    const paymentTerm = paymentTermRepository.create({
+      name: paymentTermBody.name,
+      amount: paymentTermBody.amount ,
+      plannedCollectionDate: paymentTermBody.plannedCollectionDate,
+      name: paymentTermBody.name,
+      projectId: paymentTermBody.projectId,
+      currencyId: paymentTermBody.currencyId,
+    });
+  }else{
+  }
+
+  const paymentTerm = paymentTermRepository.create(paymentTermBody);
+  await paymentTermRepository.save(paymentTerm);
   
     if (milestone) {
       const milestoneInstances = milestone.map((eachMilestone) => {

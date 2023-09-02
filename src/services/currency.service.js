@@ -19,8 +19,7 @@ const currencyRepository = dataSource.getRepository(Currency).extend({ findAll, 
 const queryCurrency = async (filter, options) => {
   const { limit, page, sortBy } = options;
 
-  return await currencyRepository.findAll({
-    tableName: 'currency',
+  return await currencyRepository.find({
     sortOptions: sortBy && { option: sortBy },
     paginationOptions: { limit: limit, page: page },
   });
