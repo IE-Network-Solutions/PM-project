@@ -18,7 +18,6 @@ const taskRepository = dataSource.getRepository(Task).extend({
   findAll,
   sortBy,
 });
-
 const taskUserRepository = dataSource.getRepository(TaskUser).extend({
   findAll,
   sortBy,
@@ -85,19 +84,18 @@ const allActiveBaselineTasks = async (projectId) => {
 
   const tasksForVariance = [];
 
-  for (const eachAllActiveBaselines of allActiveBaselines) {
-    const activeTasks = await taskRepository.createQueryBuilder('task')
+  for (const projectId of getMilestoneByProject) {
+    const activeTasks = await taskRepository
+      .createQueryBuilder('task')
       .leftJoinAndSelect('task.baseline', 'baseline')
       .leftJoinAndSelect('baseline.milestone', 'milestone')
       .leftJoinAndSelect('milestone.project', 'project')
-      .where('task.baselineId = :baselineId', { baselineId: eachAllActiveBaselines.id })
+      .where('project.id = :projectId', { projectId: projectId.projectId })
       .orderBy('task.plannedStart', 'ASC')
-      .groupBy('task.id, baseline.id, milestone.id, project.id')
+      .groupBy('baseline.id, milestone.id, project.id, task.id')
       .getMany();
-
     if (activeTasks.length > 0) {
       tasksForVariance.push(...activeTasks);
-
     }
   }
 
@@ -167,7 +165,7 @@ const getWeeklyReport = async (projectId) => {
 
   const allTasks = [];
 
-  for (const eachAllActiveBaselines of allActiveBaselines){
+  for (const eachAllActiveBaselines of allActiveBaselines) {
     const activeTasks = await taskRepository.find({
       where: {
         baselineId: eachAllActiveBaselines.id,
@@ -175,9 +173,9 @@ const getWeeklyReport = async (projectId) => {
       relations: ['baseline.milestone.project']
     });
 
-    if(activeTasks.length > 0){
-      allTasks.push(...activeTasks); 
-      
+    if (activeTasks.length > 0) {
+      allTasks.push(...activeTasks);
+
     }
   }
 

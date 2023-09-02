@@ -3,7 +3,7 @@ const { objectId } = require('./custom.validation');
 
 const createLLComment = {
     body: Joi.object().keys({
-        userId: Joi.string().required(),
+        userId: Joi.string().custom(objectId),
         comment: Joi.string().required(),
         id: Joi.string().custom(objectId),
     }),

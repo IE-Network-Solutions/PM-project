@@ -152,13 +152,68 @@ const deleteProject = async (projectId) => {
  * @param {ObjectId} ProjectId
  * @returns {Promise<Project>}
  */
-const getProjectVariance = async (projectId) => {
-  const listOfAllTasks = await allActiveBaselineTasks(projectId);
-  return listOfAllTasks;
-};
+
+const getAllProjectTasksVarianceByProject = async () => {
+  const projects = await projectRepository.find({
+    tableName: 'projects'
+  });
+  const allProjectTasks = [];
+  let project;
+  for (project of projects) {
+    const tasks = await allActiveBaselineTasks(project.id);
+    project.tasks = tasks.tasksForVariance;
+    allProjectTasks.push(project);
+  }
+  allProjectTasks.map((task) => {
+    let startVariance = '';
+    let finishVariance = '';
+
+    let firstTask = task?.tasks[0];
+    let lastTask = task?.tasks[task.tasks.length - 1];
+
+    if (firstTask?.actualStart) {
+      startVariance =
+        new Date(firstTask.plannedStart).getTime() -
+        new Date(firstTask.actualStart).getTime();
+      startVariance = Math.ceil(startVariance / (1000 * 60 * 60 * 24));
+    }
+
+    if (lastTask?.actualFinish) {
+      finishVariance =
+        new Date(lastTask.plannedFinish).getTime() -
+        new Date(lastTask.actualFinish).getTime();
+      finishVariance = Math.ceil(finishVariance / (1000 * 60 * 60 * 24));
+    }
+
+    task.startVariance = startVariance;
+    task.finishVariance = finishVariance;
+    delete task.tasks;
+  });
+
+  return { Projects: allProjectTasks };
+}
+
+const getAllProjectsDetailOnMasterSchedule = async () => {
+  const projects = await projectRepository.find({
+    tableName: 'projects'
+  });
+  const allProjectTasks = [];
+  let project;
+  for (project of projects) {
+    const tasks = await allActiveBaselineTasks(project.id);
+    project.tasks = tasks.tasksForVariance;
+    allProjectTasks.push(project);
+  }
+
+  allProjectTasks.map((task) => {
+    // delete task.tasks?.map(task => task?.baseline?.milestone);
+  });
+  return { Projects: allProjectTasks };
+}
+
 
 const addMember = async (projectId, projectMembers) => {
-  const project = await projectRepository.findOneBy({id: projectId});
+  const project = await projectRepository.findOneBy({ id: projectId });
 
   if (projectMembers) {
     const projectMemberInstances = projectMembers.map((member) => {
@@ -194,7 +249,7 @@ const removeMember = async(projectId, memberToRemove)=>{
 
   
   return await projectMemberRepository.remove(projectMembersToRemove);
-  
+
 
 }
 
@@ -204,7 +259,8 @@ module.exports = {
   getProject,
   updateProject,
   deleteProject,
-  getProjectVariance,
+  getAllProjectTasksVarianceByProject,
+  getAllProjectsDetailOnMasterSchedule,
   addMember,
   removeMember,getMembers
 };

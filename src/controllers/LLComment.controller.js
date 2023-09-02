@@ -6,10 +6,12 @@ const { LLCommentService, lessonLearnedService } = require('../services');
 
 const createLLComment = catchAsync(async (req, res) => {
     const LLId = await lessonLearnedService.getLLById(req.body.id)
+    console.log(LLId)
     if (!LLId) {
         throw new ApiError(httpStatus.NOT_FOUND, 'LL Id Contraint failed');
     }
     const result = await LLCommentService.createLLComment(req.body);
+    console.log(result)
     res.status(httpStatus.CREATED).send(result);
 });
 

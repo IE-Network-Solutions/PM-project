@@ -71,9 +71,9 @@ module.exports = new EntitySchema({
       onUpdate: 'CASCADE',
     },
     momFacilitator: {
-      type: 'one-to-many',
-      target: 'minuteOfMeeting',
-      inverseSide: 'facilitator',
+      type: "one-to-many",
+      target: "minuteOfMeeting",
+      inverseSide: "facilitator",
     },
     userComment: {
       type: "one-to-many", 
@@ -85,5 +85,10 @@ module.exports = new EntitySchema({
       target: "WeeklyReportComment", 
       inverseSide: "user", 
     }, 
+    llcomment: {
+      type: "one-to-many",
+      target: "LLComments",
+      inverseSide: "user",
+    },
   },
 });
