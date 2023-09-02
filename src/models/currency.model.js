@@ -22,4 +22,11 @@ module.exports = new EntitySchema({
   columns: {
     ...new Currency(),
   },
+  relations:{
+    paymentTerm:{
+      type: "one-to-many",
+      target: "PaymentTerm",
+      inverseSide: "currency"
+    }
+  }
 });

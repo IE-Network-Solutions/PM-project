@@ -34,5 +34,15 @@ module.exports = new EntitySchema({
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },   
+      currency: {
+        type: "many-to-one",
+        target: "Currency",
+        inverseSide: "paymentTerm",
+      },
+      budgetCategory: {
+        type: "many-to-one",
+        target: "budgetCategory",
+        inverseSide: "paymentTerm"
+      }
   },
 });
