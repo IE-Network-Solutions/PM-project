@@ -1,5 +1,6 @@
 const express = require('express');
 
+const currencyRoute = require('./currency.route');
 const riskRoute = require('./risk.route');
 const issueRoute = require('./issue.route');
 const AAARoute = require('./AAA.route');
@@ -33,6 +34,10 @@ const config = require('../../config/config');
 const router = express.Router();
 
 const defaultRoutes = [
+  {
+    path: '/currencies',
+    route: currencyRoute,
+  },
   {
     path: '/risks',
     route: riskRoute,

@@ -1,3 +1,5 @@
+module.exports.currencyController = require('./currencyController');
+
 module.exports.riskController = require('./risk.controller');
 module.exports.issueController = require('./issue.controller');
 module.exports.AAAController = require('./AAA.controller');
