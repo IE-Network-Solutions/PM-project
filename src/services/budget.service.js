@@ -115,7 +115,7 @@ const getBudgetsOfProject = async (projectId) => {
  * @returns {Promise<QueryResult>}
  */
 
-const getBudgetGroupByCategory = async(groupId='4c2262dd-8efc-4fde-842f-d3056f6b6d36')=>{
+const getBudgetGroupByCategory = async(groupId)=>{
   const budgets = await budgetRepository
   .createQueryBuilder('budget')
   .leftJoinAndSelect('budget.taskCategory', 'taskCategory')
@@ -126,12 +126,15 @@ const getBudgetGroupByCategory = async(groupId='4c2262dd-8efc-4fde-842f-d3056f6b
   .addSelect('currency.id', 'currency_id') // Select the currency ID
   .addSelect('currency.name', 'currency_name') // Select the currency name
   .addSelect('taskCategory', 'taskCategory') 
+  .addSelect('group.from', 'group_to') 
+  .addSelect('group.to', 'group_from') 
   .addSelect('project.id', 'project_id') 
   .addSelect('project.name', 'project_name') 
   .where('budget.group.id = :groupId', { groupId: groupId })
   .groupBy('currency.id') // Group by the currency ID
   .addGroupBy('taskCategory.id')
   .addGroupBy('project.id')
+  .addGroupBy('group.id')
   .getRawMany();
   // .createQueryBuilder('budget')
   // .leftJoinAndSelect('budget.taskCategory', 'taskCategory')
