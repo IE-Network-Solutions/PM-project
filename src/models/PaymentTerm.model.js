@@ -39,9 +39,9 @@ module.exports = new EntitySchema({
         target: "Currency",
         inverseSide: "paymentTerm",
       },
-      budgetCategory: {
+      budgetType: {
         type: "many-to-one",
-        target: "budgetCategory",
+        target: "budgetType",
         inverseSide: "paymentTerm"
       }
   },
