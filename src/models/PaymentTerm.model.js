@@ -11,6 +11,7 @@ class PaymentTerm extends Base {
     this.actualCollectionDate = {type: 'date', nullable: true}
     this.status = { type: 'boolean' };
     this.projectId = {type: 'boolean'}
+    this.currencyId = {type: 'varchar', nullable: true}
   }
 }
 
