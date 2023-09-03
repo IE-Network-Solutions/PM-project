@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const { startOfWeek, endOfWeek, addWeeks } = require('date-fns');
 const { Between } = require('typeorm');
-const { Task, TaskUser, Baseline, Milestone, Risk, Issue } = require('../models');
+const { Task, TaskUser, Baseline, Milestone, Risk, Issue, WeeklyReport,WeeklyReportComment, User } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -18,7 +18,6 @@ const taskRepository = dataSource.getRepository(Task).extend({
   findAll,
   sortBy,
 });
-
 const taskUserRepository = dataSource.getRepository(TaskUser).extend({
   findAll,
   sortBy,
@@ -36,6 +35,18 @@ const riskRepository = dataSource.getRepository(Risk).extend({
   sortBy,
 });
 const issueRepository = dataSource.getRepository(Issue).extend({
+  findAll,
+  sortBy,
+});
+const weeklyReportRepository = dataSource.getRepository(WeeklyReport).extend({
+  findAll,
+  sortBy,
+});
+const weeklyCommentReportRepository = dataSource.getRepository(WeeklyReportComment).extend({
+  findAll,
+  sortBy,
+});
+const userRepository = dataSource.getRepository(User).extend({
   findAll,
   sortBy,
 });
@@ -73,19 +84,18 @@ const allActiveBaselineTasks = async (projectId) => {
 
   const tasksForVariance = [];
 
-  for (const eachAllActiveBaselines of allActiveBaselines) {
-    const activeTasks = await taskRepository.createQueryBuilder('task')
+  for (const projectId of getMilestoneByProject) {
+    const activeTasks = await taskRepository
+      .createQueryBuilder('task')
       .leftJoinAndSelect('task.baseline', 'baseline')
       .leftJoinAndSelect('baseline.milestone', 'milestone')
       .leftJoinAndSelect('milestone.project', 'project')
-      .where('task.baselineId = :baselineId', { baselineId: eachAllActiveBaselines.id })
+      .where('project.id = :projectId', { projectId: projectId.projectId })
       .orderBy('task.plannedStart', 'ASC')
-      .groupBy('task.id, baseline.id, milestone.id, project.id')
+      .groupBy('baseline.id, milestone.id, project.id, task.id')
       .getMany();
-
     if (activeTasks.length > 0) {
       tasksForVariance.push(...activeTasks);
-
     }
   }
 
@@ -135,7 +145,7 @@ const allActiveBaselineTasks = async (projectId) => {
 
 
 
-const weeklyReport = async (projectId) => {
+const getWeeklyReport = async (projectId) => {
   const getMilestoneByProject = await milestoneRepository.findBy({
     projectId: projectId,
     status: true
@@ -155,17 +165,17 @@ const weeklyReport = async (projectId) => {
 
   const allTasks = [];
 
-  for (const eachAllActiveBaselines of allActiveBaselines){
+  for (const eachAllActiveBaselines of allActiveBaselines) {
     const activeTasks = await taskRepository.find({
       where: {
         baselineId: eachAllActiveBaselines.id,
       },
-      relations: ['baseline.milestone']
+      relations: ['baseline.milestone.project']
     });
 
-    if(activeTasks.length > 0){
-      allTasks.push(...activeTasks); 
-      
+    if (activeTasks.length > 0) {
+      allTasks.push(...activeTasks);
+
     }
   }
 
@@ -253,11 +263,101 @@ const addSleepingReason = async (tasks) => {
   return updatedTasks;
 };
 
+const addWeeklyReport = async(projectId, weeklyReportData)=>{
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonthNumber = currentDate.getMonth() + 1;
 
+  const risks = weeklyReportData.risks;
+  const issues = weeklyReportData.issues;
+  const sleepingTasks = weeklyReportData.sleepingTasks;
+  const nextWeekTasks = weeklyReportData.nextWeekTasks;
+  const overAllProgress = weeklyReportData.overAllProgress;
+
+  // return [projectId, currentMonthNumber, risks, issues, sleepingTasks, nextWeekTasks,]
+
+
+  const dayOfMonth = currentDate.getDate();
+  const weekOfMonth = Math.ceil(dayOfMonth / 7);
+  
+  const addedWeeklyReport =  weeklyReportRepository.create({
+    projectId: projectId,
+    year: currentYear,
+    month: currentMonthNumber,
+    week: weekOfMonth, // Add the calculated week of the month
+    issues: issues,
+    risks: risks,
+    sleepingTasks: sleepingTasks,
+    nextWeekTasks: nextWeekTasks,
+    overAllProgress: overAllProgress,
+  });
+
+  const savedWeeklyReport = await weeklyReportRepository.save(addedWeeklyReport);
+  return savedWeeklyReport;
+}
+
+const getAddedWeeklyReport = async (projectId) => {
+  const savedWeeklyReport = await weeklyReportRepository.findBy({ projectId });
+
+  // Group the fetched reports by week and fetch only the first item in each group
+  const groupedWeeklyReports = savedWeeklyReport.reduce((result, report) => {
+    if (!result[report.week]) {
+      result[report.week] = report; // Fetch the first report in the group
+    }
+    return result;
+  }, {});
+
+  return groupedWeeklyReports;
+};
+
+const getReportByWeek = async (projectId, week) => {
+  const reportByWeek = await weeklyReportRepository.find({
+    where: { projectId: projectId, id: week }, 
+    relations: ['project']
+  });
+  return reportByWeek;
+};
+
+
+const addComment = async(comment) =>{
+    const weeklyReportComment = weeklyCommentReportRepository.create({
+      weeklyReportId: comment.id,
+      userId: comment.userId,
+      comment: comment.comment,
+    });
+  
+    const savedComment = await weeklyCommentReportRepository.save(weeklyReportComment);
+
+    const sender = await userRepository.findOne({
+      where : {
+        id: savedComment.userId
+      }
+    }
+    );
+  
+    savedComment.user = sender;
+    return savedComment;
+}
+
+const getComments = async(weeklyReportId) =>{
+
+  return await weeklyCommentReportRepository.find(
+    {
+      where:{weeklyReportId: weeklyReportId, },
+      relations: ['user'],
+      order: { createdAt: 'ASC' },
+    }
+  );
+}
 
 
 module.exports = {
-  weeklyReport,
+  getWeeklyReport,
   addSleepingReason,
-  allActiveBaselineTasks
+  allActiveBaselineTasks,
+  addWeeklyReport,
+  getAddedWeeklyReport,
+  getReportByWeek,
+  addComment,
+  getComments
 };

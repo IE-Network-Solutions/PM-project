@@ -27,10 +27,11 @@ const budgetGroupRepository = dataSource.getRepository(BudgetGroup).extend({
  */
 const createBudget = async (budgetBody) => {
   budgetData = budgetBody.budgetData;
+  console.log(budgetBody.project,"pppppppppp")
   const budgetGroup = budgetGroupRepository.create({
     from: budgetBody.from,
     to: budgetBody.to,
-    project: budgetBody.project,
+    project: budgetBody.project
   });
   await budgetGroupRepository.save(budgetGroup);
 
@@ -57,7 +58,7 @@ const getBudgets = async (filter, options) => {
   const { limit, page, sortBy } = options;
 
   return await budgetRepository.find({
-    relations: ['group', 'task', 'budgetCategory', 'taskCategory', 'project'],
+    relations: ['currency','group', 'task', 'budgetCategory', 'taskCategory', 'project'],
   });
 };
 
@@ -79,9 +80,13 @@ const getBudgetsOfProject = async (projectId) => {
     .leftJoin('budget.project', 'project')
     .leftJoin('budget.task', 'task')
     .leftJoin('budget.group', 'group')
+    .leftJoin('budget.currency', 'currency')
+    .leftJoin('group.comments', 'comments')
+    .leftJoin('group.approvalStage', 'approvalStage')
+    .leftJoin('approvalStage.role', 'role')
     .leftJoin('budget.budgetCategory', 'budgetCategory')
     .leftJoin('budget.taskCategory', 'taskCategory')
-    .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory'])
+    .select(['budget','currency', 'task', 'project', 'group', 'budgetCategory', 'taskCategory', 'approvalStage', 'role', 'comments'])
     .where('project.id = :projectId', { projectId })
     .getMany();
 
@@ -110,6 +115,38 @@ const getBudgetsOfProject = async (projectId) => {
  * @returns {Promise<QueryResult>}
  */
 
+const getBudgetGroupByCategory = async(groupId)=>{
+  const budgets = await budgetRepository
+  .createQueryBuilder('budget')
+  .leftJoinAndSelect('budget.taskCategory', 'taskCategory')
+  .leftJoinAndSelect('budget.group', 'group')
+  .leftJoinAndSelect('group.project', 'project')
+  .leftJoinAndSelect('budget.currency', 'currency') // Add this line to join the currency relation
+  .select('SUM(budget.amount)', 'sum')
+  .addSelect('currency.id', 'currency_id') // Select the currency ID
+  .addSelect('currency.name', 'currency_name') // Select the currency name
+  .addSelect('taskCategory', 'taskCategory') 
+  .addSelect('group.from', 'group_to') 
+  .addSelect('group.to', 'group_from') 
+  .addSelect('project.id', 'project_id') 
+  .addSelect('project.name', 'project_name') 
+  .where('budget.group.id = :groupId', { groupId: groupId })
+  .groupBy('currency.id') // Group by the currency ID
+  .addGroupBy('taskCategory.id')
+  .addGroupBy('project.id')
+  .addGroupBy('group.id')
+  .getRawMany();
+  // .createQueryBuilder('budget')
+  // .leftJoinAndSelect('budget.taskCategory', 'taskCategory')
+  // .select('SUM(budget.amount)', 'sum')
+  // .addSelect('taskCategory', 'taskCategory')
+  // .where('taskCategory.accountNumber = :accountNumber', { accountNumber: '12345' })
+  // .groupBy('taskCategory.id')
+  // .getRawOne();
+  return budgets
+}
+
+
 const getBudgetsOfProjects = async () => {
   const approval = false;
 
@@ -118,10 +155,12 @@ const getBudgetsOfProjects = async () => {
     .leftJoin('budget.project', 'project')
     .leftJoin('budget.task', 'task')
     .leftJoin('budget.group', 'group')
+    .leftJoin('group.comments', 'comments')
     .leftJoin('group.approvalStage', 'approvalStage')
+    .leftJoin('approvalStage.role', 'role')
     .leftJoin('budget.budgetCategory', 'budgetCategory')
     .leftJoin('budget.taskCategory', 'taskCategory')
-    .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory', 'approvalStage'])
+    .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory', 'approvalStage', 'role', 'comments'])
     .where('group.approved = :approval', { approval })
     .andWhere('group.approvalStage IS NOT NULL')
     .getMany();
@@ -211,6 +250,18 @@ const updateBudget = async (budgetId, updateBody) => {
 };
 
 /**
+ * Update budget by id
+ * @param {ObjectId} budgetId
+ * @param {Object} updateBody
+ * @returns {Promise<Project>}
+ */
+const addBudget = async (budget) => {
+  const budgetData = budgetRepository.create(budget);
+
+  return await budgetRepository.save(budgetData);
+};
+
+/**
  * Delete budget by id
  * @param {ObjectId} budgetId
  * @returns {Promise<Budget>}
@@ -223,6 +274,10 @@ const deleteBudget = async (budgetId) => {
   return await budgetRepository.delete({ id: budgetId });
 };
 
+const getBudgetGroup = async (groupId) => {
+  return await budgetGroupRepository.findOne({ where: { id: groupId }, relations: ['project'] });
+};
+
 module.exports = {
   createBudget,
   getBudgets,
@@ -232,4 +287,7 @@ module.exports = {
   getBudgetsOfProject,
   getTasksOfProject,
   getBudgetsOfProjects,
+  addBudget,
+  getBudgetGroup,
+  getBudgetGroupByCategory
 };

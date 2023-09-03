@@ -1,11 +1,23 @@
 const httpStatus = require('http-status');
-const { Milestone, Task, Subtask } = require('../models');
+const { Milestone, Task, Subtask, Baseline } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 
 const milestoneRepository = dataSource.getRepository(Milestone).extend({
+  findAll,
+  sortBy,
+});
+const baselineRepository = dataSource.getRepository(Baseline).extend({
+  findAll,
+  sortBy,
+});
+const taskRepository = dataSource.getRepository(Task).extend({
+  findAll,
+  sortBy,
+});
+const subTaskRepository = dataSource.getRepository(Subtask).extend({
   findAll,
   sortBy,
 });
@@ -74,11 +86,29 @@ const updateMilestone = async (milestoneId, updateBody) => {
  * @param {ObjectId} milestoenId
  * @returns {Promise<User>}
  */
+
 const deleteMilestone = async (milestoneId) => {
   const milestone = await getMilestone(milestoneId);
   if (!milestone) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Milestone not found');
   }
+
+  //The following code is to cascade deleting baselines, 
+  //tasks and subtasks when we delete milestone
+    const baselinesToDelete = await baselineRepository.find({ milestoneId: milestoneId });
+    for (const baseline of baselinesToDelete) {
+          const tasksToDelete = await taskRepository.find({ baselineId: baseline.id });
+          for (const task of tasksToDelete) {
+          const subTasksToDelet = await subTaskRepository.find({ taskId: task.id });
+          for (const subtask of subTasksToDelet) {
+            await subTaskRepository.delete({ id: subtask.id });
+          }
+            await taskRepository.delete({ id: task.id });
+          }
+      await baselineRepository.delete({ id: baseline.id });
+  }
+
+//and then delete milestone
   return await milestoneRepository.delete({ id: milestoneId });
 };
 

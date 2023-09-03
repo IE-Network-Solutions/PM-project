@@ -10,7 +10,7 @@ module.exports.momActionResponsible = require('./mom_action_responsible.model');
 module.exports.momComment = require('./momComment.model');
 // module.exports.AfterActionAnalysisIssueRelated = require('./afterActionAnalysisIssueRelated.model');
 module.exports.Project = require('./project.model');
-module.exports.paymentTerm = require('./PaymentTerm.model')
+module.exports.paymentTerm = require('./PaymentTerm.model');
 module.exports.ProjectMembers = require('./projectMember.model');
 module.exports.ProjectContractValue = require('./projectContractValue.model');
 
@@ -21,6 +21,8 @@ module.exports.TaskUser = require('./taskUser.model');
 module.exports.Subtask = require('./subtask.model');
 module.exports.Subtask = require('./subtask.model');
 module.exports.Mom = require('./minuteOfMettings.model');
+module.exports.WeeklyReport = require('./weeklyReport.model');
+module.exports.WeeklyReportComment = require('./weeklyReportComment.model');
 module.exports.User = require('./user.model');
 module.exports.LessonLearned = require('./lessonLearned.model');
 module.exports.IndividualLL = require('./individualLL.model');
@@ -39,3 +41,5 @@ module.exports.ApprovalLevel = require('./approvalLevels.model');
 module.exports.ApprovalStage = require('./approvalStage.model');
 module.exports.Role = require('./roles.model');
 module.exports.AAADepartment = require('./AAADepartment.model');
+module.exports.Currency = require('./currency.model');
+

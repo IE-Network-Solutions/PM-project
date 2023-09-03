@@ -13,4 +13,11 @@ module.exports = new EntitySchema({
   name: 'budgetType',
   tableName: 'budget_type',
   columns: new budgetType(),
+  relations:{
+    paymentTerm:{
+      type: "one-to-many",
+      target: "PaymentTerm",
+      inverseSide: "budgetCategory"
+    }
+  }
 });

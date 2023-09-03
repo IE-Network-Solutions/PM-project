@@ -39,13 +39,22 @@ const getByProject = {
 
 const updateMom = {
   params: Joi.object().keys({
-    MomId: Joi.required(),
+    momId: Joi.required(),
   }),
-  body: Joi.object()
-    .keys({
-      name: Joi.string(),
-    })
-    .min(1),
+  body: Joi.object().keys({
+    projectId: Joi.string(),
+    title: Joi.string(),
+    objective: Joi.string(),
+    meetingDate: Joi.date(),
+    meetingTime: Joi.string(),
+    location: Joi.string(),
+    facilitatorId: Joi.string(),
+    specialNote: Joi.string(),
+    attendees: Joi.array(),
+    externalAttendees: Joi.array(),
+    action: Joi.array(), 
+    agenda: Joi.array(),
+  }),
 };
 
 const deleteMom = {
@@ -56,7 +65,7 @@ const deleteMom = {
 
 const addComment = {
     body: Joi.object().keys({
-      momId: Joi.string().required(),
+      id: Joi.string().required(),
       comment: Joi.string().required(),
       userId: Joi.string().required(),
       mentionedId: Joi.string(),

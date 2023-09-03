@@ -37,7 +37,8 @@ const getByMilestone = catchAsync(async(req, res)=>{
 });
 
 const updateBaseline = catchAsync(async(req, res)=>{
-  const baseline = await baselineService.updateBaseline(req.params.baselineId, req.body);
+  const baseline = await baselineService.updateBaseline(req.params.baselineId, req.body, req.body.tasks);
+  delete req.body.tasks;
   res.send(baseline);
 });
 const deleteBaseline = catchAsync(async(req, res)=>{

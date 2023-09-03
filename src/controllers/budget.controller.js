@@ -8,18 +8,20 @@ const {
   budgetCategoryService,
   budgetTaskCategoryService,
   projectService,
+  currencyService,
 } = require('../services');
 
 async function calculate(budget) {
   const task = await taskService.getTask(budget.taskId);
   const budgetCategory = await budgetCategoryService.getBudgetCategory(budget.budgetCategoryId);
   const taskCategory = await budgetTaskCategoryService.getBudgetTaskCategory(budget.taskCategoryId);
-  return { task, budgetCategory, taskCategory };
+  const currency = await currencyService.getCurrencyById(budget.currencyId);
+
+  return { task, budgetCategory, taskCategory,currency };
 }
 
 const createBudget = catchAsync(async (req, res) => {
   const data = req.body;
-
   async function returnBudgetData(data) {
     const budgetData = [];
 
@@ -28,10 +30,11 @@ const createBudget = catchAsync(async (req, res) => {
       throw new ApiError(httpStatus.NOT_FOUND, `project with id: ${data.projectId} not found`);
     }
     data.project = project;
+  
     const budgetArray = data.budgets;
 
     for (const budget of budgetArray) {
-      const { task, budgetCategory, taskCategory } = await calculate(budget);
+      const { task, budgetCategory, taskCategory,currency } = await calculate(budget);
 
       const singleBudgetData = {
         amount: budget.amount,
@@ -40,9 +43,10 @@ const createBudget = catchAsync(async (req, res) => {
         project: project,
         budgetCategory: budgetCategory,
         taskCategory: taskCategory,
+        currency: currency,
       };
 
-      console.log('MANNN', [singleBudgetData]);
+     
 
       budgetData.push(singleBudgetData);
     }
@@ -85,6 +89,13 @@ const updateBudget = catchAsync(async (req, res) => {
     }
     data.budgetCategory = budgetCategory;
   }
+  if (data.currencyId) {
+    const currency = await currencyService.getCurrencyById(data.currencyId);
+    if (!currency) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Budget Currency Not found not found');
+    }
+    data.currency = currency;
+  }
   if (data.taskCategory) {
     const taskCategory = await budgetTaskCategoryService.getBudgetTaskCategory(data.taskCategory);
     if (!taskCategory) {
@@ -110,6 +121,48 @@ const getBudgetsOfProjects = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getBudgetGroupByCategory= catchAsync(async (req,res)=>{
+  const data = await budgetService.getBudgetGroupByCategory()
+  res.send(data)
+})
+
+const addBudget = catchAsync(async (req, res) => {
+  data = req.body;
+
+  const task = await taskService.getTask(data.taskId);
+  if (!task) {
+    throw new ApiError(httpStatus.NOT_FOUND, `task with id: ${data.taskId} not found`);
+  }
+  const group = await budgetService.getBudgetGroup(data.groupId);
+  if (!group) {
+    throw new ApiError(httpStatus.NOT_FOUND, `group with id: ${data.groupId} not found`);
+  }
+  const project = await group.project;
+  if (!project) {
+    throw new ApiError(httpStatus.NOT_FOUND, `no project in the group please update the group`);
+  }
+  const budgetCategory = await budgetCategoryService.getBudgetCategory(data.budgetCategoryId);
+  if (!budgetCategory) {
+    throw new ApiError(httpStatus.NOT_FOUND, `budgetCategory with id: ${data.budgetCategoryId} not found`);
+  }
+  const taskCategory = await budgetTaskCategoryService.getBudgetTaskCategory(data.taskCategoryId);
+  if (!taskCategory) {
+    throw new ApiError(httpStatus.NOT_FOUND, `taskCategory with id: ${data.taskCategoryId} not found`);
+  }
+  const singleBudgetData = {
+    amount: data.amount,
+    description: data.description,
+    task: task,
+    project: project,
+    budgetCategory: budgetCategory,
+    taskCategory: taskCategory,
+    group: group,
+  };
+  console.log(singleBudgetData, 'pppppppppppp');
+  const budget = await budgetService.addBudget(singleBudgetData);
+  res.status(httpStatus.CREATED).send(budget);
+});
+
 module.exports = {
   createBudget,
   getBudgets,
@@ -118,4 +171,6 @@ module.exports = {
   deleteBudget,
   getBudgetsOfProject,
   getBudgetsOfProjects,
+  addBudget,
+  getBudgetGroupByCategory
 };

@@ -7,7 +7,6 @@ class ProjectContractValue extends Base {
   constructor() {
     super(); // Call the constructor of the Base entity to inherit its properties
     this.amount = { type: 'int' };
-    this.currency = { type: 'varchar' };
   }
 }
 
@@ -16,13 +15,17 @@ module.exports = new EntitySchema({
   tableName: 'project_contract_values',
   columns: {
     ...new ProjectContractValue(),
-    projectId: { type: 'uuid', nullable: false },
   },
   relations: {
     project: {
         type: "many-to-one", 
-        target: "projects",
+        target: "Project",
         inverseSide: "projectContractValues",
-      },   
+      },
+      currency: {
+        type: "many-to-one", 
+        target: "Currency",
+        inverseSide: "projectContractValues",
+      },  
   },
 });

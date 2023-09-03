@@ -16,17 +16,18 @@ router
   .patch(validate(projectValidation.updateProject), projectController.updateProject)
   .delete(validate(projectValidation.deleteProject), projectController.deleteProject);
 
+router
+  .route('/getProjectVariance/groupByProject/all')
+  .get(projectController.getAllProjectTasksVarianceByProject);
+router
+  .route('/getProjectDetail/onMasterSchedule/all')
+  .get(projectController.getAllProjectsDetailOnMasterSchedule);
+router
+  .route('/add-member/:projectId')
+  .post(validate(projectValidation.addMember), projectController.addMember);
 
 router
-  .route('/getProjectVariance/:projectId')
-  .get(validate(projectValidation.getProjectVariance), projectController.getProjectVariance);
-
-  router
-  .route('/add-member/:projectId')
-  .post(validate(projectValidation.addMember),projectController.addMember);
-
-  router
   .route('/remove-member/:projectId')
-  .delete(validate(projectValidation.removeMember),projectController.removeMember);
+  .delete(validate(projectValidation.removeMember), projectController.removeMember);
 
 module.exports = router;

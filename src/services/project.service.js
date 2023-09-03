@@ -7,6 +7,7 @@ const findAll = require('./Plugins/findAll');
 const publishToRabbit = require('../utils/producer');
 const { allActiveBaselineTasks } = require('./weeklyReport.service');
 
+
 const projectRepository = dataSource.getRepository(Project).extend({
   findAll,
   sortBy,
@@ -46,24 +47,21 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
   }
 
   if (projectContractValue) {
-    const projectContractValueInstance = projectContractValue.map((contract_value) => {
-      return projectContractValueRepository.create({
-        projectId: project.id,
-        amount: contract_value.amount,
-        currency: contract_value.currency,
-      });
+    const projectContractValueInstance =  projectContractValue.map((contract_value) => {
+      contract_value.project = project;
+      return contract_value
     });
     // Save the project contract value instances
     await projectContractValueRepository.save(projectContractValueInstance);
   }
 
-  project.projectMembers = projectMembers;
-  project.projectContractValue = projectContractValue;
-  publishToRabbit('project.create', project);
+  let newProject=await getProject(project.id)
+  newProject.projectMembers = projectMembers;
+  // project.projectContractValue = projectContractValue;
+  publishToRabbit('project.create', newProject);
 
-
-
-  return project;
+  return newProject;
+  // return await getProject(project.id)
 };
 
 /**
@@ -83,7 +81,7 @@ const getProjects = async (filter, options) => {
     tableName: 'projects',
     sortOptions: sortBy && { option: sortBy },
     paginationOptions: { limit: limit, page: page },
-    relations: ['projectMembers.role', 'projectContractValues'],
+    relations: ['projectMembers','projectContractValues'],
   });
   // return await projectRepository.createQueryBuilder('project')
   //   .leftJoin('project.projectMembers', 'projectMember')
@@ -102,7 +100,7 @@ const getProjects = async (filter, options) => {
 const getProject = async (id) => {
   return await projectRepository.findOne({
     where: { id: id },
-    relations: ['projectMembers', 'projectContractValues'],
+    relations: ['projectMembers', 'projectContractValues.currency'],
   },
   );
 };
@@ -117,10 +115,11 @@ const getProject = async (id) => {
 const updateProject = async (projectId, updateBody) => {
   const project = await getProject(projectId);
   if (!project) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
   await projectRepository.update({ id: projectId }, updateBody);
   const updatedProject = await getProject(projectId);
+  updatedProject.members = await getMembers(updatedProject.id);
   publishToRabbit('project.update', updatedProject);
   return updatedProject;
 };
@@ -144,13 +143,68 @@ const deleteProject = async (projectId) => {
  * @param {ObjectId} ProjectId
  * @returns {Promise<Project>}
  */
-const getProjectVariance = async (projectId) => {
-  const listOfAllTasks = await allActiveBaselineTasks(projectId);
-  return listOfAllTasks;
-};
+
+const getAllProjectTasksVarianceByProject = async () => {
+  const projects = await projectRepository.find({
+    tableName: 'projects'
+  });
+  const allProjectTasks = [];
+  let project;
+  for (project of projects) {
+    const tasks = await allActiveBaselineTasks(project.id);
+    project.tasks = tasks.tasksForVariance;
+    allProjectTasks.push(project);
+  }
+  allProjectTasks.map((task) => {
+    let startVariance = '';
+    let finishVariance = '';
+
+    let firstTask = task?.tasks[0];
+    let lastTask = task?.tasks[task.tasks.length - 1];
+
+    if (firstTask?.actualStart) {
+      startVariance =
+        new Date(firstTask.plannedStart).getTime() -
+        new Date(firstTask.actualStart).getTime();
+      startVariance = Math.ceil(startVariance / (1000 * 60 * 60 * 24));
+    }
+
+    if (lastTask?.actualFinish) {
+      finishVariance =
+        new Date(lastTask.plannedFinish).getTime() -
+        new Date(lastTask.actualFinish).getTime();
+      finishVariance = Math.ceil(finishVariance / (1000 * 60 * 60 * 24));
+    }
+
+    task.startVariance = startVariance;
+    task.finishVariance = finishVariance;
+    delete task.tasks;
+  });
+
+  return { Projects: allProjectTasks };
+}
+
+const getAllProjectsDetailOnMasterSchedule = async () => {
+  const projects = await projectRepository.find({
+    tableName: 'projects'
+  });
+  const allProjectTasks = [];
+  let project;
+  for (project of projects) {
+    const tasks = await allActiveBaselineTasks(project.id);
+    project.tasks = tasks.tasksForVariance;
+    allProjectTasks.push(project);
+  }
+
+  allProjectTasks.map((task) => {
+    // delete task.tasks?.map(task => task?.baseline?.milestone);
+  });
+  return { Projects: allProjectTasks };
+}
+
 
 const addMember = async (projectId, projectMembers) => {
-  const project = await projectRepository.findOneBy({id: projectId});
+  const project = await projectRepository.findOneBy({ id: projectId });
 
   if (projectMembers) {
     const projectMemberInstances = projectMembers.map((member) => {
@@ -167,6 +221,13 @@ const addMember = async (projectId, projectMembers) => {
   return project;
 };
 
+const getMembers = async(projectId)=>{
+ return await projectMemberRepository
+      .createQueryBuilder('project_member')
+      .where('project_member.projectId = :projectId', { projectId })
+      .getMany();
+}
+
 const removeMember = async(projectId, memberToRemove)=>{
   const projectMembersToRemove = await projectMemberRepository.find({
     where: {
@@ -175,9 +236,11 @@ const removeMember = async(projectId, memberToRemove)=>{
       roleId: memberToRemove.roleId,
     }
   });
+
+
   
   return await projectMemberRepository.remove(projectMembersToRemove);
-  
+
 
 }
 
@@ -187,7 +250,8 @@ module.exports = {
   getProject,
   updateProject,
   deleteProject,
-  getProjectVariance,
+  getAllProjectTasksVarianceByProject,
+  getAllProjectsDetailOnMasterSchedule,
   addMember,
-  removeMember
+  removeMember,getMembers
 };

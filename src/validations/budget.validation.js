@@ -7,7 +7,20 @@ const budgetSchema = Joi.object({
   taskId: Joi.string().guid().required(),
   budgetCategoryId: Joi.string().guid().required(),
   taskCategoryId: Joi.string().guid().required(),
+  currencyId:Joi.string().required(),
+
 });
+const addBudget = {
+  body: Joi.object().keys({
+    amount: Joi.number().required(),
+    description: Joi.string().required(),
+    taskId: Joi.string().guid().required(),
+    budgetCategoryId: Joi.string().guid().required(),
+    taskCategoryId: Joi.string().guid().required(),
+    groupId: Joi.string().guid().required(),
+    currencyId:Joi.string().required(),
+  }),
+};
 
 const createBudget = {
   body: Joi.object().keys({
@@ -57,4 +70,4 @@ const deleteBudget = {
   }),
 };
 
-module.exports = { createBudget, getBudgets, getBudget, updateBudget, getBudgetByProject };
+module.exports = { createBudget, getBudgets, getBudget, updateBudget, getBudgetByProject, addBudget };

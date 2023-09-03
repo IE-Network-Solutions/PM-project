@@ -7,7 +7,6 @@ const { momComment } = require('../models');
 
 const createMom = catchAsync(async (req, res) => {
   const Attendees = req.body.attendees;
-  // const externalAttendees =  req.body.otherAttendees;
   const Agenda = req.body.agenda;
   const Action = req.body.action;
   delete req.body.attendees;
@@ -51,14 +50,26 @@ const groupMOMByProject = catchAsync(async (req, res) => {
   });
 });
 
+const updateMom = catchAsync(async(req, res)=>{
+  const attendees = req.body.attendees;
+  const externalAttendees = req.body.externalAttendees;
+  const action = req.body.action;
+  const agenda = req.body.agenda;
 
-const updateMom = catchAsync(async (req, res) => {
-  const mom = await momService.updateMom(req.params.momId, req.body);
+  delete req.body.attendees;
+  delete req.body.action;
+  delete req.body.agenda;
+
+  const momBody = req.body;
+
+  const mom = await momService.updateMom(req.params.momId, momBody,  attendees, externalAttendees, action, agenda);
   res.send(mom);
 });
-const deleteMom = catchAsync(async (req, res) => {
-  await momService.deleteMom(req.params.momId);
-  res.status(httpStatus.NO_CONTENT).send();
+
+
+const deleteMom = catchAsync(async(req, res)=>{
+    await momService.deleteMom(req.params.momId);
+    res.status(httpStatus.NO_CONTENT).send();
 });
 
 const addComment = catchAsync(async (req, res) => {

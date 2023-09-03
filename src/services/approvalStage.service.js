@@ -36,7 +36,7 @@ const createApprovalStage = async (ApprovalStages) => {
  */
 
 const getApprovalStages = async () => {
-  return await ApprovalStageRepository.find();
+  return await ApprovalStageRepository.find({ relations: ['role'] });
 };
 
 /**
