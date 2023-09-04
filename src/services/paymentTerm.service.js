@@ -21,24 +21,41 @@ const projectRepository = dataSource.getRepository(Project);
 
 const createPaymentTerm = async (paymentTermBody, milestone) => {
 
-  if(paymentTermBody.percent){
-    const project = await projectRepository.findOne({
-      where: { id: paymentTermBody.projectId },
-      relations: ['projectContractValues'],
-    });
+  const project =  projectRepository.findOne({
+   where: {
+      id: paymentTermBody.projectId
+    },
+    relations: ['projectContractValues']
+  });
 
-    const paymentTerm = paymentTermRepository.create({
-      name: paymentTermBody.name,
-      amount: paymentTermBody.amount ,
-      plannedCollectionDate: paymentTermBody.plannedCollectionDate,
-      name: paymentTermBody.name,
-      projectId: paymentTermBody.projectId,
-      currencyId: paymentTermBody.currencyId,
-    });
-  }else{
+  
+  let amount;
+  if(paymentTermBody.percent){
+       amount = paymentTermBody.amount ;
+    }
+  else{
+    amount = paymentTermBody.amount;
   }
 
-  const paymentTerm = paymentTermRepository.create(paymentTermBody);
+  let isOffshore;
+  if (paymentTermBody.currencyId == 7) {
+    isOffshore = false;
+  } else {
+    isOffshore = true;
+  }
+
+  const paymentTerm = paymentTermRepository.create({
+    name: paymentTermBody.name,
+    amount: amount,
+    projectId: paymentTermBody.projectId,
+    plannedCollectionDate: paymentTermBody.plannedCollectionDate,
+    actualCollectionDate: paymentTermBody.actualCollectionDate,
+    currencyId: paymentTermBody.currencyId,
+    budgetTypeId: paymentTermBody.budgetTypeId,
+    status: paymentTermBody.status,
+    isOffshore: isOffshore,
+  });
+
   await paymentTermRepository.save(paymentTerm);
   
     if (milestone) {
