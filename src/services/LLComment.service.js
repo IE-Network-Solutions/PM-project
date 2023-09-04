@@ -62,7 +62,7 @@ const getLLCommentByLLId = async (id) => {
     return await LLCommentsRepository.find(
         {
             where: { lessonLearnedId: id },
-            relations: ['lessonLearned']
+            relations: ['lessonLearned', 'user']
         });
 };
 
