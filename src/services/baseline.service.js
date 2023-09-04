@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Baseline, Task, Subtask, Milestone } = require('../models');
+const { Baseline, Task, Subtask, Milestone, baselineComment, User } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -19,6 +19,14 @@ const taskRepository = dataSource.getRepository(Task).extend({
   sortBy,
 });
 const subTaskRepository = dataSource.getRepository(Subtask).extend({
+  findAll,
+  sortBy,
+});
+const baselineCommentRepository = dataSource.getRepository(baselineComment).extend({
+  findAll,
+  sortBy,
+});
+const userRepository = dataSource.getRepository(User).extend({
   findAll,
   sortBy,
 });
@@ -234,6 +242,36 @@ const deleteBaseline = async (baselineId) => {
   return await baselineRepository.delete({ id: baselineId });
 };
 
+const addComment = async (baselineBody) => {
+  const baselineComment = baselineCommentRepository.create({
+    baselineId: baselineBody.id,
+    userId: baselineBody.userId,
+    comment: baselineBody.comment,
+  });
+
+  const savedComment = await baselineCommentRepository.save(baselineComment);
+  const sender = await userRepository.findOne({
+    where : {
+      id: savedComment.userId
+    }
+  }
+  );
+
+  savedComment.user = sender;
+  return savedComment;
+}
+
+const getComments = async(baselineId) =>{
+
+  return await baselineCommentRepository.find(
+    {
+      where:{baselineId: baselineId, },
+      relations: ['user'],
+      order: { createdAt: 'ASC' },
+    }
+  );
+}
+
 module.exports = {
   createBaseline,
   getBaselines,
@@ -241,4 +279,6 @@ module.exports = {
   getByMilestone,
   updateBaseline,
   deleteBaseline,
+  addComment,
+  getComments
 };

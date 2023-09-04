@@ -4,8 +4,7 @@ const createPaymentTerm = {
   body: Joi.object().keys({
     name: Joi.string().required(),
     amount: Joi.number().required(),
-    percent: Joi.boolean(),
-    offshore: Joi.boolean(),
+    percentage: Joi.boolean(),
     plannedCollectionDate: Joi.date().required(),
     actualCollectionDate: Joi.date(),
     status: Joi.boolean(),

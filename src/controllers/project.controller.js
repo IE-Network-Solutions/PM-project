@@ -17,7 +17,6 @@ const createProject = catchAsync(async (req, res) => {
     }
     projectContractValue.push(contractValueData);
   }
-  console.log(projectContractValue,"ppppppppppppp");
   delete req.body.projectMembers;
   delete req.body.projectContractValue;
   const project = await projectService.createProject(req.body, projectMembers, projectContractValue);
