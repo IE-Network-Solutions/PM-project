@@ -63,9 +63,11 @@ const sendForApproval = async (approvalModuleName, moduleId) => {
   if (!approvalModule) {
     throw new ApiError(httpStatus.NOT_FOUND, 'approval module does not exist');
   }
+  console.log(approvalModule,"bbbbbbbbbb")
   // since it is about to sent for approval for the first time we will set the level to one(Approval Stage is the stage which holds the level with approving role)
   let level = 1;
   let moduleName = approvalModule.moduleName;
+  console.log(moduleName,"aaaaaaaaa")
   const approvalStage = await approvalStageRepository
     .createQueryBuilder('approval_stage')
     .leftJoin('approval_stage.approvalModule', 'approvalModule')

@@ -44,6 +44,8 @@ const createUser = async (userBody) => {
   delete userBody.updated_at;
   delete userBody.role_id;
 
+  console.log(userBody)
+
   const user = userRepository.create(userBody);
   return await userRepository.save(user);
 };
