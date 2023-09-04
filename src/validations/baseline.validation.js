@@ -52,11 +52,27 @@ const deleteBaseline= {
     }),
   };
 
+  const addComment = {
+    body: Joi.object().keys({
+      id: Joi.string().required(),
+      comment: Joi.string().required(),
+      userId: Joi.string().required(),
+    }),
+  };
+
+  const getComments = {
+    params: Joi.object().keys({
+        baselineId: Joi.string().required(),
+    }),
+  };
+
 module.exports = {
   createBaseline,
   getBaselines,
   getBaseline,
   getByMilestone,
   updateBaseline,
-  deleteBaseline
+  deleteBaseline,
+  addComment,
+  getComments
 };

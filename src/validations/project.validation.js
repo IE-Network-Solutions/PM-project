@@ -38,6 +38,15 @@ const updateProject = {
   body: Joi.object()
     .keys({
       name: Joi.string(),
+      milestone: Joi.number(),
+      budget: Joi.required(),
+      contract_sign_date: Joi.date(),
+      lc_opening_date: Joi.date(),
+      advanced_payment_date: Joi.date(),
+      status: Joi.boolean(),
+      planned_end_date: Joi.required(),
+      projectMembers: Joi.array(),
+      projectContractValue: Joi.array()
     })
     .min(1),
 };

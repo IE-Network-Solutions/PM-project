@@ -46,6 +46,16 @@ const deleteBaseline = catchAsync(async(req, res)=>{
     res.status(httpStatus.NO_CONTENT).send();
 });
 
+const addComment = catchAsync(async (req, res) => {
+  const baselineComment = await baselineService.addComment(req.body);
+  res.status(httpStatus.CREATED).send(baselineComment);
+});
+
+const getComments = catchAsync(async (req, res)=>{
+    const baselineComment = await baselineService.getComments(req.params.baselineId);
+    res.send(baselineComment);
+});
+
 module.exports = {
   createBaseline,
   getBaselines,
@@ -53,4 +63,6 @@ module.exports = {
   getByMilestone,
   updateBaseline,
   deleteBaseline,
+  addComment,
+  getComments
 };
