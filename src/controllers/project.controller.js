@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { projectService, currencyService} = require('../services');
+const { projectService, currencyService } = require('../services');
 const { User } = require('../models');
 
 const createProject = catchAsync(async (req, res) => {
@@ -17,7 +17,7 @@ const createProject = catchAsync(async (req, res) => {
     }
     projectContractValue.push(contractValueData);
   }
-  console.log(projectContractValue,"ppppppppppppp");
+  console.log(projectContractValue, "ppppppppppppp");
   delete req.body.projectMembers;
   delete req.body.projectContractValue;
   const project = await projectService.createProject(req.body, projectMembers, projectContractValue);
@@ -68,6 +68,14 @@ const getAllProjectsDetailOnMasterSchedule = async (req, res) => {
   res.send(projectDetail);
 }
 
+const getTotalActiveClosedProjects = async (req, res) => {
+  const filter = pick(req.query, ['milestone']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const totalProjects = await projectService.getTotalActiveClosedProjects(filter, options);
+  res.send(totalProjects);
+}
+
+
 module.exports = {
   createProject,
   getProjects,
@@ -77,5 +85,6 @@ module.exports = {
   getAllProjectTasksVarianceByProject,
   getAllProjectsDetailOnMasterSchedule,
   addMember,
-  removeMember
+  removeMember,
+  getTotalActiveClosedProjects
 };

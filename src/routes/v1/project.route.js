@@ -30,4 +30,6 @@ router
   .route('/remove-member/:projectId')
   .delete(validate(projectValidation.removeMember), projectController.removeMember);
 
+router.route('/all/getTotalProjects').get(projectController.getTotalActiveClosedProjects);
+
 module.exports = router;

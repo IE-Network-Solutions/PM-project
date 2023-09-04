@@ -48,7 +48,7 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
   }
 
   if (projectContractValue) {
-    const projectContractValueInstance =  projectContractValue.map((contract_value) => {
+    const projectContractValueInstance = projectContractValue.map((contract_value) => {
       contract_value.project = project;
       return contract_value
     });
@@ -56,7 +56,7 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
     await projectContractValueRepository.save(projectContractValueInstance);
   }
 
-  let newProject=await getProject(project.id)
+  let newProject = await getProject(project.id)
   newProject.projectMembers = projectMembers;
   // project.projectContractValue = projectContractValue;
   publishToRabbit('project.create', newProject);
@@ -86,7 +86,7 @@ const getProjects = async (filter, options) => {
     tableName: 'projects',
     sortOptions: sortBy && { option: sortBy },
     paginationOptions: { limit: limit, page: page },
-    relations: ['projectMembers','projectContractValues'],
+    relations: ['projectMembers', 'projectContractValues'],
   });
   // return await projectRepository.createQueryBuilder('project')
   //   .leftJoin('project.projectMembers', 'projectMember')
@@ -202,10 +202,6 @@ const getAllProjectsDetailOnMasterSchedule = async () => {
     project.tasks = tasks.tasksForVariance;
     allProjectTasks.push(project);
   }
-
-  allProjectTasks.map((task) => {
-    // delete task.tasks?.map(task => task?.baseline?.milestone);
-  });
   return { Projects: allProjectTasks };
 }
 
@@ -228,14 +224,14 @@ const addMember = async (projectId, projectMembers) => {
   return project;
 };
 
-const getMembers = async(projectId)=>{
- return await projectMemberRepository
-      .createQueryBuilder('project_member')
-      .where('project_member.projectId = :projectId', { projectId })
-      .getMany();
+const getMembers = async (projectId) => {
+  return await projectMemberRepository
+    .createQueryBuilder('project_member')
+    .where('project_member.projectId = :projectId', { projectId })
+    .getMany();
 }
 
-const removeMember = async(projectId, memberToRemove)=>{
+const removeMember = async (projectId, memberToRemove) => {
   const projectMembersToRemove = await projectMemberRepository.find({
     where: {
       projectId: projectId,
@@ -245,11 +241,22 @@ const removeMember = async(projectId, memberToRemove)=>{
   });
 
 
-  
+
   return await projectMemberRepository.remove(projectMembersToRemove);
 
 
 }
+
+const getTotalActiveClosedProjects = async (filter, options) => {
+  const projects = await getProjects(filter, options);
+  const total = projects.length;
+  const active = projects.filter(project => project.status === false).length;
+  const closed = projects.filter(project => project.status === true).length;
+  return { totalProjects: total, closedProjects: closed, activeProjcts: active };
+}
+
+
+
 
 module.exports = {
   createProject,
@@ -260,5 +267,6 @@ module.exports = {
   getAllProjectTasksVarianceByProject,
   getAllProjectsDetailOnMasterSchedule,
   addMember,
-  removeMember,getMembers
+  removeMember, getMembers,
+  getTotalActiveClosedProjects
 };
