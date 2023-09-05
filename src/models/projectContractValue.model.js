@@ -3,10 +3,10 @@ const {Base} = require('./BaseModel')
 
 
 class ProjectContractValue extends Base {
-  // Define additional properties specific to Milestone entity
   constructor() {
-    super(); // Call the constructor of the Base entity to inherit its properties
+    super();
     this.amount = { type: 'int' };
+    this.currencyId = {type: 'uuid'}
   }
 }
 
