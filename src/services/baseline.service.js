@@ -163,7 +163,6 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
       if (requestedTask.id) {
         const subTasks = taskBody.subtasks || [];
   
-        // Update the main task
         await taskRepository.update({ id: requestedTask.id }, {
           name: requestedTask.name,
           status: requestedTask.status,
@@ -176,21 +175,46 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
           subTasks: requestedTask.subTasks,
         });
   
-        // Create and save subtasks
-        if (subTasks.length > 0) {
-          const subTaskInstances = subTasks.map((eachSubTask) => ({
-            taskId: requestedTask.id, // Use the taskId of the main task
-            name: eachSubTask.name,
-            plannedStart: eachSubTask.plannedStart,
-            plannedFinish: eachSubTask.plannedFinish,
-            actualStart: eachSubTask.actualStart,
-            actualFinish: eachSubTask.actualFinish,
-            completion: eachSubTask.completion,
-            status: eachSubTask.status,
-            sleepingReason: eachSubTask.sleepingReason,
-          }));
-          await subTaskRepository.save(subTaskInstances);
+        const subTasksToUpdate = [];
+        const subTasksToCreate = [];
+        
+        for (const subTask of subTasks) {
+          if (subTask.id) {
+            subTasksToUpdate.push({
+              id: subTask.id,
+              taskId: requestedTask.id,
+              name: subTask.name,
+              plannedStart: subTask.plannedStart,
+              plannedFinish: subTask.plannedFinish,
+              actualStart: subTask.actualStart,
+              actualFinish: subTask.actualFinish,
+              completion: subTask.completion,
+              status: subTask.status,
+              sleepingReason: subTask.sleepingReason,
+            });
+          } else {
+            subTasksToCreate.push({
+              taskId: requestedTask.id,
+              name: subTask.name,
+              plannedStart: subTask.plannedStart,
+              plannedFinish: subTask.plannedFinish,
+              actualStart: subTask.actualStart,
+              actualFinish: subTask.actualFinish,
+              completion: subTask.completion,
+              status: subTask.status,
+              sleepingReason: subTask.sleepingReason,
+            });
+          }
         }
+        
+        if (subTasksToUpdate.length > 0) {
+          await Promise.all(subTasksToUpdate.map((subTask) => subTaskRepository.update(subTask.id, subTask)));
+        }
+        
+        if (subTasksToCreate.length > 0) {
+          await subTaskRepository.save(subTasksToCreate);
+        }
+        
       } else {
         const subTasks = taskBody.subtasks || [];
         const createTask = taskRepository.create({

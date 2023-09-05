@@ -37,9 +37,14 @@ const updateBaseline = {
   }),
   body: Joi.object()
     .keys({
+      id: Joi.required(),
       name: Joi.string(),
       status: Joi.boolean(),
       milestoneId: Joi.string(),
+      createdAt: Joi.date(),
+      updatedAt: Joi.date(),
+      createdBy: Joi.required(),
+      updatedBy: Joi.required(),
       tasks: Joi.array(),
       subtasks: Joi.array(),
     })
