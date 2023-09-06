@@ -46,8 +46,6 @@ module.exports = new EntitySchema({
                 joinColumn: { name: "afterActionAnalysisId", referencedColumnName: "id" },
                 inverseJoinColumn: { name: "departmentId", referencedColumnName: "id" },
             },
-            onDelete: "SET NULL",
-            onUpdate: "CASCADE",
         },
     },
 });

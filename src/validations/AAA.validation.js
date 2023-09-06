@@ -9,8 +9,7 @@ const createAAA = {
         lessonLearned: Joi.string().required(),
         remarks: Joi.string().required(),
         projectId: Joi.string().required(),
-        actions: Joi.array().required(),
-        departments: Joi.array().required(),
+        departments: Joi.array().items(Joi.string().custom(objectId)).required(),
         issueRelatesId: Joi.array().items(Joi.string().custom(objectId)).required(),
     }),
 };
@@ -38,16 +37,14 @@ const updateAAA = {
         AAAId: Joi.string().custom(objectId),
     }),
     body: Joi.object().keys({
-        title: Joi.string().required(),
-        description: Joi.string().required(),
-        teamInvolves: Joi.string().required(),
-        rootCause: Joi.string().required(),
-        lessonLearned: Joi.string().required(),
-        remarks: Joi.string().required(),
+        title: Joi.string(),
+        description: Joi.string(),
+        rootCause: Joi.string(),
+        lessonLearned: Joi.string(),
+        remarks: Joi.string(),
         projectId: Joi.string(),
-        actions: Joi.array().required()
-        // projectId: Joi.string().custom(objectId),
-        // issueId: Joi.string().custom(objectId),
+        departments: Joi.array().items(Joi.string().custom(objectId)),
+        issueRelatesId: Joi.array().items(Joi.string().custom(objectId)),
     })
         .min(1),
 };

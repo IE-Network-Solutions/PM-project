@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { AfterActionAnalysis, AAADepartment } = require('../models');
+const { AfterActionAnalysis, AAADepartment, Department } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -9,7 +9,7 @@ const { updateRelatedIssueById } = require('./relatedIssues.service');
 
 const AAARepository = dataSource.getRepository(AfterActionAnalysis).extend({ findAll, sortBy });
 const AAADepartmentRepository = dataSource.getRepository(AAADepartment).extend({ findAll, sortBy });
-
+const DepartmentRepository = dataSource.getRepository(Department).extend({ findAll, sortBy });
 // .extend({ sortBy });
 //
 
@@ -19,11 +19,7 @@ const AAADepartmentRepository = dataSource.getRepository(AAADepartment).extend({
  * @returns {Promise<AAA>}
  */
 const createAAA = async (AAABody, departments) => {
-
-    let requestActions = AAABody.actions;
-    delete AAABody.actions;
     let relatedIssues = AAABody.issueRelatesId;
-
     const createdAAA = AAARepository.create(AAABody)
     const resultAAA = await AAARepository.save(createdAAA)
 
@@ -37,10 +33,6 @@ const createAAA = async (AAABody, departments) => {
         await AAADepartmentRepository.save(AAADeparmentInstance);
     }
 
-    for (let action of requestActions) {
-        action.afterActionAnalysis = resultAAA;
-        await createAction(action);
-    }
     for (const ids of relatedIssues) {
         await updateRelatedIssueById(ids, { afterActionAnalysisId: resultAAA.id });
     }
@@ -117,21 +109,43 @@ const groupAAAByProject = async (filter, options) => {
  * @returns {Promise<AAA>}
  */
 const updateAAAById = async (AAAId, updateBody) => {
+
     const checkAAAId = await getAAAById(AAAId);
     if (!checkAAAId) {
         throw new ApiError(httpStatus.NOT_FOUND, 'AAA not found');
     }
-    let requestActions = updateBody.actions
-    const result = await AAARepository.update({ id: AAAId }, updateBody);
 
-    requestActions.map(async (action) => {
-        action.afterActionAnalysis = result;
-        await getIssueRelatedById(action);
-    });
+    const issues = updateBody.issueRelatesId;
+    const departments = updateBody.departments;
 
-    return result;
+    delete updateBody.issueRelatesId;
+    delete updateBody.departments;
 
-    // return await getAAAById(AAAId);
+
+    if (!issues || !departments) {
+        await AAARepository.update({ id: AAAId }, updateBody);
+        return await getAAAById(checkAAAId.id);
+    }
+    else {
+        await AAARepository.update({ id: AAAId }, updateBody);
+        for (const ids of issues) {
+            await updateRelatedIssueById(ids, { afterActionAnalysisId: checkAAAId.id })
+        };
+        const existingRecord = await AAADepartmentRepository.find({
+            where: { afterActionAnalysisId: checkAAAId.id },
+        });
+        await AAADepartmentRepository.delete(existingRecord);
+
+        for (const departmentId of departments) {
+            const updateDepartment = AAADepartmentRepository.create({
+                afterActionAnalysisId: checkAAAId.id,
+                departmentId: departmentId,
+            });
+            await AAADepartmentRepository.save(updateDepartment);
+        }
+
+        return await getAAAById(checkAAAId.id);
+    }
 };
 
 /**
@@ -141,6 +155,7 @@ const updateAAAById = async (AAAId, updateBody) => {
  */
 const deleteAAAById = async (AAAId) => {
     const AAA = await getAAAById(AAAId);
+    await AAADepartmentRepository.delete({ afterActionAnalysisId: AAA.id })
     if (!AAA) {
         throw new ApiError(httpStatus.NOT_FOUND, 'AAA not found');
     }
@@ -150,7 +165,7 @@ const deleteAAAById = async (AAAId) => {
 const getAllAAAByProjectId = async (id) => {
     return await AAARepository.find({
         where: { projectId: id },
-        relations: ['actions', 'issueRelates', 'project'],
+        relations: ['actions.responsiblePerson', 'actions.authorizedPerson', 'issueRelates', 'project', 'department'],
         tableName: 'afterActionAnalysis'
     });
 };
