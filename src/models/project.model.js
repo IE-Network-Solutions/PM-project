@@ -14,6 +14,7 @@ class Project extends Base {
     this.lc_opening_date = { type: 'date' };
     this.advanced_payment_date = { type: 'date' };
     this.status = { type: 'boolean' };
+    this.isOffice = {type: 'boolean', default: false}
   }
 }
 

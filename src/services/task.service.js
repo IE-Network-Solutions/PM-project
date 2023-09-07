@@ -1,3 +1,4 @@
+const { LessThan } = require('typeorm');
 const httpStatus = require('http-status');
 const { Task, TaskUser, Baseline } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
@@ -52,6 +53,28 @@ const getTasks = async (filter, options) => {
     paginationOptions: { limit: limit, page: page },
   });
 };
+
+const extendTasks = async (baselineId) => {
+  try {
+    const tasks = await taskRepository.find({
+      where: {
+        baselineId: baselineId,
+        completion: LessThan(100),
+      },
+      relations: ['subtasks'],
+    });
+
+    // Filter the subtasks with completion < 100
+    tasks.forEach((task) => {
+      task.subtasks = task.subtasks.filter((subtask) => subtask.completion < 100);
+    });
+
+    return tasks;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 /**
  * Get post by id
@@ -223,6 +246,7 @@ const filterTaskByPlanedDate = async (projectId, startDate, endDate) => {
 module.exports = {
   createTask,
   getTasks,
+  extendTasks,
   getTask,
   getTasksByMileston,
   updateTask,
