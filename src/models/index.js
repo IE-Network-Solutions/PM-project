@@ -42,4 +42,4 @@ module.exports.ApprovalStage = require('./approvalStage.model');
 module.exports.Role = require('./roles.model');
 module.exports.AAADepartment = require('./AAADepartment.model');
 module.exports.Currency = require('./currency.model');
-
+module.exports.ResourceHistory=require('./resourceHistory.model')
