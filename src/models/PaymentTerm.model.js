@@ -13,6 +13,8 @@ class PaymentTerm extends Base {
     this.projectId = {type: 'boolean'}
     this.currencyId = {type: 'varchar', nullable: true}
     this.isOffshore = {type: 'boolean'}
+    this.isAmountPercent = {type: 'boolean', default: false}
+    this.budgetTypeId = {type: 'boolean', nullable: true}
   }
 }
 

@@ -37,6 +37,7 @@ const updateProject = {
   }),
   body: Joi.object()
     .keys({
+      isOffice: Joi.boolean(),
       name: Joi.string(),
       milestone: Joi.number(),
       budget: Joi.required(),

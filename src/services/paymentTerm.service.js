@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { paymentTerm, Milestone, Project} = require('../models');
+const { paymentTerm, Milestone, Project, ProjectContractValue} = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -13,6 +13,7 @@ const paymentTermRepository = dataSource.getRepository(paymentTerm).extend({
 
 const miletoneRepository = dataSource.getRepository(Milestone);
 const projectRepository = dataSource.getRepository(Project);
+const projectContractValuesRepository = dataSource.getRepository(ProjectContractValue);
 
 /**
  * Create a user
@@ -22,17 +23,24 @@ const projectRepository = dataSource.getRepository(Project);
 
 const createPaymentTerm = async (paymentTermBody, milestone) => {
 
-  const project =  projectRepository.findOne({
-   where: {
-      id: paymentTermBody.projectId
+  const project = await projectRepository.findOne({
+    where: {
+      id: paymentTermBody.projectId,
     },
-    relations: ['projectContractValues']
+    relations: ['projectContractValues'],
   });
+
+  const projectContractValues = await projectContractValuesRepository.findOne({
+    where: {
+      currencyId: paymentTermBody.currencyId,
+    },
+  });
+
 
   
   let amount;
-  if(paymentTermBody.percent){
-       amount = paymentTermBody.amount ;
+  if(paymentTermBody.percentage){
+       amount = (projectContractValues.amount * paymentTermBody.amount) /100 ;
     }
   else{
     amount = paymentTermBody.amount;
@@ -55,10 +63,11 @@ const createPaymentTerm = async (paymentTermBody, milestone) => {
     budgetTypeId: paymentTermBody.budgetTypeId,
     status: paymentTermBody.status,
     isOffshore: isOffshore,
+    isAmountPercent: paymentTermBody.percentage,
   });
 
   await paymentTermRepository.save(paymentTerm);
-  
+
     if (milestone) {
       const milestoneInstances = milestone.map((eachMilestone) => {
         return {
@@ -132,7 +141,17 @@ const updatePaymentTerm = async (paymentTermId, updateBody, requestedMilestone) 
 
 
   if(updateBody){
-     await paymentTermRepository.update({ id: paymentTermId }, updateBody);
+    //  await paymentTermRepository.update({ id: paymentTermId }, updateBody);
+     await paymentTermRepository.update({ id: paymentTermId },{
+      name: updateBody.name,
+      amount: updateBody.amount,
+      plannedCollectionDate: updateBody.plannedCollectionDate,
+      actualCollectionDate: updateBody.actualCollectionDate,
+      currencyId: updateBody.currencyId,
+      budgetTypeId: updateBody.budgetTypeId,
+      status: updateBody.status,
+      isAmountPercent: updateBody.percentage
+    });
   }
 
   const paymentTermMilestone = await miletoneRepository.findBy({paymentTermId: paymentTermId});
@@ -156,6 +175,8 @@ const updatePaymentTerm = async (paymentTermId, updateBody, requestedMilestone) 
           paymentTermId: paymentTermId,
         };
       });
+
+      return requestedMilestone;
       await miletoneRepository.save(milestonetoUpdate);
     }
 

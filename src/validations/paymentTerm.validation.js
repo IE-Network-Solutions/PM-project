@@ -5,7 +5,7 @@ const createPaymentTerm = {
     name: Joi.string().required(),
     amount: Joi.number().required(),
     percentage: Joi.boolean(),
-    plannedCollectionDate: Joi.date().required(),
+    plannedCollectionDate: Joi.date(),
     actualCollectionDate: Joi.date(),
     status: Joi.boolean(),
     projectId: Joi.string().required(),
@@ -47,7 +47,10 @@ const updatePaymentTerm = {
       actualCollectionDate: Joi.date(),
       status: Joi.boolean(),
       milestone: Joi.array(),
-      projectId: Joi.string()
+      projectId: Joi.string(),
+      budgetTypeId: Joi.string(),
+      currencyId: Joi.string(),
+      percentage: Joi.boolean(),
     })
     .min(1),
 };
