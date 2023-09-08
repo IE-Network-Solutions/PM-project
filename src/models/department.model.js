@@ -35,8 +35,8 @@ module.exports = new EntitySchema({
                     referencedColumnName: "id",
                 },
             },
-            onDelete: "SET NULL",
-            onUpdate: "CASCADE",
+            onDelete: "CASCADE",
+            onUpdate: 'CASCADE'
         },
     }
 });
