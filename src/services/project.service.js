@@ -250,8 +250,8 @@ const removeMember = async (projectId, memberToRemove) => {
 const getTotalActiveClosedProjects = async (filter, options) => {
   const projects = await getProjects(filter, options);
   const total = projects.length;
-  const active = projects.filter(project => project.status === false).length;
-  const closed = projects.filter(project => project.status === true).length;
+  const active = projects.filter(project => project.status === true).length;
+  const closed = projects.filter(project => project.status === false).length;
   return { totalProjects: total, closedProjects: closed, activeProjcts: active };
 }
 

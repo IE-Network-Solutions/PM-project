@@ -4,6 +4,7 @@ const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const publishToRabbit = require('../utils/producer')
 
 const paymentTermRepository = dataSource.getRepository(paymentTerm).extend({
   findAll,
@@ -69,6 +70,7 @@ const createPaymentTerm = async (paymentTermBody, milestone) => {
     }
   
     paymentTerm.milestone = milestone;
+    publishToRabbit('project.paymentTerm',paymentTerm)
     return paymentTerm;
   };
   

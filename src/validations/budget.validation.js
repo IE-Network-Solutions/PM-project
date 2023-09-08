@@ -60,6 +60,7 @@ const updateBudget = {
       description: Joi.string(),
       budgetCategory: Joi.string().guid(),
       taskCategory: Joi.string().guid(),
+      currencyId: Joi.string().guid(),
     })
     .min(1),
 };
