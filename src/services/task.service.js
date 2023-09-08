@@ -55,23 +55,22 @@ const getTasks = async (filter, options) => {
 };
 
 const extendTasks = async (baselineId) => {
-  try {
-    const tasks = await taskRepository.find({
-      where: {
-        baselineId: baselineId,
-        completion: LessThan(100),
-      },
-      relations: ['subtasks'],
-    });
-
-    // Filter the subtasks with completion < 100
-    tasks.forEach((task) => {
+  const baseline = await baselineRepository.findOne({
+    where: {
+      id: baselineId,
+    },
+    relations: ['tasks.subtasks'],
+  });
+  
+  if (baseline && baseline.tasks) {
+    baseline.tasks = baseline.tasks.filter((task) => task.completion < 100);
+  
+    // Filter the subtasks with completion < 100 for each task
+    baseline.tasks.forEach((task) => {
       task.subtasks = task.subtasks.filter((subtask) => subtask.completion < 100);
     });
-
-    return tasks;
-  } catch (error) {
-    throw error;
+  
+    return baseline;
   }
 };
 

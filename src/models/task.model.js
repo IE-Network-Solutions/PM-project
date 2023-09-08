@@ -33,8 +33,6 @@ module.exports = new EntitySchema({
       type: 'one-to-many',
       target: 'SubTask',
       inverseSide: 'task',
-      onDelete: 'SET NULL',
-      onUpdate: 'CASCADE'
     },
     budgets: {
       type: 'one-to-many',

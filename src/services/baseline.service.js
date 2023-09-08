@@ -52,7 +52,13 @@ const createBaseline = async (baselineBody, tasks) => {
     }
   }
 
-  const baseline = baselineRepository.create(baselineBody);
+  const baseline = baselineRepository.create({
+    name: baselineBody.name,
+    status: baselineBody.status,
+    milestoneId: baselineBody.milestoneId,
+    createdBy: baselineBody.createdBy,
+    updatedBy: baselineBody.updatedBy
+  });
   const savedBaseline = await baselineRepository.save(baseline);
   
   
@@ -250,7 +256,13 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
     }
   }
   
-return baselineBody;
+    // After updating or creating tasks, fetch the updated baseline with tasks and subtasks
+    const updatedBaseline = await baselineRepository.findOne({
+      where: { id: baselineId },
+      relations: ['tasks.subtasks'],
+    });
+
+return updatedBaseline;
 };
 
 /**
