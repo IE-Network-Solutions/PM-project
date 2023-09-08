@@ -10,6 +10,7 @@ router
   .post(validate(projectValidation.createProject), projectController.createProject)
   .get(validate(projectValidation.getProjects), projectController.getProjects);
 
+
 router
   .route('/:projectId')
   .get(validate(projectValidation.getProjects), projectController.getProject)
@@ -31,5 +32,10 @@ router
   .delete(validate(projectValidation.removeMember), projectController.removeMember);
 
 router.route('/all/getTotalProjects').get(projectController.getTotalActiveClosedProjects);
+
+  router
+  .route('/closeproject/:projectId')
+  .patch(projectController.closeProject)
+  
 
 module.exports = router;
