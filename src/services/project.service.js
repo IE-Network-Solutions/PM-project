@@ -249,7 +249,21 @@ const removeMember = async(projectId, memberToRemove)=>{
   return await projectMemberRepository.remove(projectMembersToRemove);
 
 
+
+  
+
+
 }
+const closeProject = async (projectId, status) => {
+  const project = await getProject(projectId);
+  if (!project) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
+  }
+  project.status=status;
+  await projectRepository.update({ id: projectId }, status);
+ 
+  return await getProject(projectId);
+};
 
 module.exports = {
   createProject,
@@ -260,5 +274,7 @@ module.exports = {
   getAllProjectTasksVarianceByProject,
   getAllProjectsDetailOnMasterSchedule,
   addMember,
-  removeMember,getMembers
+  removeMember,getMembers,
+  closeProject
+  
 };

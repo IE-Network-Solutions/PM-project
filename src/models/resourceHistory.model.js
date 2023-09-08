@@ -7,7 +7,7 @@ class ResourceHistory extends Base {
   constructor() {
     super(); 
     this.Action = { type: 'enum', enum: ['Created','Deleted'], nullable: true};
-      this.projectId = { type: "varchar", nullable: true };
+    this.projectId = { type: "varchar", nullable: true };
      this.taskId = { type: "varchar", nullable: true }; 
       this.userId = { type: "varchar", nullable: true }; 
 

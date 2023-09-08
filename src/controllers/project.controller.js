@@ -67,6 +67,12 @@ const getAllProjectsDetailOnMasterSchedule = async (req, res) => {
   const projectDetail = await projectService.getAllProjectsDetailOnMasterSchedule();
   res.send(projectDetail);
 }
+const closeProject = catchAsync(async (req, res) => {
+  const project = await projectService.closeProject(req.params.projectId, req.body);
+  res.send(project);
+});
+
+
 
 module.exports = {
   createProject,
@@ -77,5 +83,6 @@ module.exports = {
   getAllProjectTasksVarianceByProject,
   getAllProjectsDetailOnMasterSchedule,
   addMember,
-  removeMember
+  removeMember,
+  closeProject
 };

@@ -8,6 +8,9 @@ const router = express.Router();
 router
   .route('/') 
   .post(resourceHistoryController.createResourceHistory);
+  router
+  .route('/') 
+  .get(resourceHistoryController.getAllResourceHistory);
 
   router
     .route('/:projectId')
@@ -16,6 +19,10 @@ router
     router
     .route('/bytask/:taskId')
     .get( resourceHistoryController.getResourceHistoryByTaskId);
+    
+    router
+    .route('/byuser/:userId')
+    .get( resourceHistoryController.getResourceHistoryByUserId);
     
 
  
