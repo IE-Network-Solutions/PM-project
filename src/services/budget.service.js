@@ -158,6 +158,59 @@ const getBudgetsOfProjects = async () => {
 };
 
 /**
+ * Query for budget for the project
+ * @param {Object} filter - Filter options
+ * @param {Object} options - Query options
+ * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
+ * @param {number} [options.limit] - Maximum number of results per page (default = 10)
+ * @param {number} [options.page] - Current page (default = 1)
+ * @returns {Promise<QueryResult>}
+ */
+
+const getAllBudgetsOfProjects = async () => {
+  const approval = false;
+
+  const budgets = await budgetRepository
+    .createQueryBuilder('budget')
+    .leftJoin('budget.project', 'project')
+    .leftJoin('budget.task', 'task')
+    .leftJoin('budget.group', 'group')
+    .leftJoin('group.comments', 'comments')
+    .leftJoin('group.approvalStage', 'approvalStage')
+    .leftJoin('approvalStage.role', 'role')
+    .leftJoin('budget.budgetCategory', 'budgetCategory')
+    .leftJoin('budget.taskCategory', 'taskCategory')
+    .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory', 'approvalStage', 'role', 'comments'])
+    .andWhere('group.approvalStage IS NOT NULL')
+    .getMany();
+
+  const groupedData = {};
+
+  budgets.forEach((entry) => {
+    const projectId = entry.project.id;
+    const groupId = entry.group.id;
+
+    if (!groupedData[projectId]) {
+      groupedData[projectId] = {
+        project: {
+          id: entry.project.id,
+          name: entry.project.name, // Include project name
+        },
+        groups: {},
+      };
+    }
+
+    if (!groupedData[projectId].groups[groupId]) {
+      groupedData[projectId].groups[groupId] = [];
+    }
+
+    groupedData[projectId].groups[groupId].push(entry);
+  });
+
+  return groupedData;
+};
+
+/**
  * Query for budget for the project by task level
  * @param {Object} filter - Filter options
  * @param {Object} options - Query options
@@ -243,6 +296,8 @@ const deleteBudget = async (budgetId) => {
 const getBudgetGroup = async (groupId) => {
   return await budgetGroupRepository.findOne({ where: { id: groupId }, relations: ['project'] });
 };
+
+const getByTaskCategory = async (categoryId) => {};
 
 module.exports = {
   createBudget,
