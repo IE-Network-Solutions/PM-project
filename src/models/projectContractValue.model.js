@@ -3,11 +3,10 @@ const {Base} = require('./BaseModel')
 
 
 class ProjectContractValue extends Base {
-  // Define additional properties specific to Milestone entity
   constructor() {
-    super(); // Call the constructor of the Base entity to inherit its properties
+    super();
     this.amount = { type: 'int' };
-    this.currency = { type: 'varchar' };
+    this.currencyId = {type: 'uuid'}
   }
 }
 
@@ -16,13 +15,17 @@ module.exports = new EntitySchema({
   tableName: 'project_contract_values',
   columns: {
     ...new ProjectContractValue(),
-    projectId: { type: 'uuid', nullable: false },
   },
   relations: {
     project: {
         type: "many-to-one", 
-        target: "projects",
+        target: "Project",
         inverseSide: "projectContractValues",
-      },   
+      },
+      currency: {
+        type: "many-to-one", 
+        target: "Currency",
+        inverseSide: "projectContractValues",
+      },  
   },
 });

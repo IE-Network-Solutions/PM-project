@@ -18,10 +18,14 @@ const AAADepartment = new EntitySchema({
         afterActionAnalysis: {
             type: 'many-to-one',
             target: 'AfterActionAnalysis',
+            onDelete: "CASCADE",
+            onUpdate: 'CASCADE'
         },
         department: {
             type: 'many-to-one',
             target: 'Department',
+            onDelete: "CASCADE",
+            onUpdate: 'CASCADE'
         },
     },
 });

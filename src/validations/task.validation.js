@@ -42,6 +42,12 @@ const getTask = {
   }),
 };
 
+const extendTasks = {
+  params: Joi.object().keys({
+    baselineId: Joi.string(),
+  }),
+};
+
 const updateTask = {
   params: Joi.object().keys({
     taskId: Joi.string(),
@@ -108,5 +114,5 @@ module.exports = {
   removeResource,
   getByPlnedDate,
   assignAllResource,
-
+  extendTasks
 };

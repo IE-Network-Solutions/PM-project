@@ -1,11 +1,11 @@
 const httpStatus = require('http-status');
-const { Task } = require('../models');
+const { Task, Subtask } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 
-const subTaskRepository = dataSource.getRepository(Task).extend({
+const subTaskRepository = dataSource.getRepository(Subtask).extend({
   findAll,
   sortBy,
 });
@@ -44,6 +44,7 @@ const getSubTasks = async (filter, options) => {
   });
 };
 
+
 /**
  * Get post by id
  * @param {ObjectId} id
@@ -76,7 +77,7 @@ const updateSubTask = async (subTaskId, updateBody) => {
 const deleteSubTask = async (subTaskId) => {
   const subtask = await getSubTask(subTaskId);
   if (!subtask) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Sub Task not found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Subtask not found');
   }
   return await subTaskRepository.delete({ id: subTaskId });
 };

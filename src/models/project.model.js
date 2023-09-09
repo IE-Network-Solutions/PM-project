@@ -14,6 +14,7 @@ class Project extends Base {
     this.lc_opening_date = { type: 'date' };
     this.advanced_payment_date = { type: 'date' };
     this.status = { type: 'boolean' };
+    this.isOffice = {type: 'boolean', default: false}
   }
 }
 
@@ -25,6 +26,11 @@ module.exports = new EntitySchema({
     projectContractValues: {
       type: 'one-to-many',
       target: 'ProjectContractValue',
+      inverseSide: 'project',
+    },
+    weeklyReport: {
+      type: 'one-to-many',
+      target: 'WeeklyReport',
       inverseSide: 'project',
     },
     projectMembers: {

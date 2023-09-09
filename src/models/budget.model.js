@@ -34,5 +34,9 @@ module.exports = new EntitySchema({
       type: 'many-to-one',
       target: 'Project',
     },
+    currency: {
+      type: 'many-to-one',
+      target: 'Currency',
+    },
   },
 });

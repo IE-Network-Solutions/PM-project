@@ -22,4 +22,12 @@ router
   .patch(validate(baselineValidation.updateBaseline),baselineController.updateBaseline)
   .delete(validate(baselineValidation.deleteBaseline),baselineController.deleteBaseline);
 
+  router
+  .route('/comment')
+  .post(validate(baselineValidation.addComment), baselineController.addComment);
+
+  router
+  .route('/comment/:baselineId')
+  .get(validate(baselineValidation.getComments), baselineController.getComments);
+
 module.exports = router;

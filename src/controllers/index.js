@@ -1,3 +1,5 @@
+module.exports.currencyController = require('./currencyController');
+
 module.exports.riskController = require('./risk.controller');
 module.exports.issueController = require('./issue.controller');
 module.exports.AAAController = require('./AAA.controller');
@@ -26,3 +28,4 @@ module.exports.approvalLevelController = require('./approvalLevel.controller');
 module.exports.approvalStageController = require('./approvalStage.controller');
 module.exports.approvalController = require('./approval.controller');
 module.exports.departmentController = require('./department.controller');
+module.exports.resourceHistoryController =require('./resourceHistory.controller')

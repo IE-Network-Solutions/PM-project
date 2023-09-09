@@ -35,6 +35,38 @@ const getUserById = async (id) => {
   return await userRepository.findOneBy({ id: id });
 };
 
+const createUser = async (userBody) => {
+  userBody.createdAt = userBody.created_at;
+  userBody.updatedAt = userBody.updated_at;
+  userBody.roleId = userBody.role_id;
+
+  delete userBody.created_at;
+  delete userBody.updated_at;
+  delete userBody.role_id;
+
+  console.log(userBody)
+
+  const user = userRepository.create(userBody);
+  return await userRepository.save(user);
+};
+
+const updateUser = async (updateBody) => {
+  let userId = updateBody.id;
+  delete updateBody.id;
+
+  updateBody.createdAt = updateBody.created_at;
+  updateBody.updatedAt = updateBody.updated_at;
+  updateBody.roleId = updateBody.role_id;
+  updateBody.emailVerifiedAt = updateBody.email_verified_at;
+
+  delete updateBody.created_at;
+  delete updateBody.updated_at;
+  delete updateBody.role_id;
+  delete updateBody.email_verified_at;
+
+  await userRepository.update({ id: userId }, updateBody);
+};
+
 /**
  * Get multiple users by array of ids
  * @param {Array} userIds
@@ -49,4 +81,6 @@ module.exports = {
   queryUsers,
   getUserById,
   getUsersById,
+  createUser,
+  updateUser,
 };

@@ -10,23 +10,32 @@ router
   .post(validate(projectValidation.createProject), projectController.createProject)
   .get(validate(projectValidation.getProjects), projectController.getProjects);
 
+
 router
   .route('/:projectId')
   .get(validate(projectValidation.getProjects), projectController.getProject)
   .patch(validate(projectValidation.updateProject), projectController.updateProject)
   .delete(validate(projectValidation.deleteProject), projectController.deleteProject);
 
+router
+  .route('/getProjectVariance/groupByProject/all')
+  .get(projectController.getAllProjectTasksVarianceByProject);
+router
+  .route('/getProjectDetail/onMasterSchedule/all')
+  .get(projectController.getAllProjectsDetailOnMasterSchedule);
+router
+  .route('/add-member/:projectId')
+  .post(validate(projectValidation.addMember), projectController.addMember);
 
 router
-  .route('/getProjectVariance/:projectId')
-  .get(validate(projectValidation.getProjectVariance), projectController.getProjectVariance);
-
-  router
-  .route('/add-member/:projectId')
-  .post(validate(projectValidation.addMember),projectController.addMember);
-
-  router
   .route('/remove-member/:projectId')
-  .delete(validate(projectValidation.removeMember),projectController.removeMember);
+  .delete(validate(projectValidation.removeMember), projectController.removeMember);
+
+router.route('/all/getTotalProjects').get(projectController.getTotalActiveClosedProjects);
+
+  router
+  .route('/closeproject/:projectId')
+  .patch(projectController.closeProject)
+  
 
 module.exports = router;

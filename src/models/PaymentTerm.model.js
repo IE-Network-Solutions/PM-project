@@ -9,8 +9,12 @@ class PaymentTerm extends Base {
     this.amount = { type: 'int'};
     this.plannedCollectionDate = {type: 'date', nullable: true}
     this.actualCollectionDate = {type: 'date', nullable: true}
-    this.status = { type: 'boolean' };
+    this.status = { type: 'boolean', default: true};
     this.projectId = {type: 'boolean'}
+    this.currencyId = {type: 'varchar', nullable: true}
+    this.isOffshore = {type: 'boolean'}
+    this.isAmountPercent = {type: 'boolean', default: false}
+    this.budgetTypeId = {type: 'boolean', nullable: true}
   }
 }
 
@@ -33,5 +37,15 @@ module.exports = new EntitySchema({
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },   
+      currency: {
+        type: "many-to-one",
+        target: "Currency",
+        inverseSide: "paymentTerm",
+      },
+      budgetType: {
+        type: "many-to-one",
+        target: "budgetType",
+        inverseSide: "paymentTerm"
+      }
   },
 });

@@ -8,13 +8,16 @@ const {
   budgetCategoryService,
   budgetTaskCategoryService,
   projectService,
+  currencyService,
 } = require('../services');
 
 async function calculate(budget) {
   const task = await taskService.getTask(budget.taskId);
   const budgetCategory = await budgetCategoryService.getBudgetCategory(budget.budgetCategoryId);
   const taskCategory = await budgetTaskCategoryService.getBudgetTaskCategory(budget.taskCategoryId);
-  return { task, budgetCategory, taskCategory };
+  const currency = await currencyService.getCurrencyById(budget.currencyId);
+
+  return { task, budgetCategory, taskCategory,currency };
 }
 
 const createBudget = catchAsync(async (req, res) => {
@@ -27,10 +30,11 @@ const createBudget = catchAsync(async (req, res) => {
       throw new ApiError(httpStatus.NOT_FOUND, `project with id: ${data.projectId} not found`);
     }
     data.project = project;
+  
     const budgetArray = data.budgets;
 
     for (const budget of budgetArray) {
-      const { task, budgetCategory, taskCategory } = await calculate(budget);
+      const { task, budgetCategory, taskCategory,currency } = await calculate(budget);
 
       const singleBudgetData = {
         amount: budget.amount,
@@ -39,9 +43,10 @@ const createBudget = catchAsync(async (req, res) => {
         project: project,
         budgetCategory: budgetCategory,
         taskCategory: taskCategory,
+        currency: currency,
       };
 
-      console.log('MANNN', [singleBudgetData]);
+     
 
       budgetData.push(singleBudgetData);
     }
@@ -84,6 +89,13 @@ const updateBudget = catchAsync(async (req, res) => {
     }
     data.budgetCategory = budgetCategory;
   }
+  if (data.currencyId) {
+    const currency = await currencyService.getCurrencyById(data.currencyId);
+    if (!currency) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Budget Currency Not found not found');
+    }
+    data.currency = currency;
+  }
   if (data.taskCategory) {
     const taskCategory = await budgetTaskCategoryService.getBudgetTaskCategory(data.taskCategory);
     if (!taskCategory) {
@@ -108,6 +120,11 @@ const getBudgetsOfProjects = catchAsync(async (req, res) => {
   const data = await budgetService.getBudgetsOfProjects();
   res.send(data);
 });
+
+const getBudgetGroupByCategory= catchAsync(async (req,res)=>{
+  const data = await budgetService.getBudgetGroupByCategory()
+  res.send(data)
+})
 
 const addBudget = catchAsync(async (req, res) => {
   data = req.body;
@@ -155,4 +172,5 @@ module.exports = {
   getBudgetsOfProject,
   getBudgetsOfProjects,
   addBudget,
+  getBudgetGroupByCategory
 };

@@ -75,7 +75,6 @@ const getAllIssuesByProjectIdAndByDate = async (id, status, startDate, endDate) 
         {
             where: {
                 projectId: id,
-                status: status,
                 createdAt: Between(
                     new Date(startDate).toISOString(),
                     new Date(endDate).toISOString()

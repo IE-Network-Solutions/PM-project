@@ -37,12 +37,23 @@ const getByMilestone = catchAsync(async(req, res)=>{
 });
 
 const updateBaseline = catchAsync(async(req, res)=>{
-  const baseline = await baselineService.updateBaseline(req.params.baselineId, req.body);
+  const baseline = await baselineService.updateBaseline(req.params.baselineId, req.body, req.body.tasks);
+  delete req.body.tasks;
   res.send(baseline);
 });
 const deleteBaseline = catchAsync(async(req, res)=>{
     await baselineService.deleteBaseline(req.params.baselineId);
     res.status(httpStatus.NO_CONTENT).send();
+});
+
+const addComment = catchAsync(async (req, res) => {
+  const baselineComment = await baselineService.addComment(req.body);
+  res.status(httpStatus.CREATED).send(baselineComment);
+});
+
+const getComments = catchAsync(async (req, res)=>{
+    const baselineComment = await baselineService.getComments(req.params.baselineId);
+    res.send(baselineComment);
 });
 
 module.exports = {
@@ -52,4 +63,6 @@ module.exports = {
   getByMilestone,
   updateBaseline,
   deleteBaseline,
+  addComment,
+  getComments
 };

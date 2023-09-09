@@ -29,6 +29,8 @@ module.exports = new EntitySchema({
         type: "many-to-one", 
         target: "Task", 
         inverseSide: "subtasks", 
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
       },
   },
 });

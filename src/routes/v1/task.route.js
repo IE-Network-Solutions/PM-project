@@ -11,6 +11,9 @@ router
   .get(validate(taskValidation.getTasks), taskController.getTasks);
 
 router
+.route('/extend-tasks/:baselineId').get(validate(taskValidation.extendTasks), taskController.extendTasks);
+
+router
   .route('/:taskId')
   .get(validate(taskValidation.getTask), taskController.getTask)
   .patch(validate(taskValidation.updateTask), taskController.updateTask)

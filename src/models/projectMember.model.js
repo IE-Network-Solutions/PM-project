@@ -13,6 +13,7 @@ const ProjectMember = new EntitySchema({
     },
     roleId: {
       type: 'uuid',
+      nullable:true
     },
   },
   relations: {
@@ -28,7 +29,7 @@ const ProjectMember = new EntitySchema({
     role: {
       type: 'many-to-one',
       target: 'Role',
-      joinColumn: { name: 'roleId', referencedColumnName: 'id' },
+      // joinColumn: { name: 'roleId', referencedColumnName: 'id' },
     },
   },
 });
