@@ -49,7 +49,6 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
   }
 
   if (projectContractValue) {
-    console.log(projectContractValue,"tttttttttttttt")
     const projectContractValueInstance =  projectContractValue.map((contract_value) => {
       contract_value.project = project;
       return contract_value

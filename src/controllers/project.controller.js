@@ -7,21 +7,27 @@ const { User } = require('../models');
 
 const createProject = catchAsync(async (req, res) => {
   const projectMembers = req.body.projectMembers;
-  const projectContractValueData = req.body.projectContractValue;
-  const projectContractValue = [];
-  for (const data of projectContractValueData) {
-    const currency = await currencyService.getCurrencyById(data.currency);
-    const contractValueData = {
-      amount: data.amount,
-      currency: currency
+  let projectContractValue = [];
+
+  if (req.body.projectContractValue) {
+    const projectContractValueData = req.body.projectContractValue;
+    for (const data of projectContractValueData) {
+      const currency = await currencyService.getCurrencyById(data.currency);
+      const contractValueData = {
+        amount: data.amount,
+        currency: currency
+      };
+      projectContractValue.push(contractValueData);
     }
-    projectContractValue.push(contractValueData);
   }
+
   delete req.body.projectMembers;
   delete req.body.projectContractValue;
+  
   const project = await projectService.createProject(req.body, projectMembers, projectContractValue);
   res.status(httpStatus.CREATED).json(project);
 });
+
 
 
 const getProjects = catchAsync(async (req, res) => {
