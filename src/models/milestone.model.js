@@ -22,6 +22,8 @@ module.exports = new EntitySchema({
         type: "many-to-one", 
         target: "projects",
         inverseSide: "milestones",
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
       },  
       paymentTerm: {
         type: "many-to-one", 

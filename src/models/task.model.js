@@ -28,6 +28,8 @@ module.exports = new EntitySchema({
       type: 'many-to-one',
       target: 'baselines',
       inverseSide: 'task',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
     subtasks: {
       type: 'one-to-many',
