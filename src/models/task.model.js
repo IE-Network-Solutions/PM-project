@@ -54,7 +54,9 @@ module.exports = new EntitySchema({
           name: 'userId',
           referencedColumnName: 'id',
         },
+        
       },
+  
     },
   },
 });
