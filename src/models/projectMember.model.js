@@ -25,6 +25,8 @@ const ProjectMember = new EntitySchema({
     project: {
       type: 'many-to-one',
       target: 'Project',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
     role: {
       type: 'many-to-one',

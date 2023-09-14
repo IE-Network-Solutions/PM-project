@@ -12,6 +12,7 @@ const createProject = {
     advanced_payment_date: Joi.date(),
     status: Joi.boolean(),
     planned_end_date: Joi.required(),
+    isOffice: Joi.boolean(),
     projectMembers: Joi.array(),
     projectContractValue: Joi.array(),
     isOffice: Joi.boolean(),
