@@ -176,6 +176,10 @@ const getBudgetsOfProjects = async () => {
 
   return groupedData;
 };
+const getMonthlyBudgetsOfProjects = async () => {
+  return "abrilo";
+};
+
 
 /**
  * Query for budget for the project by task level
@@ -275,5 +279,6 @@ module.exports = {
   getBudgetsOfProjects,
   addBudget,
   getBudgetGroup,
-  getBudgetGroupByCategory
+  getBudgetGroupByCategory,
+  getMonthlyBudgetsOfProjects
 };
