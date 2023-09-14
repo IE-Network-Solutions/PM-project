@@ -19,6 +19,14 @@ const createProject = {
   }),
 };
 
+const createOfficeProject = {
+  body: Joi.object().keys({
+    name: Joi.string().required(),
+    isOffice: Joi.boolean(),
+    projectMembers: Joi.array(),
+  }),
+};
+
 const getProjects = {
   query: Joi.object().keys({
     sortBy: Joi.string(),
@@ -95,4 +103,5 @@ module.exports = {
   getProjectVariance,
   addMember,
   removeMember,
+  createOfficeProject
 };

@@ -203,6 +203,10 @@ const getBudgetsOfProjects = async () => {
 
   return groupedData;
 };
+const getMonthlyBudgetsOfProjects = async () => {
+  return "abrilo";
+};
+
 
 const getCurrentMonthBudgetOfProjects = async () => {
   const approval = false;
@@ -431,4 +435,5 @@ module.exports = {
   getBudgetGroupByCategory,
   getAllBudgetsOfProjects,
   getCurrentMonthBudgetOfProjects,
+  getMonthlyBudgetsOfProjects
 };

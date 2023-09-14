@@ -10,6 +10,9 @@ router
   .post(validate(projectValidation.createProject), projectController.createProject)
   .get(validate(projectValidation.getProjects), projectController.getProjects);
 
+  router
+  .route('/office-project')
+  .post(validate(projectValidation.createOfficeProject), projectController.createProject);
 
 router
   .route('/:projectId')
