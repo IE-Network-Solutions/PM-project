@@ -74,6 +74,7 @@ const getBudgets = async (filter, options) => {
 
 const getBudgetsOfProject = async (projectId) => {
   // const { limit, page, sortBy } = options;
+  const approval = false;
 
   const budgets = await budgetRepository
     .createQueryBuilder('budget')
@@ -98,23 +99,17 @@ const getBudgetsOfProject = async (projectId) => {
       'role',
       'comments',
     ])
-    .where('project.id = :projectId', { projectId })
+    .where('group.approved = :approval', { approval })
+    .andWhere('project.id = :projectId', { projectId })
     .getMany();
 
   const groupedData = {};
   budgets.forEach((entry) => {
     const groupId = entry.group.id;
-    const currencyId = entry.currency.id;
-
     if (!groupedData[groupId]) {
-      groupedData[groupId] = {};
+      groupedData[groupId] = [];
     }
-
-    if (!groupedData[groupId][currencyId]) {
-      groupedData[groupId][currencyId] = [];
-    }
-
-    groupedData[groupId][currencyId].push(entry);
+    groupedData[groupId].push(entry);
   });
 
   const groupedResult = Object.values(groupedData);
@@ -205,6 +200,53 @@ const getBudgetsOfProjects = async () => {
 
     groupedData[projectId].groups[groupId].push(entry);
   });
+
+  return groupedData;
+};
+
+const getCurrentMonthBudgetOfProjects = async () => {
+  const approval = false;
+
+  const budgets = await budgetRepository
+    .createQueryBuilder('budget')
+    .leftJoin('budget.project', 'project')
+    .leftJoin('budget.task', 'task')
+    .leftJoin('budget.group', 'group')
+    .leftJoin('group.comments', 'comments')
+    .leftJoin('group.approvalStage', 'approvalStage')
+    .leftJoin('approvalStage.role', 'role')
+    .leftJoin('budget.budgetCategory', 'budgetCategory')
+    .leftJoin('budget.taskCategory', 'taskCategory')
+    .leftJoin('budget.currency', 'currency')
+    .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory', 'approvalStage', 'role', 'comments'])
+    .getMany();
+
+  const groupedData = {};
+
+  budgets.forEach((entry) => {
+    const projectId = entry.project.id;
+    const groupId = entry.group.id;
+    console.log(groupId, 'pppppppppppppppppp');
+
+    if (!groupedData[projectId]) {
+      groupedData[projectId] = {
+        project: {
+          id: entry.project.id,
+          name: entry.project.name, // Include project name
+        },
+        group: null,
+      };
+    }
+
+    if (!groupedData[projectId].group || entry.group.createdAt > groupedData[projectId].group.createdAt) {
+      groupedData[projectId].group = entry;
+      // console.log(groupedData[projectId].group, 'mmmmmmmm');
+    }
+
+    // groupedData[projectId].group.push(entry);
+  });
+
+  // console;
 
   return groupedData;
 };
@@ -305,21 +347,23 @@ const getTasksOfProject = async (projectId) => {
     .leftJoin('budget.budgetCategory', 'budgetCategory')
     .leftJoin('budget.taskCategory', 'taskCategory')
     .select(['budget', 'tasks', 'project', 'group', 'budgetCategory', 'taskCategory'])
+    .where()
+    .andWhere('project.id = :projectId', { projectId })
     .getMany();
 
-  // const groupedData = {};
-  // budgets.forEach((entry) => {
-  //   const groupId = entry.group.id;
-  //   if (!groupedData[groupId]) {
-  //     groupedData[groupId] = [];
-  //   }
-  //   groupedData[groupId].push(entry);
-  // });
+  const groupedData = {};
+  budgets.forEach((entry) => {
+    const groupId = entry.group.id;
+    if (!groupedData[groupId]) {
+      groupedData[groupId] = [];
+    }
+    groupedData[groupId].push(entry);
+  });
 
-  // const groupedResult = Object.values(groupedData);
+  const groupedResult = Object.values(groupedData);
 
-  // console.log(groupedResult);
-  return budgets;
+  console.log(groupedResult);
+  return groupedData;
 };
 
 /**
@@ -386,4 +430,5 @@ module.exports = {
   getBudgetGroup,
   getBudgetGroupByCategory,
   getAllBudgetsOfProjects,
+  getCurrentMonthBudgetOfProjects,
 };
