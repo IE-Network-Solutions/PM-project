@@ -13,7 +13,8 @@ const createProject = {
     status: Joi.boolean(),
     planned_end_date: Joi.required(),
     projectMembers: Joi.array(),
-    projectContractValue: Joi.array()
+    projectContractValue: Joi.array(),
+    isOffice: Joi.boolean(),
   }),
 };
 
@@ -47,7 +48,7 @@ const updateProject = {
       status: Joi.boolean(),
       planned_end_date: Joi.required(),
       projectMembers: Joi.array(),
-      projectContractValue: Joi.array()
+      projectContractValue: Joi.array(),
     })
     .min(1),
 };
@@ -66,14 +67,16 @@ const getProjectVariance = {
 
 const addMember = Joi.object().keys({
   params: Joi.object().keys({
-    projectId: Joi.string().required()
+    projectId: Joi.string().required(),
   }),
-  body: Joi.array().items(
-    Joi.object().keys({
-      memberId: Joi.string().required(),
-      roleId: Joi.string().required()
-    })
-  ).required()
+  body: Joi.array()
+    .items(
+      Joi.object().keys({
+        memberId: Joi.string().required(),
+        roleId: Joi.string().required(),
+      })
+    )
+    .required(),
 });
 
 const removeMember = {
@@ -81,8 +84,6 @@ const removeMember = {
     projectId: Joi.string(),
   }),
 };
-
-  
 
 module.exports = {
   createProject,
@@ -92,5 +93,5 @@ module.exports = {
   deleteProject,
   getProjectVariance,
   addMember,
-  removeMember
+  removeMember,
 };

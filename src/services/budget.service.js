@@ -27,11 +27,11 @@ const budgetGroupRepository = dataSource.getRepository(BudgetGroup).extend({
  */
 const createBudget = async (budgetBody) => {
   budgetData = budgetBody.budgetData;
-  console.log(budgetBody.project,"pppppppppp")
+  console.log(budgetBody.project, 'pppppppppp');
   const budgetGroup = budgetGroupRepository.create({
     from: budgetBody.from,
     to: budgetBody.to,
-    project: budgetBody.project
+    project: budgetBody.project,
   });
   await budgetGroupRepository.save(budgetGroup);
 
@@ -58,7 +58,7 @@ const getBudgets = async (filter, options) => {
   const { limit, page, sortBy } = options;
 
   return await budgetRepository.find({
-    relations: ['currency','group', 'task', 'budgetCategory', 'taskCategory', 'project'],
+    relations: ['currency', 'group', 'task', 'budgetCategory', 'taskCategory', 'project'],
   });
 };
 
@@ -86,17 +86,35 @@ const getBudgetsOfProject = async (projectId) => {
     .leftJoin('approvalStage.role', 'role')
     .leftJoin('budget.budgetCategory', 'budgetCategory')
     .leftJoin('budget.taskCategory', 'taskCategory')
-    .select(['budget','currency', 'task', 'project', 'group', 'budgetCategory', 'taskCategory', 'approvalStage', 'role', 'comments'])
+    .select([
+      'budget',
+      'currency',
+      'task',
+      'project',
+      'group',
+      'budgetCategory',
+      'taskCategory',
+      'approvalStage',
+      'role',
+      'comments',
+    ])
     .where('project.id = :projectId', { projectId })
     .getMany();
 
   const groupedData = {};
   budgets.forEach((entry) => {
     const groupId = entry.group.id;
+    const currencyId = entry.currency.id;
+
     if (!groupedData[groupId]) {
-      groupedData[groupId] = [];
+      groupedData[groupId] = {};
     }
-    groupedData[groupId].push(entry);
+
+    if (!groupedData[groupId][currencyId]) {
+      groupedData[groupId][currencyId] = [];
+    }
+
+    groupedData[groupId][currencyId].push(entry);
   });
 
   const groupedResult = Object.values(groupedData);
@@ -115,27 +133,27 @@ const getBudgetsOfProject = async (projectId) => {
  * @returns {Promise<QueryResult>}
  */
 
-const getBudgetGroupByCategory = async(groupId)=>{
+const getBudgetGroupByCategory = async (groupId) => {
   const budgets = await budgetRepository
-  .createQueryBuilder('budget')
-  .leftJoinAndSelect('budget.taskCategory', 'taskCategory')
-  .leftJoinAndSelect('budget.group', 'group')
-  .leftJoinAndSelect('group.project', 'project')
-  .leftJoinAndSelect('budget.currency', 'currency') // Add this line to join the currency relation
-  .select('SUM(budget.amount)', 'sum')
-  .addSelect('currency.id', 'currency_id') // Select the currency ID
-  .addSelect('currency.name', 'currency_name') // Select the currency name
-  .addSelect('taskCategory', 'taskCategory') 
-  .addSelect('group.from', 'group_to') 
-  .addSelect('group.to', 'group_from') 
-  .addSelect('project.id', 'project_id') 
-  .addSelect('project.name', 'project_name') 
-  .where('budget.group.id = :groupId', { groupId: groupId })
-  .groupBy('currency.id') // Group by the currency ID
-  .addGroupBy('taskCategory.id')
-  .addGroupBy('project.id')
-  .addGroupBy('group.id')
-  .getRawMany();
+    .createQueryBuilder('budget')
+    .leftJoinAndSelect('budget.taskCategory', 'taskCategory')
+    .leftJoinAndSelect('budget.group', 'group')
+    .leftJoinAndSelect('group.project', 'project')
+    .leftJoinAndSelect('budget.currency', 'currency') // Add this line to join the currency relation
+    .select('SUM(budget.amount)', 'sum')
+    .addSelect('currency.id', 'currency_id') // Select the currency ID
+    .addSelect('currency.name', 'currency_name') // Select the currency name
+    .addSelect('taskCategory', 'taskCategory')
+    .addSelect('group.from', 'group_to')
+    .addSelect('group.to', 'group_from')
+    .addSelect('project.id', 'project_id')
+    .addSelect('project.name', 'project_name')
+    .where('budget.group.id = :groupId', { groupId: groupId })
+    .groupBy('currency.id') // Group by the currency ID
+    .addGroupBy('taskCategory.id')
+    .addGroupBy('project.id')
+    .addGroupBy('group.id')
+    .getRawMany();
   // .createQueryBuilder('budget')
   // .leftJoinAndSelect('budget.taskCategory', 'taskCategory')
   // .select('SUM(budget.amount)', 'sum')
@@ -143,9 +161,8 @@ const getBudgetGroupByCategory = async(groupId)=>{
   // .where('taskCategory.accountNumber = :accountNumber', { accountNumber: '12345' })
   // .groupBy('taskCategory.id')
   // .getRawOne();
-  return budgets
-}
-
+  return budgets;
+};
 
 const getBudgetsOfProjects = async () => {
   const approval = false;
@@ -160,6 +177,7 @@ const getBudgetsOfProjects = async () => {
     .leftJoin('approvalStage.role', 'role')
     .leftJoin('budget.budgetCategory', 'budgetCategory')
     .leftJoin('budget.taskCategory', 'taskCategory')
+    .leftJoin('budget.currency', 'currency')
     .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory', 'approvalStage', 'role', 'comments'])
     .where('group.approved = :approval', { approval })
     .andWhere('group.approvalStage IS NOT NULL')
@@ -214,7 +232,19 @@ const getAllBudgetsOfProjects = async () => {
     .leftJoin('approvalStage.role', 'role')
     .leftJoin('budget.budgetCategory', 'budgetCategory')
     .leftJoin('budget.taskCategory', 'taskCategory')
-    .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory', 'approvalStage', 'role', 'comments'])
+    .leftJoin('budget.currency', 'currency')
+    .select([
+      'budget',
+      'task',
+      'project',
+      'group',
+      'budgetCategory',
+      'taskCategory',
+      'approvalStage',
+      'role',
+      'comments',
+      'currency',
+    ])
     .andWhere('group.approvalStage IS NOT NULL')
     .getMany();
 
@@ -223,22 +253,32 @@ const getAllBudgetsOfProjects = async () => {
   budgets.forEach((entry) => {
     const projectId = entry.project.id;
     const groupId = entry.group.id;
+    const currencyId = entry.currency.id;
 
     if (!groupedData[projectId]) {
       groupedData[projectId] = {
         project: {
           id: entry.project.id,
-          name: entry.project.name, // Include project name
+          name: entry.project.name,
         },
         groups: {},
       };
     }
 
     if (!groupedData[projectId].groups[groupId]) {
-      groupedData[projectId].groups[groupId] = [];
+      groupedData[projectId].groups[groupId] = {};
     }
 
-    groupedData[projectId].groups[groupId].push(entry);
+    if (!groupedData[projectId].groups[groupId][currencyId]) {
+      groupedData[projectId].groups[groupId][currencyId] = {
+        group: entry.group,
+        currency: entry.currency,
+        sumAmount: 0,
+      };
+    }
+
+    groupedData[projectId].groups[groupId][currencyId].sumAmount += entry.amount;
+    // groupedData[projectId].groups[groupId][currencyId].entries.push(entry);
   });
 
   return groupedData;
@@ -344,5 +384,6 @@ module.exports = {
   getBudgetsOfProjects,
   addBudget,
   getBudgetGroup,
-  getBudgetGroupByCategory
+  getBudgetGroupByCategory,
+  getAllBudgetsOfProjects,
 };
