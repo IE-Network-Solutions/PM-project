@@ -28,3 +28,4 @@ module.exports.roleService = require('./role.service');
 module.exports.approvalService = require('./approval.service');
 module.exports.departmentService = require('./department.service');
 module.exports.currencyService = require('./currency.service');
+module.exports.resourceHistory =require('./resourceHistory.service')

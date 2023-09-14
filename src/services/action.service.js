@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 const httpStatus = require('http-status');
-const { Action } = require('../models');
+const { Action, AfterActionAnalysis } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -12,15 +12,30 @@ const actionRepository = dataSource.getRepository(Action).extend({ findAll, sort
 
 /**
  * Create a risk
- * @param {Object} userBody
+ * @param {Object} actionBody
  * @returns {Promise<Action>}
  */
 const createAction = async (actionBody = []) => {
-    console.log(actionBody)
-    const action = actionRepository.create(actionBody);
-    return await actionRepository.save(action);
-};
+    const { afterActionAnalysisId, actions } = actionBody;
 
+    console.log(actionBody)
+
+    const actionsToSave = actions.map((action) => {
+        return actionRepository.create({
+            afterActionAnalysisId: afterActionAnalysisId,
+            responsiblePersonId: action.responsiblePersonId,
+            authorizedPersonId: action.authorizedPersonId,
+            action: action.action
+        });
+    });
+
+    let finalActions = []
+    await actionRepository.save(actionsToSave);
+    for (const obj of actionsToSave) {
+        finalActions.push(await getActionById(obj.id))
+    }
+    return finalActions
+}
 /**
  * Query for users
  * @param {Object} filter - Filter options
@@ -35,7 +50,7 @@ const queryActions = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
     return await actionRepository.find({
-        relations: ['afterActionAnalysis'],
+        relations: ['responsiblePerson', 'authorizedPerson'],
         tableName: 'actions',
         sortOptions: sortBy && { option: sortBy },
         paginationOptions: { limit: limit, page: page },
@@ -51,7 +66,7 @@ const getActionById = async (id) => {
     return await actionRepository.findOne(
         {
             where: { id: id },
-            relations: ['afterActionAnalysis']
+            relations: ['responsiblePerson', 'authorizedPerson']
         });
 };
 
@@ -64,7 +79,7 @@ const getActionById = async (id) => {
 const updateActionById = async (actionId, updateBody) => {
     const action = await getActionById(actionId);
     if (!action) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Action not found');
+        throw new ApiError(httpStatus.NOT_FOUND, 'Action Id not found');
     }
     await actionRepository.update({ id: actionId }, updateBody);
     return await getActionById(actionId);
@@ -78,18 +93,11 @@ const updateActionById = async (actionId, updateBody) => {
 const deleteActionById = async (actionId) => {
     const action = await getActionById(actionId);
     if (!action) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Action not found');
+        throw new ApiError(httpStatus.NOT_FOUND, 'Action Id not found');
     }
     return await actionRepository.delete({ id: actionId });
 };
 
-const getActionsId = async (actionId) => {
-    try {
-        return await actionRepository.findByIds({ actionId })
-    } catch (error) {
-        throw error;
-    }
-}
 module.exports = {
     createAction,
     queryActions,

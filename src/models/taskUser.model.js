@@ -16,6 +16,8 @@ module.exports = new EntitySchema({
     task: {
       type: 'many-to-one',
       target: 'Task',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
     user: {
       type: 'many-to-one',

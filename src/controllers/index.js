@@ -28,3 +28,4 @@ module.exports.approvalLevelController = require('./approvalLevel.controller');
 module.exports.approvalStageController = require('./approvalStage.controller');
 module.exports.approvalController = require('./approval.controller');
 module.exports.departmentController = require('./department.controller');
+module.exports.resourceHistoryController =require('./resourceHistory.controller')

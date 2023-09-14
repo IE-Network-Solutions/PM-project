@@ -11,7 +11,7 @@ module.exports.momComment = require('./momComment.model');
 // module.exports.AfterActionAnalysisIssueRelated = require('./afterActionAnalysisIssueRelated.model');
 module.exports.Project = require('./project.model');
 module.exports.paymentTerm = require('./PaymentTerm.model');
-module.exports.ProjectMembers = require('./ProjectMember.model');
+module.exports.ProjectMembers = require('./projectMember.model');
 module.exports.ProjectContractValue = require('./projectContractValue.model');
 
 module.exports.Milestone = require('./milestone.model');
@@ -43,4 +43,4 @@ module.exports.ApprovalStage = require('./approvalStage.model');
 module.exports.Role = require('./roles.model');
 module.exports.AAADepartment = require('./AAADepartment.model');
 module.exports.Currency = require('./currency.model');
-
+module.exports.ResourceHistory=require('./resourceHistory.model')

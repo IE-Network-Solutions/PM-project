@@ -9,9 +9,10 @@ async function publishToRabbit(routingKey, data) {
     let exchange = 'ProjectExchange';
 
     await channel.assertExchange(exchange, 'topic', {});
-    channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(data)), {});
+     channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(data)), {});
 
     logger.info(`Published data to queue with ${routingKey} key`);
+    console.log(data)
     await channel.close();
     await connection.close();
   } catch (error) {
