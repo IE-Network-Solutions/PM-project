@@ -222,7 +222,18 @@ const getCurrentMonthBudgetOfProjects = async () => {
     .leftJoin('budget.budgetCategory', 'budgetCategory')
     .leftJoin('budget.taskCategory', 'taskCategory')
     .leftJoin('budget.currency', 'currency')
-    .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory', 'approvalStage', 'role', 'comments'])
+    .select([
+      'budget',
+      'task',
+      'project',
+      'group',
+      'budgetCategory',
+      'taskCategory',
+      'approvalStage',
+      'role',
+      'comments',
+      'currency',
+    ])
     .getMany();
 
   const groupedData = {};
@@ -230,25 +241,47 @@ const getCurrentMonthBudgetOfProjects = async () => {
   budgets.forEach((entry) => {
     const projectId = entry.project.id;
     const groupId = entry.group.id;
-    console.log(groupId, 'pppppppppppppppppp');
+    const currencyId = entry.currency.id;
 
     if (!groupedData[projectId]) {
       groupedData[projectId] = {
         project: {
           id: entry.project.id,
-          name: entry.project.name, // Include project name
+          name: entry.project.name,
         },
-        group: null,
+        group: null, // Initialize group as null
+        currencyGroups: {}, // Initialize currencyGroups
       };
     }
 
+    // Check if the current entry's group is the latest one
     if (!groupedData[projectId].group || entry.group.createdAt > groupedData[projectId].group.createdAt) {
-      groupedData[projectId].group = entry;
-      // console.log(groupedData[projectId].group, 'mmmmmmmm');
+      groupedData[projectId].group = {
+        id: entry.group.id,
+        from: entry.group.from,
+        to: entry.group.to,
+        // Add other relevant group properties here
+      };
     }
 
-    // groupedData[projectId].group.push(entry);
+    if (!groupedData[projectId].currencyGroups[currencyId]) {
+      groupedData[projectId].currencyGroups[currencyId] = [];
+    }
+
+    groupedData[projectId].currencyGroups[currencyId].push(entry);
   });
+
+  // Calculate the total sum of amount for each currency group and store it in sumAmount
+  for (const projectId in groupedData) {
+    for (const currencyId in groupedData[projectId].currencyGroups) {
+      const currencyGroup = groupedData[projectId].currencyGroups[currencyId];
+      const sumAmount = currencyGroup.reduce((total, entry) => total + entry.amount, 0);
+      groupedData[projectId].currencyGroups[currencyId] = {
+        sumAmount,
+        currency: currencyGroup[0].currency, // Only store the currency object
+      };
+    }
+  }
 
   // console;
 
