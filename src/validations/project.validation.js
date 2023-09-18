@@ -16,6 +16,7 @@ const createProject = {
     projectMembers: Joi.array(),
     projectContractValue: Joi.array(),
     isOffice: Joi.boolean(),
+
   }),
 };
 
@@ -24,6 +25,8 @@ const createOfficeProject = {
     name: Joi.string().required(),
     isOffice: Joi.boolean(),
     projectMembers: Joi.array(),
+    status: Joi.boolean(),
+
   }),
 };
 
