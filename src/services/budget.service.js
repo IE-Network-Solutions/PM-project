@@ -208,6 +208,87 @@ const getMonthlyBudgetsOfProjects = async () => {
 };
 
 
+// get only current month budgets and there sum
+const getCurrentMonthBudgetOfProjectss = async () => {
+  const approval = false;
+
+  const budgets = await budgetRepository
+    .createQueryBuilder('budget')
+    .leftJoin('budget.project', 'project')
+    .leftJoin('budget.task', 'task')
+    .leftJoin('budget.group', 'group')
+    .leftJoin('group.comments', 'comments')
+    .leftJoin('group.approvalStage', 'approvalStage')
+    .leftJoin('approvalStage.role', 'role')
+    .leftJoin('budget.budgetCategory', 'budgetCategory')
+    .leftJoin('budget.taskCategory', 'taskCategory')
+    .leftJoin('budget.currency', 'currency')
+    .select([
+      'budget',
+      'task',
+      'project',
+      'group',
+      'budgetCategory',
+      'taskCategory',
+      'approvalStage',
+      'role',
+      'comments',
+      'currency',
+    ])
+    .getMany();
+
+  const groupedData = {};
+
+  budgets.forEach((entry) => {
+    const projectId = entry.project.id;
+    const groupId = entry.group.id;
+    const currencyId = entry.currency.id;
+
+    if (!groupedData[projectId]) {
+      groupedData[projectId] = {
+        project: {
+          id: entry.project.id,
+          name: entry.project.name,
+        },
+        groups: null, // Initialize group as null
+        currencyGroups: {}, // Initialize currencyGroups
+      };
+    }
+
+    // Check if the current entry's group is the latest one
+    if (!groupedData[projectId].group || entry.group.createdAt > groupedData[projectId].group.createdAt) {
+      groupedData[projectId].group = {
+        id: entry.group.id,
+        from: entry.group.from,
+        to: entry.group.to,
+        // Add other relevant group properties here
+      };
+    }
+
+    if (!groupedData[projectId].currencyGroups[currencyId]) {
+      groupedData[projectId].currencyGroups[currencyId] = [];
+    }
+
+    groupedData[projectId].currencyGroups[currencyId].push(entry);
+  });
+
+  // Calculate the total sum of amount for each currency group and store it in sumAmount
+  for (const projectId in groupedData) {
+    for (const currencyId in groupedData[projectId].currencyGroups) {
+      const currencyGroup = groupedData[projectId].currencyGroups[currencyId];
+      const sumAmount = currencyGroup.reduce((total, entry) => total + entry.amount, 0);
+      groupedData[projectId].currencyGroups[currencyId] = {
+        sumAmount,
+        currency: currencyGroup[0].currency, // Only store the currency object
+      };
+    }
+  }
+
+  // console;
+
+  return groupedData;
+};
+
 const getCurrentMonthBudgetOfProjects = async () => {
   const approval = false;
 
@@ -249,20 +330,16 @@ const getCurrentMonthBudgetOfProjects = async () => {
           id: entry.project.id,
           name: entry.project.name,
         },
-        group: null, // Initialize group as null
-        currencyGroups: {}, // Initialize currencyGroups
+        groups: {},
+        currencyGroups: {},
       };
     }
 
-    // Check if the current entry's group is the latest one
-    if (!groupedData[projectId].group || entry.group.createdAt > groupedData[projectId].group.createdAt) {
-      groupedData[projectId].group = {
-        id: entry.group.id,
-        from: entry.group.from,
-        to: entry.group.to,
-        // Add other relevant group properties here
-      };
+    if (!groupedData[projectId].groups[groupId]) {
+      groupedData[projectId].groups[groupId] = [];
     }
+
+    groupedData[projectId].groups[groupId].push(entry);
 
     if (!groupedData[projectId].currencyGroups[currencyId]) {
       groupedData[projectId].currencyGroups[currencyId] = [];
@@ -452,7 +529,31 @@ const getBudgetGroup = async (groupId) => {
   return await budgetGroupRepository.findOne({ where: { id: groupId }, relations: ['project'] });
 };
 
-const getByTaskCategory = async (categoryId) => {};
+const getBudgetGroups = async (id) => {
+  return await budgetGroupRepository.find({ where: { projectId: id } });
+};
+
+const getBudgetsByGroup = async (groupId) => {
+  const budgets = await budgetRepository
+    .createQueryBuilder('budget')
+    .leftJoinAndSelect('budget.taskCategory', 'taskCategory')
+    .leftJoinAndSelect('budget.group', 'group')
+    .leftJoinAndSelect('group.project', 'project')
+    .leftJoinAndSelect('budget.currency', 'currency') // Add this line to join the currency relation
+    .select('SUM(budget.amount)', 'sum')
+    .addSelect('currency.id', 'currency_id') // Select the currency ID
+    .addSelect('currency.name', 'currency_name') // Select the currency name
+    .addSelect('taskCategory', 'taskCategory')
+    .addSelect('group.from', 'group_to')
+    .addSelect('group.to', 'group_from')
+    .addSelect('project.id', 'project_id')
+    .addSelect('project.name', 'project_name')
+    .where('budget.group.id = :groupId', { groupId: groupId })
+    .groupBy('currency.id') // Group by the currency ID
+    .getRawMany();
+
+  return budgets;
+};
 
 module.exports = {
   createBudget,
@@ -468,5 +569,7 @@ module.exports = {
   getBudgetGroupByCategory,
   getAllBudgetsOfProjects,
   getCurrentMonthBudgetOfProjects,
-  getMonthlyBudgetsOfProjects
+  getMonthlyBudgetsOfProjects,
+  getBudgetGroups,
+  getBudgetsByGroup,
 };

@@ -139,6 +139,18 @@ const getMonthlyBudgetsOfProjects = catchAsync(async (req, res) => {
 
 
 
+// get all budget groups
+const budgetGroups = catchAsync(async (req, res) => {
+  const data = await budgetService.budgetGroups();
+  res.send(data);
+});
+
+// get all budgets by group
+const getBudgetsByGroup = catchAsync(async (req, res) => {
+  const data = await budgetService.getByTaskCategory();
+  res.send(data);
+});
+
 const addBudget = catchAsync(async (req, res) => {
   data = req.body;
 
@@ -188,5 +200,7 @@ module.exports = {
   getBudgetGroupByCategory,
   getAllBudgetsOfProjects,
   getMonthlyBudget,
-  getMonthlyBudgetsOfProjects
+  getMonthlyBudgetsOfProjects,
+  budgetGroups,
+  getBudgetsByGroup,
 };
