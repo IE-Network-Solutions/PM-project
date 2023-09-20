@@ -18,7 +18,8 @@ router.route('/groupbyCategory').get(budgetController.getBudgetGroupByCategory);
 router.route('/addBudget').post(validate(budgetValidation.addBudget), budgetController.addBudget);
 router.route('/project/:projectId').get(validate(budgetValidation.getBudgetByProject), budgetController.getBudgetsOfProject);
 router.route('/all-projects').get(budgetController.getAllBudgetsOfProjects);
-router.route('/monthly').get(budgetController.getMonthlyBudget);
+router.route('/monthly/:projectId').get(validate(budgetValidation.getBudgetByProject), budgetController.getMonthlyBudget);
+// router.route('/monthly').get(budgetController.getMonthlyBudget);
 
 router
   .route('/:budgetId')

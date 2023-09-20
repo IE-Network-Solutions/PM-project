@@ -289,9 +289,9 @@ const getCurrentMonthBudgetOfProjectss = async () => {
   return groupedData;
 };
 
-const getCurrentMonthBudgetOfProjects = async () => {
+const getCurrentMonthBudgetOfProjects = async (projectId) => {
   const approval = false;
-
+  console.log(projectId, 'uuuuuuuuuuuuuuu');
   const budgets = await budgetRepository
     .createQueryBuilder('budget')
     .leftJoin('budget.project', 'project')
@@ -315,8 +315,8 @@ const getCurrentMonthBudgetOfProjects = async () => {
       'comments',
       'currency',
     ])
+    .where('budget.project.id = :projectId', { projectId: projectId })
     .getMany();
-
   const groupedData = {};
 
   budgets.forEach((entry) => {
