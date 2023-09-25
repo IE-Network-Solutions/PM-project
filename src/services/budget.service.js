@@ -441,6 +441,134 @@ const getAllBudgetsOfProjects = async () => {
 };
 
 /**
+ * master budget
+ */
+
+const masterBudget = async () => {
+  const approval = false;
+
+  const budgets = await budgetRepository
+    .createQueryBuilder('budget')
+    .leftJoin('budget.project', 'project')
+    .leftJoin('budget.task', 'task')
+    .leftJoin('budget.group', 'group')
+    .leftJoin('group.comments', 'comments')
+    .leftJoin('group.approvalStage', 'approvalStage')
+    .leftJoin('approvalStage.role', 'role')
+    .leftJoin('budget.budgetCategory', 'budgetCategory')
+    .leftJoin('budget.taskCategory', 'taskCategory')
+    .leftJoin('budget.currency', 'currency')
+    .select([
+      'budget',
+      'task',
+      'project',
+      'group',
+      'budgetCategory',
+      'taskCategory',
+      'approvalStage',
+      'role',
+      'comments',
+      'currency',
+    ])
+    .andWhere('group.approvalStage IS NOT NULL')
+    .getMany();
+
+  const groupedData = {};
+
+  budgets.forEach((entry) => {
+    const projectId = entry.project.id;
+    const groupId = entry.group.id;
+    const currencyId = entry.currency.id;
+
+    if (!groupedData[projectId]) {
+      groupedData[projectId] = {
+        project: {
+          id: entry.project.id,
+          name: entry.project.name,
+        },
+        currencyGroups: {},
+      };
+    }
+
+    if (!groupedData[projectId].currencyGroups[currencyId]) {
+      groupedData[projectId].currencyGroups[currencyId] = [];
+    }
+
+    groupedData[projectId].currencyGroups[currencyId].push(entry);
+  });
+
+  return groupedData;
+};
+
+/**
+ * filter budget by date
+ */
+const filterBudget = async (startDate, endDate) => {
+  const approval = false;
+
+  const budgets = await budgetRepository
+    .createQueryBuilder('budget')
+    .leftJoin('budget.project', 'project')
+    .leftJoin('budget.task', 'task')
+    .leftJoin('budget.group', 'group')
+    .leftJoin('group.comments', 'comments')
+    .leftJoin('group.approvalStage', 'approvalStage')
+    .leftJoin('approvalStage.role', 'role')
+    .leftJoin('budget.budgetCategory', 'budgetCategory')
+    .leftJoin('budget.taskCategory', 'taskCategory')
+    .leftJoin('budget.currency', 'currency')
+    .select([
+      'budget',
+      'task',
+      'project',
+      'group',
+      'budgetCategory',
+      'taskCategory',
+      'approvalStage',
+      'role',
+      'comments',
+      'currency',
+    ])
+    .where('group.approved = :approval', { approval })
+    .andWhere('group.approvalStage IS NOT NULL')
+    .andWhere('(group.from BETWEEN :startDate AND :endDate OR group.to BETWEEN :startDate AND :endDate)', {
+      startDate,
+      endDate,
+    })
+    .getMany();
+
+  const groupedData = {};
+
+  budgets.forEach((entry) => {
+    const projectId = entry.project.id;
+    const groupId = entry.group.id;
+    const currencyId = entry.currency.id;
+
+    if (!groupedData[projectId]) {
+      groupedData[projectId] = {
+        project: {
+          id: entry.project.id,
+          name: entry.project.name,
+        },
+        groups: {},
+      };
+    }
+
+    if (!groupedData[projectId].groups[groupId]) {
+      groupedData[projectId].groups[groupId] = {};
+    }
+
+    if (!groupedData[projectId].groups[groupId][currencyId]) {
+      groupedData[projectId].groups[groupId][currencyId] = [];
+    }
+
+    groupedData[projectId].groups[groupId][currencyId].push(entry);
+  });
+
+  return groupedData;
+};
+
+/**
  * Query for budget for the project by task level
  * @param {Object} filter - Filter options
  * @param {Object} options - Query options
@@ -572,4 +700,6 @@ module.exports = {
   getMonthlyBudgetsOfProjects,
   getBudgetGroups,
   getBudgetsByGroup,
+  masterBudget,
+  filterBudget,
 };

@@ -190,6 +190,20 @@ const addBudget = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(budget);
 });
 
+const masterBudget = catchAsync(async (req, res) => {
+  const data = await budgetService.masterBudget();
+  res.send(data);
+});
+
+const filterBudget = catchAsync(async (req, res) => {
+  const startDate = req.query.startDate;
+  const endDate = req.query.endDate;
+
+  const data = await budgetService.filterBudget(startDate, endDate);
+
+  res.send(data);
+});
+
 module.exports = {
   createBudget,
   getBudgets,
@@ -205,4 +219,6 @@ module.exports = {
   getMonthlyBudgetsOfProjects,
   budgetGroups,
   getBudgetsByGroup,
+  masterBudget,
+  filterBudget,
 };
