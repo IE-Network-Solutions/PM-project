@@ -16,6 +16,7 @@ class Task extends Base {
     this.status = { type: 'boolean', nullable: true };
     this.sleepingReason = { type: 'varchar', nullable: true };
     this.baselineId = { type: 'uuid' };
+    this.milestoneId = { type: 'uuid' };
   }
 }
 
@@ -27,6 +28,13 @@ module.exports = new EntitySchema({
     baseline: {
       type: 'many-to-one',
       target: 'baselines',
+      inverseSide: 'task',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+    milestone: {
+      type: 'many-to-one',
+      target: 'milestones',
       inverseSide: 'task',
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
@@ -54,9 +62,7 @@ module.exports = new EntitySchema({
           name: 'userId',
           referencedColumnName: 'id',
         },
-        
       },
-  
     },
   },
 });
