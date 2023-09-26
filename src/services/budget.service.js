@@ -43,7 +43,7 @@ const createBudget = async (budgetBody) => {
   await budgetRepository.save(budgets);
   return budgets;
 };
-
+  
 /**
  * Query for budget
  * @param {Object} filter - Filter options
@@ -482,15 +482,19 @@ const masterBudget = async () => {
           id: entry.project.id,
           name: entry.project.name,
         },
-        currencyGroups: {},
+        groups: {},
       };
     }
 
-    if (!groupedData[projectId].currencyGroups[currencyId]) {
-      groupedData[projectId].currencyGroups[currencyId] = [];
+    if (!groupedData[projectId].groups[groupId]) {
+      groupedData[projectId].groups[groupId] = {};
     }
 
-    groupedData[projectId].currencyGroups[currencyId].push(entry);
+    if (!groupedData[projectId].groups[groupId][currencyId]) {
+      groupedData[projectId].groups[groupId][currencyId] = [];
+    }
+
+    groupedData[projectId].groups[groupId][currencyId].push(entry);
   });
 
   return groupedData;
