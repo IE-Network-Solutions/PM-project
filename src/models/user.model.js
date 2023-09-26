@@ -7,10 +7,10 @@ class User {
     this.roleId = { type: 'varchar', nullable: true };
     this.email = { type: 'varchar' };
     this.emailVerifiedAt = { type: 'timestamp', nullable: true };
-    this.password = { type: 'varchar',nullable: true };
+    this.password = { type: 'varchar', nullable: true };
     this.avatar = { type: 'varchar', nullable: true };
     this.signature = { type: 'varchar', nullable: true };
-    this.isDeleted = { type: 'bool',nullable: true };
+    this.isDeleted = { type: 'bool', nullable: true };
     this.rememberToken = { type: 'text', nullable: true };
     this.createdAt = { type: 'timestamp' };
     this.updatedAt = { type: 'timestamp' };
@@ -71,24 +71,39 @@ module.exports = new EntitySchema({
       onUpdate: 'CASCADE',
     },
     momFacilitator: {
-      type: "one-to-many",
-      target: "minuteOfMeeting",
-      inverseSide: "facilitator",
+      type: 'one-to-many',
+      target: 'minuteOfMeeting',
+      inverseSide: 'facilitator',
     },
     userComment: {
-      type: "one-to-many", 
-      target: "MomComment", 
-      inverseSide: "user", 
-    }, 
+      type: 'one-to-many',
+      target: 'MomComment',
+      inverseSide: 'user',
+    },
     reportComment: {
-      type: "one-to-many", 
-      target: "WeeklyReportComment", 
-      inverseSide: "user", 
-    }, 
+      type: 'one-to-many',
+      target: 'WeeklyReportComment',
+      inverseSide: 'user',
+    },
     llcomment: {
-      type: "one-to-many",
-      target: "LLComments",
-      inverseSide: "user",
+      type: 'one-to-many',
+      target: 'LLComments',
+      inverseSide: 'user',
+    },
+    resourceOn: {
+      type: 'many-to-many',
+      target: 'Task',
+      joinTable: {
+        name: 'taskUser',
+        joinColumn: {
+          name: 'userId',
+          referencedColumnName: 'id',
+        },
+        inverseJoinColumn: {
+          name: 'taskId',
+          referencedColumnName: 'id',
+        },
+      },
     },
   },
 });
