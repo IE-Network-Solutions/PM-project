@@ -26,7 +26,7 @@ const createOfficeProject = {
     isOffice: Joi.boolean(),
     projectMembers: Joi.array(),
     status: Joi.boolean(),
-
+    clientId:Joi.string()
   }),
 };
 

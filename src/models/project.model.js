@@ -15,6 +15,7 @@ class Project extends Base {
     this.advanced_payment_date = { type: 'date',nullable: true };
     this.status = { type: 'boolean',nullable: true };
     this.isOffice = {type: 'boolean', default: false}
+    
   }
 }
 
@@ -33,6 +34,7 @@ module.exports = new EntitySchema({
       target: 'WeeklyReport',
       inverseSide: 'project',
     },
+  
     projectMembers: {
       type: 'many-to-many',
       target: 'User',
@@ -44,6 +46,11 @@ module.exports = new EntitySchema({
           referencedColumnName: 'id',
         },
       },
+    },
+    client: {
+      type: 'many-to-one',
+      target: 'Client',
+      inverseSide: 'project',
     },
   },
 });
