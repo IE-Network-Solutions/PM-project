@@ -445,7 +445,7 @@ const getAllBudgetsOfProjects = async () => {
  */
 
 const masterBudget = async () => {
-  const approval = false;
+  const approval = true;
 
   const budgets = await budgetRepository
     .createQueryBuilder('budget')
@@ -470,7 +470,7 @@ const masterBudget = async () => {
       'comments',
       'currency',
     ])
-    .andWhere('group.approvalStage IS NOT NULL')
+    .andWhere('group.approved = :approval',{approval})
     .getMany();
 
   const groupedData = {};
@@ -508,7 +508,7 @@ const masterBudget = async () => {
  * filter budget by date
  */
 const filterBudget = async (startDate, endDate) => {
-  const approval = false;
+  const approval = true;
 
   const budgets = await budgetRepository
     .createQueryBuilder('budget')
@@ -533,8 +533,8 @@ const filterBudget = async (startDate, endDate) => {
       'comments',
       'currency',
     ])
-    .where('group.approved = :approval', { approval })
-    .andWhere('group.approvalStage IS NOT NULL')
+    // .andWhere('group.approvalStage IS NOT NULL')
+    .andWhere('group.approved = :approval',{approval})
     .andWhere('(group.from BETWEEN :startDate AND :endDate OR group.to BETWEEN :startDate AND :endDate)', {
       startDate,
       endDate,

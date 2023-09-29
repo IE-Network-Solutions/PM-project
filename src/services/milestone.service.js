@@ -93,23 +93,22 @@ const deleteMilestone = async (milestoneId) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Milestone not found');
   }
 
+  return await milestoneRepository.delete({ id: milestoneId});
   //The following code is to cascade deleting baselines, 
   //tasks and subtasks when we delete milestone
-    const baselinesToDelete = await baselineRepository.find({ milestoneId: milestoneId });
-    for (const baseline of baselinesToDelete) {
-          const tasksToDelete = await taskRepository.find({ baselineId: baseline.id });
-          for (const task of tasksToDelete) {
-          const subTasksToDelet = await subTaskRepository.find({ taskId: task.id });
-          for (const subtask of subTasksToDelet) {
-            await subTaskRepository.delete({ id: subtask.id });
-          }
-            await taskRepository.delete({ id: task.id });
-          }
-      await baselineRepository.delete({ id: baseline.id });
-  }
+    // const baselinesToDelete = await baselineRepository.find({ milestoneId: milestoneId });
+    // for (const baseline of baselinesToDelete) {
+    //       const tasksToDelete = await taskRepository.find({ baselineId: baseline.id });
+    //       for (const task of tasksToDelete) {
+    //       const subTasksToDelet = await subTaskRepository.find({ taskId: task.id });
+    //       for (const subtask of subTasksToDelet) {
+    //         await subTaskRepository.delete({ id: subtask.id });
+    //       }
+    //         await taskRepository.delete({ id: task.id });
+    //       }
+    //   await baselineRepository.delete({ id: baseline.id });
+  // }
 
-//and then delete milestone
-  return await milestoneRepository.delete({ id: milestoneId });
 };
 
 module.exports = {
