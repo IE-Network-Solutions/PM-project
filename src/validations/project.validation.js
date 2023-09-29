@@ -16,6 +16,7 @@ const createProject = {
     projectMembers: Joi.array(),
     projectContractValue: Joi.array(),
     isOffice: Joi.boolean(),
+    clientId:Joi.string()
 
   }),
 };
