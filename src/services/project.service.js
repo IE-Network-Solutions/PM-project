@@ -28,7 +28,7 @@ const projectContractValueRepository = dataSource.getRepository(ProjectContractV
 // project.service.js
 const createProject = async (projectBody, projectMembers, projectContractValue) => {
   const project = projectRepository.create(projectBody);
-
+  
   // Save the project instance
   await projectRepository.save(project);
 

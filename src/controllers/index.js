@@ -29,3 +29,4 @@ module.exports.approvalStageController = require('./approvalStage.controller');
 module.exports.approvalController = require('./approval.controller');
 module.exports.departmentController = require('./department.controller');
 module.exports.resourceHistoryController =require('./resourceHistory.controller')
+module.exports.clientController= require('./client.controller')

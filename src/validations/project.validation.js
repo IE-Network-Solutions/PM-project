@@ -15,7 +15,8 @@ const createProject = {
     isOffice: Joi.boolean(),
     projectMembers: Joi.array(),
     projectContractValue: Joi.array(),
-    isOffice: Joi.boolean(),
+     isOffice: Joi.boolean(),
+    clientId:Joi.string()
   }),
 };
 

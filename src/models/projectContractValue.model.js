@@ -5,8 +5,8 @@ const {Base} = require('./BaseModel')
 class ProjectContractValue extends Base {
   constructor() {
     super();
-    this.amount = { type: 'int' };
-    this.currencyId = {type: 'uuid'}
+    this.amount = { type: 'int',nullable:true};
+    this.currencyId = {type: 'uuid' ,nullable:true}
   }
 }
 
