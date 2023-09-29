@@ -31,22 +31,20 @@ const userRepository = dataSource.getRepository(User).extend({
   sortBy,
 });
 
-
 /**
  * Create a user
  * @param {Object} BaselineBody
  * @returns {Promise<Project>}
  */
-const createBaseline = async (baselineBody, tasks) => {
-
+const createBaseline = async (baselineBody, milestones) => {
   if (baselineBody) {
     const lastActiveBaseline = await baselineRepository.findOne({
       where: {
-        milestoneId: baselineBody.milestoneId,
-        status: true
-      }
+        projectId: baselineBody.projectId,
+        status: true,
+      },
     });
-  
+
     if (lastActiveBaseline) {
       await baselineRepository.update(lastActiveBaseline.id, { status: false });
     }
@@ -54,63 +52,72 @@ const createBaseline = async (baselineBody, tasks) => {
 
   const baseline = baselineRepository.create({
     name: baselineBody.name,
-    status: baselineBody.status,
-    milestoneId: baselineBody.milestoneId,
+    status: true,
+    projectId: baselineBody.projectId,
     createdBy: baselineBody.createdBy,
-    updatedBy: baselineBody.updatedBy
+    updatedBy: baselineBody.updatedBy,
   });
   const savedBaseline = await baselineRepository.save(baseline);
-  
-  
 
-  if (tasks) {
-    const taskInstances = tasks.map(async (eachTask) => {
-      const subTasks = eachTask.subtasks || [];
-      const taskInstance = taskRepository.create({
-        baselineId: baseline.id,
-        name: eachTask.name,
-        plannedStart: eachTask.plannedStart,
-        plannedFinish: eachTask.plannedFinish,
-        actualStart: eachTask.actualStart,
-        actualFinish: eachTask.actualFinish,
-        completion: eachTask.completion,
-        status: eachTask.status,
-        sleepingReason: eachTask.sleepingReason,
-        subTasks: subTasks,
-      });
-
-      const savedTaskInstance = await taskRepository.save(taskInstance);
-
-      // Create and save subtasks
-      if (subTasks.length > 0) {
-        const subTaskInstances = subTasks.map((eachSubTask) => {
-          return subTaskRepository.create({
-            taskId: savedTaskInstance.id,
-            name: eachSubTask.name,
-            plannedStart: eachSubTask.plannedStart,
-            plannedFinish: eachSubTask.plannedFinish,
-            actualStart: eachTask.actualStart,
-            actualFinish: eachTask.actualFinish,
-            completion: eachTask.completion,
-            status: eachSubTask.status,
-            sleepingReason: eachSubTask.sleepingReason,
-          });
+  if (milestones) {
+    milestones.forEach((milestone) => {
+      const taskInstances = milestone.tasks.map(async (eachTask) => {
+        const subTasks = eachTask.subtasks || [];
+        const taskInstance = taskRepository.create({
+          baselineId: baseline.id,
+          milestoneId: milestone.id,
+          name: eachTask.name,
+          plannedStart: eachTask.plannedStart,
+          plannedFinish: eachTask.plannedFinish,
+          actualStart: eachTask.actualStart,
+          actualFinish: eachTask.actualFinish,
+          completion: eachTask.completion,
+          status: eachTask.status,
+          sleepingReason: eachTask.sleepingReason,
+          subTasks: subTasks,
         });
 
-        await subTaskRepository.save(subTaskInstances);
-      }
+        const savedTaskInstance = await taskRepository.save(taskInstance);
 
-      return savedTaskInstance;
+        // Create and save subtasks
+        if (subTasks.length > 0) {
+          const subTaskInstances = subTasks.map((eachSubTask) => {
+            return subTaskRepository.create({
+              taskId: savedTaskInstance.id,
+              name: eachSubTask.name,
+              plannedStart: eachSubTask.plannedStart,
+              plannedFinish: eachSubTask.plannedFinish,
+              actualStart: eachTask.actualStart,
+              actualFinish: eachTask.actualFinish,
+              completion: eachTask.completion,
+              status: eachSubTask.status,
+              sleepingReason: eachSubTask.sleepingReason,
+            });
+          });
+
+          await subTaskRepository.save(subTaskInstances);
+        }
+
+        return savedTaskInstance;
+      });
+      // Save the task instances
+      const savedTaskInstances = Promise.all(taskInstances);
+      baseline.tasks = savedTaskInstances;
     });
-
-    // Save the task instances
-    const savedTaskInstances = await Promise.all(taskInstances);
-    baseline.tasks = savedTaskInstances;
   }
-  return baseline;
+  const baselineDate = await baselineRepository
+    .createQueryBuilder('baselines')
+    .leftJoinAndSelect('baselines.tasks', 'task')
+    .leftJoinAndSelect('task.subtasks', 'subtask')
+    .leftJoinAndSelect('task.milestone', 'milestone')
+    .addSelect('baselines.*')
+    .addSelect('task.*')
+    .addSelect('subtask.*')
+    .addSelect('milestone.*')
+    .getOne();
+
+  return baselineDate;
 };
-
-
 
 /**
  * Query for users
@@ -132,6 +139,79 @@ const getBaselines = async (filter, options) => {
 };
 
 /**
+ * Master Schedule
+ */
+const masterSchedule = async () => {
+  const status = true;
+  const baselineData = await baselineRepository
+    .createQueryBuilder('baselines')
+    .leftJoinAndSelect('baselines.tasks', 'task')
+    .leftJoinAndSelect('baselines.project', 'project')
+    .leftJoinAndSelect('task.subtasks', 'subtask')
+    .leftJoinAndSelect('task.resources', 'resource')
+    .leftJoinAndSelect('task.milestone', 'milestone')
+    .where('baselines.status = :status', { status })
+    .getMany();
+  // return baselineData;
+  const groupedData = groupDataByProjectBaselineMilestone(baselineData);
+
+  return groupedData;
+};
+
+function groupDataByProjectBaselineMilestone(data) {
+  const grouped = {};
+
+  data.forEach((baseline) => {
+    const projectId = baseline.project.id;
+    const baselineId = baseline.id;
+    const milestoneId = baseline.tasks[0].milestone.id;
+
+    if (!grouped[projectId]) {
+      grouped[projectId] = {
+        projectData: {
+          // Include project data here
+          id: baseline.project.id,
+          name: baseline.project.name,
+          // Add other project properties as needed
+        },
+        baselines: {},
+      };
+    }
+
+    if (!grouped[projectId].baselines[baselineId]) {
+      grouped[projectId].baselines[baselineId] = {
+        baselineData: {
+          // Include baseline data here
+          id: baseline.id,
+          name: baseline.name,
+          // Add other baseline properties as needed
+        },
+        milestones: {},
+      };
+    }
+
+    if (!grouped[projectId].baselines[baselineId].milestones[milestoneId]) {
+      grouped[projectId].baselines[baselineId].milestones[milestoneId] = {
+        milestoneData: {
+          // Include milestone data here
+          id: baseline.tasks[0].milestone.id,
+          name: baseline.tasks[0].milestone.name,
+          // Add other milestone properties as needed
+        },
+        dataRaw: [], // Initialize the dataRaw array
+      };
+    }
+
+    // Concatenate the task objects into the dataRaw array
+    grouped[projectId].baselines[baselineId].milestones[milestoneId].dataRaw = 
+      grouped[projectId].baselines[baselineId].milestones[milestoneId].dataRaw.concat(baseline.tasks);
+  });
+
+
+  return Object.values(grouped);
+}
+
+/**
  * Get post by id
  * @param {ObjectId} id
  * @returns {Promise<Baseline>}
@@ -139,7 +219,7 @@ const getBaselines = async (filter, options) => {
 const getBaseline = async (milestoneId) => {
   return await baselineRepository.findOne({
     where: { id: milestoneId },
-    relations: ['tasks.subtasks',]
+    relations: ['tasks.subtasks'],
   });
 };
 
@@ -156,34 +236,35 @@ const getByMilestone = async (milestoneId) => {
  * @returns {Promise<Project>}
  */
 const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
-
   if (baselineBody) {
-  await baselineRepository.update({ id: baselineId }, {name: baselineBody.name});
+    await baselineRepository.update({ id: baselineId }, { name: baselineBody.name });
   }
-
 
   if (tasksBody) {
     for (const taskBody of tasksBody) {
       const requestedTask = taskBody;
-  
+
       if (requestedTask.id) {
         const subTasks = taskBody.subtasks || [];
-  
-        await taskRepository.update({ id: requestedTask.id }, {
-          name: requestedTask.name,
-          status: requestedTask.status,
-          sleepingReason: requestedTask.sleepingReason,
-          plannedStart: requestedTask.plannedStart,
-          plannedFinish: requestedTask.plannedFinish,
-          actualStart: requestedTask.actualStart,
-          actualFinish: requestedTask.actualFinish,
-          completion: requestedTask.completion,
-          subTasks: requestedTask.subTasks,
-        });
-  
+
+        await taskRepository.update(
+          { id: requestedTask.id },
+          {
+            name: requestedTask.name,
+            status: requestedTask.status,
+            sleepingReason: requestedTask.sleepingReason,
+            plannedStart: requestedTask.plannedStart,
+            plannedFinish: requestedTask.plannedFinish,
+            actualStart: requestedTask.actualStart,
+            actualFinish: requestedTask.actualFinish,
+            completion: requestedTask.completion,
+            subTasks: requestedTask.subTasks,
+          }
+        );
+
         const subTasksToUpdate = [];
         const subTasksToCreate = [];
-        
+
         for (const subTask of subTasks) {
           if (subTask.id) {
             subTasksToUpdate.push({
@@ -212,15 +293,14 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
             });
           }
         }
-        
+
         if (subTasksToUpdate.length > 0) {
           await Promise.all(subTasksToUpdate.map((subTask) => subTaskRepository.update(subTask.id, subTask)));
         }
-        
+
         if (subTasksToCreate.length > 0) {
           await subTaskRepository.save(subTasksToCreate);
         }
-        
       } else {
         const subTasks = taskBody.subtasks || [];
         const createTask = taskRepository.create({
@@ -236,7 +316,7 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
           subTasks: requestedTask.subTasks,
         });
         const savedTask = await taskRepository.save(createTask);
-  
+
         // Create and save subtasks
         if (subTasks.length > 0) {
           const subTaskInstances = subTasks.map((eachSubTask) => ({
@@ -255,14 +335,14 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
       }
     }
   }
-  
-    // After updating or creating tasks, fetch the updated baseline with tasks and subtasks
-    const updatedBaseline = await baselineRepository.findOne({
-      where: { id: baselineId },
-      relations: ['tasks.subtasks'],
-    });
 
-return updatedBaseline;
+  // After updating or creating tasks, fetch the updated baseline with tasks and subtasks
+  const updatedBaseline = await baselineRepository.findOne({
+    where: { id: baselineId },
+    relations: ['tasks.subtasks'],
+  });
+
+  return updatedBaseline;
 };
 
 /**
@@ -287,26 +367,22 @@ const addComment = async (baselineBody) => {
 
   const savedComment = await baselineCommentRepository.save(baselineComment);
   const sender = await userRepository.findOne({
-    where : {
-      id: savedComment.userId
-    }
-  }
-  );
+    where: {
+      id: savedComment.userId,
+    },
+  });
 
   savedComment.user = sender;
   return savedComment;
-}
+};
 
-const getComments = async(baselineId) =>{
-
-  return await baselineCommentRepository.find(
-    {
-      where:{baselineId: baselineId, },
-      relations: ['user'],
-      order: { createdAt: 'ASC' },
-    }
-  );
-}
+const getComments = async (baselineId) => {
+  return await baselineCommentRepository.find({
+    where: { baselineId: baselineId },
+    relations: ['user'],
+    order: { createdAt: 'ASC' },
+  });
+};
 
 module.exports = {
   createBaseline,
@@ -316,5 +392,6 @@ module.exports = {
   updateBaseline,
   deleteBaseline,
   addComment,
-  getComments
+  getComments,
+  masterSchedule,
 };
