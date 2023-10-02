@@ -35,6 +35,11 @@ const getByMilestone = {
     milestoneId: Joi.string(),
   }),
 };
+const projectSchedule = {
+  params: Joi.object().keys({
+    projectId: Joi.string(),
+  }),
+};
 
 const updateBaseline = {
   params: Joi.object().keys({
@@ -84,5 +89,6 @@ module.exports = {
   updateBaseline,
   deleteBaseline,
   addComment,
-  getComments
+  getComments,
+  projectSchedule
 };

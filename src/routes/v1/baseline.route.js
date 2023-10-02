@@ -14,6 +14,7 @@ router
 router.route('/masterSchedule').get(baselineController.masterSchedule);
 
 router.route('/milestone/:milestoneId').get(validate(baselineValidation.getByMilestone), baselineController.getByMilestone);
+router.route('/project/:projectId').get(validate(baselineValidation.projectSchedule), baselineController.projectSchedule);
 
 router
   .route('/:baselineId')

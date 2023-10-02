@@ -58,6 +58,12 @@ const masterSchedule = catchAsync(async (req, res) => {
   res.send(masterSchedule);
 });
 
+const projectSchedule = catchAsync(async (req, res) => {
+  const projectId = req.params.projectId;
+  const projectSchedule = await baselineService.projectSchedule(projectId);
+  res.send(projectSchedule);
+});
+
 module.exports = {
   createBaseline,
   getBaselines,
@@ -67,5 +73,6 @@ module.exports = {
   deleteBaseline,
   addComment,
   getComments,
-  masterSchedule
+  masterSchedule,
+  projectSchedule,
 };

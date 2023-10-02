@@ -157,6 +157,25 @@ const masterSchedule = async () => {
 
   return groupedData;
 };
+/**
+ * Master Schedule
+ */
+const projectSchedule = async (projectId) => {
+  const status = true;
+  const baselineData = await baselineRepository
+    .createQueryBuilder('baselines')
+    .leftJoinAndSelect('baselines.tasks', 'task')
+    .leftJoinAndSelect('baselines.project', 'project')
+    .leftJoinAndSelect('task.subtasks', 'subtask')
+    .leftJoinAndSelect('task.resources', 'resource')
+    .leftJoinAndSelect('task.milestone', 'milestone')
+    .andWhere('project.id = :projectId', { projectId:projectId })
+    .getMany();
+  // return baselineData;
+  const groupedData = groupDataByProjectBaselineMilestone(baselineData);
+
+  return groupedData;
+};
 
 function groupDataByProjectBaselineMilestone(data) {
   const grouped = {};
@@ -394,4 +413,5 @@ module.exports = {
   addComment,
   getComments,
   masterSchedule,
+  projectSchedule
 };
