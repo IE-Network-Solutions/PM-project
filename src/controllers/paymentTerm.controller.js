@@ -8,11 +8,23 @@ const { paymentTerm } = require('../models');
 
 
 const createPaymentTerm = catchAsync(async (req, res) =>  {
-  milestone = req.body.milestone;
-  delete req.body.milestone;
-  const PaymentTerm = await paymentTermService.createPaymentTerm(req.body, milestone);
-  res.status(httpStatus.CREATED).json(PaymentTerm);
-});
+ 
+  const PaymntTerms= await Promise.all(req.body.map(async(singelPaymentTerm)=>{
+    milestone = singelPaymentTerm.milestone;
+    delete singelPaymentTerm.milestone;
+    console.log("mile",milestone)
+    console.log("body",req.body)
+    const PaymentTerm = await paymentTermService.createPaymentTerm(singelPaymentTerm, milestone);
+    return PaymentTerm;
+
+    
+  }));
+
+  res.status(httpStatus.CREATED).json(PaymntTerms);
+  
+
+  })
+
 
 
 const getPaymentTerms = catchAsync(async(req, res)=>{
