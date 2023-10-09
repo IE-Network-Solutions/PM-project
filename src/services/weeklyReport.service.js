@@ -58,16 +58,14 @@ const allActiveBaselineTasks = async (projectId) => {
     status: true
   });
 
-  const allActiveBaselines = [];
 
-  for (const eachMilestone of getMilestoneByProject) {
-    const activeBaselines = await baselineRepository.findBy({
-      milestoneId: eachMilestone.id,
-      status: true
-    });
 
-    allActiveBaselines.push(...activeBaselines);
-  }
+  const allActiveBaselines = await baselineRepository.findBy({
+    projectId: projectId,
+    status: true
+  });
+
+  
 
   const allTasks = [];
 
@@ -88,11 +86,10 @@ const allActiveBaselineTasks = async (projectId) => {
     const activeTasks = await taskRepository
       .createQueryBuilder('task')
       .leftJoinAndSelect('task.baseline', 'baseline')
-      .leftJoinAndSelect('baseline.milestone', 'milestone')
-      .leftJoinAndSelect('milestone.project', 'project')
+      .leftJoinAndSelect('baseline.project', 'project')
       .where('project.id = :projectId', { projectId: projectId.projectId })
       .orderBy('task.plannedStart', 'ASC')
-      .groupBy('baseline.id, milestone.id, project.id, task.id')
+      .groupBy('baseline.id, project.id, task.id')
       .getMany();
     if (activeTasks.length > 0) {
       tasksForVariance.push(...activeTasks);
@@ -151,17 +148,10 @@ const getWeeklyReport = async (projectId) => {
     status: true
   });
 
-
-  const allActiveBaselines = [];
-
-  for (const eachMilestone of getMilestoneByProject) {
-    const activeBaselines = await baselineRepository.findBy({
-      milestoneId: eachMilestone.id,
-      status: true
-    });
-
-    allActiveBaselines.push(...activeBaselines);
-  }
+  const allActiveBaselines = await baselineRepository.findBy({
+    projectId: projectId,
+    status: true
+  });
 
   const allTasks = [];
 
@@ -170,7 +160,7 @@ const getWeeklyReport = async (projectId) => {
       where: {
         baselineId: eachAllActiveBaselines.id,
       },
-      relations: ['baseline.milestone.project']
+      relations: ['baseline.project']
     });
 
     if (activeTasks.length > 0) {

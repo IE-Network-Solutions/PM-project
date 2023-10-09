@@ -12,9 +12,14 @@ router
   .get(validate(baselineValidation.getBaselines), baselineController.getBaselines);
 
 router.route('/masterSchedule').get(baselineController.masterSchedule);
+router.route('/masterScheduleFilter').get(baselineController.masterScheduleByDateFilter);
+
 
 router.route('/milestone/:milestoneId').get(validate(baselineValidation.getByMilestone), baselineController.getByMilestone);
 router.route('/project/:projectId').get(validate(baselineValidation.projectSchedule), baselineController.projectSchedule);
+router.route('/project/active-baseline/:projectId').get(validate(baselineValidation.projectSchedule), baselineController.activeProjectSchedule);
+
+
 
 router
   .route('/:baselineId')

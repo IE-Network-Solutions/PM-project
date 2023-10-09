@@ -55,23 +55,52 @@ const getTasks = async (filter, options) => {
 };
 
 const extendTasks = async (baselineId) => {
-  const baseline = await baselineRepository.findOne({
-    where: {
-      id: baselineId,
-    },
-    relations: ['tasks.subtasks'],
+  // const baseline = await baselineRepository.findOne({
+  //   where: {
+  //     id: baselineId,
+  //   },
+  //   relations: ['tasks.subtasks'],
+  // });
+  
+  // if (baseline && baseline.tasks) {
+  //   baseline.tasks = baseline.tasks.filter((task) => task.completion < 100);
+  
+  //   // Filter the subtasks with completion < 100 for each task
+  //   baseline.tasks.forEach((task) => {
+  //     task.subtasks = task.subtasks.filter((subtask) => subtask.completion < 100);
+  //   });
+  
+  //   return baseline;
+  // }
+
+
+  const baselineData = await baselineRepository
+  .createQueryBuilder('baselines')
+  .leftJoinAndSelect('baselines.tasks', 'task')
+  .leftJoinAndSelect('task.subtasks', 'subtask')
+  .leftJoinAndSelect('task.milestone', 'milestone')
+  .addSelect('baselines.*')
+  .addSelect('task.*')
+  .addSelect('subtask.*')
+  .where('task.completion<100')
+  .andWhere('baselines.id = :baselineId', { baselineId: baselineId })
+  .getMany();
+
+baselineData.forEach((base) => {
+  const milestones = [];
+  base.tasks.forEach((task) => {
+    if (!milestones.some((m) => m.id === task.milestoneId)) {
+      let taskMilestone=task.milestone
+      milestones.push({...taskMilestone, "tasks":[]});
+    }
+    let mileInd=milestones.findIndex((m)=>m.id === task.milestoneId)
+    milestones[mileInd].tasks.push(task)
   });
-  
-  if (baseline && baseline.tasks) {
-    baseline.tasks = baseline.tasks.filter((task) => task.completion < 100);
-  
-    // Filter the subtasks with completion < 100 for each task
-    baseline.tasks.forEach((task) => {
-      task.subtasks = task.subtasks.filter((subtask) => subtask.completion < 100);
-    });
-  
-    return baseline;
-  }
+  delete base.tasks
+  base.milestones=milestones
+});
+
+return baselineData;
 };
 
 
@@ -84,10 +113,10 @@ const getTask = async (id) => {
   return await taskRepository.findOneBy({ id: id });
 };
 
-const getTasksByMileston = async (milestoneId, filter, options) => {
+const getTasksByMileston = async (projectId, filter, options) => {
   const baseline = await baselineRepository.findOne({
     where: {
-      milestoneId: milestoneId,
+      projectId: projectId,
       status: true
     }
   });

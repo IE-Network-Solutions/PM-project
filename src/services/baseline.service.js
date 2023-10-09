@@ -150,17 +150,37 @@ const masterSchedule = async () => {
     .leftJoinAndSelect('task.subtasks', 'subtask')
     .leftJoinAndSelect('task.resources', 'resource')
     .leftJoinAndSelect('task.milestone', 'milestone')
-    .where('baselines.status = :status', { status })
+    .orderBy('baselines.createdAt', 'DESC')
+    // .where('baselines.status = true',)
     .getMany();
   // return baselineData;
-  const groupedData = groupDataByProjectBaselineMilestone(baselineData);
+const projectBaseline=[];
 
-  return groupedData;
+  baselineData.forEach((base) => {
+    if (!projectBaseline.some((p) => p.id === base.projectId)) {
+      let baselineProj=base.project
+      projectBaseline.push({...baselineProj, "baselines":[]});
+    }
+    let projIndx=projectBaseline.findIndex((bp)=>bp.id === base.projectId)
+    projectBaseline[projIndx].baselines.push(base)
+
+    const milestones = [];
+    base.tasks.forEach((task) => {
+      if (!milestones.some((m) => m.id === task.milestoneId)) {
+        let taskMilestone=task.milestone
+        milestones.push({...taskMilestone, "tasks":[]});
+      }
+      let mileInd=milestones.findIndex((m)=>m.id === task.milestoneId)
+      milestones[mileInd].tasks.push(task)
+    });
+    delete base.tasks
+    base.milestones=milestones
+  });
+
+  return projectBaseline;
 };
-/**
- * Master Schedule
- */
-const projectSchedule = async (projectId) => {
+
+const masterScheduleByDateFilter = async (startDate,endDate) => {
   const status = true;
   const baselineData = await baselineRepository
     .createQueryBuilder('baselines')
@@ -169,12 +189,99 @@ const projectSchedule = async (projectId) => {
     .leftJoinAndSelect('task.subtasks', 'subtask')
     .leftJoinAndSelect('task.resources', 'resource')
     .leftJoinAndSelect('task.milestone', 'milestone')
-    .andWhere('project.id = :projectId', { projectId:projectId })
+    .orderBy('baselines.createdAt', 'DESC')
+    .andWhere('task.plannedStart >= :startDate', { startDate: startDate })
+    .andWhere('task.plannedFinish <= :endDate', { endDate: endDate })
+
     .getMany();
   // return baselineData;
-  const groupedData = groupDataByProjectBaselineMilestone(baselineData);
+const projectBaseline=[];
 
-  return groupedData;
+  baselineData.forEach((base) => {
+    if (!projectBaseline.some((p) => p.id === base.projectId)) {
+      let baselineProj=base.project
+      projectBaseline.push({...baselineProj, "baselines":[]});
+    }
+    let projIndx=projectBaseline.findIndex((bp)=>bp.id === base.projectId)
+    projectBaseline[projIndx].baselines.push(base)
+
+    const milestones = [];
+    base.tasks.forEach((task) => {
+      if (!milestones.some((m) => m.id === task.milestoneId)) {
+        let taskMilestone=task.milestone
+        milestones.push({...taskMilestone, "tasks":[]});
+      }
+      let mileInd=milestones.findIndex((m)=>m.id === task.milestoneId)
+      milestones[mileInd].tasks.push(task)
+    });
+    delete base.tasks
+    base.milestones=milestones
+  });
+
+  return projectBaseline;
+};
+
+const projectSchedule = async (projectId) => {
+  const status = true;
+  const baselineData = await baselineRepository
+    .createQueryBuilder('baselines')
+    .leftJoinAndSelect('baselines.tasks', 'task')
+    .leftJoinAndSelect('task.subtasks', 'subtask')
+    .leftJoinAndSelect('task.milestone', 'milestone')
+    .addSelect('baselines.*')
+    .addSelect('task.*')
+    .addSelect('subtask.*')
+    .andWhere('baselines.project.id = :projectId', { projectId: projectId })
+    .orderBy('baselines.createdAt', 'DESC')
+    .getMany();
+
+  baselineData.forEach((base) => {
+    const milestones = [];
+    base.tasks.forEach((task) => {
+      if (!milestones.some((m) => m.id === task.milestoneId)) {
+        let taskMilestone=task.milestone
+        milestones.push({...taskMilestone, "tasks":[]});
+      }
+      let mileInd=milestones.findIndex((m)=>m.id === task.milestoneId)
+      milestones[mileInd].tasks.push(task)
+    });
+    delete base.tasks
+    base.milestones=milestones
+  });
+
+  return baselineData;
+};
+
+const activeProjectSchedule = async (projectId) => {
+  const status = true;
+  const baselineData = await baselineRepository
+    .createQueryBuilder('baselines')
+    .leftJoinAndSelect('baselines.tasks', 'task')
+    .leftJoinAndSelect('task.subtasks', 'subtask')
+    .leftJoinAndSelect('task.milestone', 'milestone')
+    .addSelect('baselines.*')
+    .addSelect('task.*')
+    .addSelect('subtask.*')
+    .andWhere('baselines.project.id = :projectId', { projectId: projectId })
+    .andWhere('baselines.status = true')
+    .orderBy('baselines.createdAt', 'DESC')
+    .getMany();
+
+  baselineData.forEach((base) => {
+    const milestones = [];
+    base.tasks.forEach((task) => {
+      if (!milestones.some((m) => m.id === task.milestoneId)) {
+        let taskMilestone=task.milestone
+        milestones.push({...taskMilestone, "tasks":[]});
+      }
+      let mileInd=milestones.findIndex((m)=>m.id === task.milestoneId)
+      milestones[mileInd].tasks.push(task)
+    });
+    delete base.tasks
+    base.milestones=milestones
+  });
+
+  return baselineData;
 };
 
 function groupDataByProjectBaselineMilestone(data) {
@@ -222,10 +329,10 @@ function groupDataByProjectBaselineMilestone(data) {
     }
 
     // Concatenate the task objects into the dataRaw array
-    grouped[projectId].baselines[baselineId].milestones[milestoneId].dataRaw = 
-      grouped[projectId].baselines[baselineId].milestones[milestoneId].dataRaw.concat(baseline.tasks);
+    grouped[projectId].baselines[baselineId].milestones[milestoneId].dataRaw = grouped[projectId].baselines[
+      baselineId
+    ].milestones[milestoneId].dataRaw.concat(baseline.tasks);
   });
-
 
   return Object.values(grouped);
 }
@@ -235,11 +342,33 @@ function groupDataByProjectBaselineMilestone(data) {
  * @param {ObjectId} id
  * @returns {Promise<Baseline>}
  */
-const getBaseline = async (milestoneId) => {
-  return await baselineRepository.findOne({
-    where: { id: milestoneId },
-    relations: ['tasks.subtasks'],
+const getBaseline = async (baselineId) => {
+  const baselineData = await baselineRepository
+    .createQueryBuilder('baselines')
+    .leftJoinAndSelect('baselines.tasks', 'task')
+    .leftJoinAndSelect('task.subtasks', 'subtask')
+    .leftJoinAndSelect('task.milestone', 'milestone')
+    .addSelect('baselines.*')
+    .addSelect('task.*')
+    .addSelect('subtask.*')
+    .andWhere('baselines.id = :baselineId', { baselineId: baselineId })
+    .getMany();
+
+  baselineData.forEach((base) => {
+    const milestones = [];
+    base.tasks.forEach((task) => {
+      if (!milestones.some((m) => m.id === task.milestoneId)) {
+        let taskMilestone=task.milestone
+        milestones.push({...taskMilestone, "tasks":[]});
+      }
+      let mileInd=milestones.findIndex((m)=>m.id === task.milestoneId)
+      milestones[mileInd].tasks.push(task)
+    });
+    delete base.tasks
+    base.milestones=milestones
   });
+
+  return baselineData;
 };
 
 const getByMilestone = async (milestoneId) => {
@@ -262,9 +391,9 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
   if (tasksBody) {
     for (const taskBody of tasksBody) {
       const requestedTask = taskBody;
-
       if (requestedTask.id) {
         const subTasks = taskBody.subtasks || [];
+     
 
         await taskRepository.update(
           { id: requestedTask.id },
@@ -338,7 +467,7 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
 
         // Create and save subtasks
         if (subTasks.length > 0) {
-          const subTaskInstances = subTasks.map((eachSubTask) => ({
+          const subTaskInstances = subTasks.map( (eachSubTask) => ({
             taskId: savedTask.id, // Use the taskId of the newly created task
             name: eachSubTask.name,
             plannedStart: eachSubTask.plannedStart,
@@ -356,10 +485,7 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
   }
 
   // After updating or creating tasks, fetch the updated baseline with tasks and subtasks
-  const updatedBaseline = await baselineRepository.findOne({
-    where: { id: baselineId },
-    relations: ['tasks.subtasks'],
-  });
+  const updatedBaseline = await getBaseline(baselineId)
 
   return updatedBaseline;
 };
@@ -413,5 +539,7 @@ module.exports = {
   addComment,
   getComments,
   masterSchedule,
-  projectSchedule
+  projectSchedule,
+  activeProjectSchedule,
+  masterScheduleByDateFilter
 };

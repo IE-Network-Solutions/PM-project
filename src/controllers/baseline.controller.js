@@ -58,9 +58,21 @@ const masterSchedule = catchAsync(async (req, res) => {
   res.send(masterSchedule);
 });
 
+const masterScheduleByDateFilter = catchAsync(async (req, res) => {
+  const masterSchedule = await baselineService.masterScheduleByDateFilter(req.query.startDate,req.query.finsihDate);
+  res.send(masterSchedule);
+});
+
+
 const projectSchedule = catchAsync(async (req, res) => {
   const projectId = req.params.projectId;
   const projectSchedule = await baselineService.projectSchedule(projectId);
+  res.send(projectSchedule);
+});
+
+const activeProjectSchedule=catchAsync(async (req, res) => {
+  const projectId = req.params.projectId;
+  const projectSchedule = await baselineService.activeProjectSchedule(projectId);
   res.send(projectSchedule);
 });
 
@@ -75,4 +87,7 @@ module.exports = {
   getComments,
   masterSchedule,
   projectSchedule,
+  activeProjectSchedule,
+  masterScheduleByDateFilter
 };
+
