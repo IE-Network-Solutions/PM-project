@@ -19,7 +19,13 @@ const userRepository = dataSource.getRepository(User).extend({ findAll, sortBy }
 const queryUsers = async (filter, options) => {
   const { limit, page, sortBy } = options;
 
-  return await userRepository.find({ relations: ['resourceOn'] });
+  const users = await userRepository.find({ relations: ['resourceOn'] });
+  // Filter tasks for each user
+  users.forEach((user) => {
+    user.resourceOn = user.resourceOn.filter((task) => task.completion < 100);
+  });
+
+  return users;
 };
 
 /**
