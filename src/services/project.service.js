@@ -28,7 +28,7 @@ const projectContractValueRepository = dataSource.getRepository(ProjectContractV
 // project.service.js
 const createProject = async (projectBody, projectMembers, projectContractValue) => {
   const project = projectRepository.create(projectBody);
-  
+
   // Save the project instance
   await projectRepository.save(project);
 
@@ -131,8 +131,8 @@ const deleteProject = async (projectId) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
   // return await projectRepository.delete({ id: projectId });
-   await projectRepository.delete({ id: projectId });
-   return "Project Deleted"
+  await projectRepository.delete({ id: projectId });
+  return 'Project Deleted';
 };
 
 /**

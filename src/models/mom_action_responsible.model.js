@@ -1,19 +1,19 @@
-const { EntitySchema } = require("typeorm");
+const { EntitySchema } = require('typeorm');
 
 const momActionResponsible = new EntitySchema({
-  name: "MomActionResponsible",
+  name: 'MomActionResponsible',
   columns: {
     id: {
-      type: "uuid",
+      type: 'uuid',
       primary: true,
-      generated: "uuid"
+      generated: 'uuid',
     },
     userId: {
-      type: "uuid",
-      primary: true
+      type: 'uuid',
+      primary: true,
     },
-     momActionId: {
-      type: "uuid",
+    momActionId: {
+      type: 'uuid',
       primary: true,
     },
   },
