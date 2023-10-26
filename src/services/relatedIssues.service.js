@@ -55,7 +55,7 @@ const getRelatedIssueById = async (id) => {
  * @param {Object} updateBody
  * @returns {Promise<RelatedIssue>}
  */
-const updateRelatedIssueById = async (relatedIssueId, updateBody) => {
+const updateRelatedIssueById = async (relatedIssueId = [], updateBody) => {
     const relatedIssue = await getRelatedIssueById(relatedIssueId);
     if (!relatedIssue) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Related Issue not found');

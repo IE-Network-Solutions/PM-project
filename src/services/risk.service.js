@@ -66,12 +66,11 @@ const getRisksByDate = async (startDate, endDate) => {
  * @returns {Promise<Risk>}
  */
 
-const getAllRisksByProjectId = async (id, status) => {
+const  getAllRisksByProjectId = async (id) => {
     return await riskRepository.find(
         {
             where: {
                 projectId: id,
-                status: status[0],
             },
             relations: ['project']
         });

@@ -23,3 +23,4 @@ module.exports.budgetTaskCategoryValidation = require('./budgetTaskCategory.vali
 module.exports.budgetTypeValidation = require('./budgetType.validation');
 module.exports.budgetValidation = require('./budget.validation');
 module.exports.departmentValidation = require('./department.validation');
+module.exports.resourceHistoryValidation =require('./resourceHistory.validation')

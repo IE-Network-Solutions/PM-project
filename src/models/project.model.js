@@ -7,13 +7,15 @@ class Project extends Base {
     super();
     this.name = { type: 'varchar' };
     this.clientId = { type: 'uuid', nullable: true };
-    this.milestone = { type: 'int' };
-    this.budget = { type: 'int' };
-    this.contract_sign_date = { type: 'date' };
-    this.planned_end_date = { type: 'date' };
-    this.lc_opening_date = { type: 'date' };
-    this.advanced_payment_date = { type: 'date' };
-    this.status = { type: 'boolean' };
+    this.milestone = { type: 'int',nullable: true };
+    this.budget = { type: 'int', nullable: true };
+    this.contract_sign_date = { type: 'date',nullable: true };
+    this.planned_end_date = { type: 'date',nullable: true };
+    this.lc_opening_date = { type: 'date',nullable: true };
+    this.advanced_payment_date = { type: 'date',nullable: true };
+    this.status = { type: 'boolean',nullable: true };
+    this.isOffice = {type: 'boolean', default: false}
+    
   }
 }
 
@@ -32,6 +34,7 @@ module.exports = new EntitySchema({
       target: 'WeeklyReport',
       inverseSide: 'project',
     },
+  
     projectMembers: {
       type: 'many-to-many',
       target: 'User',
@@ -43,6 +46,11 @@ module.exports = new EntitySchema({
           referencedColumnName: 'id',
         },
       },
+    },
+    client: {
+      type: 'many-to-one',
+      target: 'Client',
+      inverseSide: 'project',
     },
   },
 });

@@ -10,7 +10,7 @@ const createRisk = {
         riskOwner: Joi.string().required(),
         status: Joi.string().valid('Closed', 'Open').required(),
         impact: Joi.string().required(),
-        control: Joi.string().valid("Avoided", "Mitigated", "Transfered", "Accepted").required(),
+        control: Joi.string().required(),
         controlOwner: Joi.string().required(),
         residualProbability: Joi.string().required(),
         residualImpact: Joi.string().required(),

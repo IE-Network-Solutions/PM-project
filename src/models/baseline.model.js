@@ -6,7 +6,7 @@ class Baseline extends Base {
     super();
     this.name = { type: 'varchar' };
     this.status = { type: 'boolean', default: true };
-    this.milestoneId = { type: 'uuid' };
+    this.projectId = { type: 'uuid' };
   } 
 }
 
@@ -15,15 +15,21 @@ module.exports = new EntitySchema({
   tableName: 'baselines',
   columns: new Baseline(),
   relations: {
-    milestone: {
+    project: {
       type: 'many-to-one',
-      target: 'milestones',
+      target: 'projects',
       inverseSide: 'baselines',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
-
     tasks: {
       type: 'one-to-many',
       target: 'Task',
+      inverseSide: 'baseline',
+    },
+    baselineComment: {
+      type: 'one-to-many',
+      target: 'BaselineComment',
       inverseSide: 'baseline',
     },
   },

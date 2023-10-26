@@ -7,7 +7,6 @@ const findAll = require('./Plugins/findAll');
 const publishToRabbit = require('../utils/producer');
 const { allActiveBaselineTasks } = require('./weeklyReport.service');
 
-
 const projectRepository = dataSource.getRepository(Project).extend({
   findAll,
   sortBy,
@@ -29,7 +28,7 @@ const projectContractValueRepository = dataSource.getRepository(ProjectContractV
 // project.service.js
 const createProject = async (projectBody, projectMembers, projectContractValue) => {
   const project = projectRepository.create(projectBody);
-
+  
   // Save the project instance
   await projectRepository.save(project);
 
@@ -47,15 +46,15 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
   }
 
   if (projectContractValue) {
-    const projectContractValueInstance =  projectContractValue.map((contract_value) => {
+    const projectContractValueInstance = projectContractValue.map((contract_value) => {
       contract_value.project = project;
-      return contract_value
+      return contract_value;
     });
     // Save the project contract value instances
     await projectContractValueRepository.save(projectContractValueInstance);
   }
 
-  let newProject=await getProject(project.id)
+  let newProject = await getProject(project.id);
   newProject.projectMembers = projectMembers;
   // project.projectContractValue = projectContractValue;
   publishToRabbit('project.create', newProject);
@@ -81,7 +80,7 @@ const getProjects = async (filter, options) => {
     tableName: 'projects',
     sortOptions: sortBy && { option: sortBy },
     paginationOptions: { limit: limit, page: page },
-    relations: ['projectMembers','projectContractValues'],
+    relations: ['projectMembers', 'projectContractValues.currency'],
   });
   // return await projectRepository.createQueryBuilder('project')
   //   .leftJoin('project.projectMembers', 'projectMember')
@@ -90,7 +89,6 @@ const getProjects = async (filter, options) => {
   //   .addSelect(['projectMember', 'role', 'projectContractValue'])
   //   .getMany();
 };
-
 
 /**
  * Get post by id
@@ -101,10 +99,8 @@ const getProject = async (id) => {
   return await projectRepository.findOne({
     where: { id: id },
     relations: ['projectMembers', 'projectContractValues.currency'],
-  },
-  );
+  });
 };
-
 
 /**
  * Update user by id
@@ -135,7 +131,8 @@ const deleteProject = async (projectId) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
   // return await projectRepository.delete({ id: projectId });
-  return await projectRepository.delete({ id: projectId }, updateBody);
+   await projectRepository.delete({ id: projectId });
+   return "Project Deleted"
 };
 
 /**
@@ -146,7 +143,7 @@ const deleteProject = async (projectId) => {
 
 const getAllProjectTasksVarianceByProject = async () => {
   const projects = await projectRepository.find({
-    tableName: 'projects'
+    tableName: 'projects',
   });
   const allProjectTasks = [];
   let project;
@@ -163,16 +160,12 @@ const getAllProjectTasksVarianceByProject = async () => {
     let lastTask = task?.tasks[task.tasks.length - 1];
 
     if (firstTask?.actualStart) {
-      startVariance =
-        new Date(firstTask.plannedStart).getTime() -
-        new Date(firstTask.actualStart).getTime();
+      startVariance = new Date(firstTask.plannedStart).getTime() - new Date(firstTask.actualStart).getTime();
       startVariance = Math.ceil(startVariance / (1000 * 60 * 60 * 24));
     }
 
     if (lastTask?.actualFinish) {
-      finishVariance =
-        new Date(lastTask.plannedFinish).getTime() -
-        new Date(lastTask.actualFinish).getTime();
+      finishVariance = new Date(lastTask.plannedFinish).getTime() - new Date(lastTask.actualFinish).getTime();
       finishVariance = Math.ceil(finishVariance / (1000 * 60 * 60 * 24));
     }
 
@@ -182,11 +175,11 @@ const getAllProjectTasksVarianceByProject = async () => {
   });
 
   return { Projects: allProjectTasks };
-}
+};
 
 const getAllProjectsDetailOnMasterSchedule = async () => {
   const projects = await projectRepository.find({
-    tableName: 'projects'
+    tableName: 'projects',
   });
   const allProjectTasks = [];
   let project;
@@ -195,13 +188,8 @@ const getAllProjectsDetailOnMasterSchedule = async () => {
     project.tasks = tasks.tasksForVariance;
     allProjectTasks.push(project);
   }
-
-  allProjectTasks.map((task) => {
-    // delete task.tasks?.map(task => task?.baseline?.milestone);
-  });
   return { Projects: allProjectTasks };
-}
-
+};
 
 const addMember = async (projectId, projectMembers) => {
   const project = await projectRepository.findOneBy({ id: projectId });
@@ -221,28 +209,42 @@ const addMember = async (projectId, projectMembers) => {
   return project;
 };
 
-const getMembers = async(projectId)=>{
- return await projectMemberRepository
-      .createQueryBuilder('project_member')
-      .where('project_member.projectId = :projectId', { projectId })
-      .getMany();
-}
+const getMembers = async (projectId) => {
+  return await projectMemberRepository
+    .createQueryBuilder('project_member')
+    .where('project_member.projectId = :projectId', { projectId })
+    .getMany();
+};
 
-const removeMember = async(projectId, memberToRemove)=>{
+const removeMember = async (projectId, memberToRemove) => {
   const projectMembersToRemove = await projectMemberRepository.find({
     where: {
       projectId: projectId,
       userId: memberToRemove.memberId,
       roleId: memberToRemove.roleId,
-    }
+    },
   });
 
-
-  
   return await projectMemberRepository.remove(projectMembersToRemove);
+};
+const closeProject = async (projectId, status) => {
+  const project = await getProject(projectId);
+  if (!project) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
+  }
+  project.status = status;
+  await projectRepository.update({ id: projectId }, status);
 
+  return await getProject(projectId);
+};
 
-}
+const getTotalActiveClosedProjects = async (filter, options) => {
+  const projects = await getProjects(filter, options);
+  const total = projects.length;
+  const active = projects.filter((project) => project.status === true).length;
+  const closed = projects.filter((project) => project.status === false).length;
+  return { totalProjects: total, closedProjects: closed, activeProjcts: active };
+};
 
 module.exports = {
   createProject,
@@ -253,5 +255,10 @@ module.exports = {
   getAllProjectTasksVarianceByProject,
   getAllProjectsDetailOnMasterSchedule,
   addMember,
-  removeMember,getMembers
+  removeMember,
+  getMembers,
+  getTotalActiveClosedProjects,
+  removeMember,
+  getMembers,
+  closeProject,
 };

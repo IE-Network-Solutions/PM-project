@@ -17,7 +17,7 @@ async function calculate(budget) {
   const taskCategory = await budgetTaskCategoryService.getBudgetTaskCategory(budget.taskCategoryId);
   const currency = await currencyService.getCurrencyById(budget.currencyId);
 
-  return { task, budgetCategory, taskCategory,currency };
+  return { task, budgetCategory, taskCategory, currency };
 }
 
 const createBudget = catchAsync(async (req, res) => {
@@ -30,11 +30,11 @@ const createBudget = catchAsync(async (req, res) => {
       throw new ApiError(httpStatus.NOT_FOUND, `project with id: ${data.projectId} not found`);
     }
     data.project = project;
-  
+
     const budgetArray = data.budgets;
 
     for (const budget of budgetArray) {
-      const { task, budgetCategory, taskCategory,currency } = await calculate(budget);
+      const { task, budgetCategory, taskCategory, currency } = await calculate(budget);
 
       const singleBudgetData = {
         amount: budget.amount,
@@ -45,8 +45,6 @@ const createBudget = catchAsync(async (req, res) => {
         taskCategory: taskCategory,
         currency: currency,
       };
-
-     
 
       budgetData.push(singleBudgetData);
     }
@@ -121,10 +119,39 @@ const getBudgetsOfProjects = catchAsync(async (req, res) => {
   res.send(data);
 });
 
-const getBudgetGroupByCategory= catchAsync(async (req,res)=>{
-  const data = await budgetService.getBudgetGroupByCategory()
-  res.send(data)
-})
+const getAllBudgetsOfProjects = catchAsync(async (req, res) => {
+  const data = await budgetService.getAllBudgetsOfProjects();
+  res.send(data);
+});
+
+const getBudgetGroupByCategory = catchAsync(async (req, res) => {
+  const data = await budgetService.getBudgetGroupByCategory();
+  res.send(data);
+});
+const getMonthlyBudget = catchAsync(async (req, res) => {
+  const projectId = req.params.projectId;
+  console.log(projectId, 'kkkkkkkk');
+  const data = await budgetService.getCurrentMonthBudgetOfProjects(projectId);
+  res.send(data);
+});
+const getMonthlyBudgetsOfProjects = catchAsync(async (req, res) => {
+  const data = await budgetService.getMonthlyBudgetsOfProjects();
+  res.send(data);
+});
+
+
+
+// get all budget groups
+const budgetGroups = catchAsync(async (req, res) => {
+  const data = await budgetService.budgetGroups();
+  res.send(data);
+});
+
+// get all budgets by group
+const getBudgetsByGroup = catchAsync(async (req, res) => {
+  const data = await budgetService.getByTaskCategory();
+  res.send(data);
+});
 
 const addBudget = catchAsync(async (req, res) => {
   data = req.body;
@@ -163,6 +190,20 @@ const addBudget = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(budget);
 });
 
+const masterBudget = catchAsync(async (req, res) => {
+  const data = await budgetService.masterBudget();
+  res.send(data);
+});
+
+const filterBudget = catchAsync(async (req, res) => {
+  const startDate = req.query.startDate;
+  const endDate = req.query.endDate;
+
+  const data = await budgetService.filterBudget(startDate, endDate);
+
+  res.send(data);
+});
+
 module.exports = {
   createBudget,
   getBudgets,
@@ -172,5 +213,12 @@ module.exports = {
   getBudgetsOfProject,
   getBudgetsOfProjects,
   addBudget,
-  getBudgetGroupByCategory
+  getBudgetGroupByCategory,
+  getAllBudgetsOfProjects,
+  getMonthlyBudget,
+  getMonthlyBudgetsOfProjects,
+  budgetGroups,
+  getBudgetsByGroup,
+  masterBudget,
+  filterBudget,
 };

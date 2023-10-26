@@ -3,10 +3,15 @@ const { objectId } = require('./custom.validation');
 
 const createBaseline = {
   body: Joi.object().keys({
+    id: Joi.string(),
     name: Joi.string().required(),
     status: Joi.boolean(),
-    milestoneId: Joi.required(),
-    tasks: Joi.array(),
+    projectId: Joi.required(),
+    createdAt: Joi.date(),
+    updatedAt: Joi.date(),
+    createdBy: Joi.allow(),
+    updatedBy: Joi.allow(),
+    milestones: Joi.array().required(),
     subtasks: Joi.array(),
   }),
 };
@@ -30,6 +35,11 @@ const getByMilestone = {
     milestoneId: Joi.string(),
   }),
 };
+const projectSchedule = {
+  params: Joi.object().keys({
+    projectId: Joi.string(),
+  }),
+};
 
 const updateBaseline = {
   params: Joi.object().keys({
@@ -37,9 +47,14 @@ const updateBaseline = {
   }),
   body: Joi.object()
     .keys({
+      id: Joi.required(),
       name: Joi.string(),
       status: Joi.boolean(),
       milestoneId: Joi.string(),
+      createdAt: Joi.date(),
+      updatedAt: Joi.date(),
+      createdBy: Joi.required(),
+      updatedBy: Joi.required(),
       tasks: Joi.array(),
       subtasks: Joi.array(),
     })
@@ -52,11 +67,28 @@ const deleteBaseline= {
     }),
   };
 
+  const addComment = {
+    body: Joi.object().keys({
+      id: Joi.string().required(),
+      comment: Joi.string().required(),
+      userId: Joi.string().required(),
+    }),
+  };
+
+  const getComments = {
+    params: Joi.object().keys({
+        baselineId: Joi.string().required(),
+    }),
+  };
+
 module.exports = {
   createBaseline,
   getBaselines,
   getBaseline,
   getByMilestone,
   updateBaseline,
-  deleteBaseline
+  deleteBaseline,
+  addComment,
+  getComments,
+  projectSchedule
 };

@@ -6,12 +6,15 @@ class PaymentTerm extends Base {
   constructor() {
     super(); 
     this.name = { type: 'varchar' };
-    this.amount = { type: 'int'};
+    this.amount = { type: 'float'};
     this.plannedCollectionDate = {type: 'date', nullable: true}
     this.actualCollectionDate = {type: 'date', nullable: true}
     this.status = { type: 'boolean', default: true};
     this.projectId = {type: 'boolean'}
     this.currencyId = {type: 'varchar', nullable: true}
+    this.isOffshore = {type: 'boolean'}
+    this.isAmountPercent = {type: 'boolean', default: false}
+    this.budgetTypeId = {type: 'boolean', nullable: true}
   }
 }
 
