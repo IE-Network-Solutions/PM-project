@@ -30,8 +30,9 @@ const departmentRoute = require('./department.route');
 const approval = require('./approval.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
-const resourceHistory =require('./resourceHistory.route');
-const clientRoute= require('./client.route')
+const resourceHistory = require('./resourceHistory.route');
+const clientRoute = require('./client.route');
+const roleRoute = require('./role.route');
 
 const router = express.Router();
 
@@ -158,9 +159,11 @@ const defaultRoutes = [
   {
     path: '/clients',
     route: clientRoute,
-  }
-
-
+  },
+  {
+    path: '/roles',
+    route: roleRoute,
+  },
 ];
 
 const devRoutes = [
