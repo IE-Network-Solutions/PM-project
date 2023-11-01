@@ -16,7 +16,7 @@ const createProject = {
     projectMembers: Joi.array(),
     projectContractValue: Joi.array(),
     isOffice: Joi.boolean(),
-    clientId:Joi.string()
+    clientId: Joi.string()
 
   }),
 };
@@ -27,7 +27,7 @@ const createOfficeProject = {
     isOffice: Joi.boolean(),
     projectMembers: Joi.array(),
     status: Joi.boolean(),
-    clientId:Joi.string()
+    clientId: Joi.string()
   }),
 };
 
@@ -53,8 +53,9 @@ const updateProject = {
     .keys({
       isOffice: Joi.boolean(),
       name: Joi.string(),
+      clientId: Joi.string(),
       milestone: Joi.number(),
-      budget: Joi.required(),
+      budget: Joi.string(),
       contract_sign_date: Joi.date(),
       lc_opening_date: Joi.date(),
       advanced_payment_date: Joi.date(),
