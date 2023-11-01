@@ -5,6 +5,7 @@ const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 const { all } = require('../routes/v1');
+const { milestoneService } = require('.');
 
 const baselineRepository = dataSource.getRepository(Baseline).extend({
   findAll,
@@ -345,6 +346,7 @@ function groupDataByProjectBaselineMilestone(data) {
 const getBaseline = async (baselineId) => {
   const baselineData = await baselineRepository
     .createQueryBuilder('baselines')
+    .leftJoinAndSelect('baselines.project', 'project')
     .leftJoinAndSelect('baselines.tasks', 'task')
     .leftJoinAndSelect('task.subtasks', 'subtask')
     .leftJoinAndSelect('task.milestone', 'milestone')
@@ -354,8 +356,12 @@ const getBaseline = async (baselineId) => {
     .andWhere('baselines.id = :baselineId', { baselineId: baselineId })
     .getMany();
 
+    const allMilestones=await milestoneService.getByProject(baselineData[0].projectId)
+
+
+
   baselineData.forEach((base) => {
-    const milestones = [];
+    const milestones = allMilestones.map((e)=>{return {...e, "tasks":[]}});
     base.tasks.forEach((task) => {
       if (!milestones.some((m) => m.id === task.milestoneId)) {
         let taskMilestone=task.milestone
@@ -366,6 +372,8 @@ const getBaseline = async (baselineId) => {
     });
     delete base.tasks
     base.milestones=milestones
+    delete base.projectId
+    delete base.project
   });
 
   return baselineData;
@@ -387,7 +395,7 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
   if (baselineBody) {
     await baselineRepository.update({ id: baselineId }, { name: baselineBody.name });
   }
-
+console.log(baselineBody)
   if (tasksBody) {
     for (const taskBody of tasksBody) {
       const requestedTask = taskBody;
@@ -462,6 +470,7 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
           actualFinish: requestedTask.actualFinish,
           completion: requestedTask.completion,
           subTasks: requestedTask.subTasks,
+          milestoneId:requestedTask.milestoneId
         });
         const savedTask = await taskRepository.save(createTask);
 
