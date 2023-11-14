@@ -26,7 +26,7 @@ const extendTasks = catchAsync(async (req, res) => {
 const getTasksByMileston = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['status']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const task = await taskService.getTasksByMileston(req.params.milestoneId, filter, options);
+  const task = await taskService.getTasksByMileston(req.params.projectId, filter, options);
   res.send(task);
 });
 

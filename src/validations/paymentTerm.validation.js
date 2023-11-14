@@ -1,19 +1,22 @@
 const Joi = require('joi');
 
 const createPaymentTerm = {
-  body: Joi.object().keys({
-    name: Joi.string().required(),
-    amount: Joi.number().required(),
-    percentage: Joi.boolean(),
-    plannedCollectionDate: Joi.date(),
-    actualCollectionDate: Joi.date(),
-    status: Joi.boolean(),
-    projectId: Joi.string().required(),
-    currencyId: Joi.string().required(),
-    budgetTypeId: Joi.string().required(),
-    milestone: Joi.array().required(),
-  }),
+  body: Joi.array().items(
+    Joi.object().keys({
+      name: Joi.string().required(),
+      amount: Joi.number().required(),
+      percentage: Joi.boolean(),
+      plannedCollectionDate: Joi.date(),
+      actualCollectionDate: Joi.date(),
+      status: Joi.boolean(),
+      projectId: Joi.string().required(),
+      currencyId: Joi.string().required(),
+      budgetTypeId: Joi.string().required(),
+      milestone: Joi.array().required(),
+    })
+  ),
 };
+
 
 const getPaymentTerms = {
   query: Joi.object().keys({

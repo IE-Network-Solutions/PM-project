@@ -9,7 +9,7 @@ const findAll = require('./Plugins/findAll');
 const clientRepository = dataSource.getRepository(Client).extend({ findAll, sortBy });
 
 /**
- * Query for users
+ * Query for clients
  * @param {Object} filter - Filter options
  * @param {Object} options - Query options
  * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)

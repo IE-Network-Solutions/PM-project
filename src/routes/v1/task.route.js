@@ -25,7 +25,7 @@ router
   .route('/by-planed-date/:projectId')
   .get(validate(taskValidation.getByPlnedDate), taskController.getTasksByPlandStartDate);
   router
-  .route('/milestone/:milestoneId')
+  .route('/project/:projectId')
   .get(validate(taskValidation.getTasksByMileston), taskController.getTasksByMileston);
 
 router.route('/assign-resource/:taskId').post(validate(taskValidation.assignResource), taskController.assignResource);

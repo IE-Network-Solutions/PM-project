@@ -32,7 +32,7 @@ const getTasksByMileston = {
     page: Joi.number().integer(),
   }),
   params: Joi.object().keys({
-    milestoneId: Joi.string().required(),
+    projectId: Joi.string().required(),
   })
 };
 
