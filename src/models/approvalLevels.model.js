@@ -5,6 +5,7 @@ class ApprovalLevel extends Base {
   constructor() {
     super();
     this.levelName = { type: 'varchar' };
+    this.isMultiple = { type: 'boolean',default: false };
     this.count = { type: 'int' };
   }
 }

@@ -17,7 +17,7 @@ const approvalModuleRepository = dataSource.getRepository(ApprovalModule).extend
  * @returns {Promise<ApprovalModule>}
  */
 const createApprovalModule = async () => {
-  const approvalModules = [{ moduleName: 'ProjectBudget' }, { moduleName: 'OfficeProjectBudget' }];
+  const approvalModules = [{ moduleName: 'ProjectBudget' }, { moduleName: 'OfficeProjectBudget' }, { moduleName: 'ProjectSchedule' }];
 
   const modules = approvalModules.map((approvalModule) => {
     // console.log(approvalModule);
