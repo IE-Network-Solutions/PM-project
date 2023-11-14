@@ -53,7 +53,7 @@ const userRepository = dataSource.getRepository(User).extend({
   findAll,
   sortBy,
 });
-const baselineComment = dataSource.getRepository(baselineComment).extend({
+const baselineCommentRepository = dataSource.getRepository(baselineComment).extend({
   findAll,
   sortBy,
 });
