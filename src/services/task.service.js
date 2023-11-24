@@ -61,46 +61,46 @@ const extendTasks = async (baselineId) => {
   //   },
   //   relations: ['tasks.subtasks'],
   // });
-  
+
   // if (baseline && baseline.tasks) {
   //   baseline.tasks = baseline.tasks.filter((task) => task.completion < 100);
-  
+
   //   // Filter the subtasks with completion < 100 for each task
   //   baseline.tasks.forEach((task) => {
   //     task.subtasks = task.subtasks.filter((subtask) => subtask.completion < 100);
   //   });
-  
+
   //   return baseline;
   // }
 
 
   const baselineData = await baselineRepository
-  .createQueryBuilder('baselines')
-  .leftJoinAndSelect('baselines.tasks', 'task')
-  .leftJoinAndSelect('task.subtasks', 'subtask')
-  .leftJoinAndSelect('task.milestone', 'milestone')
-  .addSelect('baselines.*')
-  .addSelect('task.*')
-  .addSelect('subtask.*')
-  .where('task.completion<100')
-  .andWhere('baselines.id = :baselineId', { baselineId: baselineId })
-  .getMany();
+    .createQueryBuilder('baselines')
+    .leftJoinAndSelect('baselines.tasks', 'task')
+    .leftJoinAndSelect('task.subtasks', 'subtask')
+    .leftJoinAndSelect('task.milestone', 'milestone')
+    .addSelect('baselines.*')
+    .addSelect('task.*')
+    .addSelect('subtask.*')
+    .where('task.completion<100')
+    .andWhere('baselines.id = :baselineId', { baselineId: baselineId })
+    .getMany();
 
-baselineData.forEach((base) => {
-  const milestones = [];
-  base.tasks.forEach((task) => {
-    if (!milestones.some((m) => m.id === task.milestoneId)) {
-      let taskMilestone=task.milestone
-      milestones.push({...taskMilestone, "tasks":[]});
-    }
-    let mileInd=milestones.findIndex((m)=>m.id === task.milestoneId)
-    milestones[mileInd].tasks.push(task)
+  baselineData.forEach((base) => {
+    const milestones = [];
+    base.tasks.forEach((task) => {
+      if (!milestones.some((m) => m.id === task.milestoneId)) {
+        let taskMilestone = task.milestone
+        milestones.push({ ...taskMilestone, "tasks": [] });
+      }
+      let mileInd = milestones.findIndex((m) => m.id === task.milestoneId)
+      milestones[mileInd].tasks.push(task)
+    });
+    delete base.tasks
+    base.milestones = milestones
   });
-  delete base.tasks
-  base.milestones=milestones
-});
 
-return baselineData;
+  return baselineData;
 };
 
 
@@ -121,21 +121,21 @@ const getTasksByMileston = async (projectId, filter, options) => {
     }
   });
 
-  
- if(baseline){
-  const { limit, page, sortBy } = options;
-  return await taskRepository.find({
-    where:{
-      baselineId: baseline.id,
-    },
-    relations: ['resources'],
-    sortOptions: sortBy && { option: sortBy },
-    // paginationOptions: { limit: limit, page: page },
-  });
- }
- else{
-  return [];
- }
+
+  if (baseline) {
+    const { limit, page, sortBy } = options;
+    return await taskRepository.find({
+      where: {
+        baselineId: baseline.id,
+      },
+      relations: ['resources'],
+      sortOptions: sortBy && { option: sortBy },
+      // paginationOptions: { limit: limit, page: page },
+    });
+  }
+  else {
+    return [];
+  }
 };
 
 /**

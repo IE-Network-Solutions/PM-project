@@ -38,6 +38,7 @@ const userRepository = dataSource.getRepository(User).extend({
  * @returns {Promise<Project>}
  */
 const createBaseline = async (baselineBody, milestones) => {
+
   if (baselineBody) {
     const lastActiveBaseline = await baselineRepository.findOne({
       where: {
@@ -76,9 +77,11 @@ const createBaseline = async (baselineBody, milestones) => {
           status: eachTask.status,
           sleepingReason: eachTask.sleepingReason,
           subTasks: subTasks,
+          predecessor: eachTask.predecessor
         });
 
         const savedTaskInstance = await taskRepository.save(taskInstance);
+
 
         // Create and save subtasks
         if (subTasks.length > 0) {
@@ -93,6 +96,7 @@ const createBaseline = async (baselineBody, milestones) => {
               completion: eachTask.completion,
               status: eachSubTask.status,
               sleepingReason: eachSubTask.sleepingReason,
+              predecessor: eachSubTask.predecessor
             });
           });
 
@@ -101,9 +105,13 @@ const createBaseline = async (baselineBody, milestones) => {
 
         return savedTaskInstance;
       });
+
       // Save the task instances
       const savedTaskInstances = Promise.all(taskInstances);
       baseline.tasks = savedTaskInstances;
+
+
+
     });
   }
   const baselineDate = await baselineRepository
@@ -155,33 +163,33 @@ const masterSchedule = async () => {
     // .where('baselines.status = true',)
     .getMany();
   // return baselineData;
-const projectBaseline=[];
+  const projectBaseline = [];
 
   baselineData.forEach((base) => {
     if (!projectBaseline.some((p) => p.id === base.projectId)) {
-      let baselineProj=base.project
-      projectBaseline.push({...baselineProj, "baselines":[]});
+      let baselineProj = base.project
+      projectBaseline.push({ ...baselineProj, "baselines": [] });
     }
-    let projIndx=projectBaseline.findIndex((bp)=>bp.id === base.projectId)
+    let projIndx = projectBaseline.findIndex((bp) => bp.id === base.projectId)
     projectBaseline[projIndx].baselines.push(base)
 
     const milestones = [];
     base.tasks.forEach((task) => {
       if (!milestones.some((m) => m.id === task.milestoneId)) {
-        let taskMilestone=task.milestone
-        milestones.push({...taskMilestone, "tasks":[]});
+        let taskMilestone = task.milestone
+        milestones.push({ ...taskMilestone, "tasks": [] });
       }
-      let mileInd=milestones.findIndex((m)=>m.id === task.milestoneId)
+      let mileInd = milestones.findIndex((m) => m.id === task.milestoneId)
       milestones[mileInd].tasks.push(task)
     });
     delete base.tasks
-    base.milestones=milestones
+    base.milestones = milestones
   });
 
   return projectBaseline;
 };
 
-const masterScheduleByDateFilter = async (startDate,endDate) => {
+const masterScheduleByDateFilter = async (startDate, endDate) => {
   const status = true;
   const baselineData = await baselineRepository
     .createQueryBuilder('baselines')
@@ -196,27 +204,27 @@ const masterScheduleByDateFilter = async (startDate,endDate) => {
 
     .getMany();
   // return baselineData;
-const projectBaseline=[];
+  const projectBaseline = [];
 
   baselineData.forEach((base) => {
     if (!projectBaseline.some((p) => p.id === base.projectId)) {
-      let baselineProj=base.project
-      projectBaseline.push({...baselineProj, "baselines":[]});
+      let baselineProj = base.project
+      projectBaseline.push({ ...baselineProj, "baselines": [] });
     }
-    let projIndx=projectBaseline.findIndex((bp)=>bp.id === base.projectId)
+    let projIndx = projectBaseline.findIndex((bp) => bp.id === base.projectId)
     projectBaseline[projIndx].baselines.push(base)
 
     const milestones = [];
     base.tasks.forEach((task) => {
       if (!milestones.some((m) => m.id === task.milestoneId)) {
-        let taskMilestone=task.milestone
-        milestones.push({...taskMilestone, "tasks":[]});
+        let taskMilestone = task.milestone
+        milestones.push({ ...taskMilestone, "tasks": [] });
       }
-      let mileInd=milestones.findIndex((m)=>m.id === task.milestoneId)
+      let mileInd = milestones.findIndex((m) => m.id === task.milestoneId)
       milestones[mileInd].tasks.push(task)
     });
     delete base.tasks
-    base.milestones=milestones
+    base.milestones = milestones
   });
 
   return projectBaseline;
@@ -240,14 +248,14 @@ const projectSchedule = async (projectId) => {
     const milestones = [];
     base.tasks.forEach((task) => {
       if (!milestones.some((m) => m.id === task.milestoneId)) {
-        let taskMilestone=task.milestone
-        milestones.push({...taskMilestone, "tasks":[]});
+        let taskMilestone = task.milestone
+        milestones.push({ ...taskMilestone, "tasks": [] });
       }
-      let mileInd=milestones.findIndex((m)=>m.id === task.milestoneId)
+      let mileInd = milestones.findIndex((m) => m.id === task.milestoneId)
       milestones[mileInd].tasks.push(task)
     });
     delete base.tasks
-    base.milestones=milestones
+    base.milestones = milestones
   });
 
   return baselineData;
@@ -272,14 +280,14 @@ const activeProjectSchedule = async (projectId) => {
     const milestones = [];
     base.tasks.forEach((task) => {
       if (!milestones.some((m) => m.id === task.milestoneId)) {
-        let taskMilestone=task.milestone
-        milestones.push({...taskMilestone, "tasks":[]});
+        let taskMilestone = task.milestone
+        milestones.push({ ...taskMilestone, "tasks": [] });
       }
-      let mileInd=milestones.findIndex((m)=>m.id === task.milestoneId)
+      let mileInd = milestones.findIndex((m) => m.id === task.milestoneId)
       milestones[mileInd].tasks.push(task)
     });
     delete base.tasks
-    base.milestones=milestones
+    base.milestones = milestones
   });
 
   return baselineData;
@@ -356,22 +364,22 @@ const getBaseline = async (baselineId) => {
     .andWhere('baselines.id = :baselineId', { baselineId: baselineId })
     .getMany();
 
-    const allMilestones=await milestoneService.getByProject(baselineData[0].projectId)
+  const allMilestones = await milestoneService.getByProject(baselineData[0].projectId)
 
 
 
   baselineData.forEach((base) => {
-    const milestones = allMilestones.map((e)=>{return {...e, "tasks":[]}});
+    const milestones = allMilestones.map((e) => { return { ...e, "tasks": [] } });
     base.tasks.forEach((task) => {
       if (!milestones.some((m) => m.id === task.milestoneId)) {
-        let taskMilestone=task.milestone
-        milestones.push({...taskMilestone, "tasks":[]});
+        let taskMilestone = task.milestone
+        milestones.push({ ...taskMilestone, "tasks": [] });
       }
-      let mileInd=milestones.findIndex((m)=>m.id === task.milestoneId)
+      let mileInd = milestones.findIndex((m) => m.id === task.milestoneId)
       milestones[mileInd].tasks.push(task)
     });
     delete base.tasks
-    base.milestones=milestones
+    base.milestones = milestones
     delete base.projectId
     delete base.project
   });
@@ -395,13 +403,13 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
   if (baselineBody) {
     await baselineRepository.update({ id: baselineId }, { name: baselineBody.name });
   }
-console.log(baselineBody)
+  console.log(baselineBody)
   if (tasksBody) {
     for (const taskBody of tasksBody) {
       const requestedTask = taskBody;
       if (requestedTask.id) {
         const subTasks = taskBody.subtasks || [];
-     
+
 
         await taskRepository.update(
           { id: requestedTask.id },
@@ -415,6 +423,7 @@ console.log(baselineBody)
             actualFinish: requestedTask.actualFinish,
             completion: requestedTask.completion,
             subTasks: requestedTask.subTasks,
+            predecessor: requestedTask.predecessor
           }
         );
 
@@ -434,6 +443,7 @@ console.log(baselineBody)
               completion: subTask.completion,
               status: subTask.status,
               sleepingReason: subTask.sleepingReason,
+              predecessor: subTask.predecessor
             });
           } else {
             subTasksToCreate.push({
@@ -446,6 +456,8 @@ console.log(baselineBody)
               completion: subTask.completion,
               status: subTask.status,
               sleepingReason: subTask.sleepingReason,
+              predecessor: subTask.predecessor
+
             });
           }
         }
@@ -470,13 +482,14 @@ console.log(baselineBody)
           actualFinish: requestedTask.actualFinish,
           completion: requestedTask.completion,
           subTasks: requestedTask.subTasks,
-          milestoneId:requestedTask.milestoneId
+          milestoneId: requestedTask.milestoneId,
+          predecessor: requestedTask.predecessor
         });
         const savedTask = await taskRepository.save(createTask);
 
         // Create and save subtasks
         if (subTasks.length > 0) {
-          const subTaskInstances = subTasks.map( (eachSubTask) => ({
+          const subTaskInstances = subTasks.map((eachSubTask) => ({
             taskId: savedTask.id, // Use the taskId of the newly created task
             name: eachSubTask.name,
             plannedStart: eachSubTask.plannedStart,
@@ -486,6 +499,7 @@ console.log(baselineBody)
             completion: eachSubTask.completion,
             status: eachSubTask.status,
             sleepingReason: eachSubTask.sleepingReason,
+            predecessor: eachSubTask.predecessor
           }));
           await subTaskRepository.save(subTaskInstances);
         }
