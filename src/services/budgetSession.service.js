@@ -39,6 +39,11 @@ const createBudgetSession = async (budgetSessionBody) => {
     return await budgetSessionRepository.save(budgetSession);
 };
 
+const activeBudgetSession = async (b) => {
+  const lastSession = await budgetSessionRepository.findOneBy({ isActive: true });
+  return lastSession;
+}
+
 /**
  * Update budget by id
  * @param {ObjectId} budgetId
@@ -54,6 +59,7 @@ module.exports = {
     getSessionBudget,
     createBudgetSession,
     updateSessionBudget,
-    getAllSessionBudget
+  getAllSessionBudget,
+  activeBudgetSession
 }
 

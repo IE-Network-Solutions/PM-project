@@ -168,7 +168,10 @@ const getCurrentApprover = async (moduleName, moduleId) => {
     if (!moduleData) {
       throw new ApiError(httpStatus.NOT_FOUND, 'approval moduleData(baseline) does not exist');
     }
+
     if (moduleData.approvalStage.project_role) {
+      console.log("testtttt")
+
       let project = await moduleData.project;
       let projectId = project.id;
       let roleId = moduleData.approvalStage.role.id

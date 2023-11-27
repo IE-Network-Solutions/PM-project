@@ -22,6 +22,7 @@ const getBaselines = catchAsync(async (req, res) => {
 
 const getBaseline = catchAsync(async (req, res) => {
   const baseline = await baselineService.getBaseline(req.params.baselineId);
+  console.log("testttttt selam")
   if (!baseline) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Baseline not found');
   }
