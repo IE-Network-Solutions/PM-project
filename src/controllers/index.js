@@ -30,3 +30,4 @@ module.exports.approvalController = require('./approval.controller');
 module.exports.departmentController = require('./department.controller');
 module.exports.resourceHistoryController =require('./resourceHistory.controller')
 module.exports.clientController= require('./client.controller')
+module.exports.BudgetSessionController= require('./budgetSession.controller')
