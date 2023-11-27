@@ -14,6 +14,8 @@ module.exports.taskController = require('./task.controller');
 module.exports.subTaskController = require('./subtask.controller');
 module.exports.momController = require('./mom.controller');
 module.exports.userController = require('./user.controller');
+module.exports.roleController = require('./role.controller');
+
 module.exports.weeklyReportController = require('./weeklyReport.controller');
 
 module.exports.lessonLearnedController = require('./lessonLearned.controller');

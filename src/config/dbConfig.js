@@ -9,7 +9,7 @@ module.exports = {
   username: configs.postgres.userName,
   password: configs.postgres.pswd,
   database: configs.postgres.database,
-  // ssl:{rejectUnautorized:false},
+  ssl: { rejectUnauthorized: false },
   entities: [__dirname + '/../models/*.js'],
   // entities: [Post,Project,Task,SubTask,Milestone,minuteOfMeeting,agenda,agendaTopic,momAction,momAttendees, Risk, Issue, AfterActionAnalysis, RelatedIssue, Action, AfterActionAnalysisIssueRelated],
   // entities: [Post,Project,Task,SubTask,Milestone,minuteOfMeeting,agenda,agendaTopic,momAction,momAttendees],
