@@ -5,6 +5,7 @@ class ApprovalStage extends Base {
   constructor() {
     super();
     this.level = { type: 'int' };
+    this.project_role = { type: 'boolean',default:false };
   }
 }
 

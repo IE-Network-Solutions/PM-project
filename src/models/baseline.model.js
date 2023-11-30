@@ -7,6 +7,8 @@ class Baseline extends Base {
     this.name = { type: 'varchar' };
     this.status = { type: 'boolean', default: true };
     this.projectId = { type: 'uuid' };
+    this.approved = { type: 'boolean',default:false };
+    this.rejected = { type: 'boolean',default:false };
   } 
 }
 
@@ -31,6 +33,10 @@ module.exports = new EntitySchema({
       type: 'one-to-many',
       target: 'BaselineComment',
       inverseSide: 'baseline',
+    },
+    approvalStage: {
+      type: 'many-to-one',
+      target: 'ApprovalStage',
     },
   },
 });

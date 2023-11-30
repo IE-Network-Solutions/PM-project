@@ -24,3 +24,5 @@ module.exports.budgetTypeValidation = require('./budgetType.validation');
 module.exports.budgetValidation = require('./budget.validation');
 module.exports.departmentValidation = require('./department.validation');
 module.exports.resourceHistoryValidation =require('./resourceHistory.validation')
+module.exports.budgetSessionValidation =require('./BudgetSession.validation')
+module.exports.monthlyBudgetValidation =require('./monthlyBudget.validation')

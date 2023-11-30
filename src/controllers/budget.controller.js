@@ -9,6 +9,7 @@ const {
   budgetTaskCategoryService,
   projectService,
   currencyService,
+  budgetSessionService,
 } = require('../services');
 
 async function calculate(budget) {
@@ -125,7 +126,9 @@ const getAllBudgetsOfProjects = catchAsync(async (req, res) => {
 });
 
 const getBudgetGroupByCategory = catchAsync(async (req, res) => {
-  const data = await budgetService.getBudgetGroupByCategory();
+  const letestBudgetSession = await budgetSessionService.activeBudgetSession();
+  console.log(letestBudgetSession,"cccc")
+  const data = await budgetService.getBudgetGroupByCategory(letestBudgetSession.startDate,letestBudgetSession.endDate);
   res.send(data);
 });
 const getMonthlyBudget = catchAsync(async (req, res) => {

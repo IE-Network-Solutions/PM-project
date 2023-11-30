@@ -30,4 +30,7 @@ module.exports.departmentService = require('./department.service');
 module.exports.currencyService = require('./currency.service');
 module.exports.resourceHistory =require('./resourceHistory.service');
 module.exports.clientService= require('./client.service')
+module.exports.budgetSessionService= require('./budgetSession.service')
+module.exports.monthlyBudgetService= require('./montlyBudget.service')
+module.exports.monthlyBudgetCommentService= require('./monthlyBudgetComment.service')
 
