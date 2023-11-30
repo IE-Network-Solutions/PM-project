@@ -148,7 +148,8 @@ const getBudgetGroupByCategory = async (from, to) => {
     .groupBy('currency.id') // Group by the currency ID
     .addGroupBy('taskCategory.id')
     .addGroupBy('project.id')
-    .addGroupBy('group.id')
+    .addGroupBy('group.to')
+    .addGroupBy('group.from')
     .getRawMany();
   return budgets;
 };

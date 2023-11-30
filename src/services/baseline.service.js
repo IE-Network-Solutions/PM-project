@@ -347,6 +347,7 @@ const getBaseline = async (baselineId) => {
   const baselineData = await baselineRepository
     .createQueryBuilder('baselines')
     .leftJoinAndSelect('baselines.approvalStage',"approvalStage")
+    .leftJoinAndSelect('baselines.baselineComment',"baselineComment")
     .leftJoinAndSelect('approvalStage.role',"role")
     .leftJoinAndSelect('baselines.project', 'project')
     .leftJoinAndSelect('baselines.tasks', 'task')

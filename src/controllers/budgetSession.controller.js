@@ -14,6 +14,13 @@ const getBudgetSession = catchAsync(async (req, res) => {
     res.status(httpStatus.CREATED).send(budgetSession);
 
 })
+const getActiveBudgetSession = catchAsync(async (req, res) => {
+    const data = []
+    const budgetSession = await budgetSessionService.activeBudgetSession();
+    data.push(budgetSession);
+    res.status(httpStatus.CREATED).send(data);
+
+})
 
 const createBudgetSession = catchAsync(async (req,res) => {
     const data = req.body;
@@ -33,5 +40,6 @@ module.exports = {
     createBudgetSession,
     getAllBudgetSessions,
     getBudgetSession,
-    updateBudgetSession
+    updateBudgetSession,
+    getActiveBudgetSession
 }

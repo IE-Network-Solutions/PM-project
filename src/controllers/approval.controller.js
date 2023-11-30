@@ -19,7 +19,8 @@ const approve = catchAsync(async (req, res) => {
 });
 const reject = catchAsync(async (req, res) => {
   const budgetComment = req.body.comment;
-  const updatedData = await approvalService.reject(req.body.moduleName, req.body.moduleId, budgetComment);
+  console.log(budgetComment,"budget coment")
+  const updatedData = await approvalService.reject(req.body.moduleName, req.body.moduleId, budgetComment,req.body.userId);
   res.send(updatedData);
 });
 

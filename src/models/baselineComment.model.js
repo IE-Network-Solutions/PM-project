@@ -7,7 +7,7 @@ class BaselineComment extends Base {
     super(); 
     this.comment = { type: 'varchar' };
     this.baselineId = { type: 'uuid'};
-    this.userId = { type: 'uuid'};
+    this.userId = { type: 'uuid', default: null};
   }
 }
 

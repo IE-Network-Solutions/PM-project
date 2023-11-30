@@ -1,12 +1,29 @@
 const Joi = require('joi');
+const { objectId } = require('./custom.validation');
 
-const budgetSchema = Joi.object({
-  amount: Joi.number().required(),
-  description: Joi.string().required(),
-  taskId: Joi.string().guid().required(),
-  budgetCategoryId: Joi.string().guid().required(),
-  taskCategoryId: Joi.string().guid().required(),
-  currencyId: Joi.string().required(),
-});
+const addBudgetSession = {
+  body: Joi.object().keys({
+    startDate: Joi.date().required(),
+    endDate: Joi.date().required(),
+  }),
+};
 
-module.exports = { createBudget, getBudgets, getBudget, updateBudget, getBudgetByProject, addBudget, filterBudgets };
+const getBudgetSession = {
+  params: Joi.object().keys({
+    id: Joi.string(),
+  }),
+};
+
+const updateBudget = {
+  params: Joi.object().keys({
+    id: Joi.string().guid(),
+  }),
+  body: Joi.object()
+    .keys({
+      from: Joi.date(),
+      to: Joi.date(),
+    })
+    .min(1),
+};
+
+module.exports = { addBudgetSession,getBudgetSession,updateBudget };

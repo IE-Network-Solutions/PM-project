@@ -9,26 +9,25 @@ const findAll = require('./Plugins/findAll');
 const budgetSessionRepository = dataSource.getRepository(budgetSession).extend({ findAll, sortBy });
 
 /**
- * Get budget by id
- * @param {ObjectId} id
+ * Get all budget session by
  * @returns {Promise<Project>}
  */
-const getAllSessionBudget = async (id) => {
+const getAllSessionBudget = async () => {
     return await budgetSessionRepository.find();
-  };
+};
 
 /**
- * Get budget by id
+ * Get budget session by id
  * @param {ObjectId} id
  * @returns {Promise<Project>}
  */
 const getSessionBudget = async (id) => {
     return await budgetSessionRepository.findOneBy({ id: id });
-  };
+};
 
 /**
- * Create a risk
- * @param {Object} userBody
+ * Create a budget session
+ * @param {Object} budgetSessionbody
  * @returns {Promise<budgetSession>}
  */
 const createBudgetSession = async (budgetSessionBody) => {
@@ -39,13 +38,18 @@ const createBudgetSession = async (budgetSessionBody) => {
     return await budgetSessionRepository.save(budgetSession);
 };
 
-const activeBudgetSession = async (b) => {
+/**
+ * get active budget session
+ * @param {Object} budgetSessionbody
+ * @returns {Promise<budgetSession>}
+ */
+const activeBudgetSession = async () => {
   const lastSession = await budgetSessionRepository.findOneBy({ isActive: true });
   return lastSession;
 }
 
 /**
- * Update budget by id
+ * Update budget session by
  * @param {ObjectId} budgetId
  * @param {Object} updateBody
  * @returns {Promise<Project>}
@@ -53,7 +57,7 @@ const activeBudgetSession = async (b) => {
 const updateSessionBudget = async (budgetSessionId, updateBody) => {
     const budget = await budgetSessionRepository.update({ id: budgetSessionId }, updateBody);
     return await getSessionBudget(budgetSessionId);
-  };
+};
 
 module.exports = {
     getSessionBudget,

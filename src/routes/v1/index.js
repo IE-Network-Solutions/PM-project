@@ -34,6 +34,7 @@ const resourceHistory =require('./resourceHistory.route');
 const clientRoute= require('./client.route')
 const budgetSessionRoute= require('./budgetSession.route')
 const roleRoute = require('./role.route');
+const monthlyBudget = require('./monthlyBudget.route');
 
 const router = express.Router();
 
@@ -168,6 +169,10 @@ const defaultRoutes = [
    { path: '/roles',
     route: roleRoute,
   },
+  {
+    path: '/monthlyBudget',
+    route: monthlyBudget
+   }
 ];
 
 const devRoutes = [
