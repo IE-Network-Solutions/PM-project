@@ -5,11 +5,13 @@ const catchAsync = require('../utils/catchAsync');
 const { baselineService } = require('../services');
 
 const createBaseline = catchAsync(async (req, res) => {
+  console.log("savedtasknhnh")
   const milestones = req.body.milestones;
   // const subTasks = req.body.subTasks;
   delete req.body.milestones;
   // delete req.body.subTasks;
   const baseline = await baselineService.createBaseline(req.body, milestones);
+
   res.status(httpStatus.CREATED).json(baseline);
 });
 
@@ -60,7 +62,7 @@ const masterSchedule = catchAsync(async (req, res) => {
 });
 
 const masterScheduleByDateFilter = catchAsync(async (req, res) => {
-  const masterSchedule = await baselineService.masterScheduleByDateFilter(req.query.startDate,req.query.finsihDate);
+  const masterSchedule = await baselineService.masterScheduleByDateFilter(req.query.startDate, req.query.finsihDate);
   res.send(masterSchedule);
 });
 
@@ -71,7 +73,7 @@ const projectSchedule = catchAsync(async (req, res) => {
   res.send(projectSchedule);
 });
 
-const activeProjectSchedule=catchAsync(async (req, res) => {
+const activeProjectSchedule = catchAsync(async (req, res) => {
   const projectId = req.params.projectId;
   const projectSchedule = await baselineService.activeProjectSchedule(projectId);
   res.send(projectSchedule);
