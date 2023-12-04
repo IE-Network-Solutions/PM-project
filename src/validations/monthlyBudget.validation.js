@@ -5,8 +5,8 @@ const monthlyBudgetSchema =  Joi.object({
         taskCategory_id: Joi.string().required(),
         taskCategory_createdAt: Joi.date().required(),
         taskCategory_updatedAt: Joi.date().required(),
-        taskCategory_createdBy: Joi.string(),
-        taskCategory_updatedBy: Joi.string(),
+        taskCategory_createdBy: Joi.string().allow(null),
+        taskCategory_updatedBy: Joi.string().allow(null),
         taskCategory_budgetTaskCategoryName: Joi.string().required(),
         taskCategory_accountNumber: Joi.string().required(),
         taskCategory_budgetTypeId: Joi.string().required(),
@@ -17,6 +17,8 @@ const monthlyBudgetSchema =  Joi.object({
         currency_id: Joi.string().required(),
         currency_name: Joi.string().required(),
         sum: Joi.number().required(),
+        from: Joi.date().required(),
+        to: Joi.date().required(),
       });
 
 const addMonthlyBudget = {

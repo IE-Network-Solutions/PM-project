@@ -127,7 +127,7 @@ const getAllBudgetsOfProjects = catchAsync(async (req, res) => {
 
 const getBudgetGroupByCategory = catchAsync(async (req, res) => {
   const letestBudgetSession = await budgetSessionService.activeBudgetSession();
-  console.log(letestBudgetSession,"cccc")
+  console.log(letestBudgetSession,"selammmmmmmmmmmmm")
   const data = await budgetService.getBudgetGroupByCategory(letestBudgetSession.startDate,letestBudgetSession.endDate);
   res.send(data);
 });

@@ -268,8 +268,9 @@ const approve = async (moduleName, moduleId) => {
       // approve
       await approvalGroupRepository.update({ id: moduleId }, { approved: true });
       updatedModule = await approvalGroupRepository.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
+      console.log("selammmmm",updatedModule)
 // Rabit Mq Producer
-      let approvedByGroup=await services.budgetService.getBudgetGroupByCategory(moduleId)
+      let approvedByGroup=await services.budgetService.getBudgetGroupByCategory(approvalGroupRepository.from,approvalGroupRepository.to)
       publishToRabbit('project.budget',approvedByGroup)
       console.log(approvedByGroup)
     } else {

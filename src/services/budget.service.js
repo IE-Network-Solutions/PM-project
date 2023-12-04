@@ -135,22 +135,24 @@ const getBudgetGroupByCategory = async (from, to) => {
     .leftJoinAndSelect('budget.group', 'group')
     .leftJoinAndSelect('group.project', 'project')
     .leftJoinAndSelect('budget.currency', 'currency') // Add this line to join the currency relation
+    .where('group.from = :from', { from: from })
+    .andWhere('group.to = :to', { to: to })
     .select('SUM(budget.amount)', 'sum')
     .addSelect('currency.id', 'currency_id') // Select the currency ID
     .addSelect('currency.name', 'currency_name') // Select the currency name
     .addSelect('taskCategory', 'taskCategory')
-    .addSelect('group.from', 'group_to')
-    .addSelect('group.to', 'group_from')
+    .addSelect('group.from', 'group_from')
+    .addSelect('group.to', 'group_to')
     .addSelect('project.id', 'project_id')
     .addSelect('project.name', 'project_name')
-    .where('group.from = :from', { from: from })
-    .andWhere('group.to = :to', { to: to })
     .groupBy('currency.id') // Group by the currency ID
     .addGroupBy('taskCategory.id')
     .addGroupBy('project.id')
     .addGroupBy('group.to')
     .addGroupBy('group.from')
     .getRawMany();
+  
+  budgets.map((budget) => { budget.from = from,budget.to = to})
   return budgets;
 };
 
