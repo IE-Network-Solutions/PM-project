@@ -76,4 +76,4 @@ const deleteBudget = {
   }),
 };
 
-module.exports = { createBudget, getBudgets, getBudget, updateBudget, getBudgetByProject, addBudget, filterBudgets };
+module.exports = { createBudget, getBudgets, getBudget, updateBudget, getBudgetByProject, addBudget, filterBudgets,deleteBudget };

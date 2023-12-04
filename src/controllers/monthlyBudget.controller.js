@@ -33,6 +33,7 @@ const getMonthlyBudgetByMonth = catchAsync(async (req, res) => {
     let month = {}
     month.from = req.body.from
     month.to = req.body.to
+    console.log(month,"testtt")
     const monthlyBudgetData = await monthlyBudgetService.getMonthlyBudgetByMonthGroup(month);
     if (!monthlyBudgetData) {
         throw new ApiError(httpStatus.NOT_FOUND, 'no monthly budget exist');

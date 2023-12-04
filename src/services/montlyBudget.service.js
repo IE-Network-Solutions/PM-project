@@ -34,7 +34,7 @@ const getMonthlyBudgets = async () => {
     return await montlyBudgetRepository.find({
       relations: ['approvalStage'],
     });
-  };
+};
 
 /**
  * Create a montly budget

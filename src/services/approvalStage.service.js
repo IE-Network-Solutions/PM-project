@@ -25,6 +25,59 @@ const createApprovalStage = async (ApprovalStages) => {
   return approvalStages;
 };
 
+
+const approvalStageSeeder = async () => {
+  const approvalStages = [
+    {
+      "moduleName": "ProjectBudget",
+      "approvalStage": [
+          {
+              "level": 1,
+              "roleId": "4eafb2fd-e9e4-40d0-8c87-a2a2b9c48c5f",
+              "project_role": 0
+          },
+      ]
+    },
+    {
+      "moduleName": "MonthlyBudget",
+      "approvalStage": [
+          {
+              "level": 1,
+              "roleId": "0e324e94-6f2c-415c-9a46-a359a96fea7f",
+              "project_role": 0
+          },
+          {
+              "level": 2,
+              "roleId": "66d7bce9-c323-4fdc-906e-77f9c4b2edd0",
+              "project_role": 0
+          }
+      ]
+    },
+    {
+      "moduleName": "ProjectSchedule",
+      "approvalStage": [
+          {
+              "level": 1,
+              "roleId": "5dbeddaf-3490-4151-9e80-303c70f18a10",
+              "project_role": 1
+          },
+          {
+              "level": 2,
+              "roleId": "4eafb2fd-e9e4-40d0-8c87-a2a2b9c48c5f",
+              "project_role": 0
+          },
+          {
+              "level": 2,
+              "roleId": "962fbf27-01c7-4b77-80f7-aa2f39936c8d",
+              "project_role": 0
+          }
+      ]
+    }
+  ]
+
+  return approvalStages;
+}
+
 /**
  * Query for budget
  * @param {Object} filter - Filter options
@@ -76,4 +129,5 @@ module.exports = {
   createApprovalStage,
   getApprovalStages,
   getApprovalStage,
+  approvalStageSeeder
 };

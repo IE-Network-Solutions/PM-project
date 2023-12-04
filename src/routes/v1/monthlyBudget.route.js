@@ -1,6 +1,6 @@
 const express = require('express');
 const validate = require('../../middlewares/validate');
-const { budgetValidation } = require('../../validations');
+const { budgetValidation,monthlyBudgetValidation } = require('../../validations');
 const { budgetController, monthlyBudgetController } = require('../../controllers');
 const { route } = require('./risk.route');
 
@@ -8,12 +8,11 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(monthlyBudgetController.createMonthlyBudget)
+  .post(validate(monthlyBudgetValidation.addMonthlyBudget),monthlyBudgetController.createMonthlyBudget)
     .get(monthlyBudgetController.getMonthlyBudget);
 
-router.route('/month').get(monthlyBudgetController.getMonthlyBudgetByMonth);
-
+router.route('/month').get(validate(monthlyBudgetValidation.getMonthlyBudget),monthlyBudgetController.getMonthlyBudgetByMonth);
   
-router.route('/:id').patch(monthlyBudgetController.updateMonthlyBudget);
+router.route('/:id').patch(validate(monthlyBudgetValidation.updateMonthlyBudget),monthlyBudgetController.updateMonthlyBudget);
 
 module.exports = router

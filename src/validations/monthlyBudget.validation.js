@@ -38,8 +38,9 @@ const updateMonthlyBudget = {
 };
 
 const getMonthlyBudget = {
-  params: Joi.object().keys({
-    id: Joi.string(),
+  body: Joi.object().keys({
+    from: Joi.date().required(),
+    to: Joi.date().required(),
   }),
 };
 
