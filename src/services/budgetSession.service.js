@@ -13,7 +13,7 @@ const budgetSessionRepository = dataSource.getRepository(budgetSession).extend({
  * @returns {Promise<Project>}
  */
 const getAllSessionBudget = async () => {
-    return await budgetSessionRepository.find();
+  return await budgetSessionRepository.find();
 };
 
 /**
@@ -22,7 +22,7 @@ const getAllSessionBudget = async () => {
  * @returns {Promise<Project>}
  */
 const getSessionBudget = async (id) => {
-    return await budgetSessionRepository.findOneBy({ id: id });
+  return await budgetSessionRepository.findOneBy({ id: id });
 };
 
 /**
@@ -31,11 +31,14 @@ const getSessionBudget = async (id) => {
  * @returns {Promise<budgetSession>}
  */
 const createBudgetSession = async (budgetSessionBody) => {
-    const lastSession = await budgetSessionRepository.findOneBy({ isActive: true });
+  const lastSession = await budgetSessionRepository.findOneBy({ isActive: true });
+  if (lastSession !== null) {
     lastSession.isActive = false;
     await updateSessionBudget(lastSession.id, lastSession);
-    const budgetSession = budgetSessionRepository.create(budgetSessionBody);
-    return await budgetSessionRepository.save(budgetSession);
+  }
+
+  const budgetSession = budgetSessionRepository.create(budgetSessionBody);
+  return await budgetSessionRepository.save(budgetSession);
 };
 
 /**
@@ -46,7 +49,7 @@ const createBudgetSession = async (budgetSessionBody) => {
 const activeBudgetSession = async () => {
   const lastSession = await budgetSessionRepository.findOneBy({ isActive: true });
   return lastSession;
-}
+};
 
 /**
  * Update budget session by
@@ -55,15 +58,14 @@ const activeBudgetSession = async () => {
  * @returns {Promise<Project>}
  */
 const updateSessionBudget = async (budgetSessionId, updateBody) => {
-    const budget = await budgetSessionRepository.update({ id: budgetSessionId }, updateBody);
-    return await getSessionBudget(budgetSessionId);
+  const budget = await budgetSessionRepository.update({ id: budgetSessionId }, updateBody);
+  return await getSessionBudget(budgetSessionId);
 };
 
 module.exports = {
-    getSessionBudget,
-    createBudgetSession,
-    updateSessionBudget,
+  getSessionBudget,
+  createBudgetSession,
+  updateSessionBudget,
   getAllSessionBudget,
-  activeBudgetSession
-}
-
+  activeBudgetSession,
+};

@@ -6,6 +6,7 @@ const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 const publishToRabbit = require('../utils/producer');
 const { allActiveBaselineTasks } = require('./weeklyReport.service');
+const { getClients } = require('./client.service');
 
 const projectRepository = dataSource.getRepository(Project).extend({
   findAll,
@@ -28,7 +29,7 @@ const projectContractValueRepository = dataSource.getRepository(ProjectContractV
 // project.service.js
 const createProject = async (projectBody, projectMembers, projectContractValue) => {
   const project = projectRepository.create(projectBody);
-  
+
   // Save the project instance
   await projectRepository.save(project);
 
@@ -110,13 +111,18 @@ const getProject = async (id) => {
  */
 const updateProject = async (projectId, updateBody) => {
   const project = await getProject(projectId);
+
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
+  console.log(project, "ggg")
   await projectRepository.update({ id: projectId }, updateBody);
   const updatedProject = await getProject(projectId);
   updatedProject.members = await getMembers(updatedProject.id);
+
   publishToRabbit('project.update', updatedProject);
+
+  console.log(updatedProject, "sl up")
   return updatedProject;
 };
 
@@ -131,8 +137,8 @@ const deleteProject = async (projectId) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
   // return await projectRepository.delete({ id: projectId });
-   await projectRepository.delete({ id: projectId });
-   return "Project Deleted"
+  await projectRepository.delete({ id: projectId });
+  return "Project Deleted"
 };
 
 /**
