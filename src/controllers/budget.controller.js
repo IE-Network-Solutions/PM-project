@@ -127,8 +127,8 @@ const getAllBudgetsOfProjects = catchAsync(async (req, res) => {
 
 const getBudgetGroupByCategory = catchAsync(async (req, res) => {
   const letestBudgetSession = await budgetSessionService.activeBudgetSession();
-  console.log(letestBudgetSession,"cccc")
-  const data = await budgetService.getBudgetGroupByCategory(letestBudgetSession.startDate,letestBudgetSession.endDate);
+  
+  const data = await budgetService.getBudgetGroupByCategory(letestBudgetSession?.startDate, letestBudgetSession?.endDate);
   res.send(data);
 });
 const getMonthlyBudget = catchAsync(async (req, res) => {
@@ -141,8 +141,6 @@ const getMonthlyBudgetsOfProjects = catchAsync(async (req, res) => {
   const data = await budgetService.getMonthlyBudgetsOfProjects();
   res.send(data);
 });
-
-
 
 // get all budget groups
 const budgetGroups = catchAsync(async (req, res) => {
