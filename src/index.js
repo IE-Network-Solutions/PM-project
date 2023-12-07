@@ -1,8 +1,7 @@
-
 const app = require('./app');
-const rabbitConsumer=require('./utils/consumer')
+const rabbitConsumer = require('./utils/consumer');
 
-const AppDataSource = require('./utils/createDatabaseConnection')
+const AppDataSource = require('./utils/createDatabaseConnection');
 const config = require('./config/config');
 const logger = require('./config/logger');
 
@@ -12,16 +11,16 @@ rabbitConsumer(['user.*']).catch((error) => {
   console.error('Error consuming messages:', error);
 });
 
-AppDataSource.initialize().then(() => {
-  logger.info('Connected to Postgres through Typeorm');
-  server = app.listen(config.port, () => {
-    logger.info(`Listening to port http://localhost:${config.port}`);
+AppDataSource.initialize()
+  .then(() => {
+    logger.info('Connected to Postgres through Typeorm');
+    server = app.listen(config.port, () => {
+      logger.info(`Listening to port http://localhost:${config.port}`);
+    });
+  })
+  .catch((e) => {
+    logger.error(`Exception Error ${e}`);
   });
-}).catch((e) => {
-  logger.error(`Exception Error ${e}`)
-})
-
-
 
 const exitHandler = () => {
   if (server) {

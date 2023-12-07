@@ -26,7 +26,7 @@ const getBaselines = {
 
 const getBaseline = {
   params: Joi.object().keys({
-    baselineId: Joi.string()
+    baselineId: Joi.string(),
   }),
 };
 
@@ -43,7 +43,7 @@ const projectSchedule = {
 
 const updateBaseline = {
   params: Joi.object().keys({
-    baselineId: Joi.string()
+    baselineId: Joi.string(),
   }),
   body: Joi.object()
     .keys({
@@ -61,25 +61,25 @@ const updateBaseline = {
     .min(1),
 };
 
-const deleteBaseline= {
-    params: Joi.object().keys({
-      baselineId: Joi.string(),
-    }),
-  };
+const deleteBaseline = {
+  params: Joi.object().keys({
+    baselineId: Joi.string(),
+  }),
+};
 
-  const addComment = {
-    body: Joi.object().keys({
-      id: Joi.string().required(),
-      comment: Joi.string().required(),
-      userId: Joi.string().required(),
-    }),
-  };
+const addComment = {
+  body: Joi.object().keys({
+    id: Joi.string().required(),
+    comment: Joi.string().required(),
+    userId: Joi.string().required(),
+  }),
+};
 
-  const getComments = {
-    params: Joi.object().keys({
-        baselineId: Joi.string().required(),
-    }),
-  };
+const getComments = {
+  params: Joi.object().keys({
+    baselineId: Joi.string().required(),
+  }),
+};
 
 module.exports = {
   createBaseline,
@@ -90,5 +90,5 @@ module.exports = {
   deleteBaseline,
   addComment,
   getComments,
-  projectSchedule
+  projectSchedule,
 };

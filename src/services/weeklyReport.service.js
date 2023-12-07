@@ -62,7 +62,6 @@ const allActiveBaselineTasks = async (projectId) => {
 
   for (const eachMilestone of getMilestoneByProject) {
     const activeBaselines = await baselineRepository.findBy({
-      milestoneId: eachMilestone.id,
       status: true
     });
 

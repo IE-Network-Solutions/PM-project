@@ -11,7 +11,7 @@ router
   .post(validate(monthlyBudgetValidation.addMonthlyBudget),monthlyBudgetController.createMonthlyBudget)
     .get(monthlyBudgetController.getMonthlyBudget);
 
-router.route('/month').get(monthlyBudgetController.getMonthlyBudgetByMonth);
+router.route('/month').get(validate(monthlyBudgetValidation.getMonthlyBudget),monthlyBudgetController.getMonthlyBudgetByMonth);
   
 router.route('/:id').patch(validate(monthlyBudgetValidation.updateMonthlyBudget),monthlyBudgetController.updateMonthlyBudget);
 

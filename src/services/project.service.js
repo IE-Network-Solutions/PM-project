@@ -115,14 +115,14 @@ const updateProject = async (projectId, updateBody) => {
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
-  console.log(project, "ggg")
+  console.log(project, 'ggg');
   await projectRepository.update({ id: projectId }, updateBody);
   const updatedProject = await getProject(projectId);
   updatedProject.members = await getMembers(updatedProject.id);
 
   publishToRabbit('project.update', updatedProject);
 
-  console.log(updatedProject, "sl up")
+  console.log(updatedProject, 'sl up');
   return updatedProject;
 };
 
@@ -138,7 +138,7 @@ const deleteProject = async (projectId) => {
   }
   // return await projectRepository.delete({ id: projectId });
   await projectRepository.delete({ id: projectId });
-  return "Project Deleted"
+  return 'Project Deleted';
 };
 
 /**
@@ -153,32 +153,32 @@ const getAllProjectTasksVarianceByProject = async () => {
   });
   const allProjectTasks = [];
   let project;
-  for (project of projects) {
-    const tasks = await allActiveBaselineTasks(project.id);
-    project.tasks = tasks.tasksForVariance;
-    allProjectTasks.push(project);
-  }
-  allProjectTasks.map((task) => {
-    let startVariance = '';
-    let finishVariance = '';
+  // for (project of projects) {
+  //   const tasks = await allActiveBaselineTasks(project.id);
+  //   project.tasks = tasks.tasksForVariance;
+  //   allProjectTasks.push(project);
+  // }
+  // allProjectTasks.map((task) => {
+  //   let startVariance = '';
+  //   let finishVariance = '';
 
-    let firstTask = task?.tasks[0];
-    let lastTask = task?.tasks[task.tasks.length - 1];
+  //   let firstTask = task?.tasks[0];
+  //   let lastTask = task?.tasks[task.tasks.length - 1];
 
-    if (firstTask?.actualStart) {
-      startVariance = new Date(firstTask.plannedStart).getTime() - new Date(firstTask.actualStart).getTime();
-      startVariance = Math.ceil(startVariance / (1000 * 60 * 60 * 24));
-    }
+  //   if (firstTask?.actualStart) {
+  //     startVariance = new Date(firstTask.plannedStart).getTime() - new Date(firstTask.actualStart).getTime();
+  //     startVariance = Math.ceil(startVariance / (1000 * 60 * 60 * 24));
+  //   }
 
-    if (lastTask?.actualFinish) {
-      finishVariance = new Date(lastTask.plannedFinish).getTime() - new Date(lastTask.actualFinish).getTime();
-      finishVariance = Math.ceil(finishVariance / (1000 * 60 * 60 * 24));
-    }
+  //   if (lastTask?.actualFinish) {
+  //     finishVariance = new Date(lastTask.plannedFinish).getTime() - new Date(lastTask.actualFinish).getTime();
+  //     finishVariance = Math.ceil(finishVariance / (1000 * 60 * 60 * 24));
+  //   }
 
-    task.startVariance = startVariance;
-    task.finishVariance = finishVariance;
-    delete task.tasks;
-  });
+  //   task.startVariance = startVariance;
+  //   task.finishVariance = finishVariance;
+  //   delete task.tasks;
+  // });
 
   return { Projects: allProjectTasks };
 };

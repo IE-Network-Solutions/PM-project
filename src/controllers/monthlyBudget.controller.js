@@ -30,14 +30,15 @@ const updateMonthlyBudget = catchAsync(async (req, res) => {
 });
 
 const getMonthlyBudgetByMonth = catchAsync(async (req, res) => {
-    let month = {}
-    month.from = req.body.from
-    month.to = req.body.to
-    console.log(month,"testtt")
-    const monthlyBudgetData = await monthlyBudgetService.getMonthlyBudgetByMonthGroup(month);
-    if (!monthlyBudgetData) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'no monthly budget exist');
-    }
+  let month = {};
+  month.from = req.params.from;
+
+  month.to = req.params.to;
+  console.log(month, 'selammmmmmmmmm');
+  const monthlyBudgetData = await monthlyBudgetService.getMonthlyBudgetByMonthGroup(month);
+  if (!monthlyBudgetData) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'no monthly budget exist');
+  }
 
   res.status(200).json(monthlyBudgetData);
 });

@@ -4,8 +4,8 @@ const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
-const publishToRabbit = require('../utils/producer')
-const { getBudgetType } = require('./budgetType.service')
+const publishToRabbit = require('../utils/producer');
+const { getBudgetType } = require('./budgetType.service');
 
 const paymentTermRepository = dataSource.getRepository(paymentTerm).extend({
   findAll,
@@ -23,7 +23,6 @@ const projectContractValuesRepository = dataSource.getRepository(ProjectContract
  */
 
 const createPaymentTerm = async (paymentTermBody, milestone) => {
-
   const project = await projectRepository.findOne({
     where: {
       id: paymentTermBody.projectId,
@@ -37,13 +36,10 @@ const createPaymentTerm = async (paymentTermBody, milestone) => {
     },
   });
 
-
-
   let amount;
   if (paymentTermBody.percentage) {
     amount = (projectContractValues.amount * paymentTermBody.amount) / 100;
-  }
-  else {
+  } else {
     amount = paymentTermBody.amount;
   }
 
@@ -81,16 +77,11 @@ const createPaymentTerm = async (paymentTermBody, milestone) => {
 
   paymentTerm.milestone = milestone;
 
-  paymentTerm.bugetType = await getBudgetType(paymentTerm.budgetTypeId)
-  console.log(paymentTerm.bugetType)
-  publishToRabbit('project.paymentTerm', paymentTerm)
+  paymentTerm.bugetType = await getBudgetType(paymentTerm.budgetTypeId);
+  console.log(paymentTerm.bugetType);
+  publishToRabbit('project.paymentTerm', paymentTerm);
   return paymentTerm;
 };
-
-
-
-
-
 
 /**
  * Query for users
@@ -113,7 +104,6 @@ const getPaymentTerms = async (filter, options) => {
   });
 };
 
-
 /**
  * Get post by id
  * @param {ObjectId} id
@@ -123,13 +113,12 @@ const getPaymentTerm = async (id) => {
   return await paymentTermRepository.findOne({
     where: { id: id },
     relations: ['milestone'],
-  },
-  );
+  });
 };
 
 const getByProject = async (projectId) => {
   const paymentTerm = await paymentTermRepository.find({
-    where: { projectId: projectId, },
+    where: { projectId: projectId },
     relations: ['milestone'],
   });
   return paymentTerm;
@@ -142,20 +131,21 @@ const getByProject = async (projectId) => {
  * @returns {Promise<Project>}
  */
 const updatePaymentTerm = async (paymentTermId, updateBody, requestedMilestone) => {
-
-
   if (updateBody) {
     //  await paymentTermRepository.update({ id: paymentTermId }, updateBody);
-    await paymentTermRepository.update({ id: paymentTermId }, {
-      name: updateBody.name,
-      amount: updateBody.amount,
-      plannedCollectionDate: updateBody.plannedCollectionDate,
-      actualCollectionDate: updateBody.actualCollectionDate,
-      currencyId: updateBody.currencyId,
-      budgetTypeId: updateBody.budgetTypeId,
-      status: updateBody.status,
-      isAmountPercent: updateBody.percentage
-    });
+    await paymentTermRepository.update(
+      { id: paymentTermId },
+      {
+        name: updateBody.name,
+        amount: updateBody.amount,
+        plannedCollectionDate: updateBody.plannedCollectionDate,
+        actualCollectionDate: updateBody.actualCollectionDate,
+        currencyId: updateBody.currencyId,
+        budgetTypeId: updateBody.budgetTypeId,
+        status: updateBody.status,
+        isAmountPercent: updateBody.percentage,
+      }
+    );
   }
 
   const paymentTermMilestone = await miletoneRepository.findBy({ paymentTermId: paymentTermId });
@@ -189,9 +179,7 @@ const updatePaymentTerm = async (paymentTermId, updateBody, requestedMilestone) 
   return await paymentTermRepository.findOne({
     where: { id: paymentTermId },
     relations: ['milestone'],
-  },
-  );
-
+  });
 };
 
 /**
@@ -202,11 +190,7 @@ const updatePaymentTerm = async (paymentTermId, updateBody, requestedMilestone) 
 const deletePaymentTerm = async (paymentTermId) => {
   const paymentTerm = await getPaymentTerm(paymentTermId);
 
-
-  await miletoneRepository.update(
-    { paymentTermId: paymentTermId },
-    { paymentTermId: null }
-  );
+  await miletoneRepository.update({ paymentTermId: paymentTermId }, { paymentTermId: null });
 
   await paymentTermRepository.delete({ id: paymentTermId });
   return paymentTerm;
