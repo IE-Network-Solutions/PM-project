@@ -21,8 +21,8 @@ router
   .patch(validate(paymentTermValidation.updatePaymentTerm),paymentTermController.updatePaymentTerm)
   .delete(validate(paymentTermValidation.deletePaymentTerm),paymentTermController.deletePaymentTerm);
 
-  router
+router
   .route('/atp/:paymentTermId')
-  .patch(uploadOptions.single('atp-doc'),paymentTermController.updatePaymentTerm)
+  .patch(uploadOptions.single('atp-doc'), paymentTermController.updatePaymentTerm);
 
 module.exports = router;
