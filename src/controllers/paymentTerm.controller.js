@@ -2,8 +2,33 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
+const multer = require('multer');
+const path = require('path');
+const { validateFile } = require('../validations/upload.validation');
 const { paymentTermService } = require('../services');
 const { paymentTerm } = require('../models');
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './../public/uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname + '-' + Date.now + path.extname(file.originalname));
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  // Use the validateFile function from Joi to perform file validation
+  const isValid = validateFile(file);
+  if (isValid) {
+    // Accept the file
+    cb(null, true);
+  } else {
+    // Reject the file with an error message
+    cb(new Error('Invalid file'), false);
+  }
+};
+let upload = multer({ storage: storage , fileFilter: fileFilter});
 
 const createPaymentTerm = catchAsync(async (req, res) => {
   const PaymntTerms = await Promise.all(
@@ -41,6 +66,8 @@ const getByProject = catchAsync(async (req, res) => {
 });
 
 const updatePaymentTerm = catchAsync(async (req, res) => {
+  const uploadATP = upload(req.body.file);
+  req.body.path = uploadATP;
   const milestone = req.body.milestone;
   delete req.body.milestone;
   const paymentTerm = await paymentTermService.updatePaymentTerm(req.params.paymentTermId, req.body, milestone);
