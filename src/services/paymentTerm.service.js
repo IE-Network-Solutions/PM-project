@@ -144,7 +144,7 @@ const updatePaymentTerm = async (paymentTermId, updateBody, requestedMilestone) 
         budgetTypeId: updateBody.budgetTypeId,
         status: updateBody.status,
         isAmountPercent: updateBody.percentage,
-        atpDocment : updateBody.path,
+        atpDocument : updateBody.path,
       }
     );
   }

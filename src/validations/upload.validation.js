@@ -15,3 +15,7 @@ const validateFile = (file) => {
   const { error } = uploadFile.validate({ file });
   return error ? false : true;
 };
+
+module.exports = {
+  validateFile
+}
