@@ -2,8 +2,12 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
+const multer = require('multer');
+const path = require('path');
+const { validateFile } = require('../validations/upload.validation');
 const { paymentTermService } = require('../services');
 const { paymentTerm } = require('../models');
+
 
 const createPaymentTerm = catchAsync(async (req, res) => {
   const PaymntTerms = await Promise.all(
@@ -41,6 +45,8 @@ const getByProject = catchAsync(async (req, res) => {
 });
 
 const updatePaymentTerm = catchAsync(async (req, res) => {
+  const path = req.file ? req.file.path : null;
+  req.body.path = path;
   const milestone = req.body.milestone;
   delete req.body.milestone;
   const paymentTerm = await paymentTermService.updatePaymentTerm(req.params.paymentTermId, req.body, milestone);
