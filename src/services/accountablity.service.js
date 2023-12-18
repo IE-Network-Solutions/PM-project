@@ -71,7 +71,7 @@ const queryAccountablities = async (filter, options) => {
 
 
 /**
- 
+ * Get risk by id
  * @param {ObjectId} id
  * @returns {Promise<Action>}
  */
