@@ -16,6 +16,7 @@ module.exports.ProjectContractValue = require('./projectContractValue.model');
 
 module.exports.Milestone = require('./milestone.model');
 module.exports.Baseline = require('./baseline.model');
+module.exports.baselineComment = require('./baselineComment.model');
 module.exports.Task = require('./task.model');
 module.exports.TaskUser = require('./taskUser.model');
 module.exports.Subtask = require('./subtask.model');
@@ -42,4 +43,9 @@ module.exports.ApprovalStage = require('./approvalStage.model');
 module.exports.Role = require('./roles.model');
 module.exports.AAADepartment = require('./AAADepartment.model');
 module.exports.Currency = require('./currency.model');
+module.exports.ResourceHistory = require('./resourceHistory.model');
+module.exports.Client = require('./Client.model');
+module.exports.budgetSession = require('./budgetSession.model');
+module.exports.monthlyBudget = require('./monthlyBudget.model');
+module.exports.monthlyBudgetComment = require('./monthlyBudgetComments.model');
 

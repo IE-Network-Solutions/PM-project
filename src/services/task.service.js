@@ -1,3 +1,4 @@
+const { LessThan } = require('typeorm');
 const httpStatus = require('http-status');
 const { Task, TaskUser, Baseline } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
@@ -53,6 +54,56 @@ const getTasks = async (filter, options) => {
   });
 };
 
+const extendTasks = async (baselineId) => {
+  // const baseline = await baselineRepository.findOne({
+  //   where: {
+  //     id: baselineId,
+  //   },
+  //   relations: ['tasks.subtasks'],
+  // });
+
+  // if (baseline && baseline.tasks) {
+  //   baseline.tasks = baseline.tasks.filter((task) => task.completion < 100);
+
+  //   // Filter the subtasks with completion < 100 for each task
+  //   baseline.tasks.forEach((task) => {
+  //     task.subtasks = task.subtasks.filter((subtask) => subtask.completion < 100);
+  //   });
+
+  //   return baseline;
+  // }
+
+
+  const baselineData = await baselineRepository
+    .createQueryBuilder('baselines')
+    .leftJoinAndSelect('baselines.tasks', 'task')
+    .leftJoinAndSelect('task.subtasks', 'subtask')
+    .leftJoinAndSelect('task.milestone', 'milestone')
+    .addSelect('baselines.*')
+    .addSelect('task.*')
+    .addSelect('subtask.*')
+    .where('task.completion<100')
+    .andWhere('baselines.id = :baselineId', { baselineId: baselineId })
+    .getMany();
+
+  baselineData.forEach((base) => {
+    const milestones = [];
+    base.tasks.forEach((task) => {
+      if (!milestones.some((m) => m.id === task.milestoneId)) {
+        let taskMilestone = task.milestone
+        milestones.push({ ...taskMilestone, "tasks": [] });
+      }
+      let mileInd = milestones.findIndex((m) => m.id === task.milestoneId)
+      milestones[mileInd].tasks.push(task)
+    });
+    delete base.tasks
+    base.milestones = milestones
+  });
+
+  return baselineData;
+};
+
+
 /**
  * Get post by id
  * @param {ObjectId} id
@@ -62,29 +113,29 @@ const getTask = async (id) => {
   return await taskRepository.findOneBy({ id: id });
 };
 
-const getTasksByMileston = async (milestoneId, filter, options) => {
+const getTasksByMileston = async (projectId, filter, options) => {
   const baseline = await baselineRepository.findOne({
     where: {
-      milestoneId: milestoneId,
+      projectId: projectId,
       status: true
     }
   });
 
-  
- if(baseline){
-  const { limit, page, sortBy } = options;
-  return await taskRepository.find({
-    where:{
-      baselineId: baseline.id,
-    },
-    relations: ['resources'],
-    sortOptions: sortBy && { option: sortBy },
-    // paginationOptions: { limit: limit, page: page },
-  });
- }
- else{
-  return [];
- }
+
+  if (baseline) {
+    const { limit, page, sortBy } = options;
+    return await taskRepository.find({
+      where: {
+        baselineId: baseline.id,
+      },
+      relations: ['resources'],
+      sortOptions: sortBy && { option: sortBy },
+      // paginationOptions: { limit: limit, page: page },
+    });
+  }
+  else {
+    return [];
+  }
 };
 
 /**
@@ -223,6 +274,7 @@ const filterTaskByPlanedDate = async (projectId, startDate, endDate) => {
 module.exports = {
   createTask,
   getTasks,
+  extendTasks,
   getTask,
   getTasksByMileston,
   updateTask,

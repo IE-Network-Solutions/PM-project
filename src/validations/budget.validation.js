@@ -7,8 +7,7 @@ const budgetSchema = Joi.object({
   taskId: Joi.string().guid().required(),
   budgetCategoryId: Joi.string().guid().required(),
   taskCategoryId: Joi.string().guid().required(),
-  currencyId:Joi.string().required(),
-
+  currencyId: Joi.string().required(),
 });
 const addBudget = {
   body: Joi.object().keys({
@@ -18,7 +17,7 @@ const addBudget = {
     budgetCategoryId: Joi.string().guid().required(),
     taskCategoryId: Joi.string().guid().required(),
     groupId: Joi.string().guid().required(),
-    currencyId:Joi.string().required(),
+    currencyId: Joi.string().required(),
   }),
 };
 
@@ -36,6 +35,12 @@ const getBudgets = {
     sortBy: Joi.string(),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
+  }),
+};
+const filterBudgets = {
+  query: Joi.object().keys({
+    startDate: Joi.date(),
+    endDate: Joi.date(),
   }),
 };
 
@@ -60,6 +65,7 @@ const updateBudget = {
       description: Joi.string(),
       budgetCategory: Joi.string().guid(),
       taskCategory: Joi.string().guid(),
+      currencyId: Joi.string().guid(),
     })
     .min(1),
 };
@@ -70,4 +76,4 @@ const deleteBudget = {
   }),
 };
 
-module.exports = { createBudget, getBudgets, getBudget, updateBudget, getBudgetByProject, addBudget };
+module.exports = { createBudget, getBudgets, getBudget, updateBudget, getBudgetByProject, addBudget, filterBudgets,deleteBudget };

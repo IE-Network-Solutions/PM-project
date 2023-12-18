@@ -1,4 +1,3 @@
-
 const { EntitySchema } = require('typeorm');
 
 const ProjectMember = new EntitySchema({
@@ -26,6 +25,8 @@ const ProjectMember = new EntitySchema({
     project: {
       type: 'many-to-one',
       target: 'Project',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
     role: {
       type: 'many-to-one',

@@ -21,6 +21,8 @@ module.exports = new EntitySchema({
     task: {
       type: 'many-to-one',
       target: 'Task',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
     budgetCategory: {
       type: 'many-to-one',

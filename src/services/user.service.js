@@ -19,11 +19,13 @@ const userRepository = dataSource.getRepository(User).extend({ findAll, sortBy }
 const queryUsers = async (filter, options) => {
   const { limit, page, sortBy } = options;
 
-  return await userRepository.findAll({
-    tableName: 'user',
-    sortOptions: sortBy && { option: sortBy },
-    paginationOptions: { limit: limit, page: page },
+  const users = await userRepository.find({ relations: ['resourceOn'] });
+  // Filter tasks for each user
+  users.forEach((user) => {
+    user.resourceOn = user.resourceOn.filter((task) => task.completion < 100);
   });
+
+  return users;
 };
 
 /**
@@ -43,6 +45,8 @@ const createUser = async (userBody) => {
   delete userBody.created_at;
   delete userBody.updated_at;
   delete userBody.role_id;
+
+  console.log(userBody);
 
   const user = userRepository.create(userBody);
   return await userRepository.save(user);

@@ -24,6 +24,7 @@ const createApprovalStage = catchAsync(async (req, res) => {
         level: stage.level,
         role: role,
         approvalModule: approvalModule,
+        project_role: stage.project_role?stage.project_role:false
       };
 
       approvalStageData.push(singleApprovalStageData);

@@ -6,7 +6,7 @@ const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 const publishToRabbit = require('../utils/producer');
 const { allActiveBaselineTasks } = require('./weeklyReport.service');
-
+const { getClients } = require('./client.service');
 
 const projectRepository = dataSource.getRepository(Project).extend({
   findAll,
@@ -25,7 +25,6 @@ const projectContractValueRepository = dataSource.getRepository(ProjectContractV
 //   const project = projectRepository.create(projectBody);
 //   return await projectRepository.save(project);
 // };
-
 
 // project.service.js
 const createProject = async (projectBody, projectMembers, projectContractValue) => {
@@ -50,13 +49,13 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
   if (projectContractValue) {
     const projectContractValueInstance = projectContractValue.map((contract_value) => {
       contract_value.project = project;
-      return contract_value
+      return contract_value;
     });
     // Save the project contract value instances
     await projectContractValueRepository.save(projectContractValueInstance);
   }
 
-  let newProject = await getProject(project.id)
+  let newProject = await getProject(project.id);
   newProject.projectMembers = projectMembers;
   // project.projectContractValue = projectContractValue;
   publishToRabbit('project.create', newProject);
@@ -64,10 +63,6 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
   return newProject;
   // return await getProject(project.id)
 };
-
-
-
-
 
 /**
  * Query for users
@@ -86,7 +81,7 @@ const getProjects = async (filter, options) => {
     tableName: 'projects',
     sortOptions: sortBy && { option: sortBy },
     paginationOptions: { limit: limit, page: page },
-    relations: ['projectMembers', 'projectContractValues'],
+    relations: ['projectMembers', 'projectContractValues.currency'],
   });
   // return await projectRepository.createQueryBuilder('project')
   //   .leftJoin('project.projectMembers', 'projectMember')
@@ -95,9 +90,6 @@ const getProjects = async (filter, options) => {
   //   .addSelect(['projectMember', 'role', 'projectContractValue'])
   //   .getMany();
 };
-
-
-
 
 /**
  * Get post by id
@@ -108,10 +100,8 @@ const getProject = async (id) => {
   return await projectRepository.findOne({
     where: { id: id },
     relations: ['projectMembers', 'projectContractValues.currency'],
-  },
-  );
+  });
 };
-
 
 /**
  * Update user by id
@@ -121,13 +111,18 @@ const getProject = async (id) => {
  */
 const updateProject = async (projectId, updateBody) => {
   const project = await getProject(projectId);
+
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
+  console.log(project, 'ggg');
   await projectRepository.update({ id: projectId }, updateBody);
   const updatedProject = await getProject(projectId);
   updatedProject.members = await getMembers(updatedProject.id);
+
   publishToRabbit('project.update', updatedProject);
+
+  console.log(updatedProject, 'sl up');
   return updatedProject;
 };
 
@@ -142,7 +137,8 @@ const deleteProject = async (projectId) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
   // return await projectRepository.delete({ id: projectId });
-  return await projectRepository.delete({ id: projectId }, updateBody);
+  await projectRepository.delete({ id: projectId });
+  return 'Project Deleted';
 };
 
 /**
@@ -153,47 +149,43 @@ const deleteProject = async (projectId) => {
 
 const getAllProjectTasksVarianceByProject = async () => {
   const projects = await projectRepository.find({
-    tableName: 'projects'
+    tableName: 'projects',
   });
   const allProjectTasks = [];
   let project;
-  for (project of projects) {
-    const tasks = await allActiveBaselineTasks(project.id);
-    project.tasks = tasks.tasksForVariance;
-    allProjectTasks.push(project);
-  }
-  allProjectTasks.map((task) => {
-    let startVariance = '';
-    let finishVariance = '';
+  // for (project of projects) {
+  //   const tasks = await allActiveBaselineTasks(project.id);
+  //   project.tasks = tasks.tasksForVariance;
+  //   allProjectTasks.push(project);
+  // }
+  // allProjectTasks.map((task) => {
+  //   let startVariance = '';
+  //   let finishVariance = '';
 
-    let firstTask = task?.tasks[0];
-    let lastTask = task?.tasks[task.tasks.length - 1];
+  //   let firstTask = task?.tasks[0];
+  //   let lastTask = task?.tasks[task.tasks.length - 1];
 
-    if (firstTask?.actualStart) {
-      startVariance =
-        new Date(firstTask.plannedStart).getTime() -
-        new Date(firstTask.actualStart).getTime();
-      startVariance = Math.ceil(startVariance / (1000 * 60 * 60 * 24));
-    }
+  //   if (firstTask?.actualStart) {
+  //     startVariance = new Date(firstTask.plannedStart).getTime() - new Date(firstTask.actualStart).getTime();
+  //     startVariance = Math.ceil(startVariance / (1000 * 60 * 60 * 24));
+  //   }
 
-    if (lastTask?.actualFinish) {
-      finishVariance =
-        new Date(lastTask.plannedFinish).getTime() -
-        new Date(lastTask.actualFinish).getTime();
-      finishVariance = Math.ceil(finishVariance / (1000 * 60 * 60 * 24));
-    }
+  //   if (lastTask?.actualFinish) {
+  //     finishVariance = new Date(lastTask.plannedFinish).getTime() - new Date(lastTask.actualFinish).getTime();
+  //     finishVariance = Math.ceil(finishVariance / (1000 * 60 * 60 * 24));
+  //   }
 
-    task.startVariance = startVariance;
-    task.finishVariance = finishVariance;
-    delete task.tasks;
-  });
+  //   task.startVariance = startVariance;
+  //   task.finishVariance = finishVariance;
+  //   delete task.tasks;
+  // });
 
   return { Projects: allProjectTasks };
-}
+};
 
 const getAllProjectsDetailOnMasterSchedule = async () => {
   const projects = await projectRepository.find({
-    tableName: 'projects'
+    tableName: 'projects',
   });
   const allProjectTasks = [];
   let project;
@@ -203,8 +195,7 @@ const getAllProjectsDetailOnMasterSchedule = async () => {
     allProjectTasks.push(project);
   }
   return { Projects: allProjectTasks };
-}
-
+};
 
 const addMember = async (projectId, projectMembers) => {
   const project = await projectRepository.findOneBy({ id: projectId });
@@ -229,7 +220,7 @@ const getMembers = async (projectId) => {
     .createQueryBuilder('project_member')
     .where('project_member.projectId = :projectId', { projectId })
     .getMany();
-}
+};
 
 const removeMember = async (projectId, memberToRemove) => {
   const projectMembersToRemove = await projectMemberRepository.find({
@@ -237,26 +228,29 @@ const removeMember = async (projectId, memberToRemove) => {
       projectId: projectId,
       userId: memberToRemove.memberId,
       roleId: memberToRemove.roleId,
-    }
+    },
   });
 
-
-
   return await projectMemberRepository.remove(projectMembersToRemove);
+};
+const closeProject = async (projectId, status) => {
+  const project = await getProject(projectId);
+  if (!project) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
+  }
+  project.status = status;
+  await projectRepository.update({ id: projectId }, status);
 
-
-}
+  return await getProject(projectId);
+};
 
 const getTotalActiveClosedProjects = async (filter, options) => {
   const projects = await getProjects(filter, options);
   const total = projects.length;
-  const active = projects.filter(project => project.status === false).length;
-  const closed = projects.filter(project => project.status === true).length;
+  const active = projects.filter((project) => project.status === true).length;
+  const closed = projects.filter((project) => project.status === false).length;
   return { totalProjects: total, closedProjects: closed, activeProjcts: active };
-}
-
-
-
+};
 
 module.exports = {
   createProject,
@@ -267,6 +261,10 @@ module.exports = {
   getAllProjectTasksVarianceByProject,
   getAllProjectsDetailOnMasterSchedule,
   addMember,
-  removeMember, getMembers,
-  getTotalActiveClosedProjects
+  removeMember,
+  getMembers,
+  getTotalActiveClosedProjects,
+  removeMember,
+  getMembers,
+  closeProject,
 };

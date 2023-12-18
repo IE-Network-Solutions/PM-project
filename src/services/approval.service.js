@@ -8,6 +8,10 @@ const {
   User,
   BudgetComment,
   BudgetGroupComment,
+  Baseline,
+  baselineComment,
+  monthlyBudget,
+  monthlyBudgetComment,
 } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
@@ -29,8 +33,16 @@ const approvalGroupRepository = dataSource.getRepository(BudgetGroup).extend({
   findAll,
   sortBy,
 });
+const baselineRepository = dataSource.getRepository(Baseline).extend({
+  findAll,
+  sortBy,
+});
 
 const approvalBudgetCommentRepository = dataSource.getRepository(BudgetComment).extend({
+  findAll,
+  sortBy,
+});
+const approvalBaselineCommentRepository = dataSource.getRepository(baselineComment).extend({
   findAll,
   sortBy,
 });
@@ -47,6 +59,19 @@ const userRepository = dataSource.getRepository(User).extend({
   findAll,
   sortBy,
 });
+const baselineCommentRepository = dataSource.getRepository(baselineComment).extend({
+  findAll,
+  sortBy,
+});
+
+const monthlyBudgetRepostory = dataSource.getRepository(monthlyBudget).extend({
+  findAll,
+  sortBy
+})
+const monthlyBudgetCommentRepository = dataSource.getRepository(monthlyBudgetComment).extend({
+  findAll,
+  sortBy
+})
 
 /**
  * send for approval
@@ -84,9 +109,17 @@ const sendForApproval = async (approvalModuleName, moduleId) => {
     }
     // assigne the approval stage to the budget group which is the group identifier of the monthly budget
     updatedModule = await approvalGroupRepository.update({ id: moduleId }, { approvalStage: approvalStage });
-    console.log(updatedModule,"ppppppppppppp")
+  } else if (approvalModule.moduleName == 'ProjectSchedule') {
+
+    const module = await baselineRepository.findOne({ where: { id: moduleId } });
+    if (!module) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'approval module(baseline) does not exist');
+    }
+    // assigne the approval stage to the budget group which is the group identifier of the monthly budget
+   
+    updatedModule = await baselineRepository.update({ id: moduleId }, { approvalStage: approvalStage });
+   
   }
-  console.log(approvalModule.moduleName,moduleIdd,"ccccccccccc")
   let currentApprover = await getCurrentApprover(approvalModule.moduleName, moduleIdd);
   return currentApprover;
 };
@@ -121,7 +154,7 @@ const getCurrentApprover = async (moduleName, moduleId) => {
       throw new ApiError(httpStatus.NOT_FOUND, 'approval moduleData(group) does not exist');
     }
     console.log(moduleData);
-    if (moduleData.approvalStage.role.isProjectRole) {
+    if (moduleData.approvalStage.project_role) {
       let project = await moduleData.project;
       let projectId = project.id;
       let ProjectMemebrsRoleData = await approvalProjectMemebrsRepository
@@ -136,6 +169,74 @@ const getCurrentApprover = async (moduleName, moduleId) => {
       currentApprover = ProjectMemebrsRoleData;
     } else {
       currentApprover = userRepository.findOne({ where: { roleId: moduleData.approvalStage.role.id } });
+    }
+  }
+  else if (approvalModule.moduleName == 'ProjectSchedule') {
+    const moduleData = await baselineRepository
+      .createQueryBuilder('baseline')
+      .leftJoin('baseline.approvalStage', 'approvalStage')
+      .leftJoin('approvalStage.role', 'role')
+      .leftJoin('baseline.project', 'project')
+      .leftJoin('project.projectMembers', 'projectMembers')
+      .select(['baseline', 'approvalStage', 'project', 'projectMembers', 'role'])
+      .where('baseline.id = :moduleId', { moduleId })
+      .getOne();
+    if (!moduleData) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'approval moduleData(baseline) does not exist');
+    }
+
+    if (moduleData.approvalStage.project_role) {
+
+      let project = await moduleData.project;
+     
+      let projectId = project.id;
+      let roleId = moduleData.approvalStage.role.id
+      let ProjectMemebrsRoleData = await approvalProjectMemebrsRepository
+        .createQueryBuilder('project_member')
+        .leftJoin('project_member.project', 'project')
+        .leftJoin('project_member.user', 'user')
+        .leftJoin('project_member.role', 'role')
+        .select(['project_member', 'project', 'user', 'role'])
+        .where('project.id = :projectId', { projectId })
+        .andWhere('project_member.roleId = :roleId', {roleId})
+        .getOne();
+      // currentApprover = ProjectMemebrsRoleData.filter((item) => item.roleId === moduleData.approvalStage.role.id);
+      console.log(ProjectMemebrsRoleData,"abr")
+      currentApprover = ProjectMemebrsRoleData;
+    } else {
+      currentApprover = userRepository.findOne({ where: { roleId: moduleData.approvalStage.role.id }, relations: ['role'] });
+    }
+  }
+  else if (approvalModule.moduleName == 'MonthlyBudget') {
+    const moduleData = await monthlyBudgetRepostory
+      .createQueryBuilder('monthly_budgets')
+      .leftJoin('monthly_budgets.approvalStage', 'approvalStage')
+      .leftJoin('approvalStage.role', 'role')
+      .select(['monthly_budgets', 'approvalStage', 'role'])
+      .where('monthly_budgets.id = :moduleId', { moduleId })
+      .getOne();
+    if (!moduleData) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'approval moduleData(MonthlyBudget) does not exist');
+    }
+
+    if (moduleData.approvalStage.project_role) {
+
+      let project = await moduleData.project;
+     
+      let projectId = project.id;
+      let roleId = moduleData.approvalStage.role.id
+      let ProjectMemebrsRoleData = await approvalProjectMemebrsRepository
+        .createQueryBuilder('project_member')
+        .leftJoin('project_member.project', 'project')
+        .leftJoin('project_member.user', 'user')
+        .leftJoin('project_member.role', 'role')
+        .select(['project_member', 'project', 'user', 'role'])
+        .where('project.id = :projectId', { projectId })
+        .andWhere('project_member.roleId = :roleId', {roleId})
+        .getOne();
+      currentApprover = ProjectMemebrsRoleData;
+    } else {
+      currentApprover = userRepository.findOne({ where: { roleId: moduleData.approvalStage.role.id }, relations: ['role'] });
     }
   }
   return currentApprover;
@@ -157,7 +258,6 @@ const approve = async (moduleName, moduleId) => {
   if (!approvalModule) {
     throw new ApiError(httpStatus.NOT_FOUND, 'approval module does not exist');
   }
-  console.log(approvalModule,"pppppppppp")
   if (approvalModule.moduleName == 'ProjectBudget') {
     const moduleData = await approvalGroupRepository.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
     if (!moduleData) {
@@ -168,8 +268,9 @@ const approve = async (moduleName, moduleId) => {
       // approve
       await approvalGroupRepository.update({ id: moduleId }, { approved: true });
       updatedModule = await approvalGroupRepository.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
+      console.log("selammmmm",updatedModule)
 // Rabit Mq Producer
-      let approvedByGroup=await services.budgetService.getBudgetGroupByCategory(moduleId)
+      let approvedByGroup=await services.budgetService.getBudgetGroupByCategory(approvalGroupRepository.from,approvalGroupRepository.to)
       publishToRabbit('project.budget',approvedByGroup)
       console.log(approvedByGroup)
     } else {
@@ -184,8 +285,63 @@ const approve = async (moduleName, moduleId) => {
         console.log(approvalStage,"ooooooooooo")
       await approvalGroupRepository.update({ id: moduleId }, { approvalStage: approvalStage });
       updatedModule = await approvalGroupRepository.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
-console.log(updatedModule,"tttttttttt")
       // ++approval
+    }
+  }else if (approvalModule.moduleName == 'ProjectSchedule') {
+    const moduleData = await baselineRepository.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
+    if (!moduleData) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'approval module(baseline) does not exist');
+    }
+    if (approvalModule.max_level == moduleData.approvalStage.level) {
+      // approve
+      await baselineRepository.update({ id: moduleId }, { approved: true });
+      updatedModule = await baselineRepository.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
+// Rabit Mq Producer
+      // let approvedByGroup=await services.budgetService.getBudgetGroupByCategory(moduleId)
+      // publishToRabbit('project.budget',approvedByGroup)
+      // console.log(approvedByGroup)
+    } else {
+      level = moduleData.approvalStage.level + 1;
+      const approvalStage = await approvalStageRepository
+        .createQueryBuilder('approval_stage')
+        .leftJoin('approval_stage.approvalModule', 'approvalModule')
+        .leftJoin('approval_stage.role', 'role')
+        .where('approvalModule.moduleName = :moduleName', { moduleName })
+        .andWhere('approval_stage.level = :level', { level })
+        .getOne();
+        console.log(approvalStage,"ooooooooooo")
+      await baselineRepository.update({ id: moduleId }, { approvalStage: approvalStage });
+      updatedModule = await baselineRepository.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
+// console.log(updatedModule,"tttttttttt")
+      // ++approval
+    }
+  }
+  else if (approvalModule.moduleName == 'MonthlyBudget') {
+    const moduleData = await monthlyBudgetRepostory.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
+    if (!moduleData) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'approval module(monthly budget) does not exist');
+    }
+    if (approvalModule.max_level == moduleData.approvalStage.level) {
+      // approve
+      await monthlyBudgetRepostory.update({ id: moduleId }, { approved: true });
+      updatedModule = await monthlyBudgetRepostory.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
+      // Rabit Mq Producer
+      // let approvedByGroup=await services.budgetService.getBudgetGroupByCategory(moduleId)
+      // publishToRabbit('project.budget',approvedByGroup)
+      // console.log(approvedByGroup)
+    } else {
+      level = moduleData.approvalStage.level + 1;
+      const approvalStage = await approvalStageRepository
+        .createQueryBuilder('approval_stage')
+        .leftJoin('approval_stage.approvalModule', 'approvalModule')
+        .leftJoin('approval_stage.role', 'role')
+        .where('approvalModule.moduleName = :moduleName', { moduleName })
+        .andWhere('approval_stage.level = :level', { level })
+        .getOne();
+      
+      await monthlyBudgetRepostory.update({ id: moduleId }, { approvalStage: approvalStage });
+      updatedModule = await monthlyBudgetRepostory.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
+      
     }
   }
   return updatedModule;
@@ -201,7 +357,7 @@ console.log(updatedModule,"tttttttttt")
  * @returns {Promise<QueryResult>}
  */
 
-const reject = async (moduleName, moduleId, comentData) => {
+const reject = async (moduleName, moduleId, comentData,userId=null) => {
   const approvalModule = await approvalModuleRepository.findOne({ where: { moduleName: moduleName } });
   let updatedModule;
   if (!approvalModule) {
@@ -231,6 +387,50 @@ const reject = async (moduleName, moduleId, comentData) => {
     updatedModule = await approvalGroupRepository.findOne({
       where: { id: moduleId },
       relations: ['approvalStage', 'comments'],
+    });
+  }else if (approvalModule.moduleName == 'ProjectSchedule') {
+    const moduleData = await baselineRepository.findOne({
+      where: { id: moduleId },
+      relations: ['approvalStage', 'baselineComment'],
+    });
+    if (!moduleData) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'approval module(baseline) does not exist');
+    }
+    const comment = approvalBaselineCommentRepository.create({ comment: comentData, baseline: moduleData,userId });
+    console.log(comment);
+
+    const budgetComment = await approvalBaselineCommentRepository.save(comment);
+    console.log(moduleData, budgetComment, 'aaaaaaaaaaaaaaa');
+
+    await moduleData.baselineComment.push(budgetComment);
+
+
+    // approve
+    await baselineRepository.update({ id: moduleId }, { rejected: true });
+    updatedModule = await baselineRepository.findOne({
+      where: { id: moduleId },
+      relations: ['approvalStage','baselineComment'],
+    });
+  }
+  else if (approvalModule.moduleName == 'MonthlyBudget') {
+    const moduleData = await monthlyBudgetRepostory.findOne({
+      where: { id: moduleId },
+      relations: ['approvalStage','monthlyBudgetcomments'],
+    });
+    if (!moduleData) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'approval module(monthly budget) does not exist');
+    }
+    const comment = await monthlyBudgetCommentRepository.create({ budgetComment: comentData,monthlyBudget:moduleData });
+
+    const monthlBbudgetComment = await monthlyBudgetCommentRepository.save(comment);
+
+    await moduleData.monthlyBudgetcomments.push(monthlBbudgetComment);
+
+    // approve
+    await monthlyBudgetRepostory.update({ id: moduleId }, { rejected: true });
+    updatedModule = await monthlyBudgetRepostory.findOne({
+      where: { id: moduleId },
+      relations: ['approvalStage','monthlyBudgetcomments'],
     });
   }
   return updatedModule;

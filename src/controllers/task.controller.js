@@ -15,10 +15,18 @@ const getTasks = catchAsync(async (req, res) => {
   const result = await taskService.getTasks(filter, options);
   res.send(result);
 });
+
+const extendTasks = catchAsync(async (req, res) => {
+  console.log(req.params.baselineId, 'baseline id');
+  const extendTasks = await taskService.extendTasks(req.params.baselineId);
+  res.send(extendTasks);
+});
+
+
 const getTasksByMileston = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['status']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const task = await taskService.getTasksByMileston(req.params.milestoneId, filter, options);
+  const task = await taskService.getTasksByMileston(req.params.projectId, filter, options);
   res.send(task);
 });
 
@@ -88,6 +96,7 @@ const getTasksByPlandStartDate = catchAsync(async (req, res) => {
 module.exports = {
   createTask,
   getTasks,
+  extendTasks,
   getTask,
   updateTask,
   deleteTask,

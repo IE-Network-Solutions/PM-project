@@ -20,6 +20,7 @@ router
   .route('/riskByProject/:projectId')
   .get(validate(riskValidation.getRiskByProjectId), riskController.getAllRisksByProjectId);
 
+
 router
   .route('/riskByProjectIdByDate/:projectId')
   .get(validate(riskValidation.getRiskByProjectId), riskController.getAllRisksByProjectIdAndByDate);

@@ -42,10 +42,11 @@ const getAllRisksByProjectId = catchAsync(async (req, res) => {
     if (!project) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
     }
-    const result = await riskService.getAllRisksByProjectId(projectId, ["Open", "Closed"]);
+    const result = await riskService.getAllRisksByProjectId(projectId);
 
     res.send(result);
 });
+
 
 
 const getAllRisksByProjectIdAndByDate = catchAsync(async (req, res) => {

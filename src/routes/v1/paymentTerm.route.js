@@ -2,7 +2,7 @@ const express = require('express');
 const validate = require('../../middlewares/validate');
 const  { paymentTermValidation }  = require('../../validations');
 const { paymentTermController } = require('../../controllers');
-
+const { uploadOptions } = require('../../middlewares/multerUpload');
 const router = express.Router();
 
 router
@@ -20,5 +20,9 @@ router
   .get(validate(paymentTermValidation.getPaymentTerm),paymentTermController.getPaymentTerm)
   .patch(validate(paymentTermValidation.updatePaymentTerm),paymentTermController.updatePaymentTerm)
   .delete(validate(paymentTermValidation.deletePaymentTerm),paymentTermController.deletePaymentTerm);
+
+router
+  .route('/atp/:paymentTermId')
+  .patch(uploadOptions.single('atp-doc'), paymentTermController.updatePaymentTerm);
 
 module.exports = router;
