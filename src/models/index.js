@@ -48,4 +48,10 @@ module.exports.Client = require('./Client.model');
 module.exports.budgetSession = require('./budgetSession.model');
 module.exports.monthlyBudget = require('./monthlyBudget.model');
 module.exports.monthlyBudgetComment = require('./monthlyBudgetComments.model');
+module.exports.OfficeMonthlyBudget = require('./officeProjectMonthlyBudget.model')
+module.exports.OfficeMonthlyBudgetComment = require('./OfficeMonthlyBudgetComment.model')
+module.exports.momAbsents = require('./momabsents.model')
+module.exports.Accountablity = require('./accountablity.model')
+
+
 

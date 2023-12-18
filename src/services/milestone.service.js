@@ -29,7 +29,7 @@ const subTaskRepository = dataSource.getRepository(Subtask).extend({
  */
 const createMilestone = async (milestoneBody) => {
   const milestone = milestoneRepository.create(milestoneBody);
- return await milestoneRepository.save(milestone);
+  return await milestoneRepository.save(milestone);
 };
 
 
@@ -48,7 +48,7 @@ const getMilestones = async (filter, options) => {
   const { limit, page, sortBy } = options;
   return await milestoneRepository.findAll({
     tableName: 'milestones',
-    sortOptions: sortBy&&{ option: sortBy },
+    sortOptions: sortBy && { option: sortBy },
     paginationOptions: { limit: limit, page: page },
   });
 };
@@ -63,7 +63,7 @@ const getMilestone = async (milestoenId) => {
 };
 
 const getByProject = async (projectId) => {
-  return await milestoneRepository.findBy({ projectId: projectId,});
+  return await milestoneRepository.findBy({ projectId: projectId, });
 };
 
 /**
@@ -78,8 +78,11 @@ const updateMilestone = async (milestoneId, updateBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Milestone not found');
   }
   await milestoneRepository.update({ id: milestoneId }, updateBody);
+  console.log(await getMilestone(milestoneId), "kshafoqweprimxznoa");
+
   return await getMilestone(milestoneId);
 };
+
 
 /**
  * Delete user by id
@@ -93,20 +96,20 @@ const deleteMilestone = async (milestoneId) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Milestone not found');
   }
 
-  return await milestoneRepository.delete({ id: milestoneId});
+  return await milestoneRepository.delete({ id: milestoneId });
   //The following code is to cascade deleting baselines, 
   //tasks and subtasks when we delete milestone
-    // const baselinesToDelete = await baselineRepository.find({ milestoneId: milestoneId });
-    // for (const baseline of baselinesToDelete) {
-    //       const tasksToDelete = await taskRepository.find({ baselineId: baseline.id });
-    //       for (const task of tasksToDelete) {
-    //       const subTasksToDelet = await subTaskRepository.find({ taskId: task.id });
-    //       for (const subtask of subTasksToDelet) {
-    //         await subTaskRepository.delete({ id: subtask.id });
-    //       }
-    //         await taskRepository.delete({ id: task.id });
-    //       }
-    //   await baselineRepository.delete({ id: baseline.id });
+  // const baselinesToDelete = await baselineRepository.find({ milestoneId: milestoneId });
+  // for (const baseline of baselinesToDelete) {
+  //       const tasksToDelete = await taskRepository.find({ baselineId: baseline.id });
+  //       for (const task of tasksToDelete) {
+  //       const subTasksToDelet = await subTaskRepository.find({ taskId: task.id });
+  //       for (const subtask of subTasksToDelet) {
+  //         await subTaskRepository.delete({ id: subtask.id });
+  //       }
+  //         await taskRepository.delete({ id: task.id });
+  //       }
+  //   await baselineRepository.delete({ id: baseline.id });
   // }
 
 };

@@ -12,8 +12,9 @@ const createMom = {
     facilitatorId: Joi.string(),
     specialNote: Joi.string(),
     attendees: Joi.array(),
+    absents: Joi.array(),
     externalAttendees: Joi.array(),
-    action: Joi.array(), 
+    action: Joi.array(),
     agenda: Joi.array(),
   }),
 };
@@ -51,32 +52,33 @@ const updateMom = {
     facilitatorId: Joi.string(),
     specialNote: Joi.string(),
     attendees: Joi.array(),
+    absents: Joi.array(),
     externalAttendees: Joi.array(),
-    action: Joi.array(), 
+    action: Joi.array(),
     agenda: Joi.array(),
   }),
 };
 
 const deleteMom = {
-    params: Joi.object().keys({
-        MomId: Joi.string(),
-    }),
-  };
+  params: Joi.object().keys({
+    MomId: Joi.string(),
+  }),
+};
 
 const addComment = {
-    body: Joi.object().keys({
-      id: Joi.string().required(),
-      comment: Joi.string().required(),
-      userId: Joi.string().required(),
-      mentionedId: Joi.string(),
-    }),
-  };
+  body: Joi.object().keys({
+    id: Joi.string().required(),
+    comment: Joi.string().required(),
+    userId: Joi.string().required(),
+    mentionedId: Joi.string(),
+  }),
+};
 
-  const getComments = {
-    params: Joi.object().keys({
-        momId: Joi.string().required(),
-    }),
-  };
+const getComments = {
+  params: Joi.object().keys({
+    momId: Joi.string().required(),
+  }),
+};
 
 module.exports = {
   createMom,

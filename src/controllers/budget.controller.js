@@ -119,6 +119,10 @@ const getBudgetsOfProjects = catchAsync(async (req, res) => {
   const data = await budgetService.getBudgetsOfProjects();
   res.send(data);
 });
+const getBudgetsOfOfficeProjects = catchAsync(async (req, res) => {
+  const data = await budgetService.getBudgetsOfficeOfProjects();
+  res.send(data);
+});
 
 const getAllBudgetsOfProjects = catchAsync(async (req, res) => {
   const data = await budgetService.getAllBudgetsOfProjects();
@@ -127,7 +131,7 @@ const getAllBudgetsOfProjects = catchAsync(async (req, res) => {
 
 const getBudgetGroupByCategory = catchAsync(async (req, res) => {
   const letestBudgetSession = await budgetSessionService.activeBudgetSession();
-  
+
   const data = await budgetService.getBudgetGroupByCategory(letestBudgetSession?.startDate, letestBudgetSession?.endDate);
   res.send(data);
 });
@@ -222,4 +226,5 @@ module.exports = {
   getBudgetsByGroup,
   masterBudget,
   filterBudget,
+  getBudgetsOfOfficeProjects
 };
