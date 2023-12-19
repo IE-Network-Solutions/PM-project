@@ -13,9 +13,15 @@ const seedPermissions = catchAsync(async (req, res) => {
 const assignPermissionToUser = catchAsync(async (req, res) => {
     const data = await permissionService.assignPermissionToUser(req.body)
     res.status(httpStatus.CREATED).json(data);
-})
+});
+
+const assignPermissionToRole = catchAsync(async (req, res) => {
+    const data = await permissionService.assignPermissionToRole(req.body)
+    res.status(httpStatus.CREATED).json(data);
+});
 
 module.exports = {
     seedPermissions,
-    assignPermissionToUser
+    assignPermissionToUser,
+    assignPermissionToRole
 }

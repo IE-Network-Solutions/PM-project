@@ -50,4 +50,5 @@ module.exports.monthlyBudget = require('./monthlyBudget.model');
 module.exports.monthlyBudgetComment = require('./monthlyBudgetComments.model');
 module.exports.Permission = require('./permission.model');
 module.exports.permissionUser = require('./permissionUser.model');
+module.exports.permissionRole = require('./permissionRole.model');
 

@@ -34,7 +34,7 @@ const queryUsers = async (filter, options) => {
  * @returns {Promise<Risk>}
  */
 const getUserById = async (id) => {
-  return await userRepository.findOne({ where: { id: id } ,relations:['permissions'] });
+  return await userRepository.findOne({ where: { id: id } ,relations:['permissions','role'] });
 };
 
 const createUser = async (userBody) => {

@@ -8,6 +8,14 @@ const assignPermissionToUser = {
     }),
 };
 
+const assignPermissionToRole = {
+    body: Joi.object().keys({
+      roleId: Joi.string().required(),
+      permissions: Joi.array().required()
+    }),
+};
+
 module.exports = {
-    assignPermissionToUser
+  assignPermissionToUser,
+  assignPermissionToRole
 }

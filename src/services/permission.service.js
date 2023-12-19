@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Permission, permissionUser, User } = require('../models');
+const { Permission, permissionUser, User, permissionRole, Role } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -14,7 +14,15 @@ const permissionUserRepository = dataSource.getRepository(permissionUser).extend
   findAll,
   sortBy,
 });
+const permissionRoleRepository = dataSource.getRepository(permissionRole).extend({
+  findAll,
+  sortBy,
+});
 const userRepository = dataSource.getRepository(User).extend({
+  findAll,
+  sortBy,
+});
+const roleRepository = dataSource.getRepository(Role).extend({
   findAll,
   sortBy,
 });
@@ -54,6 +62,22 @@ const assignPermissionToUser = async (permissionData) => {
         })
     
         const data = await permissionUserRepository.save(permissionUser);
+        
+        return data;
+}
+
+const assignPermissionToRole = async (permissionData) => {
+        const role = await roleRepository.findOneBy({ id: permissionData.roleId });
+        let permissionRoleData = permissionData.permissions.map((permissionId) => {
+            const permission = permissionRepository.findOneBy({ id: permissionId });
+            const permissionRole = permissionRoleRepository.create({
+                    roleId: role.id,
+                    permissionId
+            })
+            return permissionRole;
+        })
+    
+        const data = await permissionRoleRepository.save(permissionRoleData);
         
         return data;
 }
@@ -122,5 +146,6 @@ module.exports = {
     getPermissions,
     getPermission,
     assignPermissionToUser,
-    seedPermission
+    seedPermission,
+    assignPermissionToRole
 };
