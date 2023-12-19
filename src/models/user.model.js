@@ -105,5 +105,19 @@ module.exports = new EntitySchema({
         },
       },
     },
+    permissions: {
+      type: 'many-to-many',
+      target: 'Permission',
+      joinTable: {
+        name: 'permission_user',
+        joinColumn: { name: 'userId', referencedColumnName: 'id' },
+        inverseJoinColumn: {
+          name: 'permissionId',
+          referencedColumnName: 'id',
+        },
+      },
+      onDelete: 'SET NULL',
+      onUpdate: 'CASCADE',
+    },
   },
 });

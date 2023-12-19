@@ -26,6 +26,7 @@ module.exports.departmentValidation = require('./department.validation');
 module.exports.resourceHistoryValidation =require('./resourceHistory.validation')
 module.exports.budgetSessionValidation =require('./BudgetSession.validation')
 module.exports.monthlyBudgetValidation =require('./monthlyBudget.validation')
+module.exports.permissionValidation =require('./permission.validation')
 
 
 module.exports.uploadValidation =require('./upload.validation')

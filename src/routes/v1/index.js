@@ -35,6 +35,7 @@ const clientRoute= require('./client.route')
 const budgetSessionRoute= require('./budgetSession.route')
 const roleRoute = require('./role.route');
 const monthlyBudget = require('./monthlyBudget.route');
+const permission = require('./permission.route');
 
 const router = express.Router();
 
@@ -172,6 +173,10 @@ const defaultRoutes = [
   {
     path: '/monthlyBudget',
     route: monthlyBudget
+   },
+  {
+    path: '/permissions',
+    route: permission
    }
 ];
 

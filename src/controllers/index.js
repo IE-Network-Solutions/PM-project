@@ -34,3 +34,4 @@ module.exports.resourceHistoryController =require('./resourceHistory.controller'
 module.exports.clientController= require('./client.controller')
 module.exports.BudgetSessionController= require('./budgetSession.controller')
 module.exports.monthlyBudgetController= require('./monthlyBudget.controller')
+module.exports.permissionController= require('./permission.controller')
