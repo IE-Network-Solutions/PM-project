@@ -34,4 +34,5 @@ module.exports.budgetSessionService= require('./budgetSession.service')
 module.exports.monthlyBudgetService= require('./montlyBudget.service')
 module.exports.monthlyBudgetCommentService= require('./monthlyBudgetComment.service')
 module.exports.permissionService= require('./permission.service')
+module.exports.budgetCategoryTypeService= require('./budgetCategoryType.service')
 

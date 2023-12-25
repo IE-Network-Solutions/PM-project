@@ -27,6 +27,7 @@ module.exports.resourceHistoryValidation =require('./resourceHistory.validation'
 module.exports.budgetSessionValidation =require('./BudgetSession.validation')
 module.exports.monthlyBudgetValidation =require('./monthlyBudget.validation')
 module.exports.permissionValidation =require('./permission.validation')
+module.exports.budgetCategoryTypeValidation =require('./budgetCategoryType.validation')
 
 
 module.exports.uploadValidation =require('./upload.validation')
