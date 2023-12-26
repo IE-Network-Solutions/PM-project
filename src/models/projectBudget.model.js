@@ -5,7 +5,11 @@ const { Base } = require('./BaseModel');
 class ProjectBudget extends Base {
   constructor() {
     super();
-    this.amount = { type: 'float' }; 
+    this.amount = { type: 'float' };
+    this.projectId = { type: 'varchar' };
+    this.currencyId = { type: 'varchar' };
+    this.budgetCategoryId = { type: 'varchar' };
+    this.usedAmount = { type: 'float', default: 0 };
   }
 }
 
@@ -25,6 +29,6 @@ module.exports = new EntitySchema({
     currency: {
       type: 'many-to-one',
       target: 'Currency',
-      },
     },
+  },
 });

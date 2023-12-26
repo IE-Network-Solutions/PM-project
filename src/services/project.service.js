@@ -265,6 +265,5 @@ module.exports = {
   getMembers,
   getTotalActiveClosedProjects,
   removeMember,
-  getMembers,
   closeProject,
 };
