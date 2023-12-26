@@ -14,4 +14,11 @@ module.exports = new EntitySchema({
   name: 'budgetCategory',
   tableName: 'budget_category',
   columns: new budgetCategory(),
+  relations: {
+    budgetCategoryType: {
+      type: 'many-to-one',
+      target: 'budgetCategoryType',
+      inverseSide: 'budgetCategory',
+    },
+  },
 });

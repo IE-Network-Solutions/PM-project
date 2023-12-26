@@ -74,6 +74,7 @@ const approvalStageSeeder = async () => {
       ]
     }
   ]
+  
 
   return approvalStages;
 }
