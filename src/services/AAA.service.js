@@ -165,7 +165,7 @@ const deleteAAAById = async (AAAId) => {
 const getAllAAAByProjectId = async (id) => {
     return await AAARepository.find({
         where: { projectId: id },
-        relations: ['actions.responsiblePerson', 'actions.authorizedPerson', 'issueRelates', 'project', 'department'],
+        relations: ['actions.responsiblePerson', 'actions.authorizedPerson', 'issueRelates', 'project', 'department', 'accountablities.responsiblePerson'],
         tableName: 'afterActionAnalysis'
     });
 };

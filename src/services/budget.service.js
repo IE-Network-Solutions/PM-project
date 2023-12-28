@@ -230,6 +230,69 @@ const getBudgetsOfProjects = async () => {
 
   return groupedData;
 };
+const getBudgetsOfficeOfProjects = async (month) => {
+  let from = month.from;
+  let to = month.to;
+
+  const isOffice = true;
+
+  const budgets = await budgetRepository
+    .createQueryBuilder('budget')
+    .leftJoin('budget.project', 'project')
+    .leftJoin('budget.task', 'task')
+    .leftJoin('task.milestone', 'milestone')
+    .leftJoin('budget.group', 'group')
+    .leftJoin('group.comments', 'comments')
+    .leftJoin('group.approvalStage', 'approvalStage')
+    .leftJoin('approvalStage.role', 'role')
+    .leftJoin('budget.budgetCategory', 'budgetCategory')
+    .leftJoin('budget.taskCategory', 'taskCategory')
+    .leftJoin('budget.currency', 'currency')
+    .select([
+      'budget',
+      'task',
+      'project',
+      'group',
+      'milestone',
+      'currency',
+      'budgetCategory',
+      'taskCategory',
+      'approvalStage',
+      'role',
+      'comments',
+    ])
+    .where('group.from = :from', { from: from })
+    .where('group.to = :to', { to: to })
+    .where('project.isOffice = :isOffice', { isOffice: isOffice })
+
+    .andWhere('group.approvalStage IS NOT NULL')
+    .getMany();
+
+  const groupedData = {};
+
+  budgets.forEach((entry) => {
+    const projectId = entry.project.id;
+    const groupId = entry.group.id;
+
+    if (!groupedData[projectId]) {
+      groupedData[projectId] = {
+        project: {
+          id: entry.project.id,
+          name: entry.project.name, // Include project name
+        },
+        groups: {},
+      };
+    }
+
+    if (!groupedData[projectId].groups[groupId]) {
+      groupedData[projectId].groups[groupId] = [];
+    }
+
+    groupedData[projectId].groups[groupId].push(entry);
+  });
+
+  return groupedData;
+};
 const getMonthlyBudgetsOfProjects = async () => {
   return 'abrilo';
 };
@@ -732,4 +795,5 @@ module.exports = {
   getBudgetsByGroup,
   masterBudget,
   filterBudget,
+  getBudgetsOfficeOfProjects,
 };

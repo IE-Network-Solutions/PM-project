@@ -43,6 +43,7 @@ const getProject = catchAsync(async (req, res) => {
   res.send(project);
 });
 const updateProject = catchAsync(async (req, res) => {
+  console.log(req.body, "rhhnananmmeqkkkkselamkkk")
   const project = await projectService.updateProject(req.params.projectId, req.body);
   res.send(project);
 });

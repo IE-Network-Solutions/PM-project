@@ -59,10 +59,10 @@ const updatePaymentTerm = {
 };
 
 const deletePaymentTerm = {
-    params: Joi.object().keys({
-      paymentTermId: Joi.string(),
-    }),
-  };
+  params: Joi.object().keys({
+    paymentTermId: Joi.string(),
+  }),
+};
 
 module.exports = {
   createPaymentTerm,

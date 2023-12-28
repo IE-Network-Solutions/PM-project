@@ -54,3 +54,7 @@ module.exports.permissionRole = require('./permissionRole.model');
 module.exports.budgetCategoryType = require('./budgetCategoryType.model');
 module.exports.projectBudget = require('./projectBudget.model');
 module.exports.offshoreMatterialBoq = require('./offshoreMatterialBoq.model');
+module.exports.OfficeMonthlyBudget = require('./officeProjectMonthlyBudget.model');
+module.exports.OfficeMonthlyBudgetComment = require('./OfficeMonthlyBudgetComment.model');
+module.exports.momAbsents = require('./momabsents.model');
+module.exports.Accountablity = require('./accountablity.model');

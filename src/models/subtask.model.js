@@ -18,6 +18,7 @@ class SubTask extends Base {
     this.sleepingReason = { type: 'varchar', nullable: true };
     this.taskId = { type: 'uuid', };
     this.predecessor = { type: "varchar", nullable: true }
+    this.predecessorType = { type: "varchar", nullable: true }
   }
 }
 

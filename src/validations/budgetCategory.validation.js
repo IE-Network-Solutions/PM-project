@@ -5,6 +5,7 @@ const createBudgetCategory = {
   body: Joi.object().keys({
     budgetCategoryName: Joi.string().required(),
     accountNumber: Joi.string().required(),
+    budgetCategoryTypeId: Joi.string().required(),
   }),
 };
 
@@ -29,6 +30,7 @@ const updateBudgetCategory = {
   body: Joi.object()
     .keys({
       budgetCategoryName: Joi.string(),
+      budgetCategoryTypeId: Joi.string(),
     })
     .min(1),
 };
