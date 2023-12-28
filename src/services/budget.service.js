@@ -176,6 +176,7 @@ const getBudgetGroupByCategory = async (from, to) => {
     .addSelect('group.to', 'group_to')
     .addSelect('project.id', 'project_id')
     .addSelect('project.name', 'project_name')
+    .addSelect('project.isOffice', 'isOffice')
     .groupBy('currency.id') // Group by the currency ID
     .addGroupBy('taskCategory.id')
     .addGroupBy('project.id')
