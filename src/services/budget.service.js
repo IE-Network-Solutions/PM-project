@@ -66,6 +66,9 @@ const deductFromProjectBudget = async (categoryId, currencyId, projectId, amount
     .getOne();
 
   console.log(projectBudget);
+  // if (!projectBudget) {
+  //   $projectBudget = 
+  // }
   projectBudget.usedAmount += amount;
 
   await projectBudgetRepository.save(projectBudget);
