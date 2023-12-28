@@ -38,12 +38,24 @@ const updateMilestone = {
     })
     .min(1),
 };
-
+const updateMilestoneVariance = {
+  body: Joi.array().items(
+    Joi.object({
+      id: Joi.string().uuid().required(),
+      plannedStart: Joi.date(),
+      plannedFinish: Joi.date(),
+      startVariance: Joi.number(),
+      finishVariance: Joi.number(),
+      actualStart: Joi.date(),
+      actualFinish: Joi.date(),
+    })
+  ).min(1),
+};
 const deleteMilestone = {
-    params: Joi.object().keys({
-        milestoneId: Joi.string(),
-    }),
-  };
+  params: Joi.object().keys({
+    milestoneId: Joi.string(),
+  }),
+};
 
 module.exports = {
   createMilestone,
@@ -51,5 +63,6 @@ module.exports = {
   getMilestone,
   getByProject,
   updateMilestone,
-  deleteMilestone
+  deleteMilestone,
+  updateMilestoneVariance
 };

@@ -38,6 +38,8 @@ const monthlyBudget = require('./monthlyBudget.route');
 const permission = require('./permission.route');
 const projectBudget = require('./projectBudget.route');
 const budgetCategoryType = require('./budgetCategoryType.route');
+const officeMonthlyBudget = require('./officeMonthlyBudget.route');
+const accountablity = require('./accountablity.route');
 
 const router = express.Router();
 
@@ -185,6 +187,14 @@ const defaultRoutes = [
   {
     path: '/budgetCategoryTypes',
     route: budgetCategoryType,
+  },
+  {
+    path: '/officeBudget',
+    route: officeMonthlyBudget,
+  },
+  {
+    path: '/accountablity',
+    route: accountablity,
   },
 ];
 
