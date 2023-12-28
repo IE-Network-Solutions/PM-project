@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const { startOfWeek, endOfWeek, addWeeks } = require('date-fns');
 const { Between, IsNull } = require('typeorm');
-const { Task, TaskUser, Baseline, Milestone, Risk, Issue, WeeklyReport,WeeklyReportComment, User } = require('../models');
+const { Task, TaskUser, Baseline, Milestone, Risk, Issue, WeeklyReport, WeeklyReportComment, User } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -170,14 +170,14 @@ const getWeeklyReport = async (projectId) => {
         baselineId: eachAllActiveBaselines.id,
       },
       relations: ['baseline.project']
-    });   
+    });
 
     if (activeTasks.length > 0) {
       allTasks.push(...activeTasks);
 
     }
   }
-  
+
 
   const sleepingTasks = [];
 
@@ -213,7 +213,7 @@ const getWeeklyReport = async (projectId) => {
 
     where: {
       projectId: projectId,
-      createdAt: Between(startOfWeekDate, endOfWeekDate),
+      // createdAt: Between(startOfWeekDate, endOfWeekDate),
     },
   });
 
@@ -222,7 +222,7 @@ const getWeeklyReport = async (projectId) => {
   const risks = await riskRepository.find({
     where: {
       projectId: projectId,
-      createdAt: Between(startOfWeekDate, endOfWeekDate),
+      // createdAt: Between(startOfWeekDate, endOfWeekDate),
     },
   });
 
@@ -262,7 +262,7 @@ const addSleepingReason = async (tasks) => {
   return updatedTasks;
 };
 
-const addWeeklyReport = async(projectId, weeklyReportData)=>{
+const addWeeklyReport = async (projectId, weeklyReportData) => {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonthNumber = currentDate.getMonth() + 1;
@@ -278,8 +278,8 @@ const addWeeklyReport = async(projectId, weeklyReportData)=>{
 
   const dayOfMonth = currentDate.getDate();
   const weekOfMonth = Math.ceil(dayOfMonth / 7);
-  
-  const addedWeeklyReport =  weeklyReportRepository.create({
+
+  const addedWeeklyReport = weeklyReportRepository.create({
     projectId: projectId,
     year: currentYear,
     month: currentMonthNumber,
@@ -311,38 +311,38 @@ const getAddedWeeklyReport = async (projectId) => {
 
 const getReportByWeek = async (projectId, week) => {
   const reportByWeek = await weeklyReportRepository.find({
-    where: { projectId: projectId, id: week }, 
+    where: { projectId: projectId, id: week },
     relations: ['project']
   });
   return reportByWeek;
 };
 
 
-const addComment = async(comment) =>{
-    const weeklyReportComment = weeklyCommentReportRepository.create({
-      weeklyReportId: comment.id,
-      userId: comment.userId,
-      comment: comment.comment,
-    });
-  
-    const savedComment = await weeklyCommentReportRepository.save(weeklyReportComment);
+const addComment = async (comment) => {
+  const weeklyReportComment = weeklyCommentReportRepository.create({
+    weeklyReportId: comment.id,
+    userId: comment.userId,
+    comment: comment.comment,
+  });
 
-    const sender = await userRepository.findOne({
-      where : {
-        id: savedComment.userId
-      }
+  const savedComment = await weeklyCommentReportRepository.save(weeklyReportComment);
+
+  const sender = await userRepository.findOne({
+    where: {
+      id: savedComment.userId
     }
-    );
-  
-    savedComment.user = sender;
-    return savedComment;
+  }
+  );
+
+  savedComment.user = sender;
+  return savedComment;
 }
 
-const getComments = async(weeklyReportId) =>{
+const getComments = async (weeklyReportId) => {
 
   return await weeklyCommentReportRepository.find(
     {
-      where:{weeklyReportId: weeklyReportId, },
+      where: { weeklyReportId: weeklyReportId, },
       relations: ['user'],
       order: { createdAt: 'ASC' },
     }

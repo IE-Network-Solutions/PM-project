@@ -120,8 +120,25 @@ const getBudgetsOfProjects = catchAsync(async (req, res) => {
   res.send(data);
 });
 const getBudgetsOfOfficeProjects = catchAsync(async (req, res) => {
-  const data = await budgetService.getBudgetsOfficeOfProjects();
-  res.send(data);
+
+  let month = {
+
+  };
+  month.from = req.body.from;
+  month.to = req.body.to;
+
+  const monthlyBudgetData = await budgetService.getBudgetsOfficeOfProjects(month);
+
+  if (!monthlyBudgetData) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'no Office monthly budget exist');
+  }
+
+  res.status(200).json(monthlyBudgetData);
+
+
+
+
+
 });
 
 const getAllBudgetsOfProjects = catchAsync(async (req, res) => {

@@ -54,6 +54,7 @@ const updateMilestoneVariance = catchAsync(async (req, res) => {
   res.send(milestones);
 });
 const deleteMilestone = catchAsync(async (req, res) => {
+  console.log(req.params.milestoneId, "psiueuehdbc")
   await milestoneService.deleteMilestone(req.params.milestoneId);
   res.status(httpStatus.NO_CONTENT).send();
 });

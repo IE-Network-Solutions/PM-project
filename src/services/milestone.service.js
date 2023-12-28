@@ -78,8 +78,6 @@ const updateMilestone = async (milestoneId, updateBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Milestone not found');
   }
   await milestoneRepository.update({ id: milestoneId }, updateBody);
-  console.log(await getMilestone(milestoneId), "kshafoqweprimxznoa");
-
   return await getMilestone(milestoneId);
 };
 
@@ -92,9 +90,11 @@ const updateMilestone = async (milestoneId, updateBody) => {
 
 const deleteMilestone = async (milestoneId) => {
   const milestone = await getMilestone(milestoneId);
+  console.log(milestone, milestoneId, "yugfggvbhhuhuhh")
   if (!milestone) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Milestone not found');
   }
+
 
   return await milestoneRepository.delete({ id: milestoneId });
   //The following code is to cascade deleting baselines, 

@@ -200,7 +200,10 @@ const getBudgetsOfProjects = async () => {
 
   return groupedData;
 };
-const getBudgetsOfficeOfProjects = async () => {
+const getBudgetsOfficeOfProjects = async (month) => {
+  let from = month.from
+  let to = month.to
+
   const isOffice = true;
 
   const budgets = await budgetRepository
@@ -216,7 +219,10 @@ const getBudgetsOfficeOfProjects = async () => {
     .leftJoin('budget.taskCategory', 'taskCategory')
     .leftJoin('budget.currency', 'currency')
     .select(['budget', 'task', 'project', 'group', 'milestone', 'currency', 'budgetCategory', 'taskCategory', 'approvalStage', 'role', 'comments'])
-    .where('project.isOffice = :isOffice', { isOffice })
+    .where('group.from = :from', { from: from })
+    .where('group.to = :to', { to: to })
+    .where('project.isOffice = :isOffice', { isOffice: isOffice })
+
     .andWhere('group.approvalStage IS NOT NULL')
     .getMany();
 
@@ -242,6 +248,7 @@ const getBudgetsOfficeOfProjects = async () => {
 
     groupedData[projectId].groups[groupId].push(entry);
   });
+
 
   return groupedData;
 };
