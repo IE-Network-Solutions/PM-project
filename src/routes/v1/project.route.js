@@ -10,7 +10,7 @@ router
   .post(validate(projectValidation.createProject), projectController.createProject)
   .get(validate(projectValidation.getProjects), projectController.getProjects);
 
-  router
+router
   .route('/office-project')
   .post(validate(projectValidation.createOfficeProject), projectController.createProject);
 
@@ -36,9 +36,9 @@ router
 
 router.route('/all/getTotalProjects').get(projectController.getTotalActiveClosedProjects);
 
-  router
+router
   .route('/closeproject/:projectId')
   .patch(projectController.closeProject)
-  
+
 
 module.exports = router;

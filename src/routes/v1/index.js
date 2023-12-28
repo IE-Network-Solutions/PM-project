@@ -30,11 +30,13 @@ const departmentRoute = require('./department.route');
 const approval = require('./approval.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
-const resourceHistory =require('./resourceHistory.route');
-const clientRoute= require('./client.route')
-const budgetSessionRoute= require('./budgetSession.route')
+const resourceHistory = require('./resourceHistory.route');
+const clientRoute = require('./client.route')
+const budgetSessionRoute = require('./budgetSession.route')
 const roleRoute = require('./role.route');
 const monthlyBudget = require('./monthlyBudget.route');
+const officeMonthlyBudget = require('./officeMonthlyBudget.route');
+const accountablity = require('./accountablity.route');
 
 const router = express.Router();
 
@@ -166,13 +168,23 @@ const defaultRoutes = [
     path: '/budgetSession',
     route: budgetSessionRoute
   },
-   { path: '/roles',
+  {
+    path: '/roles',
     route: roleRoute,
   },
   {
     path: '/monthlyBudget',
     route: monthlyBudget
-   }
+  },
+  {
+    path: '/officeBudget',
+    route: officeMonthlyBudget
+  },
+  {
+    path: '/accountablity',
+    route: accountablity
+  },
+
 ];
 
 const devRoutes = [

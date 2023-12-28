@@ -7,12 +7,13 @@ const { momComment } = require('../models');
 
 const createMom = catchAsync(async (req, res) => {
   const Attendees = req.body.attendees;
+  const Absents = req.body.absents
   const Agenda = req.body.agenda;
   const Action = req.body.action;
   delete req.body.attendees;
-  delete req.body.action; 
-  delete req.body.agenda; 
-  const mom = await momService.createMom(req.body, Attendees, Action, Agenda);
+  delete req.body.action;
+  delete req.body.agenda;
+  const mom = await momService.createMom(req.body, Attendees, Absents, Action, Agenda);
   res.status(httpStatus.CREATED).json(mom);
 });
 
@@ -50,8 +51,9 @@ const groupMOMByProject = catchAsync(async (req, res) => {
   });
 });
 
-const updateMom = catchAsync(async(req, res)=>{
+const updateMom = catchAsync(async (req, res) => {
   const attendees = req.body.attendees;
+  const absents = req.body.absents;
   const externalAttendees = req.body.externalAttendees;
   const action = req.body.action;
   const agenda = req.body.agenda;
@@ -62,14 +64,14 @@ const updateMom = catchAsync(async(req, res)=>{
 
   const momBody = req.body;
 
-  const mom = await momService.updateMom(req.params.momId, momBody,  attendees, externalAttendees, action, agenda);
+  const mom = await momService.updateMom(req.params.momId, momBody, attendees, absents, externalAttendees, action, agenda);
   res.send(mom);
 });
 
 
-const deleteMom = catchAsync(async(req, res)=>{
-    await momService.deleteMom(req.params.momId);
-    res.status(httpStatus.NO_CONTENT).send();
+const deleteMom = catchAsync(async (req, res) => {
+  await momService.deleteMom(req.params.momId);
+  res.status(httpStatus.NO_CONTENT).send();
 });
 
 const addComment = catchAsync(async (req, res) => {
@@ -77,9 +79,9 @@ const addComment = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(momComment);
 });
 
-const getComments = catchAsync(async (req, res)=>{
-    const momComment = await momService.getComments(req.params.momId);
-    res.send(momComment);
+const getComments = catchAsync(async (req, res) => {
+  const momComment = await momService.getComments(req.params.momId);
+  res.send(momComment);
 });
 
 module.exports = {

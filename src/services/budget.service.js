@@ -43,7 +43,7 @@ const createBudget = async (budgetBody) => {
   await budgetRepository.save(budgets);
   return budgets;
 };
-  
+
 /**
  * Query for budget
  * @param {Object} filter - Filter options
@@ -145,14 +145,16 @@ const getBudgetGroupByCategory = async (from, to) => {
     .addSelect('group.to', 'group_to')
     .addSelect('project.id', 'project_id')
     .addSelect('project.name', 'project_name')
+    .addSelect('project.isOffice', 'isOffice')
+    .where('group.from = :from', { from: from })
+    .andWhere('group.to = :to', { to: to })
     .groupBy('currency.id') // Group by the currency ID
     .addGroupBy('taskCategory.id')
     .addGroupBy('project.id')
     .addGroupBy('group.to')
     .addGroupBy('group.from')
     .getRawMany();
-  
-  budgets.map((budget) => { budget.from = from,budget.to = to})
+  budgets.map((budget) => { budget.from = from, budget.to = to })
   return budgets;
 };
 
@@ -197,6 +199,58 @@ const getBudgetsOfProjects = async () => {
 
     groupedData[projectId].groups[groupId].push(entry);
   });
+
+  return groupedData;
+};
+const getBudgetsOfficeOfProjects = async (month) => {
+  let from = month.from
+  let to = month.to
+
+  const isOffice = true;
+
+  const budgets = await budgetRepository
+    .createQueryBuilder('budget')
+    .leftJoin('budget.project', 'project')
+    .leftJoin('budget.task', 'task')
+    .leftJoin('task.milestone', 'milestone')
+    .leftJoin('budget.group', 'group')
+    .leftJoin('group.comments', 'comments')
+    .leftJoin('group.approvalStage', 'approvalStage')
+    .leftJoin('approvalStage.role', 'role')
+    .leftJoin('budget.budgetCategory', 'budgetCategory')
+    .leftJoin('budget.taskCategory', 'taskCategory')
+    .leftJoin('budget.currency', 'currency')
+    .select(['budget', 'task', 'project', 'group', 'milestone', 'currency', 'budgetCategory', 'taskCategory', 'approvalStage', 'role', 'comments'])
+    .where('group.from = :from', { from: from })
+    .where('group.to = :to', { to: to })
+    .where('project.isOffice = :isOffice', { isOffice: isOffice })
+
+    .andWhere('group.approvalStage IS NOT NULL')
+    .getMany();
+
+  const groupedData = {};
+
+  budgets.forEach((entry) => {
+    const projectId = entry.project.id;
+    const groupId = entry.group.id;
+
+    if (!groupedData[projectId]) {
+      groupedData[projectId] = {
+        project: {
+          id: entry.project.id,
+          name: entry.project.name, // Include project name
+        },
+        groups: {},
+      };
+    }
+
+    if (!groupedData[projectId].groups[groupId]) {
+      groupedData[projectId].groups[groupId] = [];
+    }
+
+    groupedData[projectId].groups[groupId].push(entry);
+  });
+
 
   return groupedData;
 };
@@ -467,7 +521,7 @@ const masterBudget = async () => {
       'comments',
       'currency',
     ])
-    .andWhere('group.approved = :approval',{approval})
+    .andWhere('group.approved = :approval', { approval })
     .getMany();
 
   const groupedData = {};
@@ -531,7 +585,7 @@ const filterBudget = async (startDate, endDate) => {
       'currency',
     ])
     // .andWhere('group.approvalStage IS NOT NULL')
-    .andWhere('group.approved = :approval',{approval})
+    .andWhere('group.approved = :approval', { approval })
     .andWhere('(group.from BETWEEN :startDate AND :endDate OR group.to BETWEEN :startDate AND :endDate)', {
       startDate,
       endDate,
@@ -703,4 +757,5 @@ module.exports = {
   getBudgetsByGroup,
   masterBudget,
   filterBudget,
+  getBudgetsOfficeOfProjects
 };

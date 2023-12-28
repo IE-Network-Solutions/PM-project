@@ -8,11 +8,12 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(validate(monthlyBudgetValidation.addMonthlyBudget),monthlyBudgetController.createMonthlyBudget)
-    .get(monthlyBudgetController.getMonthlyBudget);
+  .post(monthlyBudgetController.createMonthlyBudget)
+  .get(monthlyBudgetController.getMonthlyBudget);
 
-router.route('/month').get(validate(monthlyBudgetValidation.getMonthlyBudget),monthlyBudgetController.getMonthlyBudgetByMonth);
-  
-router.route('/:id').patch(validate(monthlyBudgetValidation.updateMonthlyBudget),monthlyBudgetController.updateMonthlyBudget);
+router.route('/month').get(monthlyBudgetController.getMonthlyBudgetByMonth);
+
+
+router.route('/:id').patch(monthlyBudgetController.updateMonthlyBudget);
 
 module.exports = router

@@ -30,10 +30,10 @@ const approvalModuleRepository = dataSource.getRepository(ApprovalModule).extend
  * @returns {Promise<QueryResult>}
  */
 
-const getMonthlyBudgets = async () => {  
-    return await montlyBudgetRepository.find({
-      relations: ['approvalStage'],
-    });
+const getMonthlyBudgets = async () => {
+  return await montlyBudgetRepository.find({
+    relations: ['approvalStage'],
+  });
 };
 
 /**
@@ -42,36 +42,36 @@ const getMonthlyBudgets = async () => {
  * @returns {Promise<Project>}
  */
 const createMontlyBudget = async (montlyBudgetBody) => {
-    moduleName = "MonthlyBudget"
-    level = 1
-    approvalStage = await approvalStageRepository
-        .createQueryBuilder('approval_stage')
-        .leftJoin('approval_stage.approvalModule','approvalModule')
-        .where('approvalModule.moduleName = :moduleName', { moduleName })
-        .andWhere('approval_stage.level = :level', { level })
-        .getOne();
-    
-    montlyBudgetBody.approvalStage = approvalStage;
-    const montlBudget = montlyBudgetRepository.create(montlyBudgetBody);
-    await montlyBudgetRepository.save(montlBudget);
+  moduleName = "MonthlyBudget"
+  level = 1
+  approvalStage = await approvalStageRepository
+    .createQueryBuilder('approval_stage')
+    .leftJoin('approval_stage.approvalModule', 'approvalModule')
+    .where('approvalModule.moduleName = :moduleName', { moduleName })
+    .andWhere('approval_stage.level = :level', { level })
+    .getOne();
 
-    return montlBudget;
+  montlyBudgetBody.approvalStage = approvalStage;
+  const montlBudget = montlyBudgetRepository.create(montlyBudgetBody);
+  await montlyBudgetRepository.save(montlBudget);
+
+  return montlBudget;
 };
 
 const getMonthlyBudgetByMonthGroup = async (month) => {
-    const monthlyBudget = await montlyBudgetRepository.findOne({ where: { from: month.from, to: month.to },relations: ['approvalStage','approvalStage.role','monthlyBudgetcomments'] });
-    return monthlyBudget;
+  const monthlyBudget = await montlyBudgetRepository.findOne({ where: { from: month.from, to: month.to }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments'] });
+  return monthlyBudget;
 }
 
-const updateMonthlyBudget = async (id,updatedData) => {
-    const monthlyBudget = await montlyBudgetRepository.update({ id: id }, updatedData );
-    return await montlyBudgetRepository.findOne({where: {id: id}});
+const updateMonthlyBudget = async (id, updatedData) => {
+  const monthlyBudget = await montlyBudgetRepository.update({ id: id }, updatedData);
+  return await montlyBudgetRepository.findOne({ where: { id: id } });
 }
 
 
 module.exports = {
-    createMontlyBudget,
-    getMonthlyBudgets,
-    getMonthlyBudgetByMonthGroup,
-    updateMonthlyBudget
+  createMontlyBudget,
+  getMonthlyBudgets,
+  getMonthlyBudgetByMonthGroup,
+  updateMonthlyBudget
 }

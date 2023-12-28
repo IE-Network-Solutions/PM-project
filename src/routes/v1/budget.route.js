@@ -12,6 +12,7 @@ router
   .get(validate(budgetValidation.getBudgets), budgetController.getBudgets);
 
 router.route('/project').get(budgetController.getBudgetsOfProjects);
+router.route('/officeProject').get(budgetController.getBudgetsOfOfficeProjects);
 router.route('/monthly').get(budgetController.getMonthlyBudget);
 router.route('/groupbyCategory').get(budgetController.getBudgetGroupByCategory);
 
