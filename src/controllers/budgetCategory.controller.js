@@ -2,10 +2,17 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { budgetCategoryService } = require('../services');
+const { budgetCategoryService, budgetCategoryTypeService } = require('../services');
+const { budgetCategoryType } = require('../models');
 
 const createBudgetCategory = catchAsync(async (req, res) => {
   try {
+    const data = req.body;
+    const budgetcategoryType = await budgetCategoryTypeService.getBudgetCategoryType(data.budgetCategoryTypeId);
+    data.budgetCategoryType = budgetcategoryType;
+    data.budgetCategorySlug = data.budgetCategoryName.toLowerCase().replace(/\s/g, '_');
+    delete data.budgetCategoryTypeId;
+    console.log(data);
     const budgetCategory = await budgetCategoryService.createBudgetCategory(req.body);
     res.status(httpStatus.CREATED).send(budgetCategory);
   } catch (error) {
@@ -29,6 +36,14 @@ const getBudgetCategory = catchAsync(async (req, res) => {
 });
 
 const updateBudgetCategory = catchAsync(async (req, res) => {
+  const data = req.body;
+  data.budgetCategorySlug = data.budgetCategoryName.toLowerCase().replace(/\s/g, '_');
+  if (data.budgetCategoryTypeId) {
+    const budgetcategoryType = await budgetCategoryTypeService.getBudgetCategoryType(data.budgetCategoryTypeId);
+    data.budgetCategoryType = budgetcategoryType;
+  }
+  delete data.budgetCategoryTypeId;
+  console.log(data);
   const updatedBudgetCategory = await budgetCategoryService.updateBudgetCategory(req.params.budgetCategoryId, req.body);
   res.send(updatedBudgetCategory);
 });

@@ -6,6 +6,7 @@ class budgetCategory extends Base {
   constructor() {
     super(); // Call the constructor of the Base entity to inherit its properties
     this.budgetCategoryName = { type: 'varchar' };
+    this.budgetCategorySlug = { type: 'varchar', nullable: true };
     this.accountNumber = { type: 'varchar' };
   }
 }

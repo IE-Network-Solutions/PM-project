@@ -1,11 +1,15 @@
 const httpStatus = require('http-status');
-const { BudgetCategory } = require('../models');
+const { BudgetCategory, budgetCategoryType } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 
 const budgetCategoryRepository = dataSource.getRepository(BudgetCategory).extend({
+  findAll,
+  sortBy,
+});
+const budgetCategoryTypeRepository = dataSource.getRepository(budgetCategoryType).extend({
   findAll,
   sortBy,
 });
@@ -55,7 +59,7 @@ const getBudgetCategory = async (id) => {
  * @returns {Promise<Project>}
  */
 const updateBudgetCategory = async (budgetCategoryId, updateBody) => {
-  const budgetCategory = getBudgetCategory(budgetCategoryId);
+  const budgetCategory = await getBudgetCategory(budgetCategoryId);
   if (!budgetCategory) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Budget Category not found');
   }

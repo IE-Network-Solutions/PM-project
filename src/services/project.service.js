@@ -216,10 +216,17 @@ const addMember = async (projectId, projectMembers) => {
 };
 
 const getMembers = async (projectId) => {
-  return await projectMemberRepository
+  const projectMemebrs = await projectMemberRepository
     .createQueryBuilder('project_member')
+    .leftJoinAndSelect('project_member.user', 'user')
     .where('project_member.projectId = :projectId', { projectId })
     .getMany();
+  const users = [];
+
+  projectMemebrs.map((user) => {
+    users.push(user.user);
+  });
+  return users;
 };
 
 const removeMember = async (projectId, memberToRemove) => {

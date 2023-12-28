@@ -55,7 +55,7 @@ const getBudgetCategoryType = async (id) => {
  * @returns {Promise<Project>}
  */
 const updateBudgetCategoryType = async (budgetCategoryTypeId, updateBody) => {
-  const budgetCategoryType = getBudgetCategoryType(budgetCategoryTypeId);
+  const budgetCategoryType = await getBudgetCategoryType(budgetCategoryTypeId);
   if (!budgetCategoryType) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Budget Category Type not found');
   }
@@ -77,9 +77,9 @@ const deleteBudgetCategoryTypeId = async (budgetCategoryTypeId) => {
 };
 
 module.exports = {
-    createBudgetCategoryType,
-    getAllBudgetCategoryTypes,
-    getBudgetCategoryType,
-    updateBudgetCategoryType,
-    deleteBudgetCategoryTypeId,
+  createBudgetCategoryType,
+  getAllBudgetCategoryTypes,
+  getBudgetCategoryType,
+  updateBudgetCategoryType,
+  deleteBudgetCategoryTypeId,
 };
