@@ -16,7 +16,7 @@ class Task extends Base {
     this.status = { type: 'boolean', nullable: true };
     this.sleepingReason = { type: 'varchar', nullable: true };
     this.baselineId = { type: 'uuid' };
-    this.milestoneId = { type: 'uuid' };
+    this.milestoneId = { type: 'uuid', nullable: true };
     this.predecessor = { type: 'varchar', nullable: true };
   }
 }

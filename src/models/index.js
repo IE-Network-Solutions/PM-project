@@ -49,3 +49,14 @@ module.exports.budgetSession = require('./budgetSession.model');
 module.exports.monthlyBudget = require('./monthlyBudget.model');
 module.exports.monthlyBudgetComment = require('./monthlyBudgetComments.model');
 
+///////////////////////////////////////////////////
+module.exports.Quality = require('./quality.model');
+module.exports.Solution = require('./solution.model');
+module.exports.Criteria = require('./criteria.model');
+module.exports.Todo = require('./todo.model');
+module.exports.Color = require('./color.model');
+module.exports.CheckList = require('./checkList.model');
+module.exports.Evalution = require('./evalution.model');
+module.exports.MilestoneCriteria = require('./milestoneCriteria.model');
+module.exports.TodoEvalution = require('./TodoEvalution.model');
+

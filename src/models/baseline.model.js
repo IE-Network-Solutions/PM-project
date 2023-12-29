@@ -6,10 +6,10 @@ class Baseline extends Base {
     super();
     this.name = { type: 'varchar' };
     this.status = { type: 'boolean', default: true };
-    this.projectId = { type: 'uuid' };
-    this.approved = { type: 'boolean',default:false };
-    this.rejected = { type: 'boolean',default:false };
-  } 
+    this.projectId = { type: 'uuid', nullable: true };
+    this.approved = { type: 'boolean', default: false };
+    this.rejected = { type: 'boolean', default: false };
+  }
 }
 
 module.exports = new EntitySchema({

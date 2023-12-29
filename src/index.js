@@ -1,6 +1,5 @@
 const app = require('./app');
 const rabbitConsumer = require('./utils/consumer');
-const rabbitConsumer = require('./utils/consumer')
 
 const AppDataSource = require('./utils/createDatabaseConnection');
 const config = require('./config/config');

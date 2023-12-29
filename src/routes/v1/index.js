@@ -30,11 +30,21 @@ const departmentRoute = require('./department.route');
 const approval = require('./approval.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
-const resourceHistory =require('./resourceHistory.route');
-const clientRoute= require('./client.route')
-const budgetSessionRoute= require('./budgetSession.route')
+const resourceHistory = require('./resourceHistory.route');
+const clientRoute = require('./client.route')
+const budgetSessionRoute = require('./budgetSession.route')
 const roleRoute = require('./role.route');
 const monthlyBudget = require('./monthlyBudget.route');
+
+///////////////////////////////////////////////////////
+const qualityRoute = require('./quality.route');
+const solutionRoute = require('./solution.route');
+const criteriaRoute = require('./criteria.route');
+const todoRoute = require('./todo.route');
+const colorRoute = require('./color.route');
+const checkListRoute = require('./checkList.route');
+const evalutionRoute = require('./evalution.route');
+
 
 const router = express.Router();
 
@@ -166,13 +176,44 @@ const defaultRoutes = [
     path: '/budgetSession',
     route: budgetSessionRoute
   },
-   { path: '/roles',
+  {
+    path: '/roles',
     route: roleRoute,
   },
   {
     path: '/monthlyBudget',
     route: monthlyBudget
-   }
+  },
+
+  ////////////////////////////////////////////////////
+  {
+    path: '/quality',
+    route: qualityRoute
+  },
+  {
+    path: "/solution",
+    route: solutionRoute
+  },
+  {
+    path: "/criteria",
+    route: criteriaRoute
+  },
+  {
+    path: "/todo",
+    route: todoRoute
+  },
+  {
+    path: "/color",
+    route: colorRoute
+  },
+  {
+    path: "/checkList",
+    route: checkListRoute
+  },
+  {
+    path: "/evalution",
+    route: evalutionRoute
+  }
 ];
 
 const devRoutes = [

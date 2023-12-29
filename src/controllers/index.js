@@ -30,7 +30,16 @@ module.exports.approvalLevelController = require('./approvalLevel.controller');
 module.exports.approvalStageController = require('./approvalStage.controller');
 module.exports.approvalController = require('./approval.controller');
 module.exports.departmentController = require('./department.controller');
-module.exports.resourceHistoryController =require('./resourceHistory.controller')
-module.exports.clientController= require('./client.controller')
-module.exports.BudgetSessionController= require('./budgetSession.controller')
-module.exports.monthlyBudgetController= require('./monthlyBudget.controller')
+module.exports.resourceHistoryController = require('./resourceHistory.controller')
+module.exports.clientController = require('./client.controller')
+module.exports.BudgetSessionController = require('./budgetSession.controller')
+module.exports.monthlyBudgetController = require('./monthlyBudget.controller')
+
+//////////////////////////////////////////
+module.exports.Quality = require('./quality.controller');
+module.exports.Solution = require('./solution.controller');
+module.exports.Criteria = require('./criteria.controller');
+module.exports.Todo = require('./todo.controller');
+module.exports.Color = require('./color.controller');
+module.exports.CheckList = require('./checkList.controller');
+module.exports.Evalution = require('./evalution.controller');
