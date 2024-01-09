@@ -41,6 +41,9 @@ const budgetCategoryType = require('./budgetCategoryType.route');
 const officeMonthlyBudget = require('./officeMonthlyBudget.route');
 const accountablity = require('./accountablity.route');
 
+const stakholder = require('./stakholder.route');
+
+
 const router = express.Router();
 
 const defaultRoutes = [
@@ -195,6 +198,10 @@ const defaultRoutes = [
   {
     path: '/accountablity',
     route: accountablity,
+  },
+  {
+    path: '/stakholder',
+    route: stakholder,
   },
 ];
 

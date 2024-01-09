@@ -38,3 +38,5 @@ module.exports.budgetCategoryTypeService = require('./budgetCategoryType.service
 module.exports.projectBudgetService = require('./projectBudget.service');
 module.exports.OfficeMonthlyBudgetService = require('./officeProjectMonthlyBudget.service');
 module.exports.accountablityService = require('./accountablity.service');
+
+module.exports.stakholderService = require('./stakholder.service');
