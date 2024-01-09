@@ -14,7 +14,7 @@ const getCurrentApprover = catchAsync(async (req, res) => {
 });
 
 const approve = catchAsync(async (req, res) => {
-  console.log("selammmmm", req.body);
+
   const updatedData = await approvalService.approve(req.body.moduleName, req.body.moduleId);
   res.send(updatedData);
 });
