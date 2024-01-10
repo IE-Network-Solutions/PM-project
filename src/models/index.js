@@ -58,3 +58,6 @@ module.exports.OfficeMonthlyBudget = require('./officeProjectMonthlyBudget.model
 module.exports.OfficeMonthlyBudgetComment = require('./OfficeMonthlyBudgetComment.model');
 module.exports.momAbsents = require('./momabsents.model');
 module.exports.Accountablity = require('./accountablity.model');
+
+module.exports.StakHolder = require('./stakholder.model');
+module.exports.ProjectStakHolder = require('./projectStakholder.model');
