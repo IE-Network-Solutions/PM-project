@@ -58,6 +58,7 @@ const createStakHolder = async (stakholderBody) => {
       // Create Stakholder entity using properties directly
       const stakholder = stakholderRepository.create({
         title: stakholderBody.title,
+        remark: stakholderBody.remark,
         email: stakholderBody.email,
         phone_number:stakholderBody.phone_number,
         stakeholder_name: stakholderBody.stakeholder_name,
@@ -149,7 +150,7 @@ const updateStakHoldersById = async (stakholderId, updatedData) => {
       // Update stakholder data
       stakholder.stakeholder_name = updatedData.stakeholder_name;
       stakholder.email = updatedData.email;
-
+      stakholder.remark = updatedData.remark;
       stakholder.title=updatedData.title,
       stakholder.phone_number=updatedData.phone_number,
       stakholder.project_role=updatedData.project_role,
