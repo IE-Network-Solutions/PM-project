@@ -54,6 +54,18 @@ module.exports = new EntitySchema({
         },
       },
     },
+    projectStakholders: {
+      type: 'many-to-many',
+      target: 'Stakholder',
+      joinTable: {
+        name: 'projects_stakholders',
+        joinColumn: { name: 'projectId', referencedColumnName: 'id' },
+        inverseJoinColumn: {
+          name: 'stakholderId',
+          referencedColumnName: 'id',
+        },
+      },
+    },
     client: {
       type: 'many-to-one',
       target: 'Client',
