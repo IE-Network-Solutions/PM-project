@@ -19,6 +19,7 @@ class StakHolder extends Base {
      this.decision_maker = { type: "varchar", nullable: true }; 
      this.communication_frequency = { type: "varchar", nullable: true }; 
      this.ways_of_communication = { type: "varchar", nullable: true }; 
+     this.remark = { type: "varchar", nullable: true }; 
      this.isDeleted = {  type: "boolean",  default: false,  nullable: true 
     };
 
