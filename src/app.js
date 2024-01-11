@@ -64,4 +64,7 @@ app.use(errorConverter);
 // handle error
 app.use(errorHandler);
 
+// serve static file
+app.use(express.static('public/uploads'));
+
 module.exports = app;

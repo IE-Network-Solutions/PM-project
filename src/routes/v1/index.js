@@ -31,12 +31,18 @@ const approval = require('./approval.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 const resourceHistory = require('./resourceHistory.route');
-const clientRoute = require('./client.route')
-const budgetSessionRoute = require('./budgetSession.route')
+const clientRoute = require('./client.route');
+const budgetSessionRoute = require('./budgetSession.route');
 const roleRoute = require('./role.route');
 const monthlyBudget = require('./monthlyBudget.route');
+const permission = require('./permission.route');
+const projectBudget = require('./projectBudget.route');
+const budgetCategoryType = require('./budgetCategoryType.route');
 const officeMonthlyBudget = require('./officeMonthlyBudget.route');
 const accountablity = require('./accountablity.route');
+
+const stakholder = require('./stakholder.route');
+
 
 const router = express.Router();
 
@@ -166,25 +172,37 @@ const defaultRoutes = [
   },
   {
     path: '/budgetSession',
-    route: budgetSessionRoute
+    route: budgetSessionRoute,
   },
-  {
-    path: '/roles',
-    route: roleRoute,
-  },
+  { path: '/roles', route: roleRoute },
   {
     path: '/monthlyBudget',
-    route: monthlyBudget
+    route: monthlyBudget,
+  },
+  {
+    path: '/permissions',
+    route: permission,
+  },
+  {
+    path: '/projectBudgets',
+    route: projectBudget,
+  },
+  {
+    path: '/budgetCategoryTypes',
+    route: budgetCategoryType,
   },
   {
     path: '/officeBudget',
-    route: officeMonthlyBudget
+    route: officeMonthlyBudget,
   },
   {
     path: '/accountablity',
-    route: accountablity
+    route: accountablity,
   },
-
+  {
+    path: '/stakholder',
+    route: stakholder,
+  },
 ];
 
 const devRoutes = [

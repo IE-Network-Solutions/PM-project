@@ -31,8 +31,15 @@ module.exports.approvalStageController = require('./approvalStage.controller');
 module.exports.approvalController = require('./approval.controller');
 module.exports.departmentController = require('./department.controller');
 module.exports.resourceHistoryController = require('./resourceHistory.controller')
-module.exports.clientController = require('./client.controller')
-module.exports.BudgetSessionController = require('./budgetSession.controller')
-module.exports.monthlyBudgetController = require('./monthlyBudget.controller')
-module.exports.officeMonthlyBudgetController = require('./officeProjectMonthlyBudget.controller')
-module.exports.accountablityController = require('./accountablity.controller')
+
+module.exports.stakholderController = require('./stakholder.controller')
+
+;
+module.exports.clientController = require('./client.controller');
+module.exports.BudgetSessionController = require('./budgetSession.controller');
+module.exports.monthlyBudgetController = require('./monthlyBudget.controller');
+module.exports.permissionController = require('./permission.controller');
+module.exports.budgetCategoryTypeController = require('./budgetCategoryType.controller');
+module.exports.projectBudgetController = require('./projecctBudget.controller');
+module.exports.officeMonthlyBudgetController = require('./officeProjectMonthlyBudget.controller');
+module.exports.accountablityController = require('./accountablity.controller');

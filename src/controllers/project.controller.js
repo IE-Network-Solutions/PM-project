@@ -15,7 +15,7 @@ const createProject = catchAsync(async (req, res) => {
       const currency = await currencyService.getCurrencyById(data.currency);
       const contractValueData = {
         amount: data.amount,
-        currency: currency
+        currency: currency,
       };
       projectContractValue.push(contractValueData);
     }
@@ -27,8 +27,6 @@ const createProject = catchAsync(async (req, res) => {
   const project = await projectService.createProject(req.body, projectMembers, projectContractValue);
   res.status(httpStatus.CREATED).json(project);
 });
-
-
 
 const getProjects = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['milestone']);
@@ -67,26 +65,27 @@ const removeMember = catchAsync(async (req, res) => {
 const getAllProjectTasksVarianceByProject = async (req, res) => {
   const projectIds = await projectService.getAllProjectTasksVarianceByProject();
   res.send(projectIds);
-}
+};
 
 const getAllProjectsDetailOnMasterSchedule = async (req, res) => {
   const projectDetail = await projectService.getAllProjectsDetailOnMasterSchedule();
   res.send(projectDetail);
-}
+};
 const closeProject = catchAsync(async (req, res) => {
   const project = await projectService.closeProject(req.params.projectId, req.body);
   res.send(project);
 });
-
-
 
 const getTotalActiveClosedProjects = async (req, res) => {
   const filter = pick(req.query, ['milestone']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const totalProjects = await projectService.getTotalActiveClosedProjects(filter, options);
   res.send(totalProjects);
-}
-
+};
+const getProjectMemebres = async (req, res) => {
+  const projectMemebers = await projectService.getMembers(req.params.projectId);
+  res.status(200).send(projectMemebers);
+};
 
 module.exports = {
   createProject,
@@ -99,5 +98,6 @@ module.exports = {
   addMember,
   removeMember,
   getTotalActiveClosedProjects,
-  closeProject
+  closeProject,
+  getProjectMemebres,
 };

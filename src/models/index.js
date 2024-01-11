@@ -48,10 +48,16 @@ module.exports.Client = require('./Client.model');
 module.exports.budgetSession = require('./budgetSession.model');
 module.exports.monthlyBudget = require('./monthlyBudget.model');
 module.exports.monthlyBudgetComment = require('./monthlyBudgetComments.model');
-module.exports.OfficeMonthlyBudget = require('./officeProjectMonthlyBudget.model')
-module.exports.OfficeMonthlyBudgetComment = require('./OfficeMonthlyBudgetComment.model')
-module.exports.momAbsents = require('./momabsents.model')
-module.exports.Accountablity = require('./accountablity.model')
+module.exports.Permission = require('./permission.model');
+module.exports.permissionUser = require('./permissionUser.model');
+module.exports.permissionRole = require('./permissionRole.model');
+module.exports.budgetCategoryType = require('./budgetCategoryType.model');
+module.exports.projectBudget = require('./projectBudget.model');
+module.exports.offshoreMatterialBoq = require('./offshoreMatterialBoq.model');
+module.exports.OfficeMonthlyBudget = require('./officeProjectMonthlyBudget.model');
+module.exports.OfficeMonthlyBudgetComment = require('./OfficeMonthlyBudgetComment.model');
+module.exports.momAbsents = require('./momabsents.model');
+module.exports.Accountablity = require('./accountablity.model');
 
-
-
+module.exports.StakHolder = require('./stakholder.model');
+module.exports.ProjectStakHolder = require('./projectStakholder.model');

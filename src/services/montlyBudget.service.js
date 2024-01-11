@@ -30,10 +30,10 @@ const approvalModuleRepository = dataSource.getRepository(ApprovalModule).extend
  * @returns {Promise<QueryResult>}
  */
 
-const getMonthlyBudgets = async () => {
-  return await montlyBudgetRepository.find({
-    relations: ['approvalStage'],
-  });
+const getMonthlyBudgets = async () => {  
+    return await montlyBudgetRepository.find({
+      relations: ['approvalStage'],
+    });
 };
 
 /**
