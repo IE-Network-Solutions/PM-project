@@ -60,4 +60,8 @@ module.exports.momAbsents = require('./momabsents.model');
 module.exports.Accountablity = require('./accountablity.model');
 
 module.exports.StakHolder = require('./stakholder.model');
+module.exports.Raci = require('./raci.model');
+module.exports.RaciList = require('./raciList.model');
+
 module.exports.ProjectStakHolder = require('./projectStakholder.model');
+module.exports.ProjectRaci = require('./projectRaci.model');

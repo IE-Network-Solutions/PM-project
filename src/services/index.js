@@ -40,3 +40,6 @@ module.exports.OfficeMonthlyBudgetService = require('./officeProjectMonthlyBudge
 module.exports.accountablityService = require('./accountablity.service');
 
 module.exports.stakholderService = require('./stakholder.service');
+
+module.exports.raciService = require('./raci.service');
+module.exports.raciListService = require('./raciList.service');

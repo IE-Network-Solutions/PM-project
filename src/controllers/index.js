@@ -33,6 +33,8 @@ module.exports.departmentController = require('./department.controller');
 module.exports.resourceHistoryController = require('./resourceHistory.controller')
 
 module.exports.stakholderController = require('./stakholder.controller')
+module.exports.raciController = require('./raci.controller')
+module.exports.raciListController = require('./raciList.controller')
 
 ;
 module.exports.clientController = require('./client.controller');
