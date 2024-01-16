@@ -42,6 +42,7 @@ const officeMonthlyBudget = require('./officeMonthlyBudget.route');
 const accountablity = require('./accountablity.route');
 
 const stakholder = require('./stakholder.route');
+const officeBudgetSessions = require('./officeBudgetSession.route');
 
 
 const router = express.Router();
@@ -202,6 +203,10 @@ const defaultRoutes = [
   {
     path: '/stakholder',
     route: stakholder,
+  },
+  {
+    path: '/officeBudgetSessions',
+    route: officeBudgetSessions,
   },
 ];
 

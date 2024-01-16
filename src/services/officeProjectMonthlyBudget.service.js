@@ -42,31 +42,42 @@ const approvalModuleRepository = dataSource.getRepository(ApprovalModule).extend
  * @returns {Promise<Project>}
  */
 const createMontlyBudget = async (montlyBudgetBody) => {
-    moduleName = "OfficeProjectBudget"
-    level = 1
-    const approvalStage = await approvalStageRepository
-        .createQueryBuilder('approval_stage')
-        .leftJoin('approval_stage.approvalModule', 'approvalModule')
-        .where('approvalModule.moduleName = :moduleName', { moduleName })
-        .andWhere('approval_stage.level = :level', { level })
-        .getOne();
-
-    montlyBudgetBody.approvalStage = approvalStage;
-
     const montlBudget = officeMontlyBudgetRepository.create(montlyBudgetBody);
-    await officeMontlyBudgetRepository.save(montlBudget);
+    return await officeMontlyBudgetRepository.save(montlBudget);
 
-    return montlBudget;
+
 };
 
 const getMonthlyBudgetByMonthGroup = async (month) => {
-    const monthlyBudget = await officeMontlyBudgetRepository.findOne({ where: { from: month.from, to: month.to }, relations: ['approvalStage', 'approvalStage.role', 'officeMonthlyBudgetcomments'] });
+    const monthlyBudget = await officeMontlyBudgetRepository.find({ where: { from: month.from, to: month.to } });
     return monthlyBudget;
 }
 
 const updateMonthlyBudget = async (id, updatedData) => {
+    const Budget = await officeMontlyBudgetRepository.findOne({ where: { id: id } })
+    if (!Budget) {
+        throw new ApiError(httpStatus.NOT_FOUND, ' budget Doesnt exist');
+
+    }
     const monthlyBudget = await officeMontlyBudgetRepository.update({ id: id }, updatedData);
-    return await officeMontlyBudgetRepository.findOne({ where: { id: id } });
+    return await officeMontlyBudgetRepository.findOne({ where: { id: id }, relations: ['currency', 'project', 'budgetCategory'] });
+}
+const DeleteMonthlyBudget = async (id) => {
+    const budget = await officeMontlyBudgetRepository.findOne({ where: { id: id } })
+    if (!budget) {
+
+        throw new ApiError(httpStatus.NOT_FOUND, ' budget Doesnt exist');
+    }
+    const deletedbudget = officeMontlyBudgetRepository.update({ id: id }, {
+        isDeleted: true
+    });;
+
+    return budget
+
+}
+const getMonthlyBudgetByProject = async (month, projectId) => {
+    const monthlyBudget = await officeMontlyBudgetRepository.find({ where: { projectId: projectId, from: month.from, to: month.to, isDeleted: false }, relations: ['currency', 'project', 'budgetCategory'] });
+    return monthlyBudget;
 }
 
 
@@ -74,5 +85,7 @@ module.exports = {
     createMontlyBudget,
     //getMonthlyBudgets,
     getMonthlyBudgetByMonthGroup,
-    updateMonthlyBudget
+    updateMonthlyBudget,
+    getMonthlyBudgetByProject,
+    DeleteMonthlyBudget
 }

@@ -1,30 +1,30 @@
 const express = require('express');
 //const validate = require('../../middlewares/validate');
 ////const { resourceHistoryValidation } = require('../../validations');
-const {stakholderController } = require('../../controllers')
+const { stakholderController } = require('../../controllers')
 
 const router = express.Router();
 
 router
-  .route('/') 
+  .route('/')
   .post(stakholderController.createStakHolder);
 
-  router
-  .route('/') 
+router
+  .route('/')
   .get(stakholderController.getStakHolders);
-  router
+router
   .route('/:id')
-  .get( stakholderController.getStakHoldersById);
+  .get(stakholderController.getStakHoldersById);
 
-  router
+router
   .route('/:id')
-  .delete( stakholderController.deleteStakHoldersById);
- 
-  router
-  .route('/:id')
-  .patch( stakholderController.updateStakHoldersById);
+  .delete(stakholderController.deleteStakHoldersById);
 
-  router
+router
+  .route('/:id')
+  .patch(stakholderController.updateStakHoldersById);
+
+router
   .route('/project/:project_id')
-  .get( stakholderController.getStakHoldersByProject_Id);
+  .get(stakholderController.getStakHoldersByProject_Id);
 module.exports = router;
