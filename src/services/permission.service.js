@@ -183,6 +183,11 @@ const seedPermissionResource = async () => {
   return createdResourcePermissions;
 };
 
+const getResourcesWithPermission = async () => {
+  const resources = await permissionResourceRepository.find();
+  return resources;
+};
+
 module.exports = {
   getPermissions,
   getPermission,
@@ -190,4 +195,5 @@ module.exports = {
   seedPermission,
   assignPermissionToRole,
   seedPermissionResource,
+  getResourcesWithPermission,
 };
