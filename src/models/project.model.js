@@ -71,5 +71,11 @@ module.exports = new EntitySchema({
       target: 'Client',
       inverseSide: 'project',
     },
+    officeMonthlyBudget: {
+      type: 'one-to-many',
+      target: 'OfficeMonthlyBudget',
+      inverseSide: 'project',
+
+    },
   },
 });

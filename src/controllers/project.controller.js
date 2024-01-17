@@ -53,6 +53,7 @@ const deleteProject = catchAsync(async (req, res) => {
 });
 
 const addMember = catchAsync(async (req, res) => {
+
   const projectMember = await projectService.addMember(req.params.projectId, req.body);
   res.status(httpStatus.CREATED).json(projectMember);
 });

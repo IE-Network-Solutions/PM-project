@@ -5,10 +5,7 @@ const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 
-const budgetTypeRepository = dataSource.getRepository(BudgetType).extend({
-  findAll,
-  sortBy,
-});
+const budgetTypeRepository = dataSource.getRepository(BudgetType)
 
 /**
  * Create a budget type
@@ -38,6 +35,7 @@ const getAllBudgetTypes = async (filter, options) => {
     paginationOptions: { limit: limit, page: page },
   });
 };
+
 
 /**
  * Get budget type by id
@@ -76,10 +74,18 @@ const deleteBudgetTypeId = async (budgetTypeId) => {
   return await budgetTypeRepository.delete({ id: budgetTypeId });
 };
 
+
+
+const getAllOfficeBudgetTypes = async () => {
+  let isOffice = true
+  return await budgetTypeRepository.find({ where: { isOffice: isOffice } })
+};
+
 module.exports = {
   createBudgetType,
   getAllBudgetTypes,
   getBudgetType,
   updateBudgetType,
   deleteBudgetTypeId,
+  getAllOfficeBudgetTypes
 };

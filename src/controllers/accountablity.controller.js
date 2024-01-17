@@ -6,8 +6,6 @@ const { accountablityService } = require('../services');
 
 
 const createAccountablity = catchAsync(async (req, res) => {
-
-
     const accountablities = await Promise.all(req.body?.accountablities?.map(async (element) => {
         const accountablity = await accountablityService.createAccountablity(element, req.body.afterActionAnalysisId);
 
