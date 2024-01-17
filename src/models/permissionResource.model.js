@@ -13,4 +13,11 @@ module.exports = new EntitySchema({
   name: 'permissionResource',
   tableName: 'permission_resources',
   columns: new PermissionResource(),
+  relations: {
+    permissions: {
+      type: 'one-to-many',
+      target: 'Permission',
+      inverseSide: 'permissionResource',
+    },
+  },
 });
