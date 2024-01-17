@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Permission, permissionUser, User, permissionRole, Role } = require('../models');
+const { Permission, permissionUser, User, permissionRole, Role, permissionResource } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -23,6 +23,10 @@ const userRepository = dataSource.getRepository(User).extend({
   sortBy,
 });
 const roleRepository = dataSource.getRepository(Role).extend({
+  findAll,
+  sortBy,
+});
+const permissionResourceRepository = dataSource.getRepository(permissionResource).extend({
   findAll,
   sortBy,
 });
@@ -157,6 +161,14 @@ const seedPermissionResource = async () => {
       permissionResourceName: 'Budget',
     },
   ];
+
+  const permissionResources = resourceData.map((permissionData) => {
+    const permission = permissionResourceRepository.create(permissionData);
+    return permission;
+  });
+
+  const createdResourcePermissions = await permissionResourceRepository.save(permissionResources);
+  return createdResourcePermissions;
 };
 
 module.exports = {
