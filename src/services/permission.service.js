@@ -51,101 +51,119 @@ const getPermission = async (id) => {
 };
 
 const assignPermissionToUser = async (permissionData) => {
-        const user = await userRepository.findOneBy({ id: permissionData.userId });
-        let permissionUser = permissionData.permissions.map((permissionId) => {
-            const permission = permissionRepository.findOneBy({ id: permissionId });
-            const permissionUser = permissionUserRepository.create({
-                    user: user,
-                    permissionId
-            })
-            return permissionUser;
-        })
-    
-        const data = await permissionUserRepository.save(permissionUser);
-        
-        return data;
-}
+  const user = await userRepository.findOneBy({ id: permissionData.userId });
+  let permissionUser = permissionData.permissions.map((permissionId) => {
+    const permission = permissionRepository.findOneBy({ id: permissionId });
+    const permissionUser = permissionUserRepository.create({
+      user: user,
+      permissionId,
+    });
+    return permissionUser;
+  });
+
+  const data = await permissionUserRepository.save(permissionUser);
+
+  return data;
+};
 
 const assignPermissionToRole = async (permissionData) => {
-        const role = await roleRepository.findOneBy({ id: permissionData.roleId });
-        let permissionRoleData = permissionData.permissions.map((permissionId) => {
-            const permission = permissionRepository.findOneBy({ id: permissionId });
-            const permissionRole = permissionRoleRepository.create({
-                    roleId: role.id,
-                    permissionId
-            })
-            return permissionRole;
-        })
-    
-        const data = await permissionRoleRepository.save(permissionRoleData);
-        
-        return data;
-}
+  const role = await roleRepository.findOneBy({ id: permissionData.roleId });
+  let permissionRoleData = permissionData.permissions.map((permissionId) => {
+    const permission = permissionRepository.findOneBy({ id: permissionId });
+    const permissionRole = permissionRoleRepository.create({
+      roleId: role.id,
+      permissionId,
+    });
+    return permissionRole;
+  });
+
+  const data = await permissionRoleRepository.save(permissionRoleData);
+
+  return data;
+};
 
 const seedPermission = async () => {
   const permissionData = [
     {
-      'permissionName': 'View AAA',
-      'slug': 'view_aaa'
+      permissionName: 'View AAA',
+      slug: 'view_aaa',
     },
     {
-      'permissionName': 'Create AAA',
-      'slug': 'create_aaa'
+      permissionName: 'Create AAA',
+      slug: 'create_aaa',
     },
     {
-      'permissionName': 'Update AAA',
-      'slug': 'update_aaa'
+      permissionName: 'Update AAA',
+      slug: 'update_aaa',
     },
     {
-      'permissionName': 'Delete AAA',
-      'slug': 'deleteaaa'
+      permissionName: 'Delete AAA',
+      slug: 'deleteaaa',
     },
     {
-      'permissionName': 'View Baseline',
-      'slug': 'viewbaseline'
+      permissionName: 'View Baseline',
+      slug: 'viewbaseline',
     },
     {
-      'permissionName': 'Create Baseline',
-      'slug': 'createbaseline'
+      permissionName: 'Create Baseline',
+      slug: 'createbaseline',
     },
     {
-      'permissionName': 'Delete Baseline',
-      'slug': 'deletebaseline'
+      permissionName: 'Delete Baseline',
+      slug: 'deletebaseline',
     },
     {
-      'permissionName': 'Update Baseline',
-      'slug': 'updatebaseline'
+      permissionName: 'Update Baseline',
+      slug: 'updatebaseline',
     },
     {
-      'permissionName': 'View Master Schedule',
-      'slug': 'viewmasterschedule'
+      permissionName: 'View Master Schedule',
+      slug: 'viewmasterschedule',
     },
     {
-      'permissionName': 'View Filtered Master Schedule',
-      'slug': 'viewfilteredmasterschedule'
+      permissionName: 'View Filtered Master Schedule',
+      slug: 'viewfilteredmasterschedule',
     },
     {
-      'permissionName': 'View Baseline By Milestone',
-      'slug': 'viewbaselinebymilestone'
+      permissionName: 'View Baseline By Milestone',
+      slug: 'viewbaselinebymilestone',
     },
     {
-      'permissionName': 'View Project Scheule',
-      'slug': 'viewprojectscheule'
+      permissionName: 'View Project Scheule',
+      slug: 'viewprojectscheule',
     },
   ];
   const permissions = permissionData.map((permissionData) => {
     const permission = permissionRepository.create(permissionData);
     return permission;
   });
-        
+
   const createdPermissions = await permissionRepository.save(permissions);
   return createdPermissions;
-}
+};
+
+const seedPermissionResource = async () => {
+  const resourceData = [
+    {
+      id: 1,
+      permissionResourceName: 'Project',
+    },
+    {
+      id: 2,
+      permissionResourceName: 'Schedule',
+    },
+    {
+      id: 3,
+      permissionResourceName: 'Budget',
+    },
+  ];
+};
 
 module.exports = {
-    getPermissions,
-    getPermission,
-    assignPermissionToUser,
-    seedPermission,
-    assignPermissionToRole
+  getPermissions,
+  getPermission,
+  assignPermissionToUser,
+  seedPermission,
+  assignPermissionToRole,
+  seedPermissionResource,
 };
