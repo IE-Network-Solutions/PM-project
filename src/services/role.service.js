@@ -22,7 +22,7 @@ const roleRepository = dataSource.getRepository(Role).extend({
  */
 
 const getRoles = async () => {
-  return await roleRepository.find();
+  return await roleRepository.find({ relations: ['rolePermission'] });
 };
 
 /**

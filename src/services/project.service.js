@@ -115,7 +115,7 @@ const updateProject = async (projectId, updateBody) => {
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
-  console.log(project, 'ggg');
+ 
   await projectRepository.update({ id: projectId }, updateBody);
   const updatedProject = await getProject(projectId);
   console.log(updatedProject, "ggmikkkg")
