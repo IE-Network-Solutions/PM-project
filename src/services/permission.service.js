@@ -86,15 +86,15 @@ const seedPermission = async () => {
   const permissionData = [
     {
       'permissionName': 'View AAA',
-      'slug': 'viewaaa'
+      'slug': 'view_aaa'
     },
     {
       'permissionName': 'Create AAA',
-      'slug': 'createaaa'
+      'slug': 'create_aaa'
     },
     {
       'permissionName': 'Update AAA',
-      'slug': 'updateaaa'
+      'slug': 'update_aaa'
     },
     {
       'permissionName': 'Delete AAA',
