@@ -6,6 +6,7 @@ class Permission extends Base {
     super();
     this.permissionName = { type: 'varchar' };
     this.slug = { type: 'varchar' };
+    this.permissionResourceId = { type: 'integer' };
   }
 }
 
