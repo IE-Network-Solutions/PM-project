@@ -6,22 +6,34 @@ const { permissionService } = require('../services');
 const { User } = require('../models');
 
 const seedPermissions = catchAsync(async (req, res) => {
-    const data = await permissionService.seedPermission();
-    res.status(httpStatus.CREATED).json(data);
+  const data = await permissionService.seedPermission();
+  res.status(httpStatus.CREATED).json(data);
 });
 
 const assignPermissionToUser = catchAsync(async (req, res) => {
-    const data = await permissionService.assignPermissionToUser(req.body)
-    res.status(httpStatus.CREATED).json(data);
+  const data = await permissionService.assignPermissionToUser(req.body);
+  res.status(httpStatus.CREATED).json(data);
 });
 
 const assignPermissionToRole = catchAsync(async (req, res) => {
-    const data = await permissionService.assignPermissionToRole(req.body)
-    res.status(httpStatus.CREATED).json(data);
+  const data = await permissionService.assignPermissionToRole(req.body);
+  res.status(httpStatus.CREATED).json(data);
+});
+
+const seedPermissionResource = catchAsync(async (req, res) => {
+  const data = await permissionService.seedPermissionResource();
+  res.status(httpStatus.CREATED).json(data);
+});
+
+const getResourcesWithPermission = catchAsync(async (req, res) => {
+  const data = await permissionService.getResourcesWithPermission();
+  res.status(200).json(data);
 });
 
 module.exports = {
-    seedPermissions,
-    assignPermissionToUser,
-    assignPermissionToRole
-}
+  seedPermissions,
+  assignPermissionToUser,
+  assignPermissionToRole,
+  seedPermissionResource,
+  getResourcesWithPermission,
+};
