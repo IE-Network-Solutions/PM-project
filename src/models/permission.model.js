@@ -22,5 +22,17 @@ module.exports = new EntitySchema({
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
+    rolePermission: {
+      type: 'many-to-many',
+      target: 'Role',
+      joinTable: {
+        name: 'permission_role',
+        joinColumn: { name: 'permissionId', referencedColumnName: 'id' },
+        inverseJoinColumn: {
+          name: 'roleId',
+          referencedColumnName: 'id',
+        },
+      },
+    },
   },
 });

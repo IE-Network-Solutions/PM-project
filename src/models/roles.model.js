@@ -24,5 +24,17 @@ module.exports = new EntitySchema({
       target: 'ProjectMember',
       inverseSide: 'role',
     },
+    rolePermission: {
+      type: 'many-to-many',
+      target: 'Permission',
+      joinTable: {
+        name: 'permission_role',
+        joinColumn: { name: 'roleId', referencedColumnName: 'id' },
+        inverseJoinColumn: {
+          name: 'permissionId',
+          referencedColumnName: 'id',
+        },
+      },
+    },
   },
 });
