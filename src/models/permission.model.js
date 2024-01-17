@@ -6,7 +6,7 @@ class Permission extends Base {
     super();
     this.permissionName = { type: 'varchar' };
     this.slug = { type: 'varchar' };
-    this.permissionResourceId = { type: 'integer' };
+    this.permissionResourceId = { type: 'varchar' };
   }
 }
 
@@ -15,7 +15,7 @@ module.exports = new EntitySchema({
   tableName: 'permissions',
   columns: new Permission(),
   relations: {
-    resource: {
+    permissionResource: {
       type: 'many-to-one',
       target: 'permissionResource',
       inverseSide: 'permission_resources',
