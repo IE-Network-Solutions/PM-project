@@ -184,7 +184,7 @@ const seedPermissionResource = async () => {
 };
 
 const getResourcesWithPermission = async () => {
-  const resources = await permissionResourceRepository.find();
+  const resources = await permissionResourceRepository.find({ relations: ['permissions'] });
   return resources;
 };
 

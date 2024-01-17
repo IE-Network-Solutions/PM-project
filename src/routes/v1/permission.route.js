@@ -8,6 +8,8 @@ const router = express.Router();
 
 router.route('/seed').post(authRoles(['viewaaa']), permissionController.seedPermissions);
 router.route('/seedResource').post(authRoles(['view_aaa']), permissionController.seedPermissionResource);
+router.route('/permissionResources').get(permissionController.getResourcesWithPermission);
+
 router
   .route('/assignPermissionUser')
   .post(validate(permissionValidation.assignPermissionToUser), permissionController.assignPermissionToUser);
