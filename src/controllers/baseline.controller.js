@@ -80,6 +80,13 @@ const activeProjectSchedule = catchAsync(async (req, res) => {
   res.send(projectSchedule);
 });
 
+
+const scheduleDashboard = catchAsync(async (req, res) => {
+  const projectId = req.params.projectId;
+  const projectSchedule = await baselineService.scheduleDashboard(projectId);
+  res.send(projectSchedule);
+});
+
 module.exports = {
   createBaseline,
   getBaselines,
@@ -93,4 +100,5 @@ module.exports = {
   projectSchedule,
   activeProjectSchedule,
   masterScheduleByDateFilter,
+  scheduleDashboard
 };

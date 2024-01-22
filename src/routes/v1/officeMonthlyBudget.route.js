@@ -1,6 +1,6 @@
 const express = require('express');
 const validate = require('../../middlewares/validate');
-const { budgetValidation } = require('../../validations');
+const { officeBudgetValidation } = require('../../validations');
 const { budgetController, officeMonthlyBudgetController } = require('../../controllers');
 const { route } = require('./risk.route');
 
@@ -8,12 +8,13 @@ const router = express.Router();
 
 router
     .route('/')
-    .post(officeMonthlyBudgetController.createMonthlyBudget)
+    .post(validate(officeBudgetValidation.createBudget), officeMonthlyBudgetController.createMonthlyBudget)
+
+router.route('/month/:projectId/:from/:to').get(validate(officeBudgetValidation.getBudgetByProject), officeMonthlyBudgetController.getMonthlyBudgetByMonth);
 
 
-router.route('/month').get(officeMonthlyBudgetController.getMonthlyBudgetByMonth);
 
+router.route('/:id').patch(validate(officeBudgetValidation.updateBudget), officeMonthlyBudgetController.updateMonthlyBudget).delete(validate(officeBudgetValidation.deleteBudget), officeMonthlyBudgetController.DeleteMonthlyBudget);
 
-router.route('/:id').patch(officeMonthlyBudgetController.updateMonthlyBudget);
 
 module.exports = router

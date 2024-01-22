@@ -30,3 +30,4 @@ module.exports.permissionValidation = require('./permission.validation');
 module.exports.budgetCategoryTypeValidation = require('./budgetCategoryType.validation');
 module.exports.uploadValidation = require('./upload.validation');
 module.exports.accountablityvalidation = require('./accountablity.validation');
+module.exports.officeBudgetValidation = require('./officeBudget.validation')

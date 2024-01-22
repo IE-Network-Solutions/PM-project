@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Baseline, Task, Subtask, Milestone, baselineComment, User } = require('../models');
+const { Baseline, Task, Subtask, Milestone, baselineComment, User, TaskUser } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -28,6 +28,10 @@ const baselineCommentRepository = dataSource.getRepository(baselineComment).exte
   sortBy,
 });
 const userRepository = dataSource.getRepository(User).extend({
+  findAll,
+  sortBy,
+});
+const taskUserRepository = dataSource.getRepository(TaskUser).extend({
   findAll,
   sortBy,
 });
@@ -151,6 +155,64 @@ const getBaselines = async (filter, options) => {
     paginationOptions: { limit: limit, page: page },
   });
 };
+
+
+const scheduleDashboard = async (projectId) => {
+  let taskResourceName = ""
+  const baseline = baselineRepository.findBy({
+    projectId: projectId,
+  });
+
+  const tasks = await taskRepository.findBy({
+    baselineId: "cb475adf-9dcc-4bd0-adad-93ddf7db5f13",
+  });
+
+  // Use Promise.all to await multiple asynchronous operations concurrently
+  const taskArray = await Promise.all(tasks.map(async (task) => {
+    const resource = await taskUserRepository.findBy({
+      taskId: task.id,
+    });
+    const formatDate = (date) => {
+      return `new Date(${date.getFullYear()}, ${date.getMonth()}, ${date.getDate()})`;
+    };
+
+    // Use Promise.all for the inner map to await all user fetching operations
+    const eachResource = await Promise.all(resource.map(async (r) => {
+      const resourceName = await userRepository.findBy({ id: r.userId });
+      return resourceName
+    }));
+    eachResource?.map(r => r?.map(re => taskResourceName = taskResourceName + re.name + ","
+
+
+
+    )
+
+    )
+    // console.log(eachResource[0]?.map(p => p.name), "ooo");
+
+    const plannedStartDate = new Date(task.plannedStart);
+    const plannedEndDate = new Date(task.plannedFinish);
+
+    const formattedStartDate = formatDate(plannedStartDate);
+    const formattedEndDate = formatDate(plannedEndDate);
+    return {
+      id: task.id,
+      name: task.name,
+      resource: taskResourceName,
+      startDate: null,
+      endDate: null,
+      duration: 10 * 10 * 10 * 10 * 60 * 1000,
+      completion: task.completion,
+      predecessor: null,
+    };
+  }));
+
+  const taskArrays = taskArray.map((task) => Object.values(task));
+
+  return taskArrays;
+
+};
+
 
 /**
  * Master Schedule
@@ -302,6 +364,7 @@ const activeProjectSchedule = async (projectId) => {
 
   return baselineData;
 };
+
 
 function groupDataByProjectBaselineMilestone(data) {
   const grouped = {};
@@ -585,5 +648,5 @@ module.exports = {
   masterSchedule,
   projectSchedule,
   activeProjectSchedule,
-  masterScheduleByDateFilter
+  masterScheduleByDateFilter, scheduleDashboard
 };
