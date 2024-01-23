@@ -14,13 +14,13 @@ class Project extends Base {
     this.lc_opening_date = { type: 'date', nullable: true };
     this.advanced_payment_date = { type: 'date', nullable: true };
     this.status = { type: 'boolean', nullable: true };
+
     this.plannedStart = { type: 'date', nullable: true };
     this.plannedFinish = { type: 'date', nullable: true };
     this.startVariance = { type: 'int', nullable: true }
     this.finishVariance = { type: 'int', nullable: true };
     this.actualStart = { type: 'date', nullable: true };
     this.actualFinish = { type: 'date', nullable: true };
-
     this.isOffice = { type: 'boolean', default: false }
 
   }
