@@ -30,13 +30,6 @@ const approvalModuleRepository = dataSource.getRepository(ApprovalModule).extend
  * @param {number} [options.page] - Current page (default = 1)
  * @returns {Promise<QueryResult>}
  */
-
-// const getMonthlyBudgets = async () => {
-//     return await montlyBudgetRepository.find({
-//         relations: ['approvalStage'],
-//     });
-// };
-
 /**
  * Create a montly budget
  * @param {Object} budgetBody
@@ -155,7 +148,6 @@ const getAllQuarterlyBudgetByProject = async (projectId) => {
 
 module.exports = {
     createQuarterlyBudget,
-    //getMonthlyBudgets,
     getQuarterlyBudgetByMonthGroup,
     updateQuarterlyBudget,
     getQuarterlyBudgetByProject,

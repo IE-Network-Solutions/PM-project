@@ -3,12 +3,6 @@ const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { OfficeQuarterlyBudgetService, officeBudgetSessionService } = require('../services');
-
-// const getMonthlyBudget = catchAsync(async (req, res) => {
-//     const monthlyBudget = await OfficeMonthlyBudgetService.getMonthlyBudgets();
-//     res.status(200).json(monthlyBudget);
-// });
-
 const createQuarterlyBudget = catchAsync(async (req, res) => {
 
     let date = {}
@@ -21,8 +15,6 @@ const createQuarterlyBudget = catchAsync(async (req, res) => {
 
     }
     const monthlyBudgetData = await OfficeQuarterlyBudgetService.getQuarterlyBudgetByProject(date, projectId);
-    console.log(monthlyBudgetData, "monthlyBudgetData")
-
     if (monthlyBudgetData.length !== 0) {
         throw new ApiError(httpStatus.NOT_FOUND, ' budget already exist');
     }
@@ -41,14 +33,13 @@ const DeleteQuarterlyBudget = catchAsync(async (req, res) => {
     res.status(httpStatus.CREATED).send(monthlyBudget);
 });
 const getQuarterlyBudgetByMonth = catchAsync(async (req, res) => {
-    console.log(req.params, "pararar")
     let month = {};
     month.from = req.params.from;
     month.to = req.params.to;
     let projectId = req.params.projectId
 
     const checkSession = await officeBudgetSessionService.getSessionBudgetByDate(month)
-    console
+
     if (!checkSession) {
         throw new ApiError(httpStatus.NOT_FOUND, 'session Doesnt exist');
 
@@ -74,7 +65,6 @@ const getAllQuarterlyBudgetByProject = catchAsync(async (req, res) => {
 
 module.exports = {
     createQuarterlyBudget,
-    // getMonthlyBudget,
     updateQuarterlyBudget,
     getQuarterlyBudgetByMonth,
     DeleteQuarterlyBudget,

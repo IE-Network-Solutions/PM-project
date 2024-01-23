@@ -161,7 +161,6 @@ const getCurrentApprover = async (moduleName, moduleId) => {
     if (!moduleData) {
       throw new ApiError(httpStatus.NOT_FOUND, 'approval moduleData(group) does not exist');
     }
-    console.log(moduleData);
     if (moduleData.approvalStage.project_role) {
       let project = await moduleData.project;
       let projectId = project.id;
@@ -207,7 +206,6 @@ const getCurrentApprover = async (moduleName, moduleId) => {
         .andWhere('project_member.roleId = :roleId', { roleId })
         .getOne();
       // currentApprover = ProjectMemebrsRoleData.filter((item) => item.roleId === moduleData.approvalStage.role.id);
-      console.log(ProjectMemebrsRoleData, 'abr');
       currentApprover = ProjectMemebrsRoleData;
     } else {
       currentApprover = userRepository.findOne({ where: { roleId: moduleData.approvalStage.role.id }, relations: ['role'] });
@@ -269,19 +267,17 @@ const approve = async (moduleName, moduleId) => {
     if (!moduleData) {
       throw new ApiError(httpStatus.NOT_FOUND, 'approval module(group) does not exist');
     }
-    console.log(approvalModule.max_level, moduleData.approvalStage.level, 'hhhhhhhhhhhhh');
     if (approvalModule.max_level == moduleData.approvalStage.level) {
       // approve
       await approvalGroupRepository.update({ id: moduleId }, { approved: true });
       updatedModule = await approvalGroupRepository.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
-     
+
       // Rabit Mq Producer
       let approvedByGroup = await services.budgetService.getBudgetGroupByCategory(
         approvalGroupRepository.from,
         approvalGroupRepository.to
       );
       publishToRabbit('project.budget', approvedByGroup);
-      console.log(approvedByGroup);
     } else {
       level = moduleData.approvalStage.level + 1;
       const approvalStage = await approvalStageRepository
@@ -291,7 +287,6 @@ const approve = async (moduleName, moduleId) => {
         .where('approvalModule.moduleName = :moduleName', { moduleName })
         .andWhere('approval_stage.level = :level', { level })
         .getOne();
-      console.log(approvalStage, 'ooooooooooo');
       await approvalGroupRepository.update({ id: moduleId }, { approvalStage: approvalStage });
       updatedModule = await approvalGroupRepository.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
       // ++approval
@@ -318,10 +313,8 @@ const approve = async (moduleName, moduleId) => {
         .where('approvalModule.moduleName = :moduleName', { moduleName })
         .andWhere('approval_stage.level = :level', { level })
         .getOne();
-      console.log(approvalStage, 'ooooooooooo');
       await baselineRepository.update({ id: moduleId }, { approvalStage: approvalStage });
       updatedModule = await baselineRepository.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
-      // console.log(updatedModule,"tttttttttt")
       // ++approval
     }
   } else if (approvalModule.moduleName == 'MonthlyBudget') {
@@ -352,7 +345,6 @@ const approve = async (moduleName, moduleId) => {
     }
   } else if (approvalModule.moduleName == 'OfficeProjectQuarterlyBudget') {
     const moduleData = await officeQuarterlyBudgetRepostory.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
-    console.log(moduleData, 'imoduname');
     if (!moduleData) {
       throw new ApiError(httpStatus.NOT_FOUND, 'approval module(monthly budget) does not exist');
     }
@@ -373,7 +365,6 @@ const approve = async (moduleName, moduleId) => {
         .where('approvalModule.moduleName = :moduleName', { moduleName })
         .andWhere('approval_stage.level = :level', { level })
         .getOne();
-      console.log(approvalStage, 'approvalStagekkk');
 
       await officeQuarterlyBudgetRepostory.update({ id: moduleId }, { approvalStage: approvalStage });
       updatedModule = await officeQuarterlyBudgetRepostory.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
@@ -406,13 +397,9 @@ const reject = async (moduleName, moduleId, comentData, userId = null) => {
     if (!moduleData) {
       throw new ApiError(httpStatus.NOT_FOUND, 'approval module(group) does not exist');
     }
-    console.log(comentData, 'llllllllllll');
     const comment = approvalBudgetCommentRepository.create({ budgetComment: comentData });
-    console.log(comment);
 
     const budgetComment = await approvalBudgetCommentRepository.save(comment);
-    console.log(moduleData, budgetComment, 'aaaaaaaaaaaaaaa');
-
     await moduleData.comments.push(budgetComment);
 
     await approvalGroupRepository.save(moduleData);
@@ -432,11 +419,7 @@ const reject = async (moduleName, moduleId, comentData, userId = null) => {
       throw new ApiError(httpStatus.NOT_FOUND, 'approval module(baseline) does not exist');
     }
     const comment = approvalBaselineCommentRepository.create({ comment: comentData, baseline: moduleData, userId });
-    console.log(comment);
-
     const budgetComment = await approvalBaselineCommentRepository.save(comment);
-    console.log(moduleData, budgetComment, 'aaaaaaaaaaaaaaa');
-
     await moduleData.baselineComment.push(budgetComment);
 
     // approve
@@ -473,13 +456,8 @@ const reject = async (moduleName, moduleId, comentData, userId = null) => {
     if (!moduleData) {
       throw new ApiError(httpStatus.NOT_FOUND, 'approval module(group) does not exist');
     }
-    console.log(comentData, 'llllllllllll');
     const comment = officeQuarterlyBudgetCommentRepository.create({ budgetComment: comentData });
-    console.log(comment);
-
     const budgetComment = await officeQuarterlyBudgetCommentRepository.save(comment);
-    console.log(moduleData, budgetComment, 'aaaaaaaaaaaaaaa');
-
     await moduleData.officeQuarterlyBudgetComment.push(budgetComment);
 
     await officeQuarterlyBudgetRepostory.save(moduleData);

@@ -23,19 +23,6 @@ module.exports = new EntitySchema({
     tableName: 'office_quarterly_budgets',
     columns: new OfficeQuarterlyBudget(),
     relations: {
-        // budgetCategory: {
-        //     type: 'many-to-one',
-        //     target: 'budgetCategory',
-        // },
-        // currency: {
-        //     type: 'many-to-one',
-        //     target: 'Currency',
-        // },
-        // project: {
-        //     type: 'many-to-one',
-        //     target: 'Project',
-        // },
-
 
         approvalStage: {
             type: 'many-to-one',
