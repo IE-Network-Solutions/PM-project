@@ -41,7 +41,20 @@ const updateMilestone = catchAsync(async (req, res) => {
   res.send(milestone);
 });
 
+const updateMilestoneVariance = catchAsync(async (req, res) => {
+  console.log(req.body, "ajeyroyselammeuselam")
+  const milestones = await Promise.all(req.body.map(async (element) => {
+    const milestone = milestoneService.updateMilestone(element.id, element);
+    return milestone;
+
+
+  }));
+
+  res.send(milestones);
+});
+
 const deleteMilestone = catchAsync(async (req, res) => {
+  console.log(req.params.milestoneId, "psiueuehdbc")
   await milestoneService.deleteMilestone(req.params.milestoneId);
   res.status(httpStatus.NO_CONTENT).send();
 });
@@ -53,4 +66,5 @@ module.exports = {
   getMilestone,
   updateMilestone,
   deleteMilestone,
+  updateMilestoneVariance
 };

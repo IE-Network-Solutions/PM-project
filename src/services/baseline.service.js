@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Baseline, Task, Subtask, Milestone, baselineComment, User } = require('../models');
+const { Baseline, Task, Subtask, Milestone, baselineComment, User, TaskUser } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -28,6 +28,10 @@ const baselineCommentRepository = dataSource.getRepository(baselineComment).exte
   sortBy,
 });
 const userRepository = dataSource.getRepository(User).extend({
+  findAll,
+  sortBy,
+});
+const taskUserRepository = dataSource.getRepository(TaskUser).extend({
   findAll,
   sortBy,
 });
@@ -62,22 +66,23 @@ const createBaseline = async (baselineBody, milestones) => {
   const savedBaseline = await baselineRepository.save(baseline);
 
   if (milestones) {
-    milestones.forEach((milestone) => {
-      const taskInstances = milestone.tasks.map(async (eachTask) => {
-        const subTasks = eachTask.subtasks || [];
+    milestones?.forEach((milestone) => {
+      const taskInstances = milestone?.tasks?.map(async (eachTask) => {
+        const subTasks = eachTask?.subtasks || [];
         const taskInstance = taskRepository.create({
-          baselineId: baseline.id,
-          milestoneId: milestone.id,
-          name: eachTask.name,
-          plannedStart: eachTask.plannedStart,
-          plannedFinish: eachTask.plannedFinish,
-          actualStart: eachTask.actualStart,
-          actualFinish: eachTask.actualFinish,
-          completion: eachTask.completion,
-          status: eachTask.status,
-          sleepingReason: eachTask.sleepingReason,
+          baselineId: baseline?.id,
+          milestoneId: milestone?.id,
+          name: eachTask?.name,
+          plannedStart: eachTask?.plannedStart,
+          plannedFinish: eachTask?.plannedFinish,
+          actualStart: eachTask?.actualStart,
+          actualFinish: eachTask?.actualFinish,
+          completion: eachTask?.completion,
+          status: eachTask?.status,
+          sleepingReason: eachTask?.sleepingReason,
           subTasks: subTasks,
-          predecessor: eachTask.predecessor
+          predecessor: eachTask?.predecessor,
+          predecessorType: eachTask?.predecessorType
         });
 
         const savedTaskInstance = await taskRepository.save(taskInstance);
@@ -85,18 +90,19 @@ const createBaseline = async (baselineBody, milestones) => {
 
         // Create and save subtasks
         if (subTasks.length > 0) {
-          const subTaskInstances = subTasks.map((eachSubTask) => {
+          const subTaskInstances = subTasks?.map((eachSubTask) => {
             return subTaskRepository.create({
-              taskId: savedTaskInstance.id,
-              name: eachSubTask.name,
-              plannedStart: eachSubTask.plannedStart,
-              plannedFinish: eachSubTask.plannedFinish,
-              actualStart: eachTask.actualStart,
-              actualFinish: eachTask.actualFinish,
-              completion: eachTask.completion,
-              status: eachSubTask.status,
-              sleepingReason: eachSubTask.sleepingReason,
-              predecessor: eachSubTask.predecessor
+              taskId: savedTaskInstance?.id,
+              name: eachSubTask?.name,
+              plannedStart: eachSubTask?.plannedStart,
+              plannedFinish: eachSubTask?.plannedFinish,
+              actualStart: eachTask?.actualStart,
+              actualFinish: eachTask?.actualFinish,
+              completion: eachTask?.completion,
+              status: eachSubTask?.status,
+              sleepingReason: eachSubTask?.sleepingReason,
+              predecessor: eachSubTask?.predecessor,
+              predecessorType: eachSubTask?.predecessorType
             });
           });
 
@@ -107,11 +113,12 @@ const createBaseline = async (baselineBody, milestones) => {
       });
 
       // Save the task instances
-      const savedTaskInstances = Promise.all(taskInstances);
-      baseline.tasks = savedTaskInstances;
-
-
-
+      const savedTaskInstances = Promise.all(taskInstances).then((data) => {
+        console.log("data", data)
+        baseline.tasks = savedTaskInstances;
+      }).catch((error) => {
+        console.log("Error:", error)
+      });
     });
   }
   const baselineDate = await baselineRepository
@@ -124,6 +131,8 @@ const createBaseline = async (baselineBody, milestones) => {
     .addSelect('subtask.*')
     .addSelect('milestone.*')
     .getOne();
+
+  console.log(baselineDate, "baselineDate")
 
   return baselineDate;
 };
@@ -146,6 +155,64 @@ const getBaselines = async (filter, options) => {
     paginationOptions: { limit: limit, page: page },
   });
 };
+
+
+const scheduleDashboard = async (projectId) => {
+  let taskResourceName = ""
+  const baseline = baselineRepository.findBy({
+    projectId: projectId,
+  });
+
+  const tasks = await taskRepository.findBy({
+    baselineId: "cb475adf-9dcc-4bd0-adad-93ddf7db5f13",
+  });
+
+  // Use Promise.all to await multiple asynchronous operations concurrently
+  const taskArray = await Promise.all(tasks.map(async (task) => {
+    const resource = await taskUserRepository.findBy({
+      taskId: task.id,
+    });
+    const formatDate = (date) => {
+      return `new Date(${date.getFullYear()}, ${date.getMonth()}, ${date.getDate()})`;
+    };
+
+    // Use Promise.all for the inner map to await all user fetching operations
+    const eachResource = await Promise.all(resource.map(async (r) => {
+      const resourceName = await userRepository.findBy({ id: r.userId });
+      return resourceName
+    }));
+    eachResource?.map(r => r?.map(re => taskResourceName = taskResourceName + re.name + ","
+
+
+
+    )
+
+    )
+    // console.log(eachResource[0]?.map(p => p.name), "ooo");
+
+    const plannedStartDate = new Date(task.plannedStart);
+    const plannedEndDate = new Date(task.plannedFinish);
+
+    const formattedStartDate = formatDate(plannedStartDate);
+    const formattedEndDate = formatDate(plannedEndDate);
+    return {
+      id: task.id,
+      name: task.name,
+      resource: taskResourceName,
+      startDate: null,
+      endDate: null,
+      duration: 10 * 10 * 10 * 10 * 60 * 1000,
+      completion: task.completion,
+      predecessor: null,
+    };
+  }));
+
+  const taskArrays = taskArray.map((task) => Object.values(task));
+
+  return taskArrays;
+
+};
+
 
 /**
  * Master Schedule
@@ -276,9 +343,14 @@ const activeProjectSchedule = async (projectId) => {
     .orderBy('baselines.createdAt', 'DESC')
     .getMany();
 
+
+
   baselineData.forEach((base) => {
+    console.log(base.tasks, "bababababhgdgd")
+
     const milestones = [];
     base.tasks.forEach((task) => {
+
       if (!milestones.some((m) => m.id === task.milestoneId)) {
         let taskMilestone = task.milestone
         milestones.push({ ...taskMilestone, "tasks": [] });
@@ -292,6 +364,7 @@ const activeProjectSchedule = async (projectId) => {
 
   return baselineData;
 };
+
 
 function groupDataByProjectBaselineMilestone(data) {
   const grouped = {};
@@ -354,9 +427,9 @@ function groupDataByProjectBaselineMilestone(data) {
 const getBaseline = async (baselineId) => {
   const baselineData = await baselineRepository
     .createQueryBuilder('baselines')
-    .leftJoinAndSelect('baselines.approvalStage',"approvalStage")
-    .leftJoinAndSelect('baselines.baselineComment',"baselineComment")
-    .leftJoinAndSelect('approvalStage.role',"role")
+    .leftJoinAndSelect('baselines.approvalStage', "approvalStage")
+    .leftJoinAndSelect('baselines.baselineComment', "baselineComment")
+    .leftJoinAndSelect('approvalStage.role', "role")
     .leftJoinAndSelect('baselines.project', 'project')
     .leftJoinAndSelect('baselines.tasks', 'task')
     .leftJoinAndSelect('task.subtasks', 'subtask')
@@ -364,6 +437,7 @@ const getBaseline = async (baselineId) => {
     .addSelect('baselines.*')
     .addSelect('task.*')
     .addSelect('subtask.*')
+    //.addOrderBy('baselines.tasks.task.createdAt', 'ASC')
     .andWhere('baselines.id = :baselineId', { baselineId: baselineId })
     .getMany();
 
@@ -406,12 +480,13 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
   if (baselineBody) {
     await baselineRepository.update({ id: baselineId }, { name: baselineBody.name });
   }
-  console.log(baselineBody)
+
   if (tasksBody) {
     for (const taskBody of tasksBody) {
       const requestedTask = taskBody;
       if (requestedTask.id) {
         const subTasks = taskBody.subtasks || [];
+        console.log(subTasks, "tasksBody")
 
 
         await taskRepository.update(
@@ -426,7 +501,9 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
             actualFinish: requestedTask.actualFinish,
             completion: requestedTask.completion,
             subTasks: requestedTask.subTasks,
-            predecessor: requestedTask.predecessor
+            predecessor: requestedTask.predecessor,
+            predecessorType: requestedTask.predecessorType
+
           }
         );
 
@@ -446,7 +523,8 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
               completion: subTask.completion,
               status: subTask.status,
               sleepingReason: subTask.sleepingReason,
-              predecessor: subTask.predecessor
+              predecessor: subTask.predecessor,
+              predecessorType: subTask.predecessorType
             });
           } else {
             subTasksToCreate.push({
@@ -459,7 +537,8 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
               completion: subTask.completion,
               status: subTask.status,
               sleepingReason: subTask.sleepingReason,
-              predecessor: subTask.predecessor
+              predecessor: subTask.predecessor,
+              predecessorType: subTask.predecessorType
 
             });
           }
@@ -486,7 +565,8 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
           completion: requestedTask.completion,
           subTasks: requestedTask.subTasks,
           milestoneId: requestedTask.milestoneId,
-          predecessor: requestedTask.predecessor
+          predecessor: requestedTask.predecessor,
+          predecessorType: requestedTask.predecessorType
         });
         const savedTask = await taskRepository.save(createTask);
 
@@ -502,7 +582,8 @@ const updateBaseline = async (baselineId, baselineBody, tasksBody) => {
             completion: eachSubTask.completion,
             status: eachSubTask.status,
             sleepingReason: eachSubTask.sleepingReason,
-            predecessor: eachSubTask.predecessor
+            predecessor: eachSubTask.predecessor,
+            predecessorType: eachSubTask.predecessorType
           }));
           await subTaskRepository.save(subTaskInstances);
         }
@@ -567,5 +648,5 @@ module.exports = {
   masterSchedule,
   projectSchedule,
   activeProjectSchedule,
-  masterScheduleByDateFilter
+  masterScheduleByDateFilter, scheduleDashboard
 };

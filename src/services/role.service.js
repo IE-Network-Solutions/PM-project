@@ -12,22 +12,6 @@ const roleRepository = dataSource.getRepository(Role).extend({
 });
 
 /**
- * Create a approval level
- * @param {Object} approvalModuleBody
- * @returns {Promise<ApprovalLevel>}
- */
-// const createApprovalLevel = async () => {
-
-//   const levels = approvalLevels.map((approvalLevel) => {
-//     const moduleData = approvalLevelRepository.create(approvalLevel);
-//     return moduleData;
-//   });
-
-//   const moduleDatas = await approvalLevelRepository.save(levels);
-//   return moduleDatas;
-// };
-
-/**
  * Query for approval level
  * @param {Object} filter - Filter options
  * @param {Object} options - Query options
@@ -38,7 +22,7 @@ const roleRepository = dataSource.getRepository(Role).extend({
  */
 
 const getRoles = async () => {
-  return await roleRepository.find();
+  return await roleRepository.find({ relations: ['rolePermission'] });
 };
 
 /**

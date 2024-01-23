@@ -115,9 +115,10 @@ const updateProject = async (projectId, updateBody) => {
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
-  console.log(project, 'ggg');
+ 
   await projectRepository.update({ id: projectId }, updateBody);
   const updatedProject = await getProject(projectId);
+  console.log(updatedProject, "ggmikkkg")
   updatedProject.members = await getMembers(updatedProject.id);
 
   publishToRabbit('project.update', updatedProject);
@@ -216,10 +217,17 @@ const addMember = async (projectId, projectMembers) => {
 };
 
 const getMembers = async (projectId) => {
-  return await projectMemberRepository
+  const projectMemebrs = await projectMemberRepository
     .createQueryBuilder('project_member')
+    .leftJoinAndSelect('project_member.user', 'user')
     .where('project_member.projectId = :projectId', { projectId })
     .getMany();
+  const users = [];
+
+  projectMemebrs.map((user) => {
+    users.push(user.user);
+  });
+  return users;
 };
 
 const removeMember = async (projectId, memberToRemove) => {
@@ -265,6 +273,5 @@ module.exports = {
   getMembers,
   getTotalActiveClosedProjects,
   removeMember,
-  getMembers,
   closeProject,
 };

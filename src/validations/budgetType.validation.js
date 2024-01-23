@@ -4,6 +4,7 @@ const { objectId } = require('./custom.validation');
 const createBudgetType = {
   body: Joi.object().keys({
     budgetTypeName: Joi.string().required(),
+    isOffice: Joi.boolean(),
   }),
 };
 

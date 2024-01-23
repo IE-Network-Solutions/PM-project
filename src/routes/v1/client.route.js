@@ -7,7 +7,7 @@ const router = express.Router();
 
 router
     .route('/')
-   
+
     .get(clientController.getAllClients);
 
 

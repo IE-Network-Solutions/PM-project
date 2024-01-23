@@ -31,10 +31,19 @@ const approval = require('./approval.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 const resourceHistory = require('./resourceHistory.route');
-const clientRoute = require('./client.route')
-const budgetSessionRoute = require('./budgetSession.route')
+const clientRoute = require('./client.route');
+const budgetSessionRoute = require('./budgetSession.route');
 const roleRoute = require('./role.route');
 const monthlyBudget = require('./monthlyBudget.route');
+const permission = require('./permission.route');
+const projectBudget = require('./projectBudget.route');
+const budgetCategoryType = require('./budgetCategoryType.route');
+const officeMonthlyBudget = require('./officeMonthlyBudget.route');
+const accountablity = require('./accountablity.route');
+
+const stakholder = require('./stakholder.route');
+const officeBudgetSessions = require('./officeBudgetSession.route');
+
 
 ///////////////////////////////////////////////////////
 const qualityRoute = require('./quality.route');
@@ -180,12 +189,11 @@ const defaultRoutes = [
     path: '/roles',
     route: roleRoute,
   },
+  { path: '/roles', route: roleRoute },
   {
     path: '/monthlyBudget',
     route: monthlyBudget
   },
-
-  ////////////////////////////////////////////////////
   {
     path: '/quality',
     route: qualityRoute
@@ -214,6 +222,34 @@ const defaultRoutes = [
     path: "/evalution",
     route: evalutionRoute
   }
+  {
+    path: '/permissions',
+    route: permission,
+  },
+  {
+    path: '/projectBudgets',
+    route: projectBudget,
+  },
+  {
+    path: '/budgetCategoryTypes',
+    route: budgetCategoryType,
+  },
+  {
+    path: '/officeBudget',
+    route: officeMonthlyBudget,
+  },
+  {
+    path: '/accountablity',
+    route: accountablity,
+  },
+  {
+    path: '/stakholder',
+    route: stakholder,
+  },
+  {
+    path: '/officeBudgetSessions',
+    route: officeBudgetSessions,
+  },
 ];
 
 const devRoutes = [

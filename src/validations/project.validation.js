@@ -60,9 +60,18 @@ const updateProject = {
       lc_opening_date: Joi.date(),
       advanced_payment_date: Joi.date(),
       status: Joi.boolean(),
-      planned_end_date: Joi.required(),
+      planned_end_date: Joi.date(),
       projectMembers: Joi.array(),
       projectContractValue: Joi.array(),
+      plannedStart: Joi.date(),
+      plannedFinish: Joi.date(),
+      startVariance: Joi.number(),
+      finishVariance: Joi.number(),
+      actualStart: Joi.date(),
+      actualFinish: Joi.date(),
+      start: Joi.date(),
+      finish: Joi.date(),
+      actualDuration: Joi.number()
     })
     .min(1),
 };

@@ -27,6 +27,11 @@ module.exports = new EntitySchema({
             target: 'Action',
             inverseSide: 'afterActionAnalysis',
         },
+        accountablities: {
+            type: 'one-to-many',
+            target: 'Accountablity',
+            inverseSide: 'afterActionAnalysis',
+        },
         issueRelates: {
             type: 'one-to-many',
             target: 'RelatedIssue',

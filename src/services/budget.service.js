@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Budget, BudgetGroup, Task } = require('../models');
+const { Budget, BudgetGroup, Task, projectBudget } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -20,6 +20,11 @@ const budgetGroupRepository = dataSource.getRepository(BudgetGroup).extend({
   sortBy,
 });
 
+const projectBudgetRepository = dataSource.getRepository(projectBudget).extend({
+  findAll,
+  sortBy,
+});
+
 /**
  * Create a budget
  * @param {Object} budgetBody
@@ -27,7 +32,6 @@ const budgetGroupRepository = dataSource.getRepository(BudgetGroup).extend({
  */
 const createBudget = async (budgetBody) => {
   budgetData = budgetBody.budgetData;
-  console.log(budgetBody.project, 'pppppppppp');
   const budgetGroup = budgetGroupRepository.create({
     from: budgetBody.from,
     to: budgetBody.to,
@@ -38,12 +42,39 @@ const createBudget = async (budgetBody) => {
   const budgets = budgetData.map((budget) => {
     budget.group = budgetGroup;
     const budgetData = budgetRepository.create(budget);
+    console.log('mmmmmmmmmmm', budgetData);
+    deductFromProjectBudget(budgetData.budgetCategory.id, budgetData.currency.id, budgetData.project.id, budgetData.amount);
     return budgetData;
   });
   await budgetRepository.save(budgets);
   return budgets;
 };
-  
+
+const deductFromProjectBudget = async (categoryId, currencyId, projectId, amount) => {
+  const projectBudget = await projectBudgetRepository
+    .createQueryBuilder('projectBudget')
+    .innerJoinAndSelect('projectBudget.budgetCategory', 'budgetCategory')
+    .innerJoinAndSelect('projectBudget.currency', 'currency')
+    .innerJoinAndSelect('budgetCategory.budgetCategoryType', 'budgetType')
+    .innerJoinAndSelect('projectBudget.project', 'project')
+    .where('project.id = :projectId', { projectId: projectId })
+    .andWhere('currency.id = :currencyId', { currencyId: currencyId })
+    .andWhere('budgetCategory.id = :categoryId', { categoryId: categoryId })
+    .orderBy('budgetType.id')
+    .addOrderBy('budgetCategory.id')
+    .addOrderBy('currency.id')
+    .getOne();
+
+  console.log(projectBudget);
+  // if (!projectBudget) {
+  //   $projectBudget = 
+  // }
+  projectBudget.usedAmount += amount;
+
+  await projectBudgetRepository.save(projectBudget);
+
+  return projectBudget;
+};
 /**
  * Query for budget
  * @param {Object} filter - Filter options
@@ -145,14 +176,17 @@ const getBudgetGroupByCategory = async (from, to) => {
     .addSelect('group.to', 'group_to')
     .addSelect('project.id', 'project_id')
     .addSelect('project.name', 'project_name')
+    .addSelect('project.isOffice', 'isOffice')
     .groupBy('currency.id') // Group by the currency ID
     .addGroupBy('taskCategory.id')
     .addGroupBy('project.id')
     .addGroupBy('group.to')
     .addGroupBy('group.from')
     .getRawMany();
-  
-  budgets.map((budget) => { budget.from = from,budget.to = to})
+
+  budgets.map((budget) => {
+    (budget.from = from), (budget.to = to);
+  });
   return budgets;
 };
 
@@ -200,10 +234,72 @@ const getBudgetsOfProjects = async () => {
 
   return groupedData;
 };
-const getMonthlyBudgetsOfProjects = async () => {
-  return "abrilo";
-};
+const getBudgetsOfficeOfProjects = async (month) => {
+  let from = month.from;
+  let to = month.to;
 
+  const isOffice = true;
+
+  const budgets = await budgetRepository
+    .createQueryBuilder('budget')
+    .leftJoin('budget.project', 'project')
+    .leftJoin('budget.task', 'task')
+    .leftJoin('task.milestone', 'milestone')
+    .leftJoin('budget.group', 'group')
+    .leftJoin('group.comments', 'comments')
+    .leftJoin('group.approvalStage', 'approvalStage')
+    .leftJoin('approvalStage.role', 'role')
+    .leftJoin('budget.budgetCategory', 'budgetCategory')
+    .leftJoin('budget.taskCategory', 'taskCategory')
+    .leftJoin('budget.currency', 'currency')
+    .select([
+      'budget',
+      'task',
+      'project',
+      'group',
+      'milestone',
+      'currency',
+      'budgetCategory',
+      'taskCategory',
+      'approvalStage',
+      'role',
+      'comments',
+    ])
+    .where('group.from = :from', { from: from })
+    .where('group.to = :to', { to: to })
+    .where('project.isOffice = :isOffice', { isOffice: isOffice })
+
+    .andWhere('group.approvalStage IS NOT NULL')
+    .getMany();
+
+  const groupedData = {};
+
+  budgets.forEach((entry) => {
+    const projectId = entry.project.id;
+    const groupId = entry.group.id;
+
+    if (!groupedData[projectId]) {
+      groupedData[projectId] = {
+        project: {
+          id: entry.project.id,
+          name: entry.project.name, // Include project name
+        },
+        groups: {},
+      };
+    }
+
+    if (!groupedData[projectId].groups[groupId]) {
+      groupedData[projectId].groups[groupId] = [];
+    }
+
+    groupedData[projectId].groups[groupId].push(entry);
+  });
+
+  return groupedData;
+};
+const getMonthlyBudgetsOfProjects = async () => {
+  return 'abrilo';
+};
 
 // get only current month budgets and there sum
 const getCurrentMonthBudgetOfProjectss = async () => {
@@ -467,7 +563,7 @@ const masterBudget = async () => {
       'comments',
       'currency',
     ])
-    .andWhere('group.approved = :approval',{approval})
+    .andWhere('group.approved = :approval', { approval })
     .getMany();
 
   const groupedData = {};
@@ -531,7 +627,7 @@ const filterBudget = async (startDate, endDate) => {
       'currency',
     ])
     // .andWhere('group.approvalStage IS NOT NULL')
-    .andWhere('group.approved = :approval',{approval})
+    .andWhere('group.approved = :approval', { approval })
     .andWhere('(group.from BETWEEN :startDate AND :endDate OR group.to BETWEEN :startDate AND :endDate)', {
       startDate,
       endDate,
@@ -703,4 +799,5 @@ module.exports = {
   getBudgetsByGroup,
   masterBudget,
   filterBudget,
+  getBudgetsOfficeOfProjects,
 };

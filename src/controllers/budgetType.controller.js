@@ -15,6 +15,12 @@ const getAllBudgetTypes = catchAsync(async (req, res) => {
   const budgetTypes = await budgetTypeService.getAllBudgetTypes(filter, options);
   res.status(httpStatus.OK).send(budgetTypes);
 });
+const getAllOfficeBudgetTypes = catchAsync(async (req, res) => {
+  // const filter = pick(req.query, ['status']);
+  // const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const budgetTypes = await budgetTypeService.getAllOfficeBudgetTypes();
+  res.status(httpStatus.OK).send(budgetTypes);
+});
 
 const getBudgetType = catchAsync(async (req, res) => {
   const budgetType = await budgetTypeService.getBudgetType(req.params.budgetTypeId);
@@ -40,4 +46,5 @@ module.exports = {
   getBudgetType,
   updateBudgetType,
   deleteBudgetType,
+  getAllOfficeBudgetTypes
 };

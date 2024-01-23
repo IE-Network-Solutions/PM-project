@@ -13,6 +13,13 @@ class Milestone extends Base {
     this.hasCheckList = { type: "boolean", default: false };
     this.isEvaluted = { type: "boolean", default: false };
     this.isSendToDOO = { type: "boolean", default: false };
+    this.plannedStart = { type: 'date', nullable: true };
+    this.plannedFinish = { type: 'date', nullable: true };
+    this.startVariance = { type: 'int', nullable: true }
+    this.finishVariance = { type: 'int', nullable: true };
+    this.actualStart = { type: 'date', nullable: true };
+    this.actualFinish = { type: 'date', nullable: true };
+
   }
 }
 
@@ -50,5 +57,6 @@ module.exports = new EntitySchema({
       onDelete: 'SET NULL',
       onUpdate: 'CASCADE',
     },
+
   },
 });

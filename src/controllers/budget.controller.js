@@ -119,6 +119,27 @@ const getBudgetsOfProjects = catchAsync(async (req, res) => {
   const data = await budgetService.getBudgetsOfProjects();
   res.send(data);
 });
+const getBudgetsOfOfficeProjects = catchAsync(async (req, res) => {
+
+  let month = {
+
+  };
+  month.from = req.body.from;
+  month.to = req.body.to;
+
+  const monthlyBudgetData = await budgetService.getBudgetsOfficeOfProjects(month);
+
+  if (!monthlyBudgetData) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'no Office monthly budget exist');
+  }
+
+  res.status(200).json(monthlyBudgetData);
+
+
+
+
+
+});
 
 const getAllBudgetsOfProjects = catchAsync(async (req, res) => {
   const data = await budgetService.getAllBudgetsOfProjects();
@@ -127,7 +148,7 @@ const getAllBudgetsOfProjects = catchAsync(async (req, res) => {
 
 const getBudgetGroupByCategory = catchAsync(async (req, res) => {
   const letestBudgetSession = await budgetSessionService.activeBudgetSession();
-  
+
   const data = await budgetService.getBudgetGroupByCategory(letestBudgetSession?.startDate, letestBudgetSession?.endDate);
   res.send(data);
 });
@@ -222,4 +243,5 @@ module.exports = {
   getBudgetsByGroup,
   masterBudget,
   filterBudget,
+  getBudgetsOfOfficeProjects
 };
