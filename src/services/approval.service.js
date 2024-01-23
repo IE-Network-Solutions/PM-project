@@ -12,8 +12,8 @@ const {
   baselineComment,
   monthlyBudget,
   monthlyBudgetComment,
-  OfficeMonthlyBudget,
-  OfficeMonthlyBudgetComment,
+  OfficeQuarterlyBudget,
+  OfficeQuarterlyBudgetComment,
 } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
@@ -21,7 +21,7 @@ const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 const services = require('./index');
 const publishToRabbit = require('../utils/producer');
-const OfficeMonthlyBudgetCommentModel = require('../models/OfficeMonthlyBudgetComment.model');
+const OfficeMonthlyBudgetCommentModel = require('../models/OfficeQuarterlyBudgetComment.model');
 
 const approvalStageRepository = dataSource.getRepository(ApprovalStage).extend({
   findAll,
@@ -74,11 +74,11 @@ const monthlyBudgetCommentRepository = dataSource.getRepository(monthlyBudgetCom
   findAll,
   sortBy,
 });
-const officeMonthlyBudgetRepostory = dataSource.getRepository(OfficeMonthlyBudget).extend({
+const officeQuarterlyBudgetRepostory = dataSource.getRepository(OfficeQuarterlyBudget).extend({
   findAll,
   sortBy,
 });
-const officeMonthlyBudgetCommentRepository = dataSource.getRepository(OfficeMonthlyBudgetComment).extend({
+const officeQuarterlyBudgetCommentRepository = dataSource.getRepository(OfficeQuarterlyBudgetComment).extend({
   findAll,
   sortBy,
 });
@@ -127,14 +127,6 @@ const sendForApproval = async (approvalModuleName, moduleId) => {
     //assigne the approval stage to the budget group which is the group identifier of the monthly budget
 
     updatedModule = await baselineRepository.update({ id: moduleId }, { approvalStage: approvalStage });
-  } else if (approvalModule.moduleName == 'OfficeProjectBudget') {
-    const module = await approvalGroupRepository.findOne({ where: { id: moduleId } });
-    if (!module) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'approval module(baseline) does not exist');
-    }
-    //assigne the approval stage to the budget group which is the group identifier of the monthly budget
-
-    updatedModule = await approvalGroupRepository.update({ id: moduleId }, { approvalStage: approvalStage });
   }
   let currentApprover = await getCurrentApprover(approvalModule.moduleName, moduleIdd);
   return currentApprover;
@@ -236,34 +228,6 @@ const getCurrentApprover = async (moduleName, moduleId) => {
       let project = await moduleData.project;
 
       let projectId = project.id;
-      let roleId = moduleData.approvalStage.role.id;
-      let ProjectMemebrsRoleData = await approvalProjectMemebrsRepository
-        .createQueryBuilder('project_member')
-        .leftJoin('project_member.project', 'project')
-        .leftJoin('project_member.user', 'user')
-        .leftJoin('project_member.role', 'role')
-        .select(['project_member', 'project', 'user', 'role'])
-        .where('project.id = :projectId', { projectId })
-        .andWhere('project_member.roleId = :roleId', { roleId })
-        .getOne();
-      currentApprover = ProjectMemebrsRoleData;
-    } else {
-      currentApprover = userRepository.findOne({ where: { roleId: moduleData.approvalStage.role.id }, relations: ['role'] });
-    }
-  } else if (approvalModule.moduleName == 'OfficeProjectBudget') {
-    const moduleData = await approvalGroupRepository.findOne({
-      where: { id: moduleId },
-      relations: ['approvalStage', 'approvalStage.role'],
-    });
-    console.log(moduleData, 'khaduirqeyuirqyppweincncnc');
-    if (!moduleData) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'approval moduleData(MonthlyBudget) does not exist');
-    }
-
-    if (moduleData.approvalStage.project_role) {
-      let projectId = await moduleData.budgetsData.project_id;
-
-      // let projectId = project.id;
       let roleId = moduleData.approvalStage.role.id;
       let ProjectMemebrsRoleData = await approvalProjectMemebrsRepository
         .createQueryBuilder('project_member')
@@ -386,16 +350,16 @@ const approve = async (moduleName, moduleId) => {
       await monthlyBudgetRepostory.update({ id: moduleId }, { approvalStage: approvalStage });
       updatedModule = await monthlyBudgetRepostory.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
     }
-  } else if (approvalModule.moduleName == 'OfficeProjectBudget') {
-    const moduleData = await approvalGroupRepository.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
+  } else if (approvalModule.moduleName == 'OfficeProjectQuarterlyBudget') {
+    const moduleData = await officeQuarterlyBudgetRepostory.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
     console.log(moduleData, 'imoduname');
     if (!moduleData) {
       throw new ApiError(httpStatus.NOT_FOUND, 'approval module(monthly budget) does not exist');
     }
     if (approvalModule.max_level == moduleData.approvalStage.level) {
       // approve
-      await approvalGroupRepository.update({ id: moduleId }, { approved: true });
-      updatedModule = await approvalGroupRepository.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
+      await officeQuarterlyBudgetRepostory.update({ id: moduleId }, { approved: true });
+      updatedModule = await officeQuarterlyBudgetRepostory.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
       // Rabit Mq Producer
       // let approvedByGroup=await services.budgetService.getBudgetGroupByCategory(moduleId)
       // publishToRabbit('project.budget',approvedByGroup)
@@ -411,8 +375,8 @@ const approve = async (moduleName, moduleId) => {
         .getOne();
       console.log(approvalStage, 'approvalStagekkk');
 
-      await approvalGroupRepository.update({ id: moduleId }, { approvalStage: approvalStage });
-      updatedModule = await approvalGroupRepository.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
+      await officeQuarterlyBudgetRepostory.update({ id: moduleId }, { approvalStage: approvalStage });
+      updatedModule = await officeQuarterlyBudgetRepostory.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
     }
   }
   return updatedModule;
@@ -501,30 +465,30 @@ const reject = async (moduleName, moduleId, comentData, userId = null) => {
       where: { id: moduleId },
       relations: ['approvalStage', 'monthlyBudgetcomments'],
     });
-  } else if (approvalModule.moduleName == 'OfficeProjectBudget') {
-    const moduleData = await approvalGroupRepository.findOne({
+  } else if (approvalModule.moduleName == 'OfficeProjectQuarterlyBudget') {
+    const moduleData = await officeQuarterlyBudgetRepostory.findOne({
       where: { id: moduleId },
-      relations: ['approvalStage', 'comments'],
+      relations: ['approvalStage', 'officeQuarterlyBudgetComment'],
     });
     if (!moduleData) {
       throw new ApiError(httpStatus.NOT_FOUND, 'approval module(group) does not exist');
     }
     console.log(comentData, 'llllllllllll');
-    const comment = approvalBudgetCommentRepository.create({ budgetComment: comentData });
+    const comment = officeQuarterlyBudgetCommentRepository.create({ budgetComment: comentData });
     console.log(comment);
 
-    const budgetComment = await approvalBudgetCommentRepository.save(comment);
+    const budgetComment = await officeQuarterlyBudgetCommentRepository.save(comment);
     console.log(moduleData, budgetComment, 'aaaaaaaaaaaaaaa');
 
-    await moduleData.comments.push(budgetComment);
+    await moduleData.officeQuarterlyBudgetComment.push(budgetComment);
 
-    await approvalGroupRepository.save(moduleData);
+    await officeQuarterlyBudgetRepostory.save(moduleData);
 
     // approve
-    await approvalGroupRepository.update({ id: moduleId }, { rejected: true });
-    updatedModule = await approvalGroupRepository.findOne({
+    await officeQuarterlyBudgetRepostory.update({ id: moduleId }, { rejected: true });
+    updatedModule = await officeQuarterlyBudgetRepostory.findOne({
       where: { id: moduleId },
-      relations: ['approvalStage', 'comments'],
+      relations: ['approvalStage', 'officeQuarterlyBudgetComment'],
     });
   }
   return updatedModule;

@@ -28,11 +28,11 @@ module.exports = new EntitySchema({
       target: "PaymentTerm",
       inverseSide: "currency"
     },
-    officeMonthlyBudget: {
-      type: "one-to-many",
-      target: "OfficeMonthlyBudget",
-      inverseSide: "currency"
-    }
+    // officeMonthlyBudget: {
+    //   type: "one-to-many",
+    //   target: "OfficeMonthlyBudget",
+    //   inverseSide: "currency"
+    // }
 
   }
 });

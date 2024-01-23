@@ -9,7 +9,7 @@ const getAllBudgetSessions = catchAsync(async (req, res) => {
     res.status(httpStatus.CREATED).send(budgetSessons);
 })
 
-const getBudgetSession = catchAsync(async (req, res) => {
+const getBudgetSession = catchAsync(async (req, res) => {p
     const budgetSession = await officeBudgetSessionService.getSessionBudget(req.params.id);
     res.status(httpStatus.CREATED).send(budgetSession);
 

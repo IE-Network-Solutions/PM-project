@@ -38,7 +38,7 @@ const monthlyBudget = require('./monthlyBudget.route');
 const permission = require('./permission.route');
 const projectBudget = require('./projectBudget.route');
 const budgetCategoryType = require('./budgetCategoryType.route');
-const officeMonthlyBudget = require('./officeMonthlyBudget.route');
+const officeQuarterlyBudget = require('./officeQuarterlyBudget.route');
 const accountablity = require('./accountablity.route');
 
 const stakholder = require('./stakholder.route');
@@ -194,7 +194,7 @@ const defaultRoutes = [
   },
   {
     path: '/officeBudget',
-    route: officeMonthlyBudget,
+    route: officeQuarterlyBudget,
   },
   {
     path: '/accountablity',

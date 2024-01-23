@@ -6,6 +6,8 @@ class ApprovalStage extends Base {
     super();
     this.level = { type: 'int' };
     this.project_role = { type: 'boolean', default: false };
+    this.approvalModuleId = { type: 'varchar' };
+    this.roleId = { type: 'varchar' };
   }
 }
 

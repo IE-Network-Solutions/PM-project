@@ -1,17 +1,34 @@
 const Joi = require('joi');
 
-const createBudget = {
-    body: Joi.array().items(
-        Joi.object().keys({
-            budgetAmount: Joi.number().required(),
-            from: Joi.date(),
-            to: Joi.date(),
-            budgetCategoryId: Joi.string().required(),
-            currencyId: Joi.string().required(),
-            projectId: Joi.string().required(),
+const officequarterlyBudgetSchema = Joi.object({
+    budgetAmount: Joi.number().required(),
+    from: Joi.date().required(),
+    to: Joi.date().required(),
+    budgetCategoryId: Joi.string().required(),
+    currencyId: Joi.string().required(),
+    projectId: Joi.string().required(),
+});
 
-        })
-    ),
+
+
+
+
+
+
+const createBudget = {
+    body: Joi.object().keys({
+        // budgetAmount: Joi.number().required(),
+        // from: Joi.date(),
+        // to: Joi.date(),
+        // budgetCategoryId: Joi.string().required(),
+        // currencyId: Joi.string().required(),
+        // projectId: Joi.string().required(),
+        budgetsData: Joi.array().items(officequarterlyBudgetSchema).required(),
+        from: Joi.date().required(),
+        to: Joi.date().required(),
+
+    })
+
 };
 
 
@@ -37,20 +54,29 @@ const getBudgetByProject = {
 //     }),
 // };
 
+
+
+
+
+
+
 const updateBudget = {
     params: Joi.object().keys({
         id: Joi.required(),
     }),
     body: Joi.object()
         .keys({
-            name: Joi.string(),
-            budgetAmount: Joi.number(),
-            from: Joi.date(),
-            to: Joi.date(),
-            projectId: Joi.string(),
-            currencyId: Joi.string(),
-            budgetCategoryId: Joi.string(),
+            // name: Joi.string(),
+            // budgetAmount: Joi.number(),
+            // from: Joi.date(),
+            // to: Joi.date(),
+            // projectId: Joi.string(),
+            // currencyId: Joi.string(),
+            // budgetCategoryId: Joi.string(),
 
+            budgetsData: Joi.array().items(officequarterlyBudgetSchema).required(),
+            from: Joi.string().required(),
+            to: Joi.string().required(),
         })
         .min(1),
 };
