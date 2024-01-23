@@ -45,10 +45,10 @@ module.exports.monthlyBudgetCommentService = require('./monthlyBudgetComment.ser
 module.exports.permissionService = require('./permission.service');
 module.exports.budgetCategoryTypeService = require('./budgetCategoryType.service');
 module.exports.projectBudgetService = require('./projectBudget.service');
-module.exports.OfficeMonthlyBudgetService = require('./officeProjectMonthlyBudget.service');
+module.exports.OfficeQuarterlyBudgetService = require('./officeProjectQuarterlyBudget.service');
 module.exports.accountablityService = require('./accountablity.service');
 
 module.exports.stakholderService = require('./stakholder.service');
 
-module.exports.officeMonthlyBudgetService = require('./officeProjectMonthlyBudget.service');
+module.exports.officeMonthlyBudgetService = require('./officeProjectQuarterlyBudget.service');
 module.exports.officeBudgetSessionService = require('./officeBudegtSession.service');

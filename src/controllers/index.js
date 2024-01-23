@@ -46,6 +46,6 @@ module.exports.monthlyBudgetController = require('./monthlyBudget.controller');
 module.exports.permissionController = require('./permission.controller');
 module.exports.budgetCategoryTypeController = require('./budgetCategoryType.controller');
 module.exports.projectBudgetController = require('./projecctBudget.controller');
-module.exports.officeMonthlyBudgetController = require('./officeProjectMonthlyBudget.controller');
+module.exports.officeQuarterlyBudgetController = require('./officeProjectQuarterlyBudget.controller');
 module.exports.accountablityController = require('./accountablity.controller');
 module.exports.officeBudgetSessioncontroller = require('./officeBudgetSession.controller');
