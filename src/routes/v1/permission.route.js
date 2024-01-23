@@ -2,12 +2,13 @@ const express = require('express');
 const validate = require('../../middlewares/validate');
 const { permissionController } = require('../../controllers');
 const { permissionValidation } = require('../../validations');
-const authRoles = require('../../middlewares/authPermision');
+const authPermision = require('../../middlewares/authPermision');
+const { seedPermissionMiddleware } = require('../../middlewares/authPermissionStore');
 
 const router = express.Router();
 
-router.route('/seed').post(authRoles(['viewaaa']), permissionController.seedPermissions);
-router.route('/seedResource').post(authRoles(['view_aaa']), permissionController.seedPermissionResource);
+router.route('/seed').post(permissionController.seedPermissions);
+router.route('/seedResource').post(seedPermissionMiddleware, permissionController.seedPermissionResource);
 router.route('/permissionResources').get(permissionController.getResourcesWithPermission);
 
 router

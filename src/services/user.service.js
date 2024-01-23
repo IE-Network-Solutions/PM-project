@@ -33,8 +33,16 @@ const queryUsers = async (filter, options) => {
  * @param {ObjectId} id
  * @returns {Promise<Risk>}
  */
+const getUsers = async (id) => {
+  return await userRepository.find({ relations: ['permissions', 'role'] });
+};
+/**
+ * Get user by id
+ * @param {ObjectId} id
+ * @returns {Promise<Risk>}
+ */
 const getUserById = async (id) => {
-  return await userRepository.findOne({ where: { id: id } ,relations:['permissions','role'] });
+  return await userRepository.findOne({ where: { id: id }, relations: ['permissions', 'role'] });
 };
 
 const createUser = async (userBody) => {
@@ -85,4 +93,5 @@ module.exports = {
   getUsersById,
   createUser,
   updateUser,
+  getUsers,
 };
