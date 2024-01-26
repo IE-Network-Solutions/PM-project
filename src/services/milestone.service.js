@@ -114,6 +114,16 @@ const deleteMilestone = async (milestoneId) => {
 
 };
 
+const updateHasCheckList = async (milestoneId) => {
+  return await milestoneRepository.update({ id: milestoneId }, { hasCheckList: true })
+}
+const updateIsEvaluted = async (milestoneId) => {
+  return await milestoneRepository.update({ id: milestoneId }, { isEvaluted: true })
+}
+const updateIsSendToDOO= async (milestoneId) => {
+  return await milestoneRepository.update({ id: milestoneId }, { isSendToDOO: true })
+}
+
 module.exports = {
   createMilestone,
   getMilestones,
@@ -121,4 +131,7 @@ module.exports = {
   getByProject,
   updateMilestone,
   deleteMilestone,
+  updateHasCheckList,
+  updateIsEvaluted,
+  updateIsSendToDOO
 };

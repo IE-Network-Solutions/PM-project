@@ -1,7 +1,7 @@
 const { EntitySchema } = require('typeorm');
 const { Base } = require('./BaseModel');
 
-class OfficeMonthlyBudgetComment extends Base {
+class OfficeQuarterlyBudgetComment extends Base {
     // Define additional properties specific to budget comment entity
     constructor() {
         super(); // Call the constructor of the Base entity to inherit its properties
@@ -11,13 +11,13 @@ class OfficeMonthlyBudgetComment extends Base {
 }
 
 module.exports = new EntitySchema({
-    name: 'OfficeMonthlyBudgetComment',
-    tableName: 'office_monthly_budget_comments',
-    columns: new OfficeMonthlyBudgetComment(),
+    name: 'OfficeQuarterlyBudgetComment',
+    tableName: 'office_qarterly_budget_comments',
+    columns: new OfficeQuarterlyBudgetComment(),
     relations: {
-        officeMonthlyBudget: {
+        OfficeQuarterlyBudget: {
             type: 'many-to-one',
-            target: 'OfficeMonthlyBudget',
+            target: 'OfficeQuarterlyBudget',
         },
     }
 });
