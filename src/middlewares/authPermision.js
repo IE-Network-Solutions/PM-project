@@ -16,7 +16,7 @@ const authPermissions = (prmissions) => {
     } else {
       const hasRequiredRights = await prmissions.every((requiredRight) => userPermissions?.includes(requiredRight));
       if (!hasRequiredRights) {
-        return next(new ApiError(httpStatus.BAD_REQUEST, 'Access Denied'));
+        return next(new ApiError(httpStatus.FORBIDDEN, 'Access Denied'));
       }
       next();
     }
