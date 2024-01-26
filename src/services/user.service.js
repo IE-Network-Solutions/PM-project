@@ -77,6 +77,12 @@ const updateUser = async (updateBody) => {
   await userRepository.update({ id: userId }, updateBody);
 };
 
+const updateRole = async (userId, updateBody) => {
+  await userRepository.update({ id: userId }, updateBody);
+
+  return await getUserById(userId);
+};
+
 /**
  * Get multiple users by array of ids
  * @param {Array} userIds
@@ -94,4 +100,5 @@ module.exports = {
   createUser,
   updateUser,
   getUsers,
+  updateRole,
 };

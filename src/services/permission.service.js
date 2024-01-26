@@ -89,6 +89,16 @@ const assignPermissionToRole = async (permissionData) => {
 const seedPermission = async () => {
   const permissionData = [
     {
+      permissionName: 'View Manager Dashboard',
+      slug: 'view_manager_dashboard',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Create Project',
+      slug: 'create_project',
+      permissionResourceId: 1,
+    },
+    {
       permissionName: 'View AAA',
       slug: 'view_aaa',
       permissionResourceId: 1,
