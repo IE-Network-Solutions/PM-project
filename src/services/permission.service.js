@@ -56,6 +56,8 @@ const getPermission = async (id) => {
 
 const assignPermissionToUser = async (permissionData) => {
   const user = await userRepository.findOneBy({ id: permissionData.userId });
+  user.permissions = [];
+  await userRepository.save(user);
   let permissionUser = permissionData.permissions.map((permissionId) => {
     const permission = permissionRepository.findOneBy({ id: permissionId });
     const permissionUser = permissionUserRepository.create({
@@ -67,7 +69,7 @@ const assignPermissionToUser = async (permissionData) => {
 
   const data = await permissionUserRepository.save(permissionUser);
 
-  return data;
+  return await userRepository.find({ relations: ['permissions', 'role'] });
 };
 
 const assignPermissionToRole = async (permissionData) => {
@@ -96,6 +98,91 @@ const seedPermission = async () => {
     {
       permissionName: 'Create Project',
       slug: 'create_project',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'View Project Option',
+      slug: 'view_project_option',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'View Project Option',
+      slug: 'view_project_option',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit Project',
+      slug: 'edit_project',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete Project',
+      slug: 'delete_project',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Close Project',
+      slug: 'close_project',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'View Project Detail',
+      slug: 'view_project_detail',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Add Project Boq',
+      slug: 'add_project_boq',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Download Project Boq',
+      slug: 'download_project_boq',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Add Project Memeber',
+      slug: 'add_project_memeber',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Remove Project Memeber',
+      slug: 'remove_project_memeber',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Manage Project',
+      slug: 'manage_project',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Manage Project',
+      slug: 'manage_project',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Add Milestone',
+      slug: 'add_milestone',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit Milestone',
+      slug: 'edit_milestone',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete Milestone',
+      slug: 'delete_milestone',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Add Schedule',
+      slug: 'add_schedule',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete Milestone',
+      slug: 'delete_milestone',
       permissionResourceId: 1,
     },
     {

@@ -78,6 +78,9 @@ const updateUser = async (updateBody) => {
 };
 
 const updateRole = async (userId, updateBody) => {
+  const user = await getUserById(userId);
+  user.permissions = [];
+  await user.save();
   await userRepository.update({ id: userId }, updateBody);
 
   return await getUserById(userId);
