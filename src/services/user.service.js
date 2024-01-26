@@ -3,6 +3,7 @@ const { User } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const ApiError = require('../utils/ApiError');
 
 const userRepository = dataSource.getRepository(User).extend({ findAll, sortBy });
 
@@ -78,9 +79,17 @@ const updateUser = async (updateBody) => {
 };
 
 const updateRole = async (userId, updateBody) => {
+  console.log(updateBody, 'aaaaaaaaaaaaaaaaaaaaa');
   const user = await getUserById(userId);
-  user.permissions = [];
-  await user.save();
+  console.log(user, 'bbbbbbbbbbbbbbbb');
+  if (!user) {
+    throw ApiError(404, 'user does not exist');
+  }
+  // if (user.permissions != null) {
+  //   user.permissions = [];
+  //   await user.save();
+  // }
+
   await userRepository.update({ id: userId }, updateBody);
 
   return await getUserById(userId);
