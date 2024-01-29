@@ -322,53 +322,13 @@ const seedPermission = async () => {
     },
     {
       permissionName: 'Update AAA',
-      slug: 'update_aaa',
+      slug: 'edit_aaa',
       permissionResourceId: 1,
     },
     {
       permissionName: 'Delete AAA',
-      slug: 'deleteaaa',
+      slug: 'delete_aaa',
       permissionResourceId: 1,
-    },
-    {
-      permissionName: 'View Baseline',
-      slug: 'viewbaseline',
-      permissionResourceId: 2,
-    },
-    {
-      permissionName: 'Create Baseline',
-      slug: 'createbaseline',
-      permissionResourceId: 2,
-    },
-    {
-      permissionName: 'Delete Baseline',
-      slug: 'deletebaseline',
-      permissionResourceId: 2,
-    },
-    {
-      permissionName: 'Update Baseline',
-      slug: 'updatebaseline',
-      permissionResourceId: 2,
-    },
-    {
-      permissionName: 'View Master Schedule',
-      slug: 'viewmasterschedule',
-      permissionResourceId: 2,
-    },
-    {
-      permissionName: 'View Filtered Master Schedule',
-      slug: 'viewfilteredmasterschedule',
-      permissionResourceId: 1,
-    },
-    {
-      permissionName: 'View Baseline By Milestone',
-      slug: 'viewbaselinebymilestone',
-      permissionResourceId: 1,
-    },
-    {
-      permissionName: 'View Project Scheule',
-      slug: 'viewprojectscheule',
-      permissionResourceId: 2,
     },
   ];
   const permissions = permissionData.map((permissionData) => {
