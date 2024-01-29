@@ -32,4 +32,9 @@ module.exports = {
   addProjectStakHolderMiddleware: authPermision(['add_stakeholder']),
   editProjectStakeholderMiddleware: authPermision(['edit_stakeholder']),
   deleteProjectStakeholderMiddleware: authPermision(['delete_stakeholder']),
+  createProjectLLReportderMiddleware: authPermision(['create_ll_report']),
+  deleteProjectLLReportMiddleware: authPermision(['delete_ll_report']),
+  insertProjectLLMiddleware: authPermision(['insert_ll']),
+  editProjectLLMiddleware: authPermision(['edit_ll']),
+  deleteProjectLLMiddleware: authPermision(['delete_ll']),
 };

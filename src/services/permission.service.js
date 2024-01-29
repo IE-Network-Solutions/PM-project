@@ -271,6 +271,36 @@ const seedPermission = async () => {
       permissionResourceId: 1,
     },
     {
+      permissionName: 'Send Weekly Report',
+      slug: 'send_weekly_report',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Create LL Report',
+      slug: 'create_ll_report',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete LL Report',
+      slug: 'delete_ll_report',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Insert LL',
+      slug: 'insert_ll',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit LL',
+      slug: 'edit_ll',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete LL',
+      slug: 'delete_ll',
+      permissionResourceId: 1,
+    },
+    {
       permissionName: 'Create AAA',
       slug: 'create_aaa',
       permissionResourceId: 1,
