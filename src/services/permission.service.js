@@ -211,6 +211,41 @@ const seedPermission = async () => {
       permissionResourceId: 1,
     },
     {
+      permissionName: 'Add Project Risk',
+      slug: 'add_risk',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit Project Risk',
+      slug: 'edit_risk',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete Project Risk',
+      slug: 'delete_risk',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Transfer Project Risk',
+      slug: 'transfer_risk',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Add Project Issue',
+      slug: 'add_issue',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit Project Issue',
+      slug: 'edit_issue',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete Project Issue',
+      slug: 'delete_issue',
+      permissionResourceId: 1,
+    },
+    {
       permissionName: 'Create AAA',
       slug: 'create_aaa',
       permissionResourceId: 1,
