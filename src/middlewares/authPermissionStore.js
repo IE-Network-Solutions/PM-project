@@ -27,4 +27,6 @@ module.exports = {
   addProjectIssueMiddleware: authPermision(['add_issue']),
   editProjectIssueMiddleware: authPermision(['edit_issue']),
   deleteProjectIssueMiddleware: authPermision(['delete_issue']),
+  addProjectResourceMiddleware: authPermision(['add_project_resource']),
+  editProjectResourceMiddleware: authPermision(['edit_project_resource']),
 };

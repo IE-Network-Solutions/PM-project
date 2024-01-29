@@ -246,6 +246,31 @@ const seedPermission = async () => {
       permissionResourceId: 1,
     },
     {
+      permissionName: 'Add Project Resource',
+      slug: 'add_project_resource',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit Project Resource',
+      slug: 'edit_project_resource',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Add Stakeholder',
+      slug: 'add_stakeholder',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit Stakeholder',
+      slug: 'edit_stakeholder',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete Stakeholder',
+      slug: 'delete_stakeholder',
+      permissionResourceId: 1,
+    },
+    {
       permissionName: 'Create AAA',
       slug: 'create_aaa',
       permissionResourceId: 1,
