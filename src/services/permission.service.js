@@ -106,11 +106,6 @@ const seedPermission = async () => {
       permissionResourceId: 1,
     },
     {
-      permissionName: 'View Project Option',
-      slug: 'view_project_option',
-      permissionResourceId: 1,
-    },
-    {
       permissionName: 'Edit Project',
       slug: 'edit_project',
       permissionResourceId: 1,
@@ -156,11 +151,6 @@ const seedPermission = async () => {
       permissionResourceId: 1,
     },
     {
-      permissionName: 'Manage Project',
-      slug: 'manage_project',
-      permissionResourceId: 1,
-    },
-    {
       permissionName: 'Add Milestone',
       slug: 'add_milestone',
       permissionResourceId: 1,
@@ -181,8 +171,8 @@ const seedPermission = async () => {
       permissionResourceId: 1,
     },
     {
-      permissionName: 'Delete Milestone',
-      slug: 'delete_milestone',
+      permissionName: 'Edit Schedule',
+      slug: 'edit_schedule',
       permissionResourceId: 1,
     },
     {
