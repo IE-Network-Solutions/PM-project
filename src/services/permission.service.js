@@ -301,6 +301,21 @@ const seedPermission = async () => {
       permissionResourceId: 1,
     },
     {
+      permissionName: 'Add MOM',
+      slug: 'add_mom',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit MOM',
+      slug: 'edit_mom',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete MOM',
+      slug: 'delete_mom',
+      permissionResourceId: 1,
+    },
+    {
       permissionName: 'Create AAA',
       slug: 'create_aaa',
       permissionResourceId: 1,

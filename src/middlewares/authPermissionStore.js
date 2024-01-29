@@ -37,4 +37,7 @@ module.exports = {
   insertProjectLLMiddleware: authPermision(['insert_ll']),
   editProjectLLMiddleware: authPermision(['edit_ll']),
   deleteProjectLLMiddleware: authPermision(['delete_ll']),
+  addProjectMomMiddleware: authPermision(['add_mom']),
+  editProjectMomMiddleware: authPermision(['edit_mom']),
+  deleteProjectMomMiddleware: authPermision(['delete_mom']),
 };
