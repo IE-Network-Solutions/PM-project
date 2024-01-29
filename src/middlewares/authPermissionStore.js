@@ -14,4 +14,7 @@ module.exports = {
   editProjectMilestoneMiddleware: authPermision(['edit_milestone']),
   deleteProjectMilestoneMiddleware: authPermision(['delete_milestone']),
   addProjectScheduleMilestoneMiddleware: authPermision(['add_schedule']),
+  addProjectPaymentTermMiddleware: authPermision(['add_payment_term']),
+  editProjectPaymentTermMiddleware: authPermision(['edit_payment_term']),
+  deleteProjectPaymentTermMiddleware: authPermision(['delete_payment_term']),
 };

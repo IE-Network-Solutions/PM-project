@@ -176,8 +176,18 @@ const seedPermission = async () => {
       permissionResourceId: 1,
     },
     {
-      permissionName: 'View AAA',
-      slug: 'view_aaa',
+      permissionName: 'Add Payment Term',
+      slug: 'add_payment_term',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit Payment Term',
+      slug: 'edit_payment_term',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete Payment Term',
+      slug: 'delete_payment_term',
       permissionResourceId: 1,
     },
     {
