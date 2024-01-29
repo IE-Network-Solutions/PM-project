@@ -29,4 +29,7 @@ module.exports = {
   deleteProjectIssueMiddleware: authPermision(['delete_issue']),
   addProjectResourceMiddleware: authPermision(['add_project_resource']),
   editProjectResourceMiddleware: authPermision(['edit_project_resource']),
+  addProjectStakHolderMiddleware: authPermision(['add_stakeholder']),
+  editProjectStakeholderMiddleware: authPermision(['edit_stakeholder']),
+  deleteProjectStakeholderMiddleware: authPermision(['delete_stakeholder']),
 };

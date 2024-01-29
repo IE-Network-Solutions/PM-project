@@ -26,7 +26,9 @@ router
     validate(taskValidation.assignAllResource),
     taskController.assignAllResource
   );
-router.route('/remove-resource/:taskId').post(authPermision.editProjectResourceMiddleware,validate(taskValidation.removeResource), taskController.removeResource);
+router
+  .route('/remove-resource/:taskId')
+  .post(authPermision.editProjectResourceMiddleware, validate(taskValidation.removeResource), taskController.removeResource);
 router
   .route('/by-planed-date/:projectId')
   .get(validate(taskValidation.getByPlnedDate), taskController.getTasksByPlandStartDate);
