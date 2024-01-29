@@ -191,6 +191,26 @@ const seedPermission = async () => {
       permissionResourceId: 1,
     },
     {
+      permissionName: 'Import Local Material',
+      slug: 'import_local_material',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Create Project Budget',
+      slug: 'create_project_budget',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit Project Budget',
+      slug: 'edit_project_budget',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete Project Budget',
+      slug: 'delete_project_budget',
+      permissionResourceId: 1,
+    },
+    {
       permissionName: 'Create AAA',
       slug: 'create_aaa',
       permissionResourceId: 1,
