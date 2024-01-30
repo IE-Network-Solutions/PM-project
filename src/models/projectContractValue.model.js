@@ -9,6 +9,7 @@ class ProjectContractValue extends Base {
     this.currencyId = {type: 'uuid' ,nullable:true};
     this.isVariance = {type: 'boolean',default:false};
     this.contractSignDate ={type : 'date',nullable:true};
+    this.projectId = {type:'uuid', nullable:true};
   }
 }
 

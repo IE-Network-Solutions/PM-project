@@ -65,9 +65,6 @@ const deletePaymentTerm = {
 };
 
 const validateVariance = {
-  params: Joi.object().keys({
-    projectId: Joi.required(),
-  }),
   body: Joi.object().keys({
     varianceData: Joi.array().items(
     Joi.object({
