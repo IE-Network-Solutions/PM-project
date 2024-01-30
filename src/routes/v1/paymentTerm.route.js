@@ -26,7 +26,7 @@ router
   .patch(uploadOptions.single('atp-doc'), paymentTermController.updatePaymentTerm);
 
 router
-  .route('/setVariance/:projectId')
-  .post(paymentTermController.setVariance);
+  .route('/setVariance')
+  .post(validate(paymentTermValidation.validateVariance),paymentTermController.setVariance);
 
 module.exports = router;
