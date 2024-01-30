@@ -201,9 +201,10 @@ const setVariance = async(projectId, VarianceBody)=>{
       amount: VarianceBody.amount,
       projectId : projectId,
       currencyId : VarianceBody.currencyId,
-      is_variance : true,
+      isVariance : true,
       contractSignDate : VarianceBody.contractSignDate,
   })
+  await projectContractValuesRepository.save(varianceValue);
 };
 module.exports = {
   createPaymentTerm,
