@@ -6,7 +6,9 @@ class ProjectContractValue extends Base {
   constructor() {
     super();
     this.amount = { type: 'int',nullable:true};
-    this.currencyId = {type: 'uuid' ,nullable:true}
+    this.currencyId = {type: 'uuid' ,nullable:true};
+    this.is_variance = {type: 'boolean',default:false};
+    this.contractSignDate ={type : 'date',nullable:true};
   }
 }
 
@@ -18,16 +20,16 @@ module.exports = new EntitySchema({
   },
   relations: {
     project: {
-        type: "many-to-one", 
+        type: "many-to-one",
         target: "Project",
         inverseSide: "projectContractValues",
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },
       currency: {
-        type: "many-to-one", 
+        type: "many-to-one",
         target: "Currency",
         inverseSide: "projectContractValues",
-      },  
+      },
   },
 });
