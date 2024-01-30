@@ -64,11 +64,26 @@ const deletePaymentTerm = {
   }),
 };
 
+const validateVariance = {
+  body: Joi.object().keys({
+    varianceData: Joi.array().items(
+    Joi.object({
+    amount: Joi.number().required(),
+    currencyId: Joi.string().required(),
+    contractSignDate: Joi.date(),
+    isVariance: Joi.boolean().required(),
+    projectId: Joi.string().required()
+  })
+  ).required(),
+  })
+
+}
 module.exports = {
   createPaymentTerm,
   getPaymentTerms,
   getPaymentTerm,
   getByProject,
   updatePaymentTerm,
-  deletePaymentTerm
+  deletePaymentTerm,
+  validateVariance
 };
