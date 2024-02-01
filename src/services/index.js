@@ -29,6 +29,15 @@ module.exports.approvalService = require('./approval.service');
 module.exports.departmentService = require('./department.service');
 module.exports.currencyService = require('./currency.service');
 module.exports.resourceHistory = require('./resourceHistory.service');
+
+module.exports.Quality = require('./quality.service');
+module.exports.Solution = require('./solution.service');
+module.exports.Criteria = require('./criteria.service');
+module.exports.Todo = require('./todo.service');
+module.exports.Color = require('./color.service');
+module.exports.CheckList = require('./checkList.service');
+module.exports.Evalution = require('./evalution.service');
+
 module.exports.clientService = require('./client.service');
 module.exports.budgetSessionService = require('./budgetSession.service');
 module.exports.monthlyBudgetService = require('./montlyBudget.service');
@@ -36,10 +45,14 @@ module.exports.monthlyBudgetCommentService = require('./monthlyBudgetComment.ser
 module.exports.permissionService = require('./permission.service');
 module.exports.budgetCategoryTypeService = require('./budgetCategoryType.service');
 module.exports.projectBudgetService = require('./projectBudget.service');
-module.exports.OfficeMonthlyBudgetService = require('./officeProjectMonthlyBudget.service');
+module.exports.OfficeQuarterlyBudgetService = require('./officeProjectQuarterlyBudget.service');
+
+module.exports.OfficeMonthlyBudgetService = require('./officeMonthlyBudget.service');
 module.exports.accountablityService = require('./accountablity.service');
 
 module.exports.stakholderService = require('./stakholder.service');
 
 module.exports.raciService = require('./raci.service');
 module.exports.raciListService = require('./raciList.service');
+module.exports.officeMonthlyBudgetService = require('./officeProjectQuarterlyBudget.service');
+module.exports.officeBudgetSessionService = require('./officeBudegtSession.service');

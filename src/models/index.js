@@ -54,14 +54,32 @@ module.exports.permissionRole = require('./permissionRole.model');
 module.exports.budgetCategoryType = require('./budgetCategoryType.model');
 module.exports.projectBudget = require('./projectBudget.model');
 module.exports.offshoreMatterialBoq = require('./offshoreMatterialBoq.model');
-module.exports.OfficeMonthlyBudget = require('./officeProjectMonthlyBudget.model');
-module.exports.OfficeMonthlyBudgetComment = require('./OfficeMonthlyBudgetComment.model');
+module.exports.OfficeQuarterlyBudget = require('./officeProjectQuarterlyBudget.model');
+
+module.exports.OfficeMonthlyBudget = require('./OfficeMonthlyBudget.model');
+module.exports.OfficeQuarterlyBudgetComment = require('./OfficeQuarterlyBudgetComment.model');
 module.exports.momAbsents = require('./momabsents.model');
 module.exports.Accountablity = require('./accountablity.model');
+
+
+module.exports.Quality = require('./quality.model');
+module.exports.Solution = require('./solution.model');
+module.exports.Criteria = require('./criteria.model');
+module.exports.Todo = require('./todo.model');
+module.exports.Color = require('./color.model');
+module.exports.CheckList = require('./checkList.model');
+module.exports.Evalution = require('./evalution.model');
+module.exports.MilestoneCriteria = require('./milestoneCriteria.model');
+module.exports.TodoEvalution = require('./TodoEvalution.model');
 
 module.exports.StakHolder = require('./stakholder.model');
 module.exports.Raci = require('./raci.model');
 module.exports.RaciList = require('./raciList.model');
 
 module.exports.ProjectStakHolder = require('./projectStakholder.model');
+<<<<<<< HEAD
 module.exports.ProjectRaci = require('./projectRaci.model');
+=======
+module.exports.OfficeBudgetSession = require('./officeBudgetSession.model');
+module.exports.permissionResource = require('./permissionResource.model');
+>>>>>>> 7656d5dec801dfd9623e3a7fb42eac42dbb344fa

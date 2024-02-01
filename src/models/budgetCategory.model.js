@@ -21,5 +21,10 @@ module.exports = new EntitySchema({
       target: 'budgetCategoryType',
       inverseSide: 'budgetCategory',
     },
+    // officeMonthlyBudget: {
+    //   type: "one-to-many",
+    //   target: "OfficeMonthlyBudget",
+    //   inverseSide: "budgetCategory"
+    // }
   },
 });

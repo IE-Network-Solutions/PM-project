@@ -38,12 +38,25 @@ const monthlyBudget = require('./monthlyBudget.route');
 const permission = require('./permission.route');
 const projectBudget = require('./projectBudget.route');
 const budgetCategoryType = require('./budgetCategoryType.route');
+const officeQuarterlyBudget = require('./officeQuarterlyBudget.route');
 const officeMonthlyBudget = require('./officeMonthlyBudget.route');
+
 const accountablity = require('./accountablity.route');
 
 const stakholder = require('./stakholder.route');
 const raci = require('./raci.route');
 const raciList = require('./raciList.route');
+const officeBudgetSessions = require('./officeBudgetSession.route');
+
+
+///////////////////////////////////////////////////////
+const qualityRoute = require('./quality.route');
+const solutionRoute = require('./solution.route');
+const criteriaRoute = require('./criteria.route');
+const todoRoute = require('./todo.route');
+const colorRoute = require('./color.route');
+const checkListRoute = require('./checkList.route');
+const evalutionRoute = require('./evalution.route');
 
 
 const router = express.Router();
@@ -141,6 +154,10 @@ const defaultRoutes = [
     route: budgetRoute,
   },
   {
+    path: '/officeMonthlyBudget',
+    route: officeMonthlyBudget,
+  },
+  {
     path: '/approvalModule',
     route: approvalModuleRoute,
   },
@@ -174,12 +191,44 @@ const defaultRoutes = [
   },
   {
     path: '/budgetSession',
-    route: budgetSessionRoute,
+    route: budgetSessionRoute
+  },
+  {
+    path: '/roles',
+    route: roleRoute,
   },
   { path: '/roles', route: roleRoute },
   {
     path: '/monthlyBudget',
-    route: monthlyBudget,
+    route: monthlyBudget
+  },
+  {
+    path: '/quality',
+    route: qualityRoute
+  },
+  {
+    path: "/solution",
+    route: solutionRoute
+  },
+  {
+    path: "/criteria",
+    route: criteriaRoute
+  },
+  {
+    path: "/todo",
+    route: todoRoute
+  },
+  {
+    path: "/color",
+    route: colorRoute
+  },
+  {
+    path: "/checkList",
+    route: checkListRoute
+  },
+  {
+    path: "/evalution",
+    route: evalutionRoute
   },
   {
     path: '/permissions',
@@ -195,7 +244,7 @@ const defaultRoutes = [
   },
   {
     path: '/officeBudget',
-    route: officeMonthlyBudget,
+    route: officeQuarterlyBudget,
   },
   {
     path: '/accountablity',
@@ -212,6 +261,8 @@ const defaultRoutes = [
   {
     path: '/raciList',
     route: raciList,
+    path: '/officeBudgetSessions',
+    route: officeBudgetSessions,
   },
 ];
 

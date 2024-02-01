@@ -11,15 +11,15 @@ module.exports = async function findAll({ tableName, paginationOptions, sortOpti
 
     const { columnName, orderBy } = sortBy({ columnName: sortOptions.option });
     const { skip, take } = Pagitator({ ...paginationOptions });
-    const count=await this.createQueryBuilder(tableName).getCount()
+    const count = await this.createQueryBuilder(tableName).getCount()
 
-    const data=await this.createQueryBuilder(tableName)
+    const data = await this.createQueryBuilder(tableName)
       .orderBy(`${tableName}.${columnName}`, `${orderBy}`)
       .skip(skip)
       .take(take)
       .getMany();
 
-    return {count:count,data:data}
+    return { count: count, data: data }
   }
 
   if (sortOptions && Object.values(sortOptions).length > 0) {
@@ -30,9 +30,9 @@ module.exports = async function findAll({ tableName, paginationOptions, sortOpti
   if (paginationOptions.limit && paginationOptions.page && 3 > Object.values(paginationOptions).length > 0) {
 
     const { skip, take } = Pagitator({ ...paginationOptions });
-    const count=await this.createQueryBuilder(tableName).getCount()
-    const data=await this.createQueryBuilder(tableName).skip(skip).take(take).getMany();
-    return {count:count,data:data}
+    const count = await this.createQueryBuilder(tableName).getCount()
+    const data = await this.createQueryBuilder(tableName).skip(skip).take(take).getMany();
+    return { count: count, data: data }
   }
 
   return this.createQueryBuilder(tableName).orderBy(`${tableName}.createdAt`, 'DESC').getMany();
