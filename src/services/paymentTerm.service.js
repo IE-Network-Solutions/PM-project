@@ -200,7 +200,7 @@ const setVariance = async(VarianceBody)=>{
 
   const varianceValue = projectContractValuesRepository.create(VarianceBody);
   const varianceVal = await projectContractValuesRepository.insert(varianceValue);
-  return varianceVal;
+  return varianceValue;
 };
 module.exports = {
   createPaymentTerm,
