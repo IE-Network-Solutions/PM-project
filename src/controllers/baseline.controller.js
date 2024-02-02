@@ -2,13 +2,13 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { baselineService } = require('../services');
+const { baselineService, projectService } = require('../services');
 
 const createBaseline = catchAsync(async (req, res) => {
-  console.log('savedtasknhnh');
+  console.log(req.body, 'print now');
   const milestones = req.body.milestones;
   // const subTasks = req.body.subTasks;
-  delete req.body.milestones;
+  //delete req.body.milestones;
   // delete req.body.subTasks;
   const baseline = await baselineService.createBaseline(req.body, milestones);
 
@@ -38,9 +38,9 @@ const getByMilestone = catchAsync(async (req, res) => {
 
 const updateBaseline = catchAsync(async (req, res) => {
   console.log(req.params, 'bodysur');
-  const baseline = await baselineService.updateBaseline(req.params.baselineId, req.body, req.body.tasks);
+  const baseline = await baselineService.updateBaseline(req.params.baselineId, req.body, req.body.milestones);
 
-  delete req.body.tasks;
+  delete req.body.milestones;
   res.send(baseline);
 });
 const deleteBaseline = catchAsync(async (req, res) => {
@@ -70,9 +70,14 @@ const masterScheduleByDateFilter = catchAsync(async (req, res) => {
 
 const projectSchedule = catchAsync(async (req, res) => {
   const projectId = req.params.projectId;
+  const project = await projectService.getProject(projectId)
+  if (!project) {
+    throw new ApiError(httpStatus.NOT_FOUND, ' Project doesnt exist');
+  }
   const projectSchedule = await baselineService.projectSchedule(projectId);
   res.send(projectSchedule);
 });
+
 
 const activeProjectSchedule = catchAsync(async (req, res) => {
   const projectId = req.params.projectId;
@@ -100,5 +105,6 @@ module.exports = {
   projectSchedule,
   activeProjectSchedule,
   masterScheduleByDateFilter,
-  scheduleDashboard
+  scheduleDashboard,
+
 };

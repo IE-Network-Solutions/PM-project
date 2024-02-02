@@ -221,7 +221,7 @@ const defaultRoutes = [
   {
     path: "/evalution",
     route: evalutionRoute
-  }
+  },
   {
     path: '/permissions',
     route: permission,
