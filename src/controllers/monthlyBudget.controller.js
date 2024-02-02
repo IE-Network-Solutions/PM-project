@@ -34,6 +34,7 @@ const getMonthlyBudgetByMonth = catchAsync(async (req, res) => {
   month.from = req.params.from;
 
   month.to = req.params.to;
+
   const monthlyBudgetData = await monthlyBudgetService.getMonthlyBudgetByMonthGroup(month);
 
   if (!monthlyBudgetData) {

@@ -8,7 +8,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(validate(baselineValidation.createBaseline), baselineController.createBaseline)
+  .post(baselineController.createBaseline)
   .get(validate(baselineValidation.getBaselines), baselineController.getBaselines);
 
 router.route('/masterSchedule').get(baselineController.masterSchedule);
@@ -25,7 +25,7 @@ router.route('/project/schedule-dashboard/:projectId').get(baselineController.sc
 router
   .route('/:baselineId')
   .get(validate(baselineValidation.getBaseline), baselineController.getBaseline)
-  .patch(validate(baselineValidation.updateBaseline), baselineController.updateBaseline)
+  .patch(baselineController.updateBaseline)
   .delete(validate(baselineValidation.deleteBaseline), baselineController.deleteBaseline);
 
 router.route('/comment').post(validate(baselineValidation.addComment), baselineController.addComment);

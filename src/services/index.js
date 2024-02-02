@@ -52,3 +52,4 @@ module.exports.stakholderService = require('./stakholder.service');
 
 module.exports.officeMonthlyBudgetService = require('./officeProjectQuarterlyBudget.service');
 module.exports.officeBudgetSessionService = require('./officeBudegtSession.service');
+module.exports.summaryTaskService = require('./summaryTask.service');
