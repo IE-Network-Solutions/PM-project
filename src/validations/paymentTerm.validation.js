@@ -74,7 +74,7 @@ const validateVariance = {
     isVariance: Joi.boolean().required(),
     projectId: Joi.string().required()
   })
-  ).required(),
+  ).required().unique((a, b) => a.currencyId === b.currencyId),
   })
 
 }
