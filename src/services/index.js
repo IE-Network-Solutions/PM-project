@@ -56,3 +56,7 @@ module.exports.raciService = require('./raci.service');
 module.exports.raciListService = require('./raciList.service');
 module.exports.officeMonthlyBudgetService = require('./officeProjectQuarterlyBudget.service');
 module.exports.officeBudgetSessionService = require('./officeBudegtSession.service');
+<<<<<<< HEAD
+=======
+module.exports.summaryTaskService = require('./summaryTask.service');
+>>>>>>> dd93b5d5745e2a44e685acfa113fb244d7925afa

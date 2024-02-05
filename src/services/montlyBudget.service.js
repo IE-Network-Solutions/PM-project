@@ -5,6 +5,8 @@ const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 const services = require('./index');
+const projectService = require('./project.service')
+
 
 const montlyBudgetRepository = dataSource.getRepository(monthlyBudget).extend({
   findAll,
@@ -30,10 +32,10 @@ const approvalModuleRepository = dataSource.getRepository(ApprovalModule).extend
  * @returns {Promise<QueryResult>}
  */
 
-const getMonthlyBudgets = async () => {  
-    return await montlyBudgetRepository.find({
-      relations: ['approvalStage'],
-    });
+const getMonthlyBudgets = async () => {
+  return await montlyBudgetRepository.find({
+    relations: ['approvalStage'],
+  });
 };
 
 /**
@@ -44,6 +46,9 @@ const getMonthlyBudgets = async () => {
 const createMontlyBudget = async (montlyBudgetBody) => {
   moduleName = "MonthlyBudget"
   level = 1
+
+  const project = await projectService.getProject(montlyBudgetBody.budgetsData[0].projectId)
+
   approvalStage = await approvalStageRepository
     .createQueryBuilder('approval_stage')
     .leftJoin('approval_stage.approvalModule', 'approvalModule')
@@ -52,8 +57,18 @@ const createMontlyBudget = async (montlyBudgetBody) => {
     .getOne();
 
   montlyBudgetBody.approvalStage = approvalStage;
+  if (project.isOffice) {
+
+    montlyBudgetBody.isOffice = true;
+
+
+
+  }
   const montlBudget = montlyBudgetRepository.create(montlyBudgetBody);
   await montlyBudgetRepository.save(montlBudget);
+
+
+
 
   return montlBudget;
 };
