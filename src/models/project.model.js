@@ -71,6 +71,13 @@ module.exports = new EntitySchema({
       target: 'Client',
       inverseSide: 'project',
     },
+    baslineHistory: {
+      type: 'one-to-many',
+      target: 'BaselineHistory',
+      inverseSide: 'project',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
 
   },
 });
