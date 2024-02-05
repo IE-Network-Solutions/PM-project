@@ -9,7 +9,7 @@ const router = express.Router();
 router.route('/').post(monthlyBudgetController.createMonthlyBudget).get(monthlyBudgetController.getMonthlyBudget);
 
 router.route('/month').get(monthlyBudgetController.getMonthlyBudgetByMonth);
-
+router.route('/month/project').get(monthlyBudgetController.getMonthlyBudgetByMonthGroupedByProject);
 router.route('/:id').patch(monthlyBudgetController.updateMonthlyBudget);
 
 module.exports = router;

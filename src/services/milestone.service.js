@@ -81,7 +81,7 @@ const summaryTaskRepository = dataSource.getRepository(SummaryTask).extend({
 
 
 const createMilestone = async (milestoneBody) => {
-  const milestones = await Promise.all(milestoneBody.properties.map(async (element) => {
+  const milestones = await Promise.all(milestoneBody?.properties.map(async (element) => {
     const milestone = milestoneRepository.create({
       name: element.label,
       weight: element.weight,
@@ -236,7 +236,6 @@ const updateMilestone = async (milestoneId, updateBody) => {
 
 const deleteMilestone = async (milestoneId) => {
   const milestone = await getMilestone(milestoneId);
-  console.log(milestone, milestoneId, "yugfggvbhhuhuhh")
   if (!milestone) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Milestone not found');
   }

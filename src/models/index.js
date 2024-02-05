@@ -75,4 +75,5 @@ module.exports.ProjectStakHolder = require('./projectStakholder.model');
 module.exports.OfficeBudgetSession = require('./officeBudgetSession.model');
 module.exports.permissionResource = require('./permissionResource.model');
 module.exports.SummaryTask = require('./summaryTask.model');
+module.exports.BaselineHistory = require('./baselineHistory.model');
 

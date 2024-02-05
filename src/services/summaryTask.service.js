@@ -63,6 +63,7 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
 
             let newTasks = taskBody.tasks.filter((t) => !t.id).map((e) => {
                 delete e.duration
+                delete e.taskId
                 return { ...e, baselineId: baselineId }
             })
 
@@ -74,6 +75,7 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
 
             let updateTasks = taskBody.tasks.filter((t) => t.id).map((e) => {
                 delete e.duration
+                delete e.taskId
                 return { ...e, baselineId: baselineId }
             })
 
@@ -94,7 +96,7 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
         if (taskBody.summaryTask) {
             await Promise.all(taskBody.summaryTask.map(async (element) => {
                 const nestedTasks = await updateSummaryTasks(element, baselineId, mileId, task.id);
-                allTasks.push(nestedTasks); // Push nested tasks into allTasks
+                allTasks.push(nestedTasks);
             }));
         }
     }
