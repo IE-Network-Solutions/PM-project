@@ -12,17 +12,7 @@ router
   router
   .route('/') 
   .get(raciListController.getRaciLists);    
-//   router
-//   .route('/:raciId')
-//   .get( raciController.getRacisById);
 
-//   router
-//   .route('/:id')
-//   .delete( raciController.deleteRaciById);
- 
-//   router
-//   .route('/:id')
-//   .patch( raciController.updateRaciById);
 
 
 module.exports = router;
