@@ -8,6 +8,13 @@ const createQuarterlyBudget = catchAsync(async (req, res) => {
     let date = {}
     date.from = req.body.from
     date.to = req.body.to
+    const inputData = req.body;
+
+    // Add remaining_amount to each budgetData
+    inputData.budgetsData.forEach(budgetData => {
+        budgetData.remaining_amount = budgetData.budgetAmount;
+    });
+
     const projectId = req.body.budgetsData[0].projectId
     const checkSession = await officeBudgetSessionService.getSessionBudgetByDate(date)
     if (!checkSession) {
@@ -19,9 +26,11 @@ const createQuarterlyBudget = catchAsync(async (req, res) => {
         throw new ApiError(httpStatus.NOT_FOUND, ' budget already exist');
     }
 
-    const monthlyBudget = await OfficeQuarterlyBudgetService.createQuarterlyBudget(req.body);
+    const monthlyBudget = await OfficeQuarterlyBudgetService.createQuarterlyBudget(inputData);
     res.status(httpStatus.CREATED).json(monthlyBudget);
 });
+
+
 
 const updateQuarterlyBudget = catchAsync(async (req, res) => {
     const monthlyBudget = await OfficeQuarterlyBudgetService.updateQuarterlyBudget(req.params.id, req.body);

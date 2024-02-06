@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Budget, BudgetGroup, Task, monthlyBudget, ApprovalStage, ApprovalModule } = require('../models');
+const { Budget, BudgetGroup, Task, monthlyBudget, ApprovalStage, ApprovalModule, OfficeQuarterlyBudget} = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -21,7 +21,10 @@ const approvalModuleRepository = dataSource.getRepository(ApprovalModule).extend
   sortBy,
 });
 
-
+const officeQuarterlyBudgetRepository = dataSource.getRepository(OfficeQuarterlyBudget).extend({
+  findAll,
+  sortBy,
+});
 /**
  * Query for budget
  * @param {Object} filter - Filter options
@@ -43,35 +46,66 @@ const getMonthlyBudgets = async () => {
  * @param {Object} budgetBody
  * @returns {Promise<Project>}
  */
-const createMontlyBudget = async (montlyBudgetBody) => {
-  moduleName = "MonthlyBudget"
-  level = 1
+const createMontlyBudget = async (monthlyBudgetBody) => {
+  const moduleName = "MonthlyBudget";
+  const level = 1;
+  const fromDate = monthlyBudgetBody.from;
+  const toDate = monthlyBudgetBody.to;
 
-  const project = await projectService.getProject(montlyBudgetBody.budgetsData[0].projectId)
+  const project = await projectService.getProject(monthlyBudgetBody.budgetsData[0].projectId);
 
-  approvalStage = await approvalStageRepository
+  const approvalStage = await approvalStageRepository
     .createQueryBuilder('approval_stage')
     .leftJoin('approval_stage.approvalModule', 'approvalModule')
     .where('approvalModule.moduleName = :moduleName', { moduleName })
     .andWhere('approval_stage.level = :level', { level })
     .getOne();
 
-  montlyBudgetBody.approvalStage = approvalStage;
+  monthlyBudgetBody.approvalStage = approvalStage;
+
+
+
+  const existingMonthlyBudget = await officeQuarterlyBudgetRepository.findOne({
+    where: { from: fromDate, to: toDate, isDeleted: false },
+    relations: ['approvalStage', 'approvalStage.role', 'officeQuarterlyBudgetComment']
+  });
+
   if (project.isOffice) {
-
-    montlyBudgetBody.isOffice = true;
-
-
-
+    monthlyBudgetBody.isOffice = true;
+    if (existingMonthlyBudget && existingMonthlyBudget.budgetsData && Array.isArray(existingMonthlyBudget.budgetsData)) {
+      for (const existingBudget of existingMonthlyBudget.budgetsData) {
+        for (const newBudget of monthlyBudgetBody.budgetsData) {
+          if (
+            existingBudget && newBudget &&  // Check if both existingBudget and newBudget are defined
+            existingBudget.currencyId === newBudget.currencyId &&
+            existingBudget.budgetCategoryId === newBudget.budgetCategoryId
+          ) {
+            // Check if remaining_amount is less than budgetAmount
+            if (existingBudget.remaining_amount < newBudget.budgetAmount) {
+              return "Insufficient remaining amount. Cannot create monthly budget.";
+            }
+  
+            // Update remaining_amount by subtracting budgetAmount
+            existingBudget.remaining_amount -= newBudget.budgetAmount;
+          }
+        }
+      }
+      // Save the updated existingMonthlyBudget
+      await officeQuarterlyBudgetRepository.save(existingMonthlyBudget);
+    } else {
+      console.error("existingMonthlyBudget or existingMonthlyBudget.budgetsData is undefined or not an array");
+    }
   }
-  const montlBudget = montlyBudgetRepository.create(montlyBudgetBody);
-  await montlyBudgetRepository.save(montlBudget);
 
+  // Create a new monthly budget with the original monthlyBudgetBody
+  const newMonthlyBudget = montlyBudgetRepository.create(monthlyBudgetBody);
+  await montlyBudgetRepository.save(newMonthlyBudget);
 
-
-
-  return montlBudget;
+  return newMonthlyBudget;
 };
+
+
+
 
 const getMonthlyBudgetByMonthGroup = async (month) => {
   const monthlyBudget = await montlyBudgetRepository.findOne({ where: { from: month.from, to: month.to }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments'] });
