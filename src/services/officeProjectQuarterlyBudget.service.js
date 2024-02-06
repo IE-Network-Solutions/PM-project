@@ -68,6 +68,7 @@ const DeleteQuarterlyBudget = async (id) => {
 
     return budget
 
+
 }
 const getQuarterlyBudgetByProject = async (month, projectId) => {
     let budgetData = []
@@ -75,13 +76,12 @@ const getQuarterlyBudgetByProject = async (month, projectId) => {
     if (monthlyBudget.length !== 0) {
         const budgetDatas = monthlyBudget.forEach((item) => {
             if (item.budgetsData[0].projectId === projectId) {
+
                 budgetData.push(item);
-
-
-
             }
         })
-        if (budgetDatas) {
+
+        if (budgetData) {
             const budgetWithCategories = await Promise.all(budgetData[0].budgetsData.map(async (element) => {
                 const category = await budgetCategoryService.getBudgetCategory(element.budgetCategoryId)
                 const currency = await currencyService.getCurrencyById(element.currencyId)
@@ -128,6 +128,7 @@ const getAllQuarterlyBudgetByProject = async (projectId) => {
             }
 
         })
+        console.log(budgetDatas, "carrrurru")
         if (budgetDatas) {
             const budgetWithCategories = await Promise.all(activeBudget[0]?.budgetsData.map(async (element) => {
                 const category = await budgetCategoryService.getBudgetCategory(element.budgetCategoryId)

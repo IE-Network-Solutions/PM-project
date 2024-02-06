@@ -78,36 +78,30 @@ const getMonthlyBudgetByMonthGroup = async (month) => {
   return monthlyBudget;
 }
 const getMonthlyBudgetByProjectGroup = async (month) => {
-
   // const month = month.month
   const year = month.year
   let budget = [];
-
   const monthlyBudget = await montlyBudgetRepository
     .createQueryBuilder("monthlyBudget")
     .leftJoinAndSelect("monthlyBudget.approvalStage", "approvalStage")
     .leftJoinAndSelect("approvalStage.role", "role")
     .leftJoinAndSelect("monthlyBudget.monthlyBudgetcomments", "monthlyBudgetcomments")
-    // .where("MONTH(monthlyBudget.from) > :currentMonth", { month })
-    // .andWhere("YEAR(monthlyBudget.from) > :currentYear", { year })
-    // .andWhere("MONTH(monthlyBudget.to) < :currentMonth", { month })
-    // .andWhere("YEAR(monthlyBudget.to) < :currentYear", { year })
     .getMany();
 
-  function groupDataByProjectId(data) {
-    const groupedData = {};
-    data.forEach(entry => {
-      entry.budgetsData.forEach(budget => {
-        if (!groupedData[budget.projectId]) {
-          groupedData[budget.projectId] = [];
-        }
-        groupedData[budget.projectId].push(entry);
-      });
-    });
-    return groupedData;
-  }
+  const groupedData = {};
+  monthlyBudget.forEach(entry => {
+    entry.budgetsData.forEach(budget => {
+      if (!groupedData[budget.projectId]) {
+        groupedData[budget.projectId] = [];
+      }
 
-  return groupDataByProjectId(monthlyBudget);
+      groupedData[budget.projectId].push(budget);
+
+
+    });
+  });
+  return groupedData;
+
 }
 
 const updateMonthlyBudget = async (id, updatedData) => {
