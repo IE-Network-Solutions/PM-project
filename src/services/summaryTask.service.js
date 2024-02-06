@@ -111,6 +111,7 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
 
 const updateSingleSummaryTask = async (taskBody) => {
   const allTasks = [];
+
   if (taskBody?.length !== 0) {
     await Promise.all(
       taskBody.map(async (element) => {
@@ -119,16 +120,19 @@ const updateSingleSummaryTask = async (taskBody) => {
           ...element,
         });
 
-        if (taskBody.summaryTask) {
+        if (element.lastChild === false && element.summaryTask) {
           const nestedTasks = await updateSingleSummaryTask(element.summaryTask);
           allTasks.push({
             ...sumtask,
             summaryTask: nestedTasks,
           });
+        } else {
+          allTasks.push(sumtask);
         }
       })
     );
   }
+
   return allTasks;
 };
 
