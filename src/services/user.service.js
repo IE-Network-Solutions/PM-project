@@ -3,6 +3,7 @@ const { User } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const ApiError = require('../utils/ApiError');
 
 const userRepository = dataSource.getRepository(User).extend({ findAll, sortBy });
 
@@ -33,8 +34,16 @@ const queryUsers = async (filter, options) => {
  * @param {ObjectId} id
  * @returns {Promise<Risk>}
  */
+const getUsers = async (id) => {
+  return await userRepository.find({ relations: ['permissions', 'role'] });
+};
+/**
+ * Get user by id
+ * @param {ObjectId} id
+ * @returns {Promise<Risk>}
+ */
 const getUserById = async (id) => {
-  return await userRepository.findOne({ where: { id: id } ,relations:['permissions','role'] });
+  return await userRepository.findOne({ where: { id: id }, relations: ['permissions', 'role'] });
 };
 
 const createUser = async (userBody) => {
@@ -69,6 +78,23 @@ const updateUser = async (updateBody) => {
   await userRepository.update({ id: userId }, updateBody);
 };
 
+const updateRole = async (userId, updateBody) => {
+  console.log(updateBody, 'aaaaaaaaaaaaaaaaaaaaa');
+  const user = await getUserById(userId);
+  console.log(user, 'bbbbbbbbbbbbbbbb');
+  if (!user) {
+    throw ApiError(404, 'user does not exist');
+  }
+  // if (user.permissions != null) {
+  //   user.permissions = [];
+  //   await user.save();
+  // }
+
+  await userRepository.update({ id: userId }, updateBody);
+
+  return await getUserById(userId);
+};
+
 /**
  * Get multiple users by array of ids
  * @param {Array} userIds
@@ -85,4 +111,6 @@ module.exports = {
   getUsersById,
   createUser,
   updateUser,
+  getUsers,
+  updateRole,
 };

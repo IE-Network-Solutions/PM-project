@@ -4,7 +4,7 @@ const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
-const summaryTaskService = require("./summaryTask.service")
+const summaryTaskService = require('./summaryTask.service');
 
 const milestoneRepository = dataSource.getRepository(Milestone).extend({
   findAll,
@@ -31,23 +31,30 @@ const summaryTaskRepository = dataSource.getRepository(SummaryTask).extend({
  * Create a user
  * @param {Object} milestoneBody
  * @returns {Promise<Project>}
- * 
+ *
  */
 const createMilestone = async (milestoneBody) => {
-  const milestones = await Promise.all(milestoneBody?.properties.map(async (element) => {
-    const milestone = milestoneRepository.create({
-      name: element.label,
-      weight: element.weight,
-      projectId: milestoneBody.projectId,
-      baselineId: element.baselineId
-    });
-    const savedMilestone = await milestoneRepository.save(milestone);
-    const summaryTasks = await summaryTaskService.createSummaryTasks(element.properties, element.baselineId, savedMilestone.id, element.baselineId || null);
-    return {
-      ...savedMilestone,
-      summaryTask: summaryTasks
-    };
-  }));
+  const milestones = await Promise.all(
+    milestoneBody?.properties.map(async (element) => {
+      const milestone = milestoneRepository.create({
+        name: element.label,
+        weight: element.weight,
+        projectId: milestoneBody.projectId,
+        baselineId: element.baselineId,
+      });
+      const savedMilestone = await milestoneRepository.save(milestone);
+      const summaryTasks = await summaryTaskService.createSummaryTasks(
+        element.properties,
+        element.baselineId,
+        savedMilestone.id,
+        element.baselineId || null
+      );
+      return {
+        ...savedMilestone,
+        summaryTask: summaryTasks,
+      };
+    })
+  );
 
   return milestones;
 };
@@ -80,8 +87,6 @@ const getMilestones = async (filter, options) => {
 const getMilestone = async (milestoenId) => {
   return await milestoneRepository.findOneBy({ id: milestoenId });
 };
-
-
 
 const flatToHierarchy = (flat) => {
   let roots = [];
@@ -120,29 +125,22 @@ const flatToHierarchy = (flat) => {
   return roots;
 };
 
-
 const getByProject = async (projectId) => {
   const milestone = await milestoneRepository.find({
     where: { projectId: projectId },
 
     relations: ['summaryTask', 'summaryTask.tasks'],
-    order: { createdAt: 'DESC' }
+    order: { createdAt: 'DESC' },
   });
 
   for (const item of milestone) {
+    let finalSub = flatToHierarchy(item.summaryTask);
+    delete item.summaryTask;
 
-    let finalSub = flatToHierarchy(item.summaryTask)
-    delete item.summaryTask
-
-
-    item["summaryTask"] = finalSub
-
+    item['summaryTask'] = finalSub;
   }
 
-  return milestone
-
-
-
+  return milestone;
 };
 
 /**
@@ -151,13 +149,19 @@ const getByProject = async (projectId) => {
  * @param {Object} updateBody
  * @returns {Promise<Project>}
  */
+
 const updateMilestone = async (milestoneId, updateBody) => {
   const milestone = await getMilestone(milestoneId);
   if (!milestone) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Milestone not found');
   }
-  await milestoneRepository.update({ id: milestoneId }, updateBody);
-  return await getMilestone(milestoneId);
+  let summaryTasks = updateBody['summaryTask'];
+  delete updateBody.summaryTask;
+
+  const savedMilestone = await milestoneRepository.save({ ...milestone, ...updateBody });
+
+  let updatedSummaryTask = await summaryTaskService.updateSingleSummaryTask(summaryTasks);
+  return { ...savedMilestone, summaryTask: updatedSummaryTask };
 };
 
 /**
@@ -176,14 +180,14 @@ const deleteMilestone = async (milestoneId) => {
 };
 
 const updateHasCheckList = async (milestoneId) => {
-  return await milestoneRepository.update({ id: milestoneId }, { hasCheckList: true })
-}
+  return await milestoneRepository.update({ id: milestoneId }, { hasCheckList: true });
+};
 const updateIsEvaluted = async (milestoneId) => {
-  return await milestoneRepository.update({ id: milestoneId }, { isEvaluted: true })
-}
+  return await milestoneRepository.update({ id: milestoneId }, { isEvaluted: true });
+};
 const updateIsSendToDOO = async (milestoneId) => {
-  return await milestoneRepository.update({ id: milestoneId }, { isSendToDOO: true })
-}
+  return await milestoneRepository.update({ id: milestoneId }, { isSendToDOO: true });
+};
 
 module.exports = {
   createMilestone,
@@ -195,5 +199,5 @@ module.exports = {
   updateHasCheckList,
   updateIsEvaluted,
   updateIsSendToDOO,
-  flatToHierarchy
+  flatToHierarchy,
 };

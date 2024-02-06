@@ -11,7 +11,6 @@ const paymentTermRepository = dataSource.getRepository(paymentTerm).extend({
   findAll,
   sortBy,
 });
-
 const miletoneRepository = dataSource.getRepository(Milestone);
 const projectRepository = dataSource.getRepository(Project);
 const projectContractValuesRepository = dataSource.getRepository(ProjectContractValue);
@@ -197,6 +196,12 @@ const deletePaymentTerm = async (paymentTermId) => {
   return paymentTerm;
 };
 
+const setVariance = async(VarianceBody)=>{
+
+  const varianceValue = projectContractValuesRepository.create(VarianceBody);
+  const varianceVal = await projectContractValuesRepository.save(varianceValue);
+  return varianceVal;
+};
 module.exports = {
   createPaymentTerm,
   getPaymentTerms,
@@ -204,4 +209,5 @@ module.exports = {
   getByProject,
   updatePaymentTerm,
   deletePaymentTerm,
-};
+  setVariance,
+}
