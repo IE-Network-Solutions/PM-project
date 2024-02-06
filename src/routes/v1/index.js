@@ -39,9 +39,13 @@ const permission = require('./permission.route');
 const projectBudget = require('./projectBudget.route');
 const budgetCategoryType = require('./budgetCategoryType.route');
 const officeQuarterlyBudget = require('./officeQuarterlyBudget.route');
+const officeMonthlyBudget = require('./officeMonthlyBudget.route');
+
 const accountablity = require('./accountablity.route');
 
 const stakholder = require('./stakholder.route');
+const raci = require('./raci.route');
+const raciList = require('./raciList.route');
 const officeBudgetSessions = require('./officeBudgetSession.route');
 
 
@@ -150,6 +154,10 @@ const defaultRoutes = [
     route: budgetRoute,
   },
   {
+    path: '/officeMonthlyBudget',
+    route: officeMonthlyBudget,
+  },
+  {
     path: '/approvalModule',
     route: approvalModuleRoute,
   },
@@ -247,6 +255,12 @@ const defaultRoutes = [
     route: stakholder,
   },
   {
+    path: '/raci',
+    route: raci,
+  },
+  {
+    path: '/raciList',
+    route: raciList,
     path: '/officeBudgetSessions',
     route: officeBudgetSessions,
   },
