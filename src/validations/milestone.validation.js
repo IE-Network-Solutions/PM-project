@@ -31,11 +31,28 @@ const updateMilestone = {
     milestoneId: Joi.required(),
   }),
   body: Joi.object()
-    .keys({
-      name: Joi.string(),
-      status: Joi.boolean(),
-      weight: Joi.number(),
-    })
+    // .keys({
+    //   id: Joi.string().uuid().required(),
+    //   name: Joi.string(),
+    //   status: Joi.boolean(),
+    //   createdBy:Joi.string(),
+    //   updatedBy:Joi.string(),
+    //   paymentTermId:Joi.string().uuid(),
+    //   summaryTask:Joi.array(),
+    //   projectId: Joi.string().uuid(),
+    //   plannedStart: Joi.date(),
+    //   plannedFinish: Joi.date(),
+    //   startVariance: Joi.number(),
+    //   finishVariance: Joi.number(),
+    //   actualStart: Joi.date(),
+    //   actualFinish: Joi.date(),
+    //   createdAt:Joi.date(),
+    //   updatedAt:Joi.date(),
+    //   hasCheckList:Joi.boolean(),
+    //   isEvaluted:Joi.boolean(),
+    //   isSendToDOO:Joi.boolean(),
+
+    // })
     .min(1),
 };
 const updateMilestoneVariance = {
