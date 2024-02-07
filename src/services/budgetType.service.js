@@ -5,7 +5,10 @@ const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 
-const budgetTypeRepository = dataSource.getRepository(BudgetType)
+const budgetTypeRepository = dataSource.getRepository(BudgetType).extend({
+  findAll,
+  sortBy,
+});
 
 /**
  * Create a budget type

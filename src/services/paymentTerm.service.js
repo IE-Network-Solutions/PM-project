@@ -199,8 +199,8 @@ const deletePaymentTerm = async (paymentTermId) => {
 const setVariance = async(VarianceBody)=>{
 
   const varianceValue = projectContractValuesRepository.create(VarianceBody);
-  const varianceVal = await projectContractValuesRepository.save(varianceValue);
-  return varianceVal;
+  const varianceVal = await projectContractValuesRepository.insert(varianceValue);
+  return varianceValue;
 };
 module.exports = {
   createPaymentTerm,
