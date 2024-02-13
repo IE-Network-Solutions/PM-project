@@ -66,6 +66,19 @@ module.exports = new EntitySchema({
         },
       },
     },
+    projectRacis: {
+      type: 'many-to-many',
+      target: 'Raci',
+      joinTable: {
+        name: 'projects_racis',
+        joinColumn: { name: 'projectId', referencedColumnName: 'id' },
+        inverseJoinColumn: {
+          name: 'raciId',
+          referencedColumnName: 'id',
+        },
+      },
+    },
+  
     client: {
       type: 'many-to-one',
       target: 'Client',
