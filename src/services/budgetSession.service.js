@@ -61,6 +61,10 @@ const updateSessionBudget = async (budgetSessionId, updateBody) => {
   const budget = await budgetSessionRepository.update({ id: budgetSessionId }, updateBody);
   return await getSessionBudget(budgetSessionId);
 };
+const getSessionBudgetByDate = async (Date) => {
+  return await budgetSessionRepository.findOne({ where: { startDate: Date.from, endDate: Date.to } });
+
+};
 
 module.exports = {
   getSessionBudget,
@@ -68,4 +72,5 @@ module.exports = {
   updateSessionBudget,
   getAllSessionBudget,
   activeBudgetSession,
+  getSessionBudgetByDate
 };

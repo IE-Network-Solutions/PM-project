@@ -269,7 +269,6 @@ const masterScheduleByDateFilter = async (startDate, endDate) => {
 };
 const projectSchedule = async (projectId) => {
   const baseline = await baselineHistoryRepository.find({ where: { projectId: projectId } })
-  console.log(baseline[0].baselineData, "bvbvbvbvb")
   const milestone = await milestoneRepository.find({
     where: { projectId: projectId },
     relations: ['summaryTask', 'summaryTask.tasks', 'summaryTask.baseline', "summaryTask.tasks.baseline"],
@@ -528,8 +527,6 @@ const activeProjectSchedule = async (projectId) => {
 
 
   baselineData.forEach((base) => {
-    console.log(base.tasks, "bababababhgdgd")
-
     const milestones = [];
     base.tasks.forEach((task) => {
 
