@@ -10,6 +10,9 @@ router.route('/').post(monthlyBudgetController.createMonthlyBudget).get(monthlyB
 
 router.route('/month').get(monthlyBudgetController.getMonthlyBudgetByMonth);
 router.route('/month/project').get(monthlyBudgetController.getMonthlyBudgetByMonthGroupedByProject);
+router.route('/month/officProject').get(monthlyBudgetController.getMonthlyBudgetByMonthGroupedByProjectOfficeProject);
+
 router.route('/:id').patch(monthlyBudgetController.updateMonthlyBudget);
+router.route('/officProject/:projectId').get(monthlyBudgetController.getMonthlyBudgetByProject);
 
 module.exports = router;
