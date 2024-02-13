@@ -4,7 +4,7 @@ const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
-const summaryTaskService = require("./summaryTask.service")
+const summaryTaskService = require('./summaryTask.service');
 
 const milestoneRepository = dataSource.getRepository(Milestone).extend({
   findAll,
@@ -31,94 +31,33 @@ const summaryTaskRepository = dataSource.getRepository(SummaryTask).extend({
  * Create a user
  * @param {Object} milestoneBody
  * @returns {Promise<Project>}
- * 
+ *
  */
-// const milestoneBodyhh = {
-//   // label: "Project",
-//   properties: [
-//     {
-//       name: "mile1 testttt",
-//       weight: 20,
-//       projectId: "03160bfd-fe9b-4844-967a-8c80e560dae5",
-//       baselineId: "113da988-3c86-46d9-81fd-73c3b7c34fbe",
-
-//       properties: [
-//         {
-//           name: "summary task 1",
-//           // id: "2667cb96-7c14-4527-a28f-9e1222c5f9d7",
-//           properties: [
-//             {
-//               name: "summary summary task 1",
-//               //  id: "f3e58b10-edbe-46bc-bf0b-42794f885b4c",
-//               properties: [
-//                 {
-//                   name: "summary summary summary task 1",
-//                   // id: "40dd20ec-3cb4-49f9-9932-04a44ec5b554",
-//                   properties: []
-//                 }
-//               ]
-//             }
-//           ]
-//         },
-//         {
-//           name: "summary task 2",
-//           // id: "5f796595-705c-43c8-85c2-0f13b4c23ba3",
-//           properties: []
-//         }
-//       ]
-//     },
-//     {
-//       name: "mile2 testttt",
-//       weight: 20,
-//       projectId: "03160bfd-fe9b-4844-967a-8c80e560dae5",
-//       baselineId: "7b9a8061-ef3d-4e19-bf9b-2d662abe5aed",
-//       properties: []
-//     }
-//   ],
-//   // id: ""
-// }
-
-
-
 const createMilestone = async (milestoneBody) => {
-  const milestones = await Promise.all(milestoneBody.properties.map(async (element) => {
-    const milestone = milestoneRepository.create({
-      name: element.label,
-      weight: element.weight,
-      projectId: milestoneBody.projectId,
-      baselineId: element.baselineId
-    });
-    const savedMilestone = await milestoneRepository.save(milestone);
-    const summaryTasks = await summaryTaskService.createSummaryTasks(element.properties, element.baselineId, savedMilestone.id, element.baselineId || null);
-    return {
-      ...savedMilestone,
-      summaryTask: summaryTasks
-    };
-  }));
+  const milestones = await Promise.all(
+    milestoneBody?.properties.map(async (element) => {
+      const milestone = milestoneRepository.create({
+        name: element.label,
+        weight: element.weight,
+        projectId: milestoneBody.projectId,
+        baselineId: element.baselineId,
+      });
+      const savedMilestone = await milestoneRepository.save(milestone);
+      const summaryTasks = await summaryTaskService.createSummaryTasks(
+        element.properties,
+        element.baselineId,
+        savedMilestone.id,
+        element.baselineId || null
+      );
+      return {
+        ...savedMilestone,
+        summaryTask: summaryTasks,
+      };
+    })
+  );
 
   return milestones;
 };
-
-// const createSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
-//   const allTasks = [];
-//   if (taskBody?.length !== 0) {
-//     await Promise.all(taskBody.map(async (element) => {
-//       const task = summaryTaskRepository.create({
-//         name: element.label,
-//         baselineId: baselineId,
-//         milestoneId: mileId,
-//         parentId: parentId
-//       });
-//       const savedTask = await summaryTaskRepository.save(task);
-//       const nestedTasks = await createSummaryTasks(element.properties, baselineId, mileId, savedTask.id);
-//       allTasks.push({
-//         ...savedTask,
-//         summaryTask: nestedTasks
-//       });
-//     }));
-//   }
-//   return allTasks;
-// };
 
 
 /**
@@ -148,8 +87,6 @@ const getMilestones = async (filter, options) => {
 const getMilestone = async (milestoenId) => {
   return await milestoneRepository.findOneBy({ id: milestoenId });
 };
-
-
 
 const flatToHierarchy = (flat) => {
   let roots = [];
@@ -188,29 +125,22 @@ const flatToHierarchy = (flat) => {
   return roots;
 };
 
-
 const getByProject = async (projectId) => {
   const milestone = await milestoneRepository.find({
     where: { projectId: projectId },
 
     relations: ['summaryTask', 'summaryTask.tasks'],
-    order: { createdAt: 'DESC' }
+    order: { createdAt: 'DESC' },
   });
 
   for (const item of milestone) {
+    let finalSub = flatToHierarchy(item.summaryTask);
+    delete item.summaryTask;
 
-    let finalSub = flatToHierarchy(item.summaryTask)
-    delete item.summaryTask
-
-
-    item["summaryTask"] = finalSub
-
+    item['summaryTask'] = finalSub;
   }
 
-  return milestone
-
-
-
+  return milestone;
 };
 
 /**
@@ -219,13 +149,19 @@ const getByProject = async (projectId) => {
  * @param {Object} updateBody
  * @returns {Promise<Project>}
  */
+
 const updateMilestone = async (milestoneId, updateBody) => {
   const milestone = await getMilestone(milestoneId);
   if (!milestone) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Milestone not found');
   }
-  await milestoneRepository.update({ id: milestoneId }, updateBody);
-  return await getMilestone(milestoneId);
+  let summaryTasks = updateBody['summaryTask'];
+  delete updateBody.summaryTask;
+
+  const savedMilestone = await milestoneRepository.save({ ...milestone, ...updateBody });
+
+  let updatedSummaryTask = await summaryTaskService.updateSingleSummaryTask(summaryTasks);
+  return { ...savedMilestone, summaryTask: updatedSummaryTask };
 };
 
 /**
@@ -236,39 +172,22 @@ const updateMilestone = async (milestoneId, updateBody) => {
 
 const deleteMilestone = async (milestoneId) => {
   const milestone = await getMilestone(milestoneId);
-  console.log(milestone, milestoneId, "yugfggvbhhuhuhh")
   if (!milestone) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Milestone not found');
   }
-
-
   return await milestoneRepository.delete({ id: milestoneId });
-  //The following code is to cascade deleting baselines, 
-  //tasks and subtasks when we delete milestone
-  // const baselinesToDelete = await baselineRepository.find({ milestoneId: milestoneId });
-  // for (const baseline of baselinesToDelete) {
-  //       const tasksToDelete = await taskRepository.find({ baselineId: baseline.id });
-  //       for (const task of tasksToDelete) {
-  //       const subTasksToDelet = await subTaskRepository.find({ taskId: task.id });
-  //       for (const subtask of subTasksToDelet) {
-  //         await subTaskRepository.delete({ id: subtask.id });
-  //       }
-  //         await taskRepository.delete({ id: task.id });
-  //       }
-  //   await baselineRepository.delete({ id: baseline.id });
-  // }
 
 };
 
 const updateHasCheckList = async (milestoneId) => {
-  return await milestoneRepository.update({ id: milestoneId }, { hasCheckList: true })
-}
+  return await milestoneRepository.update({ id: milestoneId }, { hasCheckList: true });
+};
 const updateIsEvaluted = async (milestoneId) => {
-  return await milestoneRepository.update({ id: milestoneId }, { isEvaluted: true })
-}
+  return await milestoneRepository.update({ id: milestoneId }, { isEvaluted: true });
+};
 const updateIsSendToDOO = async (milestoneId) => {
-  return await milestoneRepository.update({ id: milestoneId }, { isSendToDOO: true })
-}
+  return await milestoneRepository.update({ id: milestoneId }, { isSendToDOO: true });
+};
 
 module.exports = {
   createMilestone,
@@ -280,5 +199,5 @@ module.exports = {
   updateHasCheckList,
   updateIsEvaluted,
   updateIsSendToDOO,
-  flatToHierarchy
+  flatToHierarchy,
 };

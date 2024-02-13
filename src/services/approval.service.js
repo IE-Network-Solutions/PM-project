@@ -224,7 +224,7 @@ const getCurrentApprover = async (moduleName, moduleId) => {
 
     if (moduleData.approvalStage.project_role) {
       let project = await moduleData.project;
-
+      console.log(project, "sdfghjklfghjk")
       let projectId = project.id;
       let roleId = moduleData.approvalStage.role.id;
       let ProjectMemebrsRoleData = await approvalProjectMemebrsRepository

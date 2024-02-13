@@ -68,6 +68,7 @@ const DeleteQuarterlyBudget = async (id) => {
 
     return budget
 
+
 }
 const getQuarterlyBudgetByProject = async (month, projectId) => {
     let budgetData = []
@@ -75,13 +76,12 @@ const getQuarterlyBudgetByProject = async (month, projectId) => {
     if (monthlyBudget.length !== 0) {
         const budgetDatas = monthlyBudget.forEach((item) => {
             if (item.budgetsData[0].projectId === projectId) {
+
                 budgetData.push(item);
-
-
-
             }
         })
-        if (budgetDatas) {
+
+        if (budgetData) {
             const budgetWithCategories = await Promise.all(budgetData[0].budgetsData.map(async (element) => {
                 const category = await budgetCategoryService.getBudgetCategory(element.budgetCategoryId)
                 const currency = await currencyService.getCurrencyById(element.currencyId)
@@ -117,6 +117,7 @@ const getAllQuarterlyBudgetByProject = async (projectId) => {
     const activeBudget = []
     const inActiveBudget = []
     const activeBudgetSessions = await officeBudgetSessionService.activeBudgetSession();
+    console.log(activeBudgetSessions, projectId, "bxnxioiewqoroe")
     const monthlyBudget = await officeQuarterlyBudgetRepository.find({
         where: { from: activeBudgetSessions.startDate, to: activeBudgetSessions.endDate, isDeleted: false }, relations: ['approvalStage', 'approvalStage.role', 'officeQuarterlyBudgetComment']
     });
@@ -128,7 +129,8 @@ const getAllQuarterlyBudgetByProject = async (projectId) => {
             }
 
         })
-        if (budgetDatas) {
+
+        if (activeBudget.length !== 0) {
             const budgetWithCategories = await Promise.all(activeBudget[0]?.budgetsData.map(async (element) => {
                 const category = await budgetCategoryService.getBudgetCategory(element.budgetCategoryId)
                 const currency = await currencyService.getCurrencyById(element.currencyId)
@@ -140,8 +142,6 @@ const getAllQuarterlyBudgetByProject = async (projectId) => {
             return activeBudget;
         }
     }
-
-
     return activeBudget;
 
 }

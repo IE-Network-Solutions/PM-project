@@ -86,5 +86,6 @@ module.exports.permissionResource = require('./permissionResource.model');
 >>>>>>> 7656d5dec801dfd9623e3a7fb42eac42dbb344fa
 =======
 module.exports.SummaryTask = require('./summaryTask.model');
+module.exports.BaselineHistory = require('./baselineHistory.model');
 
 >>>>>>> dd93b5d5745e2a44e685acfa113fb244d7925afa

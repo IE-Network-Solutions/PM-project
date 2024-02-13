@@ -19,7 +19,11 @@ class Task extends Base {
     this.milestoneId = { type: 'uuid', nullable: true };
     this.predecessor = { type: 'varchar', nullable: true };
     this.predecessorType = { type: 'varchar', nullable: true };
+    this.start = { type: 'date', nullable: true };
+    this.finish = { type: 'date', nullable: true };
     this.summarytaskId = { type: 'uuid', nullable: true };
+    this.startVariance = { type: 'int', nullable: true };
+    this.finishVariance = { type: 'int', nullable: true };
   }
 }
 

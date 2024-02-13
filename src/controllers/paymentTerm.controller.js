@@ -59,8 +59,8 @@ const deletePaymentTerm = catchAsync(async (req, res) => {
 });
 
 const setVariance = catchAsync(async(req,res)=>{
-  await paymentTermService.setVariance(req.body.varianceData);
-  res.send('Variance Set');
+  varianceValue = await paymentTermService.setVariance(req.body.varianceData);
+  res.send(varianceValue);
 });
 module.exports = {
   createPaymentTerm,
