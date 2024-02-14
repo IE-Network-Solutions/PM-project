@@ -22,6 +22,7 @@ const createApprovalModule = async () => {
     { moduleName: 'OfficeProjectBudget', max_level: 2 },
     { moduleName: 'ProjectSchedule', max_level: 3 },
     { moduleName: 'MonthlyBudget', max_level: 2 },
+    { moduleName: 'OfficeProjectQuarterlyBudget', max_level: 2 },
   ];
 
   const modules = approvalModules.map((approvalModule) => {

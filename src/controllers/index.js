@@ -36,7 +36,7 @@ module.exports.stakholderController = require('./stakholder.controller')
 module.exports.raciController = require('./raci.controller')
 module.exports.raciListController = require('./raciList.controller')
 
-;
+    ;
 module.exports.Quality = require('./quality.controller');
 module.exports.Solution = require('./solution.controller');
 module.exports.Criteria = require('./criteria.controller');
