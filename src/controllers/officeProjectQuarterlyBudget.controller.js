@@ -16,6 +16,7 @@ const createQuarterlyBudget = catchAsync(async (req, res) => {
     });
 
     const projectId = req.body.budgetsData[0].projectId
+    inputData.projectId = projectId
     const checkSession = await officeBudgetSessionService.getSessionBudgetByDate(date)
     if (!checkSession) {
         throw new ApiError(httpStatus.NOT_FOUND, 'session Doesnt exist');

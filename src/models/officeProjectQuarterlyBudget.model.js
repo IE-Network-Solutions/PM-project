@@ -12,7 +12,8 @@ class OfficeQuarterlyBudget extends Base {
         this.approvalStageId = { type: 'varchar', nullable: true }
         this.approved = { type: 'boolean', default: false };
         this.rejected = { type: 'boolean', default: false };
-        this.isDeleted = { type: 'boolean', default: false }
+        this.isDeleted = { type: 'boolean', default: false };
+        this.projectId = { type: 'uuid' };
 
 
     }
@@ -32,6 +33,12 @@ module.exports = new EntitySchema({
             type: 'one-to-many',
             target: 'OfficeQuarterlyBudgetComment',
             inverseSide: 'OfficeQuarterlyBudget'
+        },
+        project: {
+            type: 'many-to-one',
+            target: 'Project',
+            inverseSide: 'OfficeQuarterlyBudget'
+
         },
 
     }

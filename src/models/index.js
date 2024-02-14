@@ -56,7 +56,7 @@ module.exports.projectBudget = require('./projectBudget.model');
 module.exports.offshoreMatterialBoq = require('./offshoreMatterialBoq.model');
 module.exports.OfficeQuarterlyBudget = require('./officeProjectQuarterlyBudget.model');
 
-module.exports.OfficeMonthlyBudget = require('./OfficeMonthlyBudget.model');
+//module.exports.OfficeMonthlyBudget = require('./OfficeMonthlyBudget.model');
 module.exports.OfficeQuarterlyBudgetComment = require('./OfficeQuarterlyBudgetComment.model');
 module.exports.momAbsents = require('./momabsents.model');
 module.exports.Accountablity = require('./accountablity.model');
@@ -77,15 +77,13 @@ module.exports.Raci = require('./raci.model');
 module.exports.RaciList = require('./raciList.model');
 
 module.exports.ProjectStakHolder = require('./projectStakholder.model');
-<<<<<<< HEAD
+
 module.exports.ProjectRaci = require('./projectRaci.model');
-=======
+
 module.exports.OfficeBudgetSession = require('./officeBudgetSession.model');
 module.exports.permissionResource = require('./permissionResource.model');
-<<<<<<< HEAD
->>>>>>> 7656d5dec801dfd9623e3a7fb42eac42dbb344fa
-=======
+
+
 module.exports.SummaryTask = require('./summaryTask.model');
 module.exports.BaselineHistory = require('./baselineHistory.model');
 
->>>>>>> dd93b5d5745e2a44e685acfa113fb244d7925afa

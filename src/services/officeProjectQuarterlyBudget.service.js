@@ -71,30 +71,32 @@ const DeleteQuarterlyBudget = async (id) => {
 
 }
 const getQuarterlyBudgetByProject = async (month, projectId) => {
+    console.log(month, "month nonthhhhhh")
     let budgetData = []
-    const monthlyBudget = await officeQuarterlyBudgetRepository.find({ where: { from: month.from, to: month.to, isDeleted: false }, relations: ['approvalStage', 'approvalStage.role', 'officeQuarterlyBudgetComment'] });
-    if (monthlyBudget.length !== 0) {
-        const budgetDatas = monthlyBudget.forEach((item) => {
-            if (item.budgetsData[0].projectId === projectId) {
+    const monthlyBudget = await officeQuarterlyBudgetRepository.findOne({ where: { from: month.from, to: month.to, isDeleted: false, projectId: projectId }, relations: ['approvalStage', 'approvalStage.role', 'officeQuarterlyBudgetComment'] });
 
-                budgetData.push(item);
-            }
-        })
+    //     const budgetDatas = monthlyBudget.forEach((item) => {
+    //         if (item.budgetsData[0].projectId === projectId) {
 
-        if (budgetData) {
-            const budgetWithCategories = await Promise.all(budgetData[0].budgetsData.map(async (element) => {
-                const category = await budgetCategoryService.getBudgetCategory(element.budgetCategoryId)
-                const currency = await currencyService.getCurrencyById(element.currencyId)
-                element.budgetCategory = category
-                element.currency = currency
+    //             budgetData.push(item);
+    //         }
+    //     })
 
-                return element
-            }))
-            budgetData[0].budgetsData = budgetWithCategories
-            return budgetData;
-        }
+
+    if (monthlyBudget) {
+        const budgetWithCategories = await Promise.all(monthlyBudget?.budgetsData.map(async (element) => {
+            const category = await budgetCategoryService.getBudgetCategory(element.budgetCategoryId)
+            const currency = await currencyService.getCurrencyById(element.currencyId)
+            element.budgetCategory = category
+            element.currency = currency
+
+            return element
+        }))
+        monthlyBudget.budgetsData = budgetWithCategories
+        return monthlyBudget;
     }
-    return budgetData;
+
+    return monthlyBudget;
 }
 const RequestApprovalQuarterlyBudget = async (id) => {
     const Budget = await officeQuarterlyBudgetRepository.findOne({ where: { id: id, isDeleted: false } })
@@ -118,31 +120,23 @@ const getAllQuarterlyBudgetByProject = async (projectId) => {
     const inActiveBudget = []
     const activeBudgetSessions = await officeBudgetSessionService.activeBudgetSession();
     console.log(activeBudgetSessions, projectId, "bxnxioiewqoroe")
-    const monthlyBudget = await officeQuarterlyBudgetRepository.find({
-        where: { from: activeBudgetSessions.startDate, to: activeBudgetSessions.endDate, isDeleted: false }, relations: ['approvalStage', 'approvalStage.role', 'officeQuarterlyBudgetComment']
+    const monthlyBudget = await officeQuarterlyBudgetRepository.findOne({
+        where: { from: activeBudgetSessions.startDate, to: activeBudgetSessions.endDate, isDeleted: false, projectId: projectId }, relations: ['approvalStage', 'approvalStage.role', 'officeQuarterlyBudgetComment']
     });
 
-    if (monthlyBudget.length !== 0) {
-        const budgetDatas = monthlyBudget.forEach((item) => {
-            if (item.budgetsData[0].projectId === projectId) {
-                activeBudget.push(item)
-            }
-
-        })
-
-        if (activeBudget.length !== 0) {
-            const budgetWithCategories = await Promise.all(activeBudget[0]?.budgetsData.map(async (element) => {
-                const category = await budgetCategoryService.getBudgetCategory(element.budgetCategoryId)
-                const currency = await currencyService.getCurrencyById(element.currencyId)
-                element.budgetCategory = category
-                element.currency = currency
-                return element
-            }))
-            activeBudget[0].budgetsData = budgetWithCategories
-            return activeBudget;
-        }
+    if (monthlyBudget) {
+        const budgetWithCategories = await Promise.all(monthlyBudget.budgetsData.map(async (element) => {
+            const category = await budgetCategoryService.getBudgetCategory(element.budgetCategoryId)
+            const currency = await currencyService.getCurrencyById(element.currencyId)
+            element.budgetCategory = category
+            element.currency = currency
+            return element
+        }))
+        monthlyBudget.budgetsData = budgetWithCategories
+        return monthlyBudget;
     }
-    return activeBudget;
+
+    return monthlyBudget;
 
 }
 

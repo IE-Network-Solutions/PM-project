@@ -72,6 +72,7 @@ const createBaseline = async (baselineBody, milestones) => {
       })
       lastActiveBaselineSaved = await baselineHistoryRepository.save(createBasline)
     }
+
     if (lastActiveBaselineSaved.length !== 0) {
       const baseline = baselineRepository.create({
         name: baselineBody.name,
@@ -101,11 +102,33 @@ const createBaseline = async (baselineBody, milestones) => {
 
 
     }
+    else {
+      const baseline = baselineRepository.create({
+        name: baselineBody.name,
+        status: true,
+        projectId: baselineBody.projectId,
+      });
+
+      savedBaseline = await baselineRepository.save(baseline);
+
+      if (milestones) {
+
+        const savedMilestones = await Promise.all(milestones.map(async (milestone) => {
+          if (milestone.summaryTask) {
+            return summaryTaskService.createSummaryTasks(milestone.summaryTask, savedBaseline.id, milestone.id);
+
+          }
+
+          return milestone;
+        }));
+
+        savedBaseline.milestones = savedMilestones;
+      }
+
+    }
   }
 
   return await getBaseline(savedBaseline.id)
-
-
 }
 
 /**
@@ -189,42 +212,48 @@ const scheduleDashboard = async (projectId) => {
  * Master Schedule
  */
 const masterSchedule = async () => {
-  const status = true;
-  const baselineData = await baselineRepository
-    .createQueryBuilder('baselines')
-    .leftJoinAndSelect('baselines.tasks', 'task')
-    .leftJoinAndSelect('baselines.project', 'project')
-    .leftJoinAndSelect('task.subtasks', 'subtask')
-    .leftJoinAndSelect('task.resources', 'resource')
-    .leftJoinAndSelect('task.milestone', 'milestone')
-    .orderBy('baselines.createdAt', 'DESC')
-    // .where('baselines.status = true',)
-    .getMany();
-  // return baselineData;
-  const projectBaseline = [];
-
-  baselineData.forEach((base) => {
-    if (!projectBaseline.some((p) => p.id === base.projectId)) {
-      let baselineProj = base.project
-      projectBaseline.push({ ...baselineProj, "baselines": [] });
-    }
-    let projIndx = projectBaseline.findIndex((bp) => bp.id === base.projectId)
-    projectBaseline[projIndx].baselines.push(base)
-
-    const milestones = [];
-    base.tasks.forEach((task) => {
-      if (!milestones.some((m) => m.id === task.milestoneId)) {
-        let taskMilestone = task.milestone
-        milestones.push({ ...taskMilestone, "tasks": [] });
-      }
-      let mileInd = milestones.findIndex((m) => m.id === task.milestoneId)
-      milestones[mileInd].tasks.push(task)
+  const baselines = await baselineRepository.find({ where: { status: true }, relations: ['project'] })
+  for (const basline of baselines) {
+    const milestone = await milestoneRepository.find({
+      where: { projectId: basline.projectId },
+      relations: ['summaryTask', 'summaryTask.tasks', 'summaryTask.baseline', "summaryTask.tasks.baseline"],
+      order: { createdAt: 'DESC' }
     });
-    delete base.tasks
-    base.milestones = milestones
-  });
+    if (milestone) {
 
-  return projectBaseline;
+      let milestones = milestone
+      basline.milestones = milestones.map(milestone => {
+        let finalSub = milestoneService.flatToHierarchy(milestone.summaryTask)
+        delete milestone.summaryTask
+        milestone["summaryTask"] = finalSub
+        return milestone
+      })
+
+
+    }
+    else {
+      basline.milestones = [];
+    }
+
+
+  }
+
+  const groupedBaslines = baselines.reduce((prev, base) => {
+
+    const projectId = base.projectId
+    if (!prev[projectId]) {
+      prev[projectId] = {
+        name: base.project.name,
+        baselines: {}
+      };
+      prev[projectId].baselines = base;
+    }
+    return Object.values(prev)
+
+
+  }, {})
+
+  return groupedBaslines
 };
 
 const masterScheduleByDateFilter = async (startDate, endDate) => {
@@ -272,7 +301,7 @@ const projectSchedule = async (projectId) => {
   const milestone = await milestoneRepository.find({
     where: { projectId: projectId },
     relations: ['summaryTask', 'summaryTask.tasks', 'summaryTask.baseline', "summaryTask.tasks.baseline"],
-    order: { createdAt: 'DESC' }
+    order: { createdAt: 'ASC' }
   });
   if (milestone) {
 
