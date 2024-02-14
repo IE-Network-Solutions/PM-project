@@ -47,7 +47,7 @@ module.exports.budgetCategoryTypeService = require('./budgetCategoryType.service
 module.exports.projectBudgetService = require('./projectBudget.service');
 module.exports.OfficeQuarterlyBudgetService = require('./officeProjectQuarterlyBudget.service');
 
-module.exports.OfficeMonthlyBudgetService = require('./officeMonthlyBudget.service');
+// module.exports.OfficeMonthlyBudgetService = require('./officeMonthlyBudget.service');
 module.exports.accountablityService = require('./accountablity.service');
 
 module.exports.stakholderService = require('./stakholder.service');
@@ -56,7 +56,4 @@ module.exports.raciService = require('./raci.service');
 module.exports.raciListService = require('./raciList.service');
 module.exports.officeMonthlyBudgetService = require('./officeProjectQuarterlyBudget.service');
 module.exports.officeBudgetSessionService = require('./officeBudegtSession.service');
-<<<<<<< HEAD
-=======
 module.exports.summaryTaskService = require('./summaryTask.service');
->>>>>>> dd93b5d5745e2a44e685acfa113fb244d7925afa
