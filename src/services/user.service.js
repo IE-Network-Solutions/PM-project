@@ -6,15 +6,18 @@ const findAll = require('./Plugins/findAll');
 const ApiError = require('../utils/ApiError');
 
 const userRepository = dataSource.getRepository(User).extend({ findAll, sortBy });
-
 /**
- * Query for users
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * @module user
+ */
+/**
+ * Queries users based on the provided filter and options, filtering tasks for each user where completion is less than 100%.
+ * @function
+ * @param {Object} filter - The filter criteria to apply while querying users.
+ * @param {Object} options - The options to configure the query, including limit, page, and sortBy.
+ * @param {number} [options.limit] - The maximum number of users to retrieve per page.
+ * @param {number} [options.page] - The page number of users to retrieve.
+ * @param {string} [options.sortBy] - The field to sort the users by.
+ * @returns {Promise<Array<Object>>} A Promise that resolves with an array of queried users with filtered tasks.
  */
 
 const queryUsers = async (filter, options) => {
@@ -28,23 +31,32 @@ const queryUsers = async (filter, options) => {
 
   return users;
 };
-
 /**
- * Get user by id
- * @param {ObjectId} id
- * @returns {Promise<Risk>}
+ * Retrieves all users along with their permissions and roles.
+ * @function
+ * @param {string} id - The ID of the user to retrieve.
+ * @returns {Promise<Array<Object>>} A Promise that resolves with an array of retrieved users with their permissions and roles.
  */
+
 const getUsers = async (id) => {
   return await userRepository.find({ relations: ['permissions', 'role'] });
 };
 /**
- * Get user by id
- * @param {ObjectId} id
- * @returns {Promise<Risk>}
+ * Retrieves a user by their ID along with their permissions and role.
+ * @function
+ * @param {string} id - The ID of the user to retrieve.
+ * @returns {Promise<Object|null>} A Promise that resolves with the retrieved user if found, or null if not found.
  */
+
 const getUserById = async (id) => {
   return await userRepository.findOne({ where: { id: id }, relations: ['permissions', 'role'] });
 };
+/**
+ * Creates a new user with the provided data.
+ * @function
+ * @param {Object} userBody - The data for the user to create.
+ * @returns {Promise<Object>} A Promise that resolves with the created user.
+ */
 
 const createUser = async (userBody) => {
   userBody.createdAt = userBody.created_at;
@@ -60,6 +72,12 @@ const createUser = async (userBody) => {
   const user = userRepository.create(userBody);
   return await userRepository.save(user);
 };
+/**
+ * Updates a user with the provided data.
+ * @function
+ * @param {Object} updateBody - The data to update the user with.
+ * @returns {Promise<void>} A Promise that resolves once the user is updated.
+ */
 
 const updateUser = async (updateBody) => {
   let userId = updateBody.id;
@@ -77,6 +95,14 @@ const updateUser = async (updateBody) => {
 
   await userRepository.update({ id: userId }, updateBody);
 };
+/**
+ * Updates the role of a user specified by their ID with the provided data.
+ * @function
+ * @param {string} userId - The ID of the user whose role is to be updated.
+ * @param {Object} updateBody - The data to update the user's role with.
+ * @returns {Promise<Object>} A Promise that resolves with the updated user.
+ * @throws {ApiError} If the user specified by the ID does not exist.
+ */
 
 const updateRole = async (userId, updateBody) => {
   console.log(updateBody, 'aaaaaaaaaaaaaaaaaaaaa');
@@ -94,12 +120,13 @@ const updateRole = async (userId, updateBody) => {
 
   return await getUserById(userId);
 };
-
 /**
- * Get multiple users by array of ids
- * @param {Array} userIds
- * @returns {Promise<User>}
+ * Retrieves users by their IDs.
+ * @function
+ * @param {Array<string>} userIds - An array of user IDs to retrieve.
+ * @returns {Promise<Array<Object>>} A Promise that resolves with an array of retrieved users.
  */
+
 const getUsersById = async (userIds) => {
   console.log(userIds);
   return await userRepository.findByIds(userIds);

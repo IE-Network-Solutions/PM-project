@@ -9,17 +9,21 @@ const findAll = require('./Plugins/findAll');
 const departmentRepository = dataSource.getRepository(Department).extend({ findAll, sortBy });
 // .extend({ sortBy });
 //
-
 /**
- * Query for department
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * @module department
  */
-
+/**
+ * Retrieves departments based on filter criteria and options.
+ *
+ * @async
+ * @function
+ * @param {Object} filter - The filter criteria for department retrieval.
+ * @param {Object} options - Options for pagination and sorting.
+ * @param {number} options.limit - The maximum number of departments to retrieve.
+ * @param {number} options.page - The page number for pagination.
+ * @param {string} options.sortBy - The field to sort departments by.
+ * @returns {Promise} - A promise that resolves with the retrieved departments.
+ */
 const queryDepartments = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
@@ -30,11 +34,13 @@ const queryDepartments = async (filter, options) => {
     });
 
 };
-
 /**
- * Get department by id
- * @param {ObjectId} id
- * @returns {Promise<Issue>}
+ * Retrieves a department by its ID.
+ *
+ * @async
+ * @function
+ * @param {string} id - The ID of the department to retrieve.
+ * @returns {Promise} - A promise that resolves with the retrieved department.
  */
 const getDepartmentById = async (id) => {
     return await departmentRepository.findOne({ where: { id: id } });

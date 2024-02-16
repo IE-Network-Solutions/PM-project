@@ -18,22 +18,26 @@ const approvalModuleRepository = dataSource.getRepository(ApprovalModule).extend
   findAll,
   sortBy,
 });
-
-
 /**
- * Query for budget
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * @module monthlBbudgetComment
+*/
+/**
+ * Retrieves monthly budget comments from the repository.
+ *
+ * @function
+ * @returns {Promise<Array>} An array of monthly budget comments.
  */
-
-const getMonthlyBudgetComments = async () => {  
+const getMonthlyBudgetComments = async () => {
     return await montlyBudgetCommentRepository.find();
 };
-
+/**
+ * Creates a new monthly budget comment.
+ *
+ * @function
+ * @param {string} comment - The comment to be added.
+ * @param {string|null} userId - Optional user ID associated with the comment.
+ * @returns {Promise<Object>} A newly created monthly budget comment object.
+ */
 const createMonthlyBudgetComment = async (comment,userId = null) => {
     return await monthlyBudgetComment.create({ comment: comment, userId: userId });
 }

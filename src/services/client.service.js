@@ -7,22 +7,26 @@ const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 
 const clientRepository = dataSource.getRepository(Client).extend({ findAll, sortBy });
-
 /**
- * Query for clients
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * @module Client
  */
-
+/**
+ * Retrieves clients based on filter criteria and options.
+ *
+ * @async
+ * @function
+ * @param {Object} filter - The filter criteria for client retrieval.
+ * @param {Object} options - Options for pagination and sorting.
+ * @param {number} options.limit - The maximum number of clients to retrieve.
+ * @param {number} options.page - The page number for pagination.
+ * @param {string} options.sortBy - The field to sort clients by.
+ * @returns {Promise} - A promise that resolves with the retrieved clients.
+ */
 const getClients = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
     return await clientRepository.find({
-       
+
         tableName: 'clients',
         sortOptions: sortBy && { option: sortBy },
         paginationOptions: { limit: limit, page: page },

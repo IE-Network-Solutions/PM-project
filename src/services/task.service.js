@@ -20,15 +20,16 @@ const baselineRepository = dataSource.getRepository(Baseline).extend({
   findAll,
   sortBy,
 });
-
-// .extend({ sortBy });
-//
-
 /**
- * Create a user
- * @param {Object} taskBody
- * @returns {Promise<Project>}
+ * @module task
  */
+/**
+ * Creates a new task using the provided task body.
+ * @function
+ * @param {Object} taskBody - The body of the task to create.
+ * @returns {Promise<void>} A Promise that resolves once the task is created and saved.
+ */
+
 const createTask = async (taskBody) => {
   console.log(taskBody, "nbvbvbvvbvjdididi")
   const task = taskRepository.create(taskBody);
@@ -38,15 +39,15 @@ const createTask = async (taskBody) => {
   console.log(gg, "nahome")
 
 };
-
 /**
- * Query for users
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves tasks based on the provided filter and options.
+ * @function
+ * @param {Object} filter - The filter criteria to apply while retrieving tasks.
+ * @param {Object} options - The options to configure the retrieval, including limit, page, and sortBy.
+ * @param {number} [options.limit] - The maximum number of tasks to retrieve per page.
+ * @param {number} [options.page] - The page number of tasks to retrieve.
+ * @param {string} [options.sortBy] - The field to sort the tasks by.
+ * @returns {Promise<Array<Object>>} A Promise that resolves with an array of retrieved tasks.
  */
 
 const getTasks = async (filter, options) => {
@@ -58,6 +59,12 @@ const getTasks = async (filter, options) => {
     paginationOptions: { limit: limit, page: page },
   });
 };
+/**
+ * Extends tasks related to the specified baseline by retrieving additional data including subtasks and milestones.
+ * @function
+ * @param {string} baselineId - The ID of the baseline to extend tasks for.
+ * @returns {Promise<Array<Object>>} A Promise that resolves with an array of extended baseline data including tasks, subtasks, and milestones.
+ */
 
 const extendTasks = async (baselineId) => {
   // const baseline = await baselineRepository.findOne({
@@ -107,16 +114,27 @@ const extendTasks = async (baselineId) => {
 
   return baselineData;
 };
-
-
 /**
- * Get post by id
- * @param {ObjectId} id
- * @returns {Promise<Project>}
+ * Retrieves a task by its ID.
+ * @function
+ * @param {string} id - The ID of the task to retrieve.
+ * @returns {Promise<Object|null>} A Promise that resolves with the task object if found, or null if not found.
  */
+
 const getTask = async (id) => {
   return await taskRepository.findOneBy({ id: id });
 };
+/**
+ * Retrieves tasks associated with the specified project and baseline, filtered by the provided criteria.
+ * @function
+ * @param {string} projectId - The ID of the project to retrieve tasks for.
+ * @param {Object} filter - The filter criteria to apply while retrieving tasks.
+ * @param {Object} options - The options to configure the retrieval, including limit, page, and sortBy.
+ * @param {number} [options.limit] - The maximum number of tasks to retrieve per page.
+ * @param {number} [options.page] - The page number of tasks to retrieve.
+ * @param {string} [options.sortBy] - The field to sort the tasks by.
+ * @returns {Promise<Array<Object>>} A Promise that resolves with an array of retrieved tasks.
+ */
 
 const getTasksByMileston = async (projectId, filter, options) => {
   const baseline = await baselineRepository.findOne({
@@ -142,13 +160,15 @@ const getTasksByMileston = async (projectId, filter, options) => {
     return [];
   }
 };
-
 /**
- * Update user by id
- * @param {ObjectId} taskId
- * @param {Object} updateBody
- * @returns {Promise<Project>}
+ * Updates a task with the specified ID using the provided update body.
+ * @function
+ * @param {string} taskId - The ID of the task to update.
+ * @param {Object} updateBody - The data to update the task with.
+ * @returns {Promise<Object>} A Promise that resolves with the updated task object.
+ * @throws {ApiError} If the task with the specified ID is not found.
  */
+
 const updateTask = async (taskId, updateBody) => {
   const task = await getTask(taskId);
   if (!task) {
@@ -157,12 +177,14 @@ const updateTask = async (taskId, updateBody) => {
   await taskRepository.update({ id: taskId }, updateBody);
   return await getTask(taskId);
 };
-
 /**
- * Delete user by id
- * @param {ObjectId} taskId
- * @returns {Promise<User>}
+ * Deletes a task with the specified ID.
+ * @function
+ * @param {string} taskId - The ID of the task to delete.
+ * @returns {Promise<void>} A Promise that resolves once the task is deleted.
+ * @throws {ApiError} If the task with the specified ID is not found.
  */
+
 const deleteTask = async (taskId) => {
   const task = await getTask(taskId);
   if (!task) {
@@ -170,13 +192,15 @@ const deleteTask = async (taskId) => {
   }
   return await taskRepository.delete({ id: taskId });
 };
-
 /**
- * Assign Resoure to the task
- * @param {String} taskId
- * @param {Array} usersId
- * @returns {Promise<User>}
+ * Assigns users to a task identified by its ID.
+ * @function
+ * @param {string} taskId - The ID of the task to assign users to.
+ * @param {Array<string>} userIds - An array of user IDs to assign to the task.
+ * @returns {Promise<Array<Object>>} A Promise that resolves with an array of task-user associations created.
+ * @throws {ApiError} If the task with the specified ID or the users with the given IDs are not found.
  */
+
 const assignResource = async (taskId, userIds) => {
   const task = await getTask(taskId);
   if (!task) {
@@ -196,13 +220,17 @@ const assignResource = async (taskId, userIds) => {
   await taskUserRepository.save(taskUsers);
   return taskUsers;
 };
-
 /**
- * Assign All Resoure to the task
- * @param {String} taskId
- * @param {Array} usersId
- * @returns {Promise<User>}
+ * Assigns multiple users to multiple tasks according to the provided resource body.
+ * @function
+ * @param {Object} resourceBody - The resource body containing task IDs and corresponding user IDs.
+ * @param {Array<Object>} resourceBody.resources - An array of objects containing task IDs and corresponding user IDs.
+ * @param {string} resourceBody.resources[].taskId - The ID of the task to assign users to.
+ * @param {Array<string>} resourceBody.resources[].userIds - An array of user IDs to assign to the task.
+ * @returns {Promise<Array<Object>>} A Promise that resolves with an array of task-user associations created.
+ * @throws {ApiError} If any task or user specified in the resource body is not found.
  */
+
 const assignAllResource = async (resourceBody) => {
   let taskUsersData = [];
   for (const resource of resourceBody.resources) {
@@ -227,13 +255,15 @@ const assignAllResource = async (resourceBody) => {
 
   return taskUsersData;
 };
-
 /**
- * Remove Resoure from the task
- * @param {String} taskId
- * @param {Array} usersId
- * @returns {Promise<User>}
+ * Removes a user from a task by their ID.
+ * @function
+ * @param {string} taskId - The ID of the task from which to remove the user.
+ * @param {string} userId - The ID of the user to be removed from the task.
+ * @returns {Promise<Object>} A Promise that resolves with the updated task object from which the user was removed.
+ * @throws {AppError} If the association between the task and user is not found.
  */
+
 const removeResource = async (taskId, userId) => {
   // Fetch the TaskResource entity representing the association
   const taskResource = await taskUserRepository.findOneBy({
@@ -250,12 +280,13 @@ const removeResource = async (taskId, userId) => {
 
   return await getTask(taskId);
 };
-
 /**
- * Filter Tsks by planedStartDate
- * @param {String} taskId
- * @param {Array} usersId
- * @returns {Promise<User>}
+ * Filters tasks associated with a project within a specified planned date range.
+ * @function
+ * @param {string} projectId - The ID of the project to filter tasks for.
+ * @param {Date} startDate - The start date of the planned date range.
+ * @param {Date} endDate - The end date of the planned date range.
+ * @returns {Promise<Array<Object>>} A Promise that resolves with an array of tasks filtered by the planned date range.
  */
 
 const filterTaskByPlanedDate = async (projectId, startDate, endDate) => {

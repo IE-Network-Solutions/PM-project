@@ -10,27 +10,31 @@ const { Between, In } = require('typeorm');
 const riskRepository = dataSource.getRepository(Risk).extend({ findAll, sortBy });
 // .extend({ sortBy });
 //
-
 /**
- * Create a risk
- * @param {Object} userBody
- * @returns {Promise<Risk>}
+ * @module risk
+ */
+/**
+ * Creates a risk asynchronously.
+ *
+ * @function
+ * @param {Object} riskBody - The risk data to be saved.
+ * @returns {Promise<Object>} - A promise that resolves to the saved risk object.
  */
 const createRisk = async (riskBody) => {
     const risk = riskRepository.create(riskBody);
     return await riskRepository.save(risk);
 };
-
 /**
- * Query for users
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Queries risks asynchronously.
+ *
+ * @function
+ * @param {Object} filter - The filter criteria for risk data.
+ * @param {Object} options - Additional options for pagination and sorting.
+ * @param {number} options.limit - The maximum number of results to return.
+ * @param {number} options.page - The page number for pagination.
+ * @param {string} options.sortBy - The field to sort the results by.
+ * @returns {Promise<Array<Object>>} - A promise that resolves to an array of risk objects.
  */
-
 const queryRisks = async (filter, options) => {
     const { limit, page, sortBy } = options;
     return await riskRepository.find({
@@ -41,11 +45,13 @@ const queryRisks = async (filter, options) => {
     });
 
 };
-
 /**
- * Get risk by id
- * @param {ObjectId} id
- * @returns {Promise<Risk>}
+ * Retrieves risks created within a specified date range.
+ *
+ * @function
+ * @param {string} startDate - The start date in ISO format (e.g., '2024-02-15').
+ * @param {string} endDate - The end date in ISO format (e.g., '2024-02-20').
+ * @returns {Promise<Array<Object>>} - A promise that resolves to an array of risk objects.
  */
 const getRisksByDate = async (startDate, endDate) => {
 
@@ -59,11 +65,12 @@ const getRisksByDate = async (startDate, endDate) => {
         relations: ['project']
     });
 };
-
 /**
- * Get risk by id
- * @param {ObjectId} id
- * @returns {Promise<Risk>}
+ * Retrieves all risks associated with a specific project ID.
+ *
+ * @function
+ * @param {number} id - The project ID to filter risks.
+ * @returns {Promise<Array<Object>>} - A promise that resolves to an array of risk objects.
  */
 
 const  getAllRisksByProjectId = async (id) => {
@@ -75,7 +82,16 @@ const  getAllRisksByProjectId = async (id) => {
             relations: ['project']
         });
 };
-
+/**
+ * Retrieves all risks associated with a specific project ID within a specified date range.
+ *
+ * @function
+ * @param {number} id - The project ID to filter risks.
+ * @param {string[]} status - An array of risk statuses (e.g., ['open', 'in-progress']).
+ * @param {string} startDate - The start date in ISO format (e.g., '2024-02-15').
+ * @param {string} endDate - The end date in ISO format (e.g., '2024-02-20').
+ * @returns {Promise<Array<Object>>} - A promise that resolves to an array of risk objects.
+ */
 const getAllRisksByProjectIdAndByDate = async (id, status, startDate, endDate) => {
     return await riskRepository.find(
         {
@@ -90,7 +106,13 @@ const getAllRisksByProjectIdAndByDate = async (id, status, startDate, endDate) =
             relations: ['project']
         });
 };
-
+/**
+ * Retrieves a risk by its unique identifier.
+ *
+ * @function
+ * @param {number} id - The ID of the risk to retrieve.
+ * @returns {Promise<Object|null>} - A promise that resolves to the risk object or null if not found.
+ */
 const getRiskById = async (id) => {
     return await riskRepository.findOne(
         {
@@ -128,7 +150,15 @@ const groupCriticalRiskByProject = async (filter, options) => {
 
     return groupedResults;
 };
-
+/**
+ * Groups critical risks associated with projects.
+ *
+ * @function
+ * @param {Object} filter - The filter criteria for risk data.
+ * @param {Object} options - Additional options for grouping.
+ * @param {string} options.rate - The risk rate to filter by (e.g., 'Critical').
+ * @returns {Promise<Array<Object>>} - A promise that resolves to an array of grouped risk objects.
+ */
 const getAllCriticalRisks = async (status) => {
     return await riskRepository.find(
         {
@@ -138,18 +168,24 @@ const getAllCriticalRisks = async (status) => {
             relations: ['project']
         });
 };
-
-
-
+/**
+ * Retrieves all critical risks.
+ *
+ * @function
+ * @param {string} status - The status of the risks (e.g., 'open', 'in-progress').
+ * @returns {Promise<Array<Object>>} - A promise that resolves to an array of critical risk objects.
+ */
 const updateRiskStatus = async (riskId, status) => {
     return await riskRepository.update({ id: "Transfered" })
 };
-
 /**
- * Update user by id
- * @param {ObjectId} postId
- * @param {Object} updateBody
- * @returns {Promise<Risk>}
+ * Updates a risk by its unique identifier.
+ *
+ * @function
+ * @param {number} riskId - The ID of the risk to update.
+ * @param {Object} updateBody - The updated risk data.
+ * @returns {Promise<Object|null>} - A promise that resolves to the updated risk object or null if not found.
+ * @throws {ApiError} - Throws an error if the risk with the specified ID is not found.
  */
 const updateRiskById = async (riskId, updateBody) => {
     const risk = await getRiskById(riskId);
@@ -159,11 +195,13 @@ const updateRiskById = async (riskId, updateBody) => {
     await riskRepository.update({ id: riskId }, updateBody);
     return await getRiskById(riskId);
 };
-
 /**
- * Delete user by id
- * @param {ObjectId} riskId
- * @returns {Promise<Risk>}
+ * Deletes a risk by its unique identifier.
+ *
+ * @function
+ * @param {number} riskId - The ID of the risk to delete.
+ * @returns {Promise<void>} - A promise that resolves when the risk is successfully deleted.
+ * @throws {ApiError} - Throws an error if the risk with the specified ID is not found.
  */
 const deleteRiskById = async (riskId) => {
     const risk = await getRiskById(riskId);
@@ -172,7 +210,16 @@ const deleteRiskById = async (riskId) => {
     }
     return await riskRepository.delete({ id: riskId });
 };
-
+/**
+ * Retrieves all risks and issues associated with a specific project ID within a specified date range.
+ *
+ * @function
+ * @param {number} projectId - The project ID to filter risks and issues.
+ * @param {string} status - The status of the risks (e.g., 'open', 'in-progress').
+ * @param {string} startDate - The start date in ISO format (e.g., '2024-02-15').
+ * @param {string} endDate - The end date in ISO format (e.g., '2024-02-20').
+ * @returns {Promise<Object>} - A promise that resolves to an object containing risks and issues.
+ */
 const getAllRiskAndIssuesByProjectIdByDate = async (projectId, status, startDate, endDate) => {
     const risksByProjectId = await getAllRisksByProjectIdAndByDate(projectId, status, startDate, endDate);
     const issuesByProjectId = await issueService.getAllIssuesByProjectIdAndByDate(projectId, "Transfered", startDate, endDate);

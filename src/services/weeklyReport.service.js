@@ -50,7 +50,15 @@ const userRepository = dataSource.getRepository(User).extend({
   findAll,
   sortBy,
 });
-
+/**I
+ * @module weeklyReport
+ */
+/**
+ * Retrieves all active baseline tasks, next week's tasks, risks, and issues for the given project ID.
+ * @function
+ * @param {string} projectId - The ID of the project to retrieve the weekly report for.
+ * @returns {Promise<Object>} A Promise that resolves with an object containing all active baseline tasks, next week's tasks, risks, and issues.
+ */
 
 const allActiveBaselineTasks = async (projectId) => {
   const getMilestoneByProject = await milestoneRepository.findBy({
@@ -141,8 +149,12 @@ const allActiveBaselineTasks = async (projectId) => {
   return weeklyReport;
 
 };
-
-
+/**
+ * Retrieves the weekly report for the given project ID, including all tasks, sleeping tasks, next week's tasks, risks, and issues.
+ * @function
+ * @param {string} projectId - The ID of the project to retrieve the weekly report for.
+ * @returns {Promise<Object>} A Promise that resolves with an object containing all tasks, sleeping tasks, next week's tasks, risks, and issues for the week.
+ */
 
 const getWeeklyReport = async (projectId) => {
   const getMilestoneByProject = await milestoneRepository.findBy({
@@ -237,7 +249,12 @@ const getWeeklyReport = async (projectId) => {
   return weeklyReport;
 
 };
-
+/**
+ * Adds sleeping reason to the tasks provided and returns the updated tasks.
+ * @function
+ * @param {Array<Object>} tasks - The tasks to update with sleeping reasons.
+ * @returns {Promise<Array<Object>>} A Promise that resolves with the updated tasks.
+ */
 
 const addSleepingReason = async (tasks) => {
   const updatedTasks = [];
@@ -260,6 +277,13 @@ const addSleepingReason = async (tasks) => {
 
   return updatedTasks;
 };
+/**
+ * Adds a weekly report for the specified project ID with the provided data.
+ * @function
+ * @param {string} projectId - The ID of the project to add the weekly report for.
+ * @param {Object} weeklyReportData - The data for the weekly report.
+ * @returns {Promise<Object>} A Promise that resolves with the added weekly report.
+ */
 
 const addWeeklyReport = async (projectId, weeklyReportData) => {
   const currentDate = new Date();
@@ -293,6 +317,12 @@ const addWeeklyReport = async (projectId, weeklyReportData) => {
   const savedWeeklyReport = await weeklyReportRepository.save(addedWeeklyReport);
   return savedWeeklyReport;
 }
+/**
+ * Retrieves the added weekly report for the specified project ID.
+ * @function
+ * @param {string} projectId - The ID of the project to retrieve the added weekly report for.
+ * @returns {Promise<Object>} A Promise that resolves with the added weekly report.
+ */
 
 const getAddedWeeklyReport = async (projectId) => {
   const savedWeeklyReport = await weeklyReportRepository.findBy({ projectId });
@@ -307,6 +337,13 @@ const getAddedWeeklyReport = async (projectId) => {
 
   return groupedWeeklyReports;
 };
+/**
+ * Retrieves the weekly report for the specified project ID and week.
+ * @function
+ * @param {string} projectId - The ID of the project to retrieve the weekly report for.
+ * @param {number} week - The week number of the report to retrieve.
+ * @returns {Promise<Array<Object>>} A Promise that resolves with the weekly report for the specified project and week.
+ */
 
 const getReportByWeek = async (projectId, week) => {
   const reportByWeek = await weeklyReportRepository.find({
@@ -315,7 +352,15 @@ const getReportByWeek = async (projectId, week) => {
   });
   return reportByWeek;
 };
-
+/**
+ * Adds a comment to a weekly report.
+ * @function
+ * @param {Object} comment - The comment object containing the weekly report ID, user ID, and comment.
+ * @param {string} comment.id - The ID of the weekly report to add the comment to.
+ * @param {string} comment.userId - The ID of the user adding the comment.
+ * @param {string} comment.comment - The comment content.
+ * @returns {Promise<Object>} A Promise that resolves with the added comment.
+ */
 
 const addComment = async (comment) => {
   const weeklyReportComment = weeklyCommentReportRepository.create({
@@ -336,6 +381,12 @@ const addComment = async (comment) => {
   savedComment.user = sender;
   return savedComment;
 }
+/**
+ * Retrieves comments for a weekly report.
+ * @function
+ * @param {string} weeklyReportId - The ID of the weekly report to retrieve comments for.
+ * @returns {Promise<Array<Object>>} A Promise that resolves with an array of comments for the specified weekly report.
+ */
 
 const getComments = async (weeklyReportId) => {
 

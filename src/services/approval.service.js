@@ -82,11 +82,15 @@ const officeQuarterlyBudgetCommentRepository = dataSource.getRepository(OfficeQu
   findAll,
   sortBy,
 });
-
 /**
- * send for approval
- * @param {Object} approval
- * @returns {Promise<>}
+ * @module approval
+ */
+/**
+ * Sends a module for approval by assigning it to an approval stage based on the approval module name and the module ID
+ * @function
+ * @param {string} approvalModuleName - The name of the approval module (e.g., 'ProjectBudget', 'ProjectSchedule')
+ * @param {number} moduleId - The ID of the module to send for approval
+ * @returns {Promise<Object>} - The updated module with the assigned approval stage
  */
 const sendForApproval = async (approvalModuleName, moduleId) => {
   let approvalModuleNamee = approvalModuleName;
@@ -131,17 +135,13 @@ const sendForApproval = async (approvalModuleName, moduleId) => {
   let currentApprover = await getCurrentApprover(approvalModule.moduleName, moduleIdd);
   return currentApprover;
 };
-
 /**
- * Query for approval level
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Gets and returns the current approver for a given module name and module ID
+ * @function
+ * @param {string} moduleName - The name of the module (e.g., 'ProjectBudget', 'ProjectSchedule')
+ * @param {number} moduleId - The ID of the module
+ * @returns {Promise<Object>} - The current approver object with its related entities
  */
-
 const getCurrentApprover = async (moduleName, moduleId) => {
   const approvalModule = await approvalModuleRepository.findOneBy({ moduleName: moduleName });
   let currentApprover = {};
@@ -244,17 +244,13 @@ const getCurrentApprover = async (moduleName, moduleId) => {
 
   return currentApprover;
 };
-
 /**
- * Query for approval level
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Approves a module by its name and ID and updates its approval stage
+ * @function
+ * @param {string} moduleName - The name of the module (e.g., 'ProjectBudget', 'ProjectSchedule')
+ * @param {number} moduleId - The ID of the module to approve
+ * @returns {Promise<Object>} - The updated module with the new approval stage
  */
-
 const approve = async (moduleName, moduleId) => {
   const approvalModule = await approvalModuleRepository.findOne({ where: { moduleName: moduleName } });
 
@@ -374,15 +370,14 @@ const approve = async (moduleName, moduleId) => {
 };
 
 /**
- * Query for approval level
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Rejects a module by its name and ID and adds a comment to it
+ * @function
+ * @param {string} moduleName - The name of the module (e.g., 'ProjectBudget', 'ProjectSchedule')
+ * @param {number} moduleId - The ID of the module to reject
+ * @param {string} comentData - The comment data to add to the module
+ * @param {number} [userId] - The optional ID of the user who rejects the module
+ * @returns {Promise<Object>} - The rejected module with the added comment
  */
-
 const reject = async (moduleName, moduleId, comentData, userId = null) => {
   const approvalModule = await approvalModuleRepository.findOne({ where: { moduleName: moduleName } });
   let updatedModule;
@@ -471,11 +466,11 @@ const reject = async (moduleName, moduleId, comentData, userId = null) => {
   }
   return updatedModule;
 };
-
 /**
- * Get budget by id
- * @param {ObjectId} id
- * @returns {Promise<Project>}
+ * Gets and returns an approval module by its ID
+ * @function
+ * @param {number} id - The ID of the approval module
+ * @returns {Promise<Object>} - The approval module object
  */
 const getApprovalModule = async (id) => {
   return await approvalModuleRepository.findOneBy({ id: id });

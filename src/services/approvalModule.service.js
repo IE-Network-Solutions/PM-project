@@ -12,9 +12,12 @@ const approvalModuleRepository = dataSource.getRepository(ApprovalModule).extend
 });
 
 /**
- * Create a approval module
- * @param {Object} approvalModuleBody
- * @returns {Promise<ApprovalModule>}
+ * @module approvalModule
+ */
+/**
+ * Creates and returns an array of approval module instances with predefined data
+ * @function
+ * @returns {Promise<Array<Object>>} - The array of approval module instances
  */
 const createApprovalModule = async () => {
   const approvalModules = [
@@ -40,35 +43,32 @@ const createApprovalModule = async () => {
   const moduleDatas = await approvalModuleRepository.save(modules);
   return moduleDatas;
 };
-
 /**
- * get a approval module by module name
- * @param {Object} approvalModuleBody
- * @returns {Promise<ApprovalModule>}
+ * Retrieves an approval module by its module name.
+ * @function
+ * @async
+ * @param {string} moduleName - The name of the approval module.
+ * @returns {Promise<ApprovalModule | null>} - The approval module object, or null if not found.
  */
 const getApprovalModuleByModuleName = async (moduleName) => {
   const module = approvalModuleRepository.findOne({ where: { moduleName: moduleName } });
   return module;
 };
-
 /**
- * Query for budget
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves all approval modules.
+ * @fuction
+ * @async
+ * @returns {Promise<ApprovalModule[]>} - An array of approval module objects.
  */
-
 const getApprovalModules = async () => {
   return await approvalModuleRepository.find();
 };
-
 /**
- * Get budget by id
- * @param {ObjectId} id
- * @returns {Promise<Project>}
+ * Retrieves an approval module by its ID.
+ * @function
+ * @async
+ * @param {number} id - The unique identifier of the approval module.
+ * @returns {Promise<ApprovalModule | null>} - The approval module object, or null if not found.
  */
 const getApprovalModule = async (id) => {
   return await approvalModuleRepository.findOneBy({ id: id });

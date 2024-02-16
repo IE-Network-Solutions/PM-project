@@ -30,30 +30,40 @@ const permissionResourceRepository = dataSource.getRepository(permissionResource
   findAll,
   sortBy,
 });
-
 /**
- * Query for approval level
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * @module permission
  */
-
+/**
+ * Retrieves permissions from the repository.
+ * @async
+ * @function
+ * @throws {ApiError} Throws an error if retrieving permissions fails.
+ * @returns {Promise<Array>} An array of permission objects.
+ */
 const getPermissions = async () => {
   return await permissionRepository.find();
 };
-
 /**
- * Get budget by id
- * @param {ObjectId} id
- * @returns {Promise<Project>}
+ * Retrieves a permission by its unique identifier.
+ * @async
+ * @function
+ * @param {number} id - The unique identifier of the permission.
+ * @throws {ApiError} Throws an error if retrieving the permission fails.
+ * @returns {Promise<Object>} The permission object.
  */
 const getPermission = async (id) => {
   return await permissionRepository.findOneBy({ id: id });
 };
-
+/**
+ * Assigns permissions to a user.
+ * @async
+ * @function
+ * @param {Object} permissionData - The permission assignment details.
+ * @param {number} permissionData.userId - The unique identifier of the user.
+ * @param {Array<number>} permissionData.permissions - An array of permission identifiers to assign.
+ * @throws {ApiError} Throws an error if assigning permissions fails.
+ * @returns {Promise<Array>} An array of user objects with updated permissions.
+ */
 const assignPermissionToUser = async (permissionData) => {
   const user = await userRepository.findOneBy({ id: permissionData.userId });
   user.permissions = [];
@@ -71,7 +81,16 @@ const assignPermissionToUser = async (permissionData) => {
 
   return await userRepository.find({ relations: ['permissions', 'role'] });
 };
-
+/**
+ * Assigns permissions to a role.
+ * @async
+ * @function
+ * @param {Object} permissionData - The permission assignment details.
+ * @param {number} permissionData.roleId - The unique identifier of the role.
+ * @param {Array<number>} permissionData.permissions - An array of permission identifiers to assign.
+ * @throws {ApiError} Throws an error if assigning permissions fails.
+ * @returns {Promise<Array>} An array of permission role objects.
+ */
 const assignPermissionToRole = async (permissionData) => {
   const role = await roleRepository.findOneBy({ id: permissionData.roleId });
   let permissionRoleData = permissionData.permissions.map((permissionId) => {
@@ -87,7 +106,13 @@ const assignPermissionToRole = async (permissionData) => {
 
   return data;
 };
-
+/**
+ * Seeds permissions in the repository.
+ * @async
+ * @function
+ * @throws {ApiError} Throws an error if seeding permissions fails.
+ * @returns {Promise<Array>} An array of created permission objects.
+ */
 const seedPermission = async () => {
   const permissionData = [
     {
@@ -254,7 +279,13 @@ const seedPermission = async () => {
   const createdPermissions = await permissionRepository.save(permissions);
   return createdPermissions;
 };
-
+/**
+ * Seeds permission resources in the repository.
+ * @async
+ * @function
+ * @throws {ApiError} Throws an error if seeding permission resources fails.
+ * @returns {Promise<Array>} An array of created permission resource objects.
+ */
 const seedPermissionResource = async () => {
   const resourceData = [
     {
@@ -279,7 +310,13 @@ const seedPermissionResource = async () => {
   const createdResourcePermissions = await permissionResourceRepository.save(permissionResources);
   return createdResourcePermissions;
 };
-
+/**
+ * Retrieves permissions resources along with associated permissions.
+ * @async
+ * @function
+ * @throws {ApiError} Throws an error if retrieving permission resources fails.
+ * @returns {Promise<Array>} An array of permission resource objects.
+ */
 const getResourcesWithPermission = async () => {
   const resources = await permissionResourceRepository.find({ relations: ['permissions'] });
   return resources;

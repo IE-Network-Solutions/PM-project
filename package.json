@@ -91,6 +91,7 @@
     "faker": "^5.1.0",
     "husky": "^7.0.0",
     "jest": "^26.0.1",
+    "jsdoc": "^4.0.2",
     "lint-staged": "^11.0.0",
     "node-mocks-http": "^1.8.0",
     "nodemon": "^2.0.22",
