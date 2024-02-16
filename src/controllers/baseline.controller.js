@@ -5,7 +5,6 @@ const catchAsync = require('../utils/catchAsync');
 const { baselineService, projectService } = require('../services');
 
 const createBaseline = catchAsync(async (req, res) => {
-  console.log(req.body, 'print now');
   const milestones = req.body.milestones;
   // const subTasks = req.body.subTasks;
   //delete req.body.milestones;
@@ -24,7 +23,6 @@ const getBaselines = catchAsync(async (req, res) => {
 
 const getBaseline = catchAsync(async (req, res) => {
   const baseline = await baselineService.getBaseline(req.params.baselineId);
-  console.log('testttttt selam');
   if (!baseline) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Baseline not found');
   }
@@ -37,7 +35,6 @@ const getByMilestone = catchAsync(async (req, res) => {
 });
 
 const updateBaseline = catchAsync(async (req, res) => {
-  console.log(req.params, 'bodysur');
   const baseline = await baselineService.updateBaseline(req.params.baselineId, req.body, req.body.milestones);
 
   delete req.body.milestones;

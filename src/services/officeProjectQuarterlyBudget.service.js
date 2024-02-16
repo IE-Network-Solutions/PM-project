@@ -71,18 +71,8 @@ const DeleteQuarterlyBudget = async (id) => {
 
 }
 const getQuarterlyBudgetByProject = async (month, projectId) => {
-    console.log(month, "month nonthhhhhh")
     let budgetData = []
     const monthlyBudget = await officeQuarterlyBudgetRepository.findOne({ where: { from: month.from, to: month.to, isDeleted: false, projectId: projectId }, relations: ['approvalStage', 'approvalStage.role', 'officeQuarterlyBudgetComment'] });
-
-    //     const budgetDatas = monthlyBudget.forEach((item) => {
-    //         if (item.budgetsData[0].projectId === projectId) {
-
-    //             budgetData.push(item);
-    //         }
-    //     })
-
-
     if (monthlyBudget) {
         const budgetWithCategories = await Promise.all(monthlyBudget?.budgetsData.map(async (element) => {
             const category = await budgetCategoryService.getBudgetCategory(element.budgetCategoryId)
@@ -119,7 +109,6 @@ const getAllQuarterlyBudgetByProject = async (projectId) => {
     const activeBudget = []
     const inActiveBudget = []
     const activeBudgetSessions = await officeBudgetSessionService.activeBudgetSession();
-    console.log(activeBudgetSessions, projectId, "bxnxioiewqoroe")
     const monthlyBudget = await officeQuarterlyBudgetRepository.findOne({
         where: { from: activeBudgetSessions.startDate, to: activeBudgetSessions.endDate, isDeleted: false, projectId: projectId }, relations: ['approvalStage', 'approvalStage.role', 'officeQuarterlyBudgetComment']
     });

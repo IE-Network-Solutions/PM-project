@@ -24,16 +24,14 @@ const createApprovalStage = catchAsync(async (req, res) => {
         level: stage.level,
         role: role,
         approvalModule: approvalModule,
-        project_role: stage.project_role?stage.project_role:false
+        project_role: stage.project_role ? stage.project_role : false
       };
 
       approvalStageData.push(singleApprovalStageData);
     }
-    console.log(approvalStageData);
     return approvalStageData;
   }
   const approvalstagedata = await returnApprovalStageData(data);
-  console.log(approvalstagedata);
   const approvalStage = await approvalStageService.createApprovalStage(approvalstagedata);
 
   res.status(httpStatus.CREATED).send(approvalStage);

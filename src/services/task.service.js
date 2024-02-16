@@ -30,12 +30,9 @@ const baselineRepository = dataSource.getRepository(Baseline).extend({
  * @returns {Promise<Project>}
  */
 const createTask = async (taskBody) => {
-  console.log(taskBody, "nbvbvbvvbvjdididi")
-  const task = taskRepository.create(taskBody);
-  console.log(task, "kkk")
+  const task = taskRepository.create(taskBody)
+  return await taskRepository.save(task);
 
-  const gg = await taskRepository.save(task);
-  console.log(gg, "nahome")
 
 };
 

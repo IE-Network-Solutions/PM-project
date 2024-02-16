@@ -111,7 +111,6 @@ const deleteBudget = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 const getBudgetsOfProject = catchAsync(async (req, res) => {
-  console.log(req.params.projectId);
   const data = await budgetService.getBudgetsOfProject(req.params.projectId);
   res.send(data);
 });
@@ -207,7 +206,6 @@ const addBudget = catchAsync(async (req, res) => {
     taskCategory: taskCategory,
     group: group,
   };
-  console.log(singleBudgetData, 'pppppppppppp');
   const budget = await budgetService.addBudget(singleBudgetData);
   res.status(httpStatus.CREATED).send(budget);
 });

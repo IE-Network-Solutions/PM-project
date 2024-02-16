@@ -6,14 +6,13 @@ const ApiError = require("../utils/ApiError");
 const createChecklist = catchAsync(async (req, res, next) => {
     const milestoneId = req.body.milestoneId;
     const criteriaIds = req.body.criteriaIds;
-    console.log("req", req.body)
 
     const checkList1 = await CheckList.createChecklist(req.body);
-    const checkList2 = await CheckList.createMilestoneCriteria(milestoneId, criteriaIds); 
+    const checkList2 = await CheckList.createMilestoneCriteria(milestoneId, criteriaIds);
     if (checkList1 && checkList2) {
         await milestoneService.updateHasCheckList(milestoneId)
         const checkListResult = await CheckList.getCheckList(checkList1?.id);
-        res.status(httpStatus.CREATED).send(checkListResult);    
+        res.status(httpStatus.CREATED).send(checkListResult);
     }
 })
 

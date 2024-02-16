@@ -14,8 +14,6 @@ const createPaymentTerm = catchAsync(async (req, res) => {
     req.body.map(async (singelPaymentTerm) => {
       milestone = singelPaymentTerm.milestone;
       delete singelPaymentTerm.milestone;
-      console.log('mile', milestone);
-      console.log('body', req.body);
       const PaymentTerm = await paymentTermService.createPaymentTerm(singelPaymentTerm, milestone);
       return PaymentTerm;
     })
@@ -58,7 +56,7 @@ const deletePaymentTerm = catchAsync(async (req, res) => {
   res.send('Payment Term Deleted');
 });
 
-const setVariance = catchAsync(async(req,res)=>{
+const setVariance = catchAsync(async (req, res) => {
   varianceValue = await paymentTermService.setVariance(req.body.varianceData);
   res.send(varianceValue);
 });
