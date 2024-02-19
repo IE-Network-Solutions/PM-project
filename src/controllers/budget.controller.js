@@ -11,6 +11,15 @@ const {
   currencyService,
   budgetSessionService,
 } = require('../services');
+/**
+ * @module budget
+ */
+/**
+ * Calculates task, budget category, task category, and currency for a given budget.
+ * @function
+ * @param {Object} budget - The budget data.
+ * @returns {Promise<Object>} A Promise that resolves with the calculated data.
+ */
 
 async function calculate(budget) {
   const task = await taskService.getTask(budget.taskId);
@@ -20,6 +29,13 @@ async function calculate(budget) {
 
   return { task, budgetCategory, taskCategory, currency };
 }
+/**
+ * Creates a new budget.
+ * @function
+ * @param {Object} req - The request object containing the budget data.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves once the budget is created.
+ */
 
 const createBudget = catchAsync(async (req, res) => {
   const data = req.body;
@@ -59,6 +75,13 @@ const createBudget = catchAsync(async (req, res) => {
   const budget = await budgetService.createBudget(data);
   res.status(httpStatus.CREATED).send(budget);
 });
+/**
+ * Retrieves all budgets based on the provided filter and options.
+ * @function
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with all budgets.
+ */
 
 const getBudgets = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['status']);
@@ -66,6 +89,13 @@ const getBudgets = catchAsync(async (req, res) => {
   const result = await budgetService.getBudgets(filter, options);
   res.send(result);
 });
+/**
+ * Retrieves a budget by its ID.
+ * @function
+ * @param {Object} req - The request object containing the budget ID.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with the budget data.
+ */
 
 const getBudget = catchAsync(async (req, res) => {
   const budget = await budgetService.getBudget(req.params.taskId);
@@ -74,6 +104,13 @@ const getBudget = catchAsync(async (req, res) => {
   }
   res.send(budget);
 });
+/**
+ * Updates a budget by its ID.
+ * @function
+ * @param {Object} req - The request object containing the budget ID and updated data.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with the updated budget data.
+ */
 
 const updateBudget = catchAsync(async (req, res) => {
   const data = req.body;
@@ -105,20 +142,51 @@ const updateBudget = catchAsync(async (req, res) => {
   const updatedBudget = await budgetService.updateBudget(req.params.budgetId, data);
   res.send(updatedBudget);
 });
+/**
+ * Deletes a budget by its ID.
+ * @function
+ * @param {Object} req - The request object containing the budget ID.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves once the budget is deleted.
+ */
 
 const deleteBudget = catchAsync(async (req, res) => {
   await budgetService.deleteBudget(req.params.budgetId);
   res.status(httpStatus.NO_CONTENT).send();
 });
+/**
+ * Retrieves budgets associated with a project.
+ * @function
+ * @param {Object} req - The request object containing the project ID.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with the budgets associated with the project.
+ */
+
 const getBudgetsOfProject = catchAsync(async (req, res) => {
   console.log(req.params.projectId);
   const data = await budgetService.getBudgetsOfProject(req.params.projectId);
   res.send(data);
 });
+/**
+ * Retrieves budgets associated with multiple projects.
+ * @function
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with the budgets associated with multiple projects.
+ */
+
 const getBudgetsOfProjects = catchAsync(async (req, res) => {
   const data = await budgetService.getBudgetsOfProjects();
   res.send(data);
 });
+/**
+ * Retrieves monthly budgets of office projects based on a specified date range.
+ * @function
+ * @param {Object} req - The request object containing the date range.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with the monthly budgets of office projects.
+ */
+
 const getBudgetsOfOfficeProjects = catchAsync(async (req, res) => {
 
   let month = {
@@ -140,11 +208,25 @@ const getBudgetsOfOfficeProjects = catchAsync(async (req, res) => {
 
 
 });
+/**
+ * Retrieves all budgets associated with projects.
+ * @function
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with all budgets associated with projects.
+ */
 
 const getAllBudgetsOfProjects = catchAsync(async (req, res) => {
   const data = await budgetService.getAllBudgetsOfProjects();
   res.send(data);
 });
+/**
+ * Retrieves budgets grouped by category for the latest budget session.
+ * @function
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with budgets grouped by category.
+ */
 
 const getBudgetGroupByCategory = catchAsync(async (req, res) => {
   const letestBudgetSession = await budgetSessionService.activeBudgetSession();
@@ -152,28 +234,64 @@ const getBudgetGroupByCategory = catchAsync(async (req, res) => {
   const data = await budgetService.getBudgetGroupByCategory(letestBudgetSession?.startDate, letestBudgetSession?.endDate);
   res.send(data);
 });
+/**
+ * Retrieves the current month's budget for a specific project.
+ * @function
+ * @param {Object} req - The request object containing the project ID.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with the current month's budget for the project.
+ */
+
 const getMonthlyBudget = catchAsync(async (req, res) => {
   const projectId = req.params.projectId;
   console.log(projectId, 'kkkkkkkk');
   const data = await budgetService.getCurrentMonthBudgetOfProjects(projectId);
   res.send(data);
 });
+/**
+ * Retrieves monthly budgets of all projects.
+ * @function
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with the monthly budgets of all projects.
+ */
+
 const getMonthlyBudgetsOfProjects = catchAsync(async (req, res) => {
   const data = await budgetService.getMonthlyBudgetsOfProjects();
   res.send(data);
 });
+/**
+ * Retrieves budget groups.
+ * @function
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with budget groups.
+ */
 
-// get all budget groups
 const budgetGroups = catchAsync(async (req, res) => {
   const data = await budgetService.budgetGroups();
   res.send(data);
 });
 
-// get all budgets by group
+/**
+ * Retrieves budgets by task category.
+ * @function
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with budgets grouped by task category.
+ */
+
 const getBudgetsByGroup = catchAsync(async (req, res) => {
   const data = await budgetService.getByTaskCategory();
   res.send(data);
 });
+/**
+ * Adds a new budget.
+ * @function
+ * @param {Object} req - The request object containing the budget data.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves once the budget is added.
+ */
 
 const addBudget = catchAsync(async (req, res) => {
   data = req.body;
@@ -211,11 +329,25 @@ const addBudget = catchAsync(async (req, res) => {
   const budget = await budgetService.addBudget(singleBudgetData);
   res.status(httpStatus.CREATED).send(budget);
 });
+/**
+ * Retrieves the master budget.
+ * @function
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with the master budget.
+ */
 
 const masterBudget = catchAsync(async (req, res) => {
   const data = await budgetService.masterBudget();
   res.send(data);
 });
+/**
+ * Retrieves budgets filtered by start and end dates.
+ * @function
+ * @param {Object} req - The request object containing the start and end dates.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with budgets filtered by dates.
+ */
 
 const filterBudget = catchAsync(async (req, res) => {
   const startDate = req.query.startDate;
