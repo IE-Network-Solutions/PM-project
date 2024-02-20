@@ -16,17 +16,21 @@ const projectMemberRepository = dataSource.getRepository(ProjectMembers);
 const projectContractValueRepository = dataSource.getRepository(ProjectContractValue);
 
 /**
- * Create a user
- * @param {Object} projectBody
- * @returns {Promise<Project>}
+ * @module project
  */
-
-// const createProject = async (projectBody) => {
-//   const project = projectRepository.create(projectBody);
-//   return await projectRepository.save(project);
-// };
-
-// project.service.js
+/**
+ * Creates a new project with the specified details.
+ * @async
+ * @function
+ * @param {Object} projectBody - The project details.
+ * @param {string} projectBody.name - The name of the project.
+ * @param {string} projectBody.description - The description of the project.
+ * @param {number} projectBody.managerId - The unique identifier of the project manager.
+ * @param {Array<Object>} projectMembers - An array of project member objects.
+ * @param {Array<Object>} projectContractValue - An array of project contract value objects.
+ * @throws {ApiError} Throws an error if creating the project fails.
+ * @returns {Promise<Object>} The created project object.
+ */
 const createProject = async (projectBody, projectMembers, projectContractValue) => {
   const project = projectRepository.create(projectBody);
 
@@ -63,17 +67,18 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
   return newProject;
   // return await getProject(project.id)
 };
-
 /**
- * Query for users
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves a list of projects based on specified filter and options.
+ * @async
+ * @function
+ * @param {Object} filter - The filter criteria for projects (if any).
+ * @param {Object} options - Additional options for pagination and sorting.
+ * @param {number} options.limit - The maximum number of results to return.
+ * @param {number} options.page - The page number for pagination.
+ * @param {string} options.sortBy - The field to sort the results by.
+ * @throws {ApiError} Throws an error if retrieving projects fails.
+ * @returns {Promise<Array>} An array of project objects.
  */
-
 const getProjects = async (filter, options) => {
   const { limit, page, sortBy } = options;
 
@@ -90,11 +95,13 @@ const getProjects = async (filter, options) => {
   //   .addSelect(['projectMember', 'role', 'projectContractValue'])
   //   .getMany();
 };
-
 /**
- * Get post by id
- * @param {ObjectId} id
- * @returns {Promise<Project>}
+ * Retrieves project details by its unique identifier.
+ * @async
+ * @function
+ * @param {number} id - The unique identifier of the project.
+ * @throws {ApiError} Throws an error if retrieving the project fails.
+ * @returns {Promise<Object>} The project object with associated members and contract values.
  */
 const getProject = async (id) => {
   return await projectRepository.findOne({
@@ -102,12 +109,17 @@ const getProject = async (id) => {
     relations: ['projectMembers', 'projectContractValues.currency'],
   });
 };
-
 /**
- * Update user by id
- * @param {ObjectId} projectId
- * @param {Object} updateBody
- * @returns {Promise<Project>}
+ * Updates an existing project with the specified details.
+ * @async
+ * @function
+ * @param {number} projectId - The unique identifier of the project to update.
+ * @param {Object} updateBody - The updated project details.
+ * @param {string} updateBody.name - The new name for the project.
+ * @param {string} updateBody.description - The updated description of the project.
+ * @param {number} updateBody.managerId - The updated unique identifier of the project manager.
+ * @throws {ApiError} Throws an error if updating the project fails.
+ * @returns {Promise<Object>} The updated project object with associated members.
  */
 const updateProject = async (projectId, updateBody) => {
   const project = await getProject(projectId);
@@ -115,7 +127,7 @@ const updateProject = async (projectId, updateBody) => {
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
- 
+
   await projectRepository.update({ id: projectId }, updateBody);
   const updatedProject = await getProject(projectId);
   console.log(updatedProject, "ggmikkkg")
@@ -126,11 +138,13 @@ const updateProject = async (projectId, updateBody) => {
   console.log(updatedProject, 'sl up');
   return updatedProject;
 };
-
 /**
- * Delete user by id
- * @param {ObjectId} ProjectId
- * @returns {Promise<User>}
+ * Deletes a project by marking it as deleted.
+ * @async
+ * @function
+ * @param {number} projectId - The unique identifier of the project to delete.
+ * @throws {ApiError} Throws an error if the project does not exist.
+ * @returns {Promise<string>} A success message indicating that the project has been deleted.
  */
 const deleteProject = async (projectId) => {
   const project = await getProject(projectId);
@@ -141,13 +155,13 @@ const deleteProject = async (projectId) => {
   await projectRepository.delete({ id: projectId });
   return 'Project Deleted';
 };
-
 /**
- * Delete user by id
- * @param {ObjectId} ProjectId
- * @returns {Promise<Project>}
+ * Retrieves variance information for all projects.
+ * @async
+ * @function
+ * @throws {ApiError} Throws an error if retrieving variance data fails.
+ * @returns {Promise<Object>} An object containing variance details for each project.
  */
-
 const getAllProjectTasksVarianceByProject = async () => {
   const projects = await projectRepository.find({
     tableName: 'projects',
@@ -183,7 +197,13 @@ const getAllProjectTasksVarianceByProject = async () => {
 
   return { Projects: allProjectTasks };
 };
-
+/**
+ * Retrieves variance information for all projects.
+ * @async
+ * @function
+ * @throws {ApiError} Throws an error if retrieving variance data fails.
+ * @returns {Promise<Object>} An object containing variance details for each project.
+ */
 const getAllProjectsDetailOnMasterSchedule = async () => {
   const projects = await projectRepository.find({
     tableName: 'projects',
@@ -197,7 +217,17 @@ const getAllProjectsDetailOnMasterSchedule = async () => {
   }
   return { Projects: allProjectTasks };
 };
-
+/**
+ * Adds project members to a specified project.
+ * @async
+ * @function
+ * @param {number} projectId - The unique identifier of the project.
+ * @param {Array<Object>} projectMembers - An array of project member objects.
+ * @param {number} projectMembers.memberId - The unique identifier of the user.
+ * @param {number} projectMembers.roleId - The unique identifier of the role.
+ * @throws {ApiError} Throws an error if adding project members fails.
+ * @returns {Promise<Object>} The updated project object with associated members.
+ */
 const addMember = async (projectId, projectMembers) => {
   const project = await projectRepository.findOneBy({ id: projectId });
 
@@ -215,7 +245,14 @@ const addMember = async (projectId, projectMembers) => {
   }
   return project;
 };
-
+/**
+ * Retrieves project members associated with a specific project.
+ * @async
+ * @function
+ * @param {number} projectId - The unique identifier of the project.
+ * @throws {ApiError} Throws an error if retrieving project members fails.
+ * @returns {Promise<Array>} An array of user objects representing project members.
+ */
 const getMembers = async (projectId) => {
   const projectMemebrs = await projectMemberRepository
     .createQueryBuilder('project_member')
@@ -229,7 +266,17 @@ const getMembers = async (projectId) => {
   });
   return users;
 };
-
+/**
+ * Removes a project member from a specified project.
+ * @async
+ * @function
+ * @param {number} projectId - The unique identifier of the project.
+ * @param {Object} memberToRemove - The project member to remove.
+ * @param {number} memberToRemove.memberId - The unique identifier of the user to remove.
+ * @param {number} memberToRemove.roleId - The unique identifier of the role associated with the user.
+ * @throws {ApiError} Throws an error if removing the project member fails.
+ * @returns {Promise<void>} A success message indicating that the project member has been removed.
+ */
 const removeMember = async (projectId, memberToRemove) => {
   const projectMembersToRemove = await projectMemberRepository.find({
     where: {
@@ -241,6 +288,15 @@ const removeMember = async (projectId, memberToRemove) => {
 
   return await projectMemberRepository.remove(projectMembersToRemove);
 };
+/**
+ * Closes a project by updating its status.
+ * @async
+ * @function
+ * @param {number} projectId - The unique identifier of the project to close.
+ * @param {string} status - The updated status for the project (e.g., 'Closed').
+ * @throws {ApiError} Throws an error if closing the project fails.
+ * @returns {Promise<Object>} The updated project object.
+ */
 const closeProject = async (projectId, status) => {
   const project = await getProject(projectId);
   if (!project) {
@@ -251,7 +307,17 @@ const closeProject = async (projectId, status) => {
 
   return await getProject(projectId);
 };
-
+/**
+ * Retrieves the total number of projects, as well as the count of active and closed projects.
+ *
+ * @function
+ * @param {Object} filter - An object containing filter criteria for project retrieval.
+ * @param {Object} options - Additional options for querying projects.
+ * @returns {Promise<Object>} - An object with the following properties:
+ *   - {number} totalProjects - Total number of projects.
+ *   - {number} closedProjects - Number of closed projects.
+ *   - {number} activeProjects - Number of active projects.
+ */
 const getTotalActiveClosedProjects = async (filter, options) => {
   const projects = await getProjects(filter, options);
   const total = projects.length;

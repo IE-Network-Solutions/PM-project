@@ -12,22 +12,30 @@ if (config.env !== 'test') {
 }
 
 /**
- * Send an email
- * @param {string} to
- * @param {string} subject
- * @param {string} text
- * @returns {Promise}
+ * @module email
+*/
+/**
+ * Sends an email.
+ *
+ * @async
+ * @function
+ * @param {string} to - The recipient's email address.
+ * @param {string} subject - The subject of the email.
+ * @param {string} text - The plain-text content of the email.
+ * @returns {Promise} - A promise that resolves when the email is sent.
  */
 const sendEmail = async (to, subject, text) => {
   const msg = { from: config.email.from, to, subject, text };
   await transport.sendMail(msg);
 };
-
 /**
- * Send reset password email
- * @param {string} to
- * @param {string} token
- * @returns {Promise}
+ * Sends a reset password email.
+ *
+ * @async
+ * @function
+ * @param {string} to - The recipient's email address.
+ * @param {string} token - The reset password token.
+ * @returns {Promise} - A promise that resolves when the email is sent.
  */
 const sendResetPasswordEmail = async (to, token) => {
   const subject = 'Reset password';
@@ -38,12 +46,14 @@ To reset your password, click on this link: ${resetPasswordUrl}
 If you did not request any password resets, then ignore this email.`;
   await sendEmail(to, subject, text);
 };
-
 /**
- * Send verification email
- * @param {string} to
- * @param {string} token
- * @returns {Promise}
+ * Sends a verification email for email address confirmation.
+ *
+ * @async
+ * @function
+ * @param {string} to - The recipient's email address.
+ * @param {string} token - The verification token.
+ * @returns {Promise} - A promise that resolves when the email is sent.
  */
 const sendVerificationEmail = async (to, token) => {
   const subject = 'Email Verification';

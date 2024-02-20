@@ -10,15 +10,20 @@ const resourceHistoryRepository = dataSource.getRepository(ResourceHistory).exte
   findAll,
   sortBy,
 });
-
-
-// .extend({ sortBy });
-//
-
 /**
- * Create a user
- * @param {Object} resourceBody
- * @returns {Promise<Project>}
+ * @module resourcehistory
+ */
+/**
+ * Creates a resource history entry by saving the given data.
+ *
+ * @function
+ * @param {Object} resourceBody - Data representing the resource history.
+ *   - {number} taskId - The ID of the task associated with this resource history.
+ *   - {number} baselineId - The ID of the baseline associated with this resource history.
+ *   - {number} milestoneId - The ID of the milestone associated with this resource history.
+ *   - {number} projectId - The ID of the project associated with this resource history.
+ *   - ... // Specify other properties and their descriptions
+ * @returns {Promise<Object>} - A promise that resolves to the saved resource history entry.
  */
 const createResourceHistory = async (resourceBody) => {
   const task = await taskService.getTask(resourceBody.taskId);
@@ -28,11 +33,12 @@ const createResourceHistory = async (resourceBody) => {
   const resource = resourceHistoryRepository.create(resourceBody)
   return await resourceHistoryRepository.save(resource);
 };
-
 /**
- * Get resourcehistory by projectid
- * @param {ObjectId} id
- * @returns {Promise<Action>}
+ * Retrieves resource history entries associated with a specific project.
+ *
+ * @function
+ * @param {number} id - The unique identifier of the project to retrieve resource history for.
+ * @returns {Promise<Object[]>} - A promise that resolves to an array of resource history entries.
  */
 const getResourceHistoryByProjectId = async (id) => {
 
@@ -42,12 +48,13 @@ const getResourceHistoryByProjectId = async (id) => {
             relations: ['project','user','task']
         });
 };
-
-
 /**
- * Get resourcehistory by taskid
- * @param {ObjectId} id
- * @returns {Promise<Action>}
+ * Retrieves resource history entries associated with a specific task.
+ *
+ * @function
+ * @param {number} id - The unique identifier of the task to retrieve resource history for.
+ * @returns {Promise<Object[]>} - A promise that resolves to an array of resource history entries.
+ *   Each entry represents a historical record of resource usage or changes related to the task.
  */
 const getResourceHistoryByTaskId = async (id) => {
     return await resourceHistoryRepository.find(
@@ -56,25 +63,34 @@ const getResourceHistoryByTaskId = async (id) => {
             relations: ['project','user','task']
         });
 };
+/**
+ * Retrieves resource history entries associated with a specific user.
+ *
+ * @function
+ * @param {number} id - The unique identifier of the user to retrieve resource history for.
+ * @returns {Promise<Object[]>} - A promise that resolves to an array of resource history entries.
+ *   Each entry represents a historical record related to the user's resource usage or changes.
+ */
 const getResourceHistoryByUserId = async (id) => {
-  
+
   return await resourceHistoryRepository.find(
       {
           where: { userId: id },
           relations: ['project','user','task']
       });
 };
-
 /**
- * Query for resourcehistory
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves resource history entries based on the provided filter and options.
+ *
+ * @function
+ * @param {Object} filter - An object containing filter criteria for resource history retrieval.
+ * @param {Object} options - Additional options for querying resource history.
+ *   - {number} limit - Maximum number of results to retrieve.
+ *   - {number} page - Page number for pagination.
+ *   - {string} sortBy - Field to sort the results by (e.g., 'createdAt', 'updatedAt').
+ * @returns {Promise<Object[]>} - A promise that resolves to an array of resource history entries.
+ *   Each entry represents a historical record related to resource usage or changes.
  */
-
 const getAllResourceHistory = async (filter, options) => {
   const { limit, page, sortBy } = options;
 
@@ -84,11 +100,6 @@ const getAllResourceHistory = async (filter, options) => {
     paginationOptions: { limit: limit, page: page },
     relations: ['project','user','task']
   });
-  
- 
-
-
-
 };
 module.exports = {
     createResourceHistory,
@@ -96,5 +107,5 @@ module.exports = {
     getResourceHistoryByTaskId,
     getAllResourceHistory,
     getResourceHistoryByUserId
-    
+
   };

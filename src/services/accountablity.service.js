@@ -12,12 +12,17 @@ const accountablityRepository = dataSource.getRepository(Accountablity).extend({
 
 // .extend({ sortBy });
 //
-
-
 /**
- * Create a risk
- * @param {Object} actionBody
- * @returns {Promise<Action>}
+ * @module accountablity
+*/
+/**
+ * Creates and returns an accountability instance for a given AAA instance
+ * @function
+ * @param {Object} accBody - The body of the accountability instance
+ * @param {string} accBody.description - The description of the accountability
+ * @param {number} accBody.responsiblePersonId - The ID of the responsible person
+ * @param {number} afterActionAnalysisId - The ID of the AAA instance
+ * @returns {Promise<Object>} - The created accountability instance with its related entities
  */
 const createAccountablity = async (accBody, afterActionAnalysisId) => {
 
@@ -48,15 +53,13 @@ const createAccountablity = async (accBody, afterActionAnalysisId) => {
 
 }
 /**
- * Query for users
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Queries and returns the accountability instances that match the options
+ * @function
+ * @var {Object} options - The options object for the query
+ * @var {number} options.limit - The maximum number of results to return
+ * @var {number} options.page - The page number of the results
+ * @var {string} [options.sortBy] - The optional sorting option for the results
  */
-
 const queryAccountablities = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
@@ -67,14 +70,11 @@ const queryAccountablities = async (filter, options) => {
         paginationOptions: { limit: limit, page: page },
     });
 };
-
-
-
-
 /**
- * Get risk by id
- * @param {ObjectId} id
- * @returns {Promise<Action>}
+ * Gets and returns an accountability instance by its ID
+ * @function
+ * @param {number} id - The ID of the accountability instance
+ * @returns {Promise<Object>} - The accountability instance with its related entity
  */
 const getAccountablityById = async (id) => {
     console.log(id, "nnbgid")
@@ -84,12 +84,12 @@ const getAccountablityById = async (id) => {
             relations: ['responsiblePerson']
         });
 };
-
 /**
- * Update user by id
- * @param {ObjectId} postId
- * @param {Object} updateBody
- * @returns {Promise<Action>}
+ * Updates and returns an accountability instance by its ID and the update body
+ * @function
+ * @param {number} accId - The ID of the accountability instance to update
+ * @param {Object} updateBody - The update body for the accountability instance
+ * @returns {Promise<Object>} - The updated accountability instance with its related entity
  */
 const updateAccountablityById = async (accId, updateBody) => {
     const accExist = await getAccountablityById(accId);
@@ -99,11 +99,11 @@ const updateAccountablityById = async (accId, updateBody) => {
     await accountablityRepository.update({ id: accId }, updateBody);
     return await getAccountablityById(actionId);
 };
-
 /**
- * Delete user by id
- * @param {ObjectId} actionId
- * @returns {Promise<Action>}
+ * Deletes an accountability instance by its ID
+ * @function
+ * @param {number} accId - The ID of the accountability instance to delete
+ * @returns {Promise<Object>} - The deleted accountability instance
  */
 const deleteAccountablityById = async (accId) => {
     const accExist = await getAccountablityById(accId);

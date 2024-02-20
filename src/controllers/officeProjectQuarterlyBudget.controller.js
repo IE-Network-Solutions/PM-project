@@ -3,6 +3,18 @@ const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { OfficeQuarterlyBudgetService, officeBudgetSessionService } = require('../services');
+/**
+ * @module OfficeProjecQuarterlyBudget
+ */
+
+/**
+ * Creates a new quarterly budget.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the created quarterly budget.
+ * @throws {ApiError} - Throws an error if the session doesn't exist or if the budget already exists.
+ */
 const createQuarterlyBudget = catchAsync(async (req, res) => {
 
     let date = {}
@@ -31,17 +43,38 @@ const createQuarterlyBudget = catchAsync(async (req, res) => {
     res.status(httpStatus.CREATED).json(monthlyBudget);
 });
 
-
-
+/**
+ * Updates an existing quarterly budget.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the updated quarterly budget.
+ */
 const updateQuarterlyBudget = catchAsync(async (req, res) => {
     const monthlyBudget = await OfficeQuarterlyBudgetService.updateQuarterlyBudget(req.params.id, req.body);
     res.status(httpStatus.CREATED).json(monthlyBudget);
 });
 
+/**
+ * Deletes a quarterly budget by ID.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with a success status after deletion.
+ */
 const DeleteQuarterlyBudget = catchAsync(async (req, res) => {
     const monthlyBudget = await OfficeQuarterlyBudgetService.DeleteQuarterlyBudget(req.params.id);
     res.status(httpStatus.CREATED).send(monthlyBudget);
 });
+
+/**
+ * Retrieves quarterly budget data for a specific month range and project.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the quarterly budget data for the specified project and month range.
+ * @throws {ApiError} - Throws an error if the session doesn't exist.
+ */
 const getQuarterlyBudgetByMonth = catchAsync(async (req, res) => {
     let month = {};
     month.from = req.params.from;
@@ -62,12 +95,25 @@ const getQuarterlyBudgetByMonth = catchAsync(async (req, res) => {
     res.status(200).json(monthlyBudgetData);
 });
 
-
+/**
+ * Requests approval for the quarterly budget.
+ * @function
+ * @param {string} req.params.id - The ID of the budget to request approval for.
+ * @returns {Promise<Object>} - A promise that resolves to the monthly budget data.
+ * @throws {Error} - If there's an issue with the approval request.
+ */
 const RequestApprovalQuarterlyBudget = catchAsync(async (req, res) => {
     const monthlyBudget = await OfficeQuarterlyBudgetService.RequestApprovalQuarterlyBudget(req.params.id);
     res.status(httpStatus.CREATED).json(monthlyBudget);
 });
 
+/**
+ * Retrieves all quarterly budgets associated with a specific project.
+ * @function
+ * @param {string} req.params.id - The ID of the project.
+ * @returns {Promise<Object[]>} - A promise that resolves to an array of quarterly budget data.
+ * @throws {Error} - If there's an issue fetching the budgets.
+ */
 const getAllQuarterlyBudgetByProject = catchAsync(async (req, res) => {
     const monthlyBudget = await OfficeQuarterlyBudgetService.getAllQuarterlyBudgetByProject(req.params.id);
     res.status(httpStatus.CREATED).json(monthlyBudget);

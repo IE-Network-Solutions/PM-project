@@ -8,27 +8,31 @@ const findAll = require('./Plugins/findAll');
 const individualLLRepository = dataSource.getRepository(IndividualLL).extend({ findAll, sortBy });
 // .extend({ sortBy });
 //
-
 /**
- * Create a risk
- * @param {Object} userBody
- * @returns {Promise<IndividualLL>}
+ * @module individualLL
+ */
+/**
+ * Creates an individual life lesson record.
+ * @async
+ * @function
+ * @param {Object} individualLLBody - The body containing individual life lesson data.
+ * @returns {Promise<Object>} - A promise resolving to the saved individual life lesson record.
  */
 const createIndividualLL = async (individualLLBody) => {
     const result = individualLLRepository.create(individualLLBody);
     return await individualLLRepository.save(result);
 };
-
 /**
- * Query for users
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves evaluation data, including checklist and todo evaluation details.
+ * @async
+ * @function
+ * @param {Object} filter - The filter criteria for querying individual life lessons.
+ * @param {Object} options - Additional options for pagination and sorting.
+ * @param {number} options.limit - The maximum number of records to retrieve.
+ * @param {number} options.page - The page number for pagination.
+ * @param {string} options.sortBy - The field to sort the results by.
+ * @returns {Promise<{ evalution: any[], todoEvalution: any[] }>} - A promise resolving to an object containing evaluation and todo evaluation arrays.
  */
-
 const queryIndividualLLs = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
@@ -40,11 +44,12 @@ const queryIndividualLLs = async (filter, options) => {
     });
 
 };
-
 /**
- * Get risk by id
- * @param {ObjectId} id
- * @returns {Promise<IndividualLL>}
+ * Retrieves an individual life lesson record by its ID.
+ * @async
+ * @function
+ * @param {number} id - The ID of the individual life lesson.
+ * @returns {Promise<Object>} - A promise resolving to the retrieved individual life lesson record.
  */
 const getIndividualLLById = async (id) => {
     return await individualLLRepository.findOne({
@@ -52,13 +57,16 @@ const getIndividualLLById = async (id) => {
         relations: ['lessonLearned']
     });
 };
-
 /**
- * Update user by id
- * @param {ObjectId} issueId
- * @param {Object} updateBody
- * @returns {Promise<IndividualLL>}
+ * Updates an individual life lesson record by its ID.
+ * @async
+ * @function
+ * @param {number} individualLLId - The ID of the individual life lesson.
+ * @param {Object} updateBody - The data to update the individual life lesson.
+ * @throws {ApiError} - Throws an error if the individual lesson is not found.
+ * @returns {Promise<Object>} - A promise resolving to the updated individual life lesson record.
  */
+
 const updateIndividualLLById = async (individualLLId, updateBody) => {
     const result = await getIndividualLLById(individualLLId);
     if (!result) {
@@ -67,11 +75,13 @@ const updateIndividualLLById = async (individualLLId, updateBody) => {
     await individualLLRepository.update({ id: individualLLId }, updateBody);
     return await getIndividualLLById(individualLLId);
 };
-
 /**
- * Delete user by id
- * @param {ObjectId} issueId
- * @returns {Promise<IndividualLL>}
+ * Deletes an individual life lesson record by its ID.
+ * @async
+ * @function
+ * @param {number} individualLLId - The ID of the individual life lesson.
+ * @throws {ApiError} - Throws an error if the individual lesson is not found.
+ * @returns {Promise<void>} - A promise resolving after successful deletion.
  */
 const deleteIndividualLLById = async (individualLLId) => {
     const result = await getIndividualLLById();

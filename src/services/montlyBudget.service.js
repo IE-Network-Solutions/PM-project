@@ -27,25 +27,33 @@ const officeQuarterlyBudgetRepository = dataSource.getRepository(OfficeQuarterly
   sortBy,
 });
 /**
- * Query for budget
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * @module monthlyBudget
  */
-
+/**
+ * Retrieves monthly budgets from the repository.
+ *
+ * @function
+ * @returns {Promise<Array>} An array of monthly budgets with associated approval stages.
+ */
 const getMonthlyBudgets = async () => {
   return await montlyBudgetRepository.find({
     relations: ['approvalStage'],
   });
 };
-
 /**
- * Create a montly budget
- * @param {Object} budgetBody
- * @returns {Promise<Project>}
+ * Creates a new monthly budget.
+ *
+ * @function
+ * @param {Object} monthlyBudgetBody - The monthly budget data.
+ * @param {string} monthlyBudgetBody.from - Start date of the budget.
+ * @param {string} monthlyBudgetBody.to - End date of the budget.
+ * @param {Array} monthlyBudgetBody.budgetsData - Array of budget data.
+ * @param {string} monthlyBudgetBody.budgetsData.projectId - ID of the associated project.
+ * @param {number} monthlyBudgetBody.budgetsData.currencyId - ID of the currency.
+ * @param {number} monthlyBudgetBody.budgetsData.budgetCategoryId - ID of the budget category.
+ * @param {number} monthlyBudgetBody.budgetsData.budgetAmount - Amount allocated for the budget.
+ * @param {string|null} monthlyBudgetBody.budgetsData.userId - Optional user ID associated with the budget.
+ * @returns {Promise<Object|string>} A newly created monthly budget object or an error message.
  */
 const createMontlyBudget = async (monthlyBudgetBody) => {
   const moduleName = "MonthlyBudget";
@@ -108,6 +116,7 @@ const createMontlyOfficeBudget = async (monthlyBudgetBody) => {
               throw new ApiError(httpStatus.FORBIDDEN, 'Insufficient remaining amount. Cannot create monthly budget');
 
             }
+
             // Update remaining_amount by subtracting budgetAmount
             existingBudget.remaining_amount -= newBudget.budgetAmount;
           }
@@ -128,8 +137,15 @@ const createMontlyOfficeBudget = async (monthlyBudgetBody) => {
   }
 
 };
-
-
+/**
+ * Retrieves monthly budgets based on the specified date range.
+ *
+ * @function
+ * @param {Object} month - An object representing the date range.
+ * @param {string} month.from - Start date of the budget.
+ * @param {string} month.to - End date of the budget.
+ * @returns {Promise<Array>} An array of monthly budgets with associated approval stages and comments.
+ */
 const getMonthlyBudgetByMonthGroup = async (month) => {
   const monthlyBudget = await montlyBudgetRepository.findOne({ where: { from: month.from, to: month.to, isOffice: false }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments'] });
   console.log(monthlyBudget, "monthlyBudgetmonthlyBudget")
@@ -144,7 +160,14 @@ const getMonthlyBudgetByMonthGroup = async (month) => {
   // };
   return monthlyBudget;
 }
-
+/**
+ * Retrieves monthly budgets grouped by project.
+ *
+ * @function
+ * @param {Object} month - An object representing the date range.
+ * @param {string} month.year - The year for which budgets are retrieved.
+ * @returns {Promise<Object>} An object containing monthly budgets grouped by project.
+ */
 
 const getMonthlyBudgetByMonthGroupOfficeProject = async (month, ProjectId) => {
   const monthlyBudget = await montlyBudgetRepository.find({ where: { from: month.from, to: month.to, isOffice: true }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments'] });
@@ -157,6 +180,7 @@ const getMonthlyBudgetByMonthGroupOfficeProject = async (month, ProjectId) => {
   };
   return returnedBudget
 }
+
 const getMonthlyBudgetByProjectGroup = async (month) => {
   // const month = month.month
   const year = month.year
@@ -183,6 +207,14 @@ const getMonthlyBudgetByProjectGroup = async (month) => {
   return groupedData;
 
 }
+/**
+ * Retrieves monthly budgets grouped by project for the specified year.
+ *
+ * @function
+ * @param {Object} month - An object representing the date range.
+ * @param {string} month.year - The year for which budgets are retrieved.
+ * @returns {Promise<Object>} An object containing monthly budgets grouped by project.
+ */
 const getMonthlyBudgetByProjectGroupoffice = async (month) => {
   // const month = month.month
   const year = month.year
@@ -220,11 +252,25 @@ const getMonthlyBudgetByProjectGroupoffice = async (month) => {
   return groupedData;
 
 }
-
+/**
+ * Updates an existing monthly budget.
+ *
+ * @function
+ * @param {string} id - The ID of the monthly budget to be updated.
+ * @param {Object} updatedData - The updated data for the monthly budget.
+ * @returns {Promise<Object>} The updated monthly budget object.
+ */
 const updateMonthlyBudget = async (id, updatedData) => {
   const monthlyBudget = await montlyBudgetRepository.update({ id: id }, updatedData);
   return await montlyBudgetRepository.findOne({ where: { id: id } });
 }
+/**
+ * Retrieves monthly budgets for a specific project.
+ *
+ * @function
+ * @param {string} projectId - The ID of the project.
+ * @returns {Promise<Array>} An array of monthly budgets associated with the project.
+ */
 const updateOfficeMonthlyBudget = async (id, updatedData) => {
   const budgetToBeUpdated = await montlyBudgetRepository.findOne({ where: { id: id } })
   let remmaing = 0

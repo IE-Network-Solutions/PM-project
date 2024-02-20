@@ -8,27 +8,31 @@ const findAll = require('./Plugins/findAll');
 const lessonLearnedRepository = dataSource.getRepository(LessonLearned).extend({ findAll, sortBy });
 // .extend({ sortBy });
 //
-
 /**
- * Create a risk
- * @param {Object} userBody
- * @returns {Promise<LessonLearned>}
+ * @module lessonLearned
+*/
+/**
+ * Creates a lesson learned record.
+ * @async
+ * @function
+ * @param {Object} LLBody - The data for the lesson learned.
+ * @returns {Promise<Object>} - A promise resolving to the saved lesson learned record.
  */
 const createLL = async (LLBody) => {
     const result = lessonLearnedRepository.create(LLBody);
     return await lessonLearnedRepository.save(result);
 };
-
 /**
- * Query for users
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves lesson learned data, including related individuals, comments, project, and department.
+ * @async
+ * @function
+ * @param {Object} filter - The filter criteria for querying lesson learned records.
+ * @param {Object} options - Additional options for pagination and sorting.
+ * @param {number} options.limit - The maximum number of records to retrieve.
+ * @param {number} options.page - The page number for pagination.
+ * @param {string} options.sortBy - The field to sort the results by.
+ * @returns {Promise<Object[]>} - A promise resolving to an array of lesson learned records.
  */
-
 const queryLLs = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
@@ -39,7 +43,13 @@ const queryLLs = async (filter, options) => {
         paginationOptions: { limit: limit, page: page },
     });
 };
-
+/**
+ * Retrieves lesson learned data related to a specific project.
+ * @async
+ * @function
+ * @param {number} id - The ID of the project.
+ * @returns {Promise<Object[]>} - A promise resolving to an array of lesson learned records associated with the project.
+ */
 const getAllLLByProjectId = async (id) => {
     return await lessonLearnedRepository.find(
         {
@@ -47,7 +57,13 @@ const getAllLLByProjectId = async (id) => {
             relations: ['individuals', 'llComments', 'project', 'department']
         });
 };
-
+/**
+ * Retrieves lesson learned data related to a specific department.
+ * @async
+ * @function
+ * @param {number} id - The ID of the department.
+ * @returns {Promise<Object[]>} - A promise resolving to an array of lesson learned records associated with the department.
+ */
 const getAllLLByDepartmentId = async (id) => {
     return await lessonLearnedRepository.find(
         {
@@ -55,11 +71,11 @@ const getAllLLByDepartmentId = async (id) => {
             relations: ['individuals', 'llComments', 'project', 'department']
         });
 };
-
 /**
- * Get risk by id
- * @param {ObjectId} id
- * @returns {Promise<LessonLearned>}
+ * Retrieves a lesson learned record by its ID.
+ * @async
+ * @param {number} id - The ID of the lesson learned.
+ * @returns {Promise<Object>} - A promise resolving to the retrieved lesson learned record.
  */
 const getLLById = async (id) => {
     return await lessonLearnedRepository.findOne(
@@ -68,7 +84,13 @@ const getLLById = async (id) => {
             relations: ['individuals', 'llComments', 'project', 'department']
         });
 };
-
+/**
+ * Returns all lesson learned entries associated with a given project
+ * @function
+ * @param {Object} filter - The filter criteria.
+ * @param {Object} options - Additional options.
+ * @returns {Promise<Array>} - A promise that resolves to an array of grouped results.
+ */
 const groupLLByProject = async (filter, options) => {
     const groupedResults = await lessonLearnedRepository
         .createQueryBuilder('ll')
@@ -97,10 +119,12 @@ const groupLLByProject = async (filter, options) => {
 };
 
 /**
- * Update user by id
- * @param {ObjectId} issueId
- * @param {Object} updateBody
- * @returns {Promise<LessonLearned>}
+ * Updates a lesson learned entry using the ID
+ * @function
+ * @param {string} LLId - The ID of the lesson learned.
+ * @param {Object} updateBody - The update data for the lesson learned.
+ * @throws {ApiError} Throws an error if the lesson learned is not found.
+ * @returns {Promise<Object>} - A promise that resolves to the updated lesson learned.
  */
 const updateLLById = async (LLId, updateBody) => {
     const result = await getLLById(LLId);
@@ -110,11 +134,12 @@ const updateLLById = async (LLId, updateBody) => {
     await lessonLearnedRepository.update({ id: LLId }, updateBody);
     return await getLLById(LLId);
 };
-
 /**
- * Delete user by id
- * @param {ObjectId} issueId
- * @returns {Promise<LessonLearned>}
+ * Deletes a lesson learned entry uing its ID
+ * @function
+ * @param {string} LLId - The ID of the lesson learned.
+ * @throws {ApiError} Throws an error if the lesson learned is not found.
+ * @returns {Promise<Object>} - A promise that resolves when the lesson learned is successfully deleted.
  */
 const deleteLLById = async (LLId) => {
     const result = await getLLById(LLId);
