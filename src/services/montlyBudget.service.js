@@ -135,12 +135,12 @@ const createMontlyOfficeBudget = async (monthlyBudgetBody) => {
   else {
     throw new ApiError(httpStatus.NOT_FOUND, 'quarterly budget For this project is not found');
   }
-
   // Create a new monthly budget with the original monthlyBudgetBody
   const newMonthlyBudget = montlyBudgetRepository.create(monthlyBudgetBody);
   await montlyBudgetRepository.save(newMonthlyBudget);
 
   return newMonthlyBudget;
+
 };
 /**
  * Retrieves monthly budgets based on the specified date range.
@@ -165,6 +165,19 @@ const getMonthlyBudgetByMonthGroup = async (month) => {
   // };
   return monthlyBudget;
 }
+
+const getMonthlyBudgetByMonthGroupOfficeProject = async (month, ProjectId) => {
+  const monthlyBudget = await montlyBudgetRepository.find({ where: { from: month.from, to: month.to, isOffice: true }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments'] });
+  let returnedBudget = {}
+
+  for (const budget of monthlyBudget) {
+    if (budget.budgetsData[0].projectId === ProjectId) {
+      returnedBudget = budget
+    }
+  };
+  return returnedBudget
+}
+
 /**
  * Retrieves monthly budgets grouped by project.
  *
@@ -256,6 +269,61 @@ const updateMonthlyBudget = async (id, updatedData) => {
   const monthlyBudget = await montlyBudgetRepository.update({ id: id }, updatedData);
   return await montlyBudgetRepository.findOne({ where: { id: id } });
 }
+
+const updateOfficeMonthlyBudget = async (id, updatedData) => {
+  const budgetToBeUpdated = await montlyBudgetRepository.findOne({ where: { id: id } })
+  let remmaing = 0
+  if (budgetToBeUpdated) {
+    for (const existingBudget of budgetToBeUpdated.budgetsData) {
+      for (const newBudget of updatedData.budgetsData) {
+        if (
+          existingBudget && newBudget &&
+          existingBudget.currencyId === newBudget.currencyId &&
+          existingBudget.budgetCategoryId === newBudget.budgetCategoryId
+        ) {
+          remmaing = existingBudget.budgetAmount - newBudget.budgetAmount
+
+        }
+
+      }
+    }
+    const existingQuarterlyBudget = await officeQuarterlyBudgetRepository
+      .createQueryBuilder('office_quarterly_budgets')
+      .leftJoinAndSelect('office_quarterly_budgets.approvalStage', 'approvalStage')
+      .leftJoinAndSelect('approvalStage.role', 'role')
+      .leftJoinAndSelect('office_quarterly_budgets.officeQuarterlyBudgetComment', 'officeQuarterlyBudgetComment')
+      .where('office_quarterly_budgets.from <= :fromDate', { fromDate: fromDate })
+      .andWhere('office_quarterly_budgets.to >= :toDate', { toDate: toDate })
+      .andWhere('office_quarterly_budgets.projectId >= :projectId', { projectId: project.id })
+      .andWhere('office_quarterly_budgets.isDeleted = :isDeleted', { isDeleted: false })
+
+      .getOne();
+    if (existingQuarterlyBudget) {
+
+      for (const existingBudget of existingQuarterlyBudget.budgetsData) {
+        for (const newBudget of updatedData.budgetsData) {
+          if (
+            existingBudget && newBudget &&  // Check if both existingBudget and newBudget are defined
+            existingBudget.currencyId === newBudget.currencyId &&
+            existingBudget.budgetCategoryId === newBudget.budgetCategoryId
+          ) {
+            // Check if remaining_amount is less than budgetAmount
+            if (existingBudget.remaining_amount < newBudget.budgetAmount) {
+              throw new ApiError(httpStatus.FORBIDDEN, 'Insufficient remaining amount. Cannot create monthly budget');
+
+            }
+            // Update remaining_amount by subtracting budgetAmount
+            existingBudget.remaining_amount -= remmaing;
+          }
+        }
+      }
+    }
+
+    const monthlyBudget = await montlyBudgetRepository.update({ id: id }, updatedData);
+    return await montlyBudgetRepository.findOne({ where: { id: id } });
+  }
+}
+
 /**
  * Retrieves monthly budgets for a specific project.
  *

@@ -55,6 +55,11 @@ const updateMonthlyBudget = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).json(monthlyBudget);
 });
 
+const updateOfficeMonthlyBudget = catchAsync(async (req, res) => {
+  const monthlyBudget = await monthlyBudgetService.updateOfficeMonthlyBudget(req.params.id, req.body);
+  res.status(httpStatus.CREATED).json(monthlyBudget);
+});
+
 /**
  * Retrieves monthly budget data for a specific month range.
  * @function
