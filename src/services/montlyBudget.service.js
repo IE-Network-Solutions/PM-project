@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Budget, BudgetGroup, Task, monthlyBudget, ApprovalStage, ApprovalModule, OfficeQuarterlyBudget} = require('../models');
+const { Budget, BudgetGroup, Task, monthlyBudget, ApprovalStage, ApprovalModule, OfficeQuarterlyBudget } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -60,8 +60,28 @@ const createMontlyBudget = async (monthlyBudgetBody) => {
   const level = 1;
   const fromDate = monthlyBudgetBody.from;
   const toDate = monthlyBudgetBody.to;
+  const approvalStage = await approvalStageRepository
+    .createQueryBuilder('approval_stage')
+    .leftJoin('approval_stage.approvalModule', 'approvalModule')
+    .where('approvalModule.moduleName = :moduleName', { moduleName })
+    .andWhere('approval_stage.level = :level', { level })
+    .getOne();
 
-  const project = await projectService.getProject(monthlyBudgetBody.budgetsData[0].projectId);
+  monthlyBudgetBody.approvalStage = approvalStage;
+  // Create a new monthly budget with the original monthlyBudgetBody
+  const newMonthlyBudget = montlyBudgetRepository.create(monthlyBudgetBody);
+  await montlyBudgetRepository.save(newMonthlyBudget);
+
+  return newMonthlyBudget;
+};
+const createMontlyOfficeBudget = async (monthlyBudgetBody) => {
+  console.log(monthlyBudgetBody, "finalmonthlyBudgetBody")
+  const moduleName = "MonthlyBudget";
+  const level = 1;
+  const fromDate = new Date(monthlyBudgetBody.from);
+  const toDate = new Date(monthlyBudgetBody.to);
+  const projectId = monthlyBudgetBody.budgetsData[0].projectId
+  const project = await projectService.getProject(projectId);
 
   const approvalStage = await approvalStageRepository
     .createQueryBuilder('approval_stage')
@@ -71,17 +91,19 @@ const createMontlyBudget = async (monthlyBudgetBody) => {
     .getOne();
 
   monthlyBudgetBody.approvalStage = approvalStage;
-
-
-
-  const existingMonthlyBudget = await officeQuarterlyBudgetRepository.findOne({
-    where: { from: fromDate, to: toDate, isDeleted: false },
-    relations: ['approvalStage', 'approvalStage.role', 'officeQuarterlyBudgetComment']
-  });
-
-  if (project.isOffice) {
+  const existingMonthlyBudget = await officeQuarterlyBudgetRepository
+    .createQueryBuilder('office_quarterly_budgets')
+    .leftJoinAndSelect('office_quarterly_budgets.approvalStage', 'approvalStage')
+    .leftJoinAndSelect('approvalStage.role', 'role')
+    .leftJoinAndSelect('office_quarterly_budgets.officeQuarterlyBudgetComment', 'officeQuarterlyBudgetComment')
+    .where('office_quarterly_budgets.project = :projectId', { projectId: projectId })
+    .andWhere('office_quarterly_budgets.from <= :fromDate', { fromDate: fromDate })
+    .andWhere('office_quarterly_budgets.to >= :toDate', { toDate: toDate })
+    .andWhere('office_quarterly_budgets.isDeleted = :isDeleted', { isDeleted: false })
+    .getOne();
+  if (project.isOffice && existingMonthlyBudget.projectId === projectId) {
     monthlyBudgetBody.isOffice = true;
-    if (existingMonthlyBudget && existingMonthlyBudget.budgetsData && Array.isArray(existingMonthlyBudget.budgetsData)) {
+    if (existingMonthlyBudget && existingMonthlyBudget.budgetsData) {
       for (const existingBudget of existingMonthlyBudget.budgetsData) {
         for (const newBudget of monthlyBudgetBody.budgetsData) {
           if (
@@ -91,7 +113,8 @@ const createMontlyBudget = async (monthlyBudgetBody) => {
           ) {
             // Check if remaining_amount is less than budgetAmount
             if (existingBudget.remaining_amount < newBudget.budgetAmount) {
-              return "Insufficient remaining amount. Cannot create monthly budget.";
+              throw new ApiError(httpStatus.FORBIDDEN, 'Insufficient remaining amount. Cannot create monthly budget');
+
             }
 
             // Update remaining_amount by subtracting budgetAmount
@@ -101,17 +124,18 @@ const createMontlyBudget = async (monthlyBudgetBody) => {
       }
       // Save the updated existingMonthlyBudget
       await officeQuarterlyBudgetRepository.save(existingMonthlyBudget);
+      const newMonthlyBudget = montlyBudgetRepository.create(monthlyBudgetBody);
+      await montlyBudgetRepository.save(newMonthlyBudget);
+      return newMonthlyBudget;
     } else {
-      console.error("existingMonthlyBudget or existingMonthlyBudget.budgetsData is undefined or not an array");
+      throw new ApiError(httpStatus.NOT_FOUND, 'quarterly budget is not found');
     }
-    montlyBudgetBody.isOffice = true;
+
+  }
+  else {
+    throw new ApiError(httpStatus.NOT_FOUND, 'quarterly budget For this project is not found');
   }
 
-  // Create a new monthly budget with the original monthlyBudgetBody
-  const newMonthlyBudget = montlyBudgetRepository.create(monthlyBudgetBody);
-  await montlyBudgetRepository.save(newMonthlyBudget);
-
-  return newMonthlyBudget;
 };
 /**
  * Retrieves monthly budgets based on the specified date range.
@@ -123,7 +147,7 @@ const createMontlyBudget = async (monthlyBudgetBody) => {
  * @returns {Promise<Array>} An array of monthly budgets with associated approval stages and comments.
  */
 const getMonthlyBudgetByMonthGroup = async (month) => {
-  const monthlyBudget = await montlyBudgetRepository.find({ where: { from: month.from, to: month.to }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments'] });
+  const monthlyBudget = await montlyBudgetRepository.findOne({ where: { from: month.from, to: month.to, isOffice: false }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments'] });
   console.log(monthlyBudget, "monthlyBudgetmonthlyBudget")
   // for (const budget of monthlyBudget.budgetsData) {
 
@@ -144,6 +168,19 @@ const getMonthlyBudgetByMonthGroup = async (month) => {
  * @param {string} month.year - The year for which budgets are retrieved.
  * @returns {Promise<Object>} An object containing monthly budgets grouped by project.
  */
+
+const getMonthlyBudgetByMonthGroupOfficeProject = async (month, ProjectId) => {
+  const monthlyBudget = await montlyBudgetRepository.find({ where: { from: month.from, to: month.to, isOffice: true }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments'] });
+  let returnedBudget = {}
+
+  for (const budget of monthlyBudget) {
+    if (budget.budgetsData[0].projectId === ProjectId) {
+      returnedBudget = budget
+    }
+  };
+  return returnedBudget
+}
+
 const getMonthlyBudgetByProjectGroup = async (month) => {
   // const month = month.month
   const year = month.year
@@ -234,6 +271,61 @@ const updateMonthlyBudget = async (id, updatedData) => {
  * @param {string} projectId - The ID of the project.
  * @returns {Promise<Array>} An array of monthly budgets associated with the project.
  */
+const updateOfficeMonthlyBudget = async (id, updatedData) => {
+  const budgetToBeUpdated = await montlyBudgetRepository.findOne({ where: { id: id } })
+  let remmaing = 0
+  if (budgetToBeUpdated) {
+    for (const existingBudget of budgetToBeUpdated.budgetsData) {
+      for (const newBudget of updatedData.budgetsData) {
+        if (
+          existingBudget && newBudget &&
+          existingBudget.currencyId === newBudget.currencyId &&
+          existingBudget.budgetCategoryId === newBudget.budgetCategoryId
+        ) {
+          remmaing = existingBudget.budgetAmount - newBudget.budgetAmount
+
+        }
+
+      }
+    }
+    const existingQuarterlyBudget = await officeQuarterlyBudgetRepository
+      .createQueryBuilder('office_quarterly_budgets')
+      .leftJoinAndSelect('office_quarterly_budgets.approvalStage', 'approvalStage')
+      .leftJoinAndSelect('approvalStage.role', 'role')
+      .leftJoinAndSelect('office_quarterly_budgets.officeQuarterlyBudgetComment', 'officeQuarterlyBudgetComment')
+      .where('office_quarterly_budgets.from <= :fromDate', { fromDate: fromDate })
+      .andWhere('office_quarterly_budgets.to >= :toDate', { toDate: toDate })
+      .andWhere('office_quarterly_budgets.projectId >= :projectId', { projectId: project.id })
+      .andWhere('office_quarterly_budgets.isDeleted = :isDeleted', { isDeleted: false })
+
+      .getOne();
+    if (existingQuarterlyBudget) {
+
+      for (const existingBudget of existingQuarterlyBudget.budgetsData) {
+        for (const newBudget of updatedData.budgetsData) {
+          if (
+            existingBudget && newBudget &&  // Check if both existingBudget and newBudget are defined
+            existingBudget.currencyId === newBudget.currencyId &&
+            existingBudget.budgetCategoryId === newBudget.budgetCategoryId
+          ) {
+            // Check if remaining_amount is less than budgetAmount
+            if (existingBudget.remaining_amount < newBudget.budgetAmount) {
+              throw new ApiError(httpStatus.FORBIDDEN, 'Insufficient remaining amount. Cannot create monthly budget');
+
+            }
+            // Update remaining_amount by subtracting budgetAmount
+            existingBudget.remaining_amount -= remmaing;
+          }
+        }
+      }
+    }
+
+    const monthlyBudget = await montlyBudgetRepository.update({ id: id }, updatedData);
+    return await montlyBudgetRepository.findOne({ where: { id: id } });
+  }
+}
+
+
 const getBudgetByProject = async (projectId) => {
   const activeBudget = []
   const inActiveBudget = []
@@ -277,5 +369,8 @@ module.exports = {
   updateMonthlyBudget,
   getMonthlyBudgetByProjectGroup,
   getMonthlyBudgetByProjectGroupoffice,
-  getBudgetByProject
+  getBudgetByProject,
+  createMontlyOfficeBudget,
+  getMonthlyBudgetByMonthGroupOfficeProject,
+  updateOfficeMonthlyBudget
 }

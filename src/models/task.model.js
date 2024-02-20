@@ -24,6 +24,8 @@ class Task extends Base {
     this.summarytaskId = { type: 'uuid', nullable: true };
     this.startVariance = { type: 'int', nullable: true };
     this.finishVariance = { type: 'int', nullable: true };
+    this.duration = { type: 'int', nullable: true };
+    this.actualDuration = { type: 'int', nullable: true };
   }
 }
 

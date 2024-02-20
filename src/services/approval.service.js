@@ -253,7 +253,7 @@ const getCurrentApprover = async (moduleName, moduleId) => {
  */
 const approve = async (moduleName, moduleId) => {
   const approvalModule = await approvalModuleRepository.findOne({ where: { moduleName: moduleName } });
-
+  console.log(approvalModule, "approvalModule")
   let updatedModule;
   if (!approvalModule) {
     throw new ApiError(httpStatus.NOT_FOUND, 'approval module does not exist');
@@ -340,12 +340,14 @@ const approve = async (moduleName, moduleId) => {
       updatedModule = await monthlyBudgetRepostory.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
     }
   } else if (approvalModule.moduleName == 'OfficeProjectQuarterlyBudget') {
+
     const moduleData = await officeQuarterlyBudgetRepostory.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
     if (!moduleData) {
       throw new ApiError(httpStatus.NOT_FOUND, 'approval module(monthly budget) does not exist');
     }
     if (approvalModule.max_level == moduleData.approvalStage.level) {
       // approve
+
       await officeQuarterlyBudgetRepostory.update({ id: moduleId }, { approved: true });
       updatedModule = await officeQuarterlyBudgetRepostory.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
       // Rabit Mq Producer
@@ -353,6 +355,7 @@ const approve = async (moduleName, moduleId) => {
       // publishToRabbit('project.budget',approvedByGroup)
       // console.log(approvedByGroup)
     } else {
+
       level = moduleData.approvalStage.level + 1;
       const approvalStage = await approvalStageRepository
         .createQueryBuilder('approval_stage')

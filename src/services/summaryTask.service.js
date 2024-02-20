@@ -27,6 +27,7 @@ const taskRepository = dataSource.getRepository(Task).extend({
  * @returns {Promise<Array<Object>>} A Promise that resolves with an array of created summary tasks.
  */
 const createSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
+  console.log(taskBody, "whyy idont")
   const allTasks = [];
   if (taskBody?.length !== 0) {
     await Promise.all(
