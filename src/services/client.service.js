@@ -8,8 +8,8 @@ const findAll = require('./Plugins/findAll');
 
 const clientRepository = dataSource.getRepository(Client).extend({ findAll, sortBy });
 /**
- * @module client
- */
+ * @module Client
+
 /**
  * Retrieves clients based on filter criteria and options.
  *

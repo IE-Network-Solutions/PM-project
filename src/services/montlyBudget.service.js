@@ -135,6 +135,11 @@ const createMontlyOfficeBudget = async (monthlyBudgetBody) => {
   else {
     throw new ApiError(httpStatus.NOT_FOUND, 'quarterly budget For this project is not found');
   }
+  // Create a new monthly budget with the original monthlyBudgetBody
+  const newMonthlyBudget = montlyBudgetRepository.create(monthlyBudgetBody);
+  await montlyBudgetRepository.save(newMonthlyBudget);
+
+  return newMonthlyBudget;
 
 };
 /**
@@ -160,14 +165,6 @@ const getMonthlyBudgetByMonthGroup = async (month) => {
   // };
   return monthlyBudget;
 }
-/**
- * Retrieves monthly budgets grouped by project.
- *
- * @function
- * @param {Object} month - An object representing the date range.
- * @param {string} month.year - The year for which budgets are retrieved.
- * @returns {Promise<Object>} An object containing monthly budgets grouped by project.
- */
 
 const getMonthlyBudgetByMonthGroupOfficeProject = async (month, ProjectId) => {
   const monthlyBudget = await montlyBudgetRepository.find({ where: { from: month.from, to: month.to, isOffice: true }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments'] });
@@ -181,6 +178,14 @@ const getMonthlyBudgetByMonthGroupOfficeProject = async (month, ProjectId) => {
   return returnedBudget
 }
 
+/**
+ * Retrieves monthly budgets grouped by project.
+ *
+ * @function
+ * @param {Object} month - An object representing the date range.
+ * @param {string} month.year - The year for which budgets are retrieved.
+ * @returns {Promise<Object>} An object containing monthly budgets grouped by project.
+ */
 const getMonthlyBudgetByProjectGroup = async (month) => {
   // const month = month.month
   const year = month.year
@@ -264,13 +269,7 @@ const updateMonthlyBudget = async (id, updatedData) => {
   const monthlyBudget = await montlyBudgetRepository.update({ id: id }, updatedData);
   return await montlyBudgetRepository.findOne({ where: { id: id } });
 }
-/**
- * Retrieves monthly budgets for a specific project.
- *
- * @function
- * @param {string} projectId - The ID of the project.
- * @returns {Promise<Array>} An array of monthly budgets associated with the project.
- */
+
 const updateOfficeMonthlyBudget = async (id, updatedData) => {
   const budgetToBeUpdated = await montlyBudgetRepository.findOne({ where: { id: id } })
   let remmaing = 0
@@ -325,7 +324,13 @@ const updateOfficeMonthlyBudget = async (id, updatedData) => {
   }
 }
 
-
+/**
+ * Retrieves monthly budgets for a specific project.
+ *
+ * @function
+ * @param {string} projectId - The ID of the project.
+ * @returns {Promise<Array>} An array of monthly budgets associated with the project.
+ */
 const getBudgetByProject = async (projectId) => {
   const activeBudget = []
   const inActiveBudget = []

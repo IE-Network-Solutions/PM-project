@@ -42,21 +42,6 @@ const createMonthlyBudget = catchAsync(async (req, res) => {
   const monthlyBudget = await monthlyBudgetService.createMontlyBudget(req.body);
   res.status(httpStatus.CREATED).json(monthlyBudget);
 });
-const createOfficeMonthlyBudget = catchAsync(async (req, res) => {
-  let month = {};
-  month.from = req.body.from;
-  month.to = req.body.to;
-  const projectId = req.body.budgetsData[0].projectId
-
-  const monthlyBudgetData = await monthlyBudgetService.getMonthlyBudgetByMonthGroupOfficeProject(month, projectId);
-
-  if (Object.values(monthlyBudgetData).length !== 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'monthly budget already exist');
-  }
-
-  const monthlyBudget = await monthlyBudgetService.createMontlyOfficeBudget(req.body);
-  res.status(httpStatus.CREATED).json(monthlyBudget);
-});
 
 /**
  * Updates an existing monthly budget.
@@ -70,6 +55,11 @@ const updateMonthlyBudget = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).json(monthlyBudget);
 });
 
+const updateOfficeMonthlyBudget = catchAsync(async (req, res) => {
+  const monthlyBudget = await monthlyBudgetService.updateOfficeMonthlyBudget(req.params.id, req.body);
+  res.status(httpStatus.CREATED).json(monthlyBudget);
+});
+
 /**
  * Retrieves monthly budget data for a specific month range.
  * @function
@@ -78,11 +68,6 @@ const updateMonthlyBudget = catchAsync(async (req, res) => {
  * @returns {Promise<void>} - Resolves with the monthly budget data for the specified month range.
  * @throws {ApiError} - Throws an error if no monthly budget exists for the given range.
  */
-const updateOfficeMonthlyBudget = catchAsync(async (req, res) => {
-  const monthlyBudget = await monthlyBudgetService.updateOfficeMonthlyBudget(req.params.id, req.body);
-  res.status(httpStatus.CREATED).json(monthlyBudget);
-});
-
 const getMonthlyBudgetByMonth = catchAsync(async (req, res) => {
   let month = {};
   month.from = req.params.from;
