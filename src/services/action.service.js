@@ -77,8 +77,6 @@ const getActionById = async (id) => {
         });
 };
 
-JavaScript
-
 /**
  * Updates and returns an action instance by its ID and the update body
  * @function

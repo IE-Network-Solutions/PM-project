@@ -19,6 +19,10 @@ class Milestone extends Base {
     this.finishVariance = { type: 'int', nullable: true };
     this.actualStart = { type: 'date', nullable: true };
     this.actualFinish = { type: 'date', nullable: true };
+    this.start = { type: 'date', nullable: true }
+    this.finish = { type: 'date', nullable: true };
+    this.duration = { type: 'int', nullable: true };
+    this.actualDuration = { type: 'int', nullable: true };
 
   }
 }

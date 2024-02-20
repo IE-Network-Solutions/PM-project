@@ -143,5 +143,7 @@ module.exports = {
   getMonthlyBudgetByMonth,
   getMonthlyBudgetByMonthGroupedByProject,
   getMonthlyBudgetByMonthGroupedByProjectOfficeProject,
-  getMonthlyBudgetByProject
+  getMonthlyBudgetByProject,
+  createOfficeMonthlyBudget,
+  updateOfficeMonthlyBudget
 };

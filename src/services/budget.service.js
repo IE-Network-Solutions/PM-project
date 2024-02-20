@@ -201,6 +201,7 @@ const getBudgetGroupByCategory = async (from, to) => {
  */
 const getBudgetsOfProjects = async () => {
   const approval = false;
+  const isOffice = false
 
   const budgets = await budgetRepository
     .createQueryBuilder('budget')
@@ -215,6 +216,7 @@ const getBudgetsOfProjects = async () => {
     .leftJoin('budget.currency', 'currency')
     .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory', 'approvalStage', 'role', 'comments'])
     .where('group.approved = :approval', { approval })
+    .andWhere('budget.currency=:isOffice', { isOffice })
     .andWhere('group.approvalStage IS NOT NULL')
     .getMany();
 
