@@ -11,7 +11,7 @@ const budgetCategoryTypeRepository = dataSource.getRepository(budgetCategoryType
 });
 
 /**
- * @module budgetCategorieTypes
+ * @module budgetCategoryType
  */
 /**
  * Creates a budget category type.

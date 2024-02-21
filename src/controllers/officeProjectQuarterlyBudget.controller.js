@@ -4,7 +4,7 @@ const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { OfficeQuarterlyBudgetService, officeBudgetSessionService } = require('../services');
 /**
- * @module OfficeProjecQuarterlyBudget
+ * @module OfficeProjectQuarterlyBudget
  */
 
 /**

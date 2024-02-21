@@ -13,7 +13,7 @@ const accountablityRepository = dataSource.getRepository(Accountablity).extend({
 // .extend({ sortBy });
 //
 /**
- * @module accountablity
+ * @module accountability
 */
 /**
  * Creates and returns an accountability instance for a given AAA instance

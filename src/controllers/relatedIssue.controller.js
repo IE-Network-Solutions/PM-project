@@ -4,7 +4,7 @@ const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { relatedIssueService } = require('../services');
 /**
- * @module relatedIssue
+ * @module relatedIssues
  */
 /**
  * Creates a new related issue.
