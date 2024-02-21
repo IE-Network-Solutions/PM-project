@@ -1,6 +1,6 @@
 {
   "source": {
-    "include": ["./src/controllers", "./src/services"],
+    "include": ["./src/controllers", "./src/services", "./src/validations"],
     "exclude": ["node_modules"]
   },
   "plugins": ["plugins/markdown"],
