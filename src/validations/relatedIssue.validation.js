@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const { objectId } = require('./custom.validation');
 /**
- * @module relatedIssue
+ * @module relatedIssues
  */
 /**
  * Schema for creating a related issue.
