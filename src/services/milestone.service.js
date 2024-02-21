@@ -27,7 +27,7 @@ const summaryTaskRepository = dataSource.getRepository(SummaryTask).extend({
   sortBy,
 });
 /**
- * @module Milestone
+ * @module milestone
  */
 /**
  * Creates and saves milestones based on provided milestone data.
