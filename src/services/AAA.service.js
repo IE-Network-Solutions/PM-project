@@ -64,7 +64,7 @@ const queryAAAs = async (filter, options) => {
 };
 /**
  * Gets and returns an AAA instance by its ID
- * @funtion
+ * @function
  * @param {number} id - The ID of the AAA instance
  * @returns {Promise<Object>} - The AAA instance with its related entities
  */

@@ -67,7 +67,7 @@ const updateSessionBudget = async (budgetSessionId, updateBody) => {
 };
 /**
  * Retrieves a budget session by its start and end dates.
- * @fucntion
+ * @function
  * @param {object} Date - An object containing 'from' and 'to' properties representing the date range.
  * @param {string} Date.from - The start date of the range.
  * @param {string} Date.to - The end date of the range.

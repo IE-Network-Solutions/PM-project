@@ -54,7 +54,13 @@ const updateMonthlyBudget = catchAsync(async (req, res) => {
   const monthlyBudget = await monthlyBudgetService.updateMonthlyBudget(req.params.id, req.body);
   res.status(httpStatus.CREATED).json(monthlyBudget);
 });
-
+/**
+ * Updates an existing monthly budget for office.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the updated monthly budget.
+ */
 const updateOfficeMonthlyBudget = catchAsync(async (req, res) => {
   const monthlyBudget = await monthlyBudgetService.updateOfficeMonthlyBudget(req.params.id, req.body);
   res.status(httpStatus.CREATED).json(monthlyBudget);

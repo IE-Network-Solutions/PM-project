@@ -8,11 +8,11 @@ const { accountablityService } = require('../services');
  * @module accountability
  */
 /**
- * Create a new accountablity by associating with the AAA
+ * Create a new accountability by associating with the AAA
  * @function
  * @param {Object} req - Express request object
  * @param {Object} req.body - Request body
- * @param {Array} req.body.accountablities - Array of accountablity objects
+ * @param {Array} req.body.accountabilities - Array of accountability objects
  * @param {string} req.body.afterActionAnalysisId - The ID of the after action analysis
  * @param {Object} res - Express response object
  */
@@ -43,11 +43,11 @@ const getAccountablities = catchAsync(async (req, res) => {
 });
 
 /**
- * Get accountablity by ID
+ * Get accountability by ID
  * @function
  * @param {Object} req - Express request object
  * @param {Object} req.params - Route parameters
- * @param {string} req.params.accId - Accountablity ID
+ * @param {string} req.params.accId - Accountability ID
  * @param {Object} res - Express response object
  * @throws {ApiError}
  */
@@ -64,7 +64,7 @@ const getAccountablityById = catchAsync(async (req, res) => {
  * @function
  * @param {Object} req - Express request object
  * @param {Object} req.params - Route parameters
- * @param {string} req.params.accId - Accountablity ID
+ * @param {string} req.params.accId - Accountability ID
  * @param {Object} req.body - Request body
  * @param {Object} res - Express response object
  */

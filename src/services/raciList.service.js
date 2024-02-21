@@ -22,7 +22,7 @@ const raciListRepository = dataSource.getRepository(RaciList).extend({
  * @function
  * @param {Object} raciBody - Data representing the RACI list entry.
  *   - {string} name - The name of the RACI list.
- *   - {string} describtion - A description of the RACI list.
+ *   - {string} description - A description of the RACI list.
  * @throws {Error} - Throws an error if there's an issue creating the RACI list.
  * @returns {Promise<Object>} - A promise that resolves to the saved RACI list entry.
  */
