@@ -12,11 +12,15 @@ const AAADepartmentRepository = dataSource.getRepository(AAADepartment).extend({
 const DepartmentRepository = dataSource.getRepository(Department).extend({ findAll, sortBy });
 // .extend({ sortBy });
 //
-
 /**
- * Create a risk
- * @param {Object} userBody
- * @returns {Promise<AAA>}
+ * @module AAA
+ */
+/**
+ * Creates and saves an AAA instance and its related entities
+ * @function
+ * @param {Object} AAABody - The body of the AAA instance
+ * @param {Array<number>} [departments] - The optional array of department IDs
+ * @returns {Promise<Object>} - The created AAA instance with its related entities
  */
 const createAAA = async (AAABody, departments) => {
     let relatedIssues = AAABody.issueRelatesId;
@@ -38,17 +42,16 @@ const createAAA = async (AAABody, departments) => {
     }
     return await getAAAById(resultAAA.id);
 };
-
 /**
- * Query for users
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Queries and returns the AAA instances that match the filter and options
+ * @function
+ * @param {Object} filter - The filter object for the query
+ * @param {Object} options - The options object for the query
+ * @param {number} options.limit - The maximum number of results to return
+ * @param {number} options.page - The page number of the results
+ * @param {string} [options.sortBy] - The optional sorting option for the results
+ * @returns {Promise<Array<Object>>} - The array of AAA instances with their related entities
  */
-
 const queryAAAs = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
@@ -59,11 +62,11 @@ const queryAAAs = async (filter, options) => {
         paginationOptions: { limit: limit, page: page }
     });
 };
-
 /**
- * Get risk by id
- * @param {ObjectId} id
- * @returns {Promise<AAA>}
+ * Gets and returns an AAA instance by its ID
+ * @function
+ * @param {number} id - The ID of the AAA instance
+ * @returns {Promise<Object>} - The AAA instance with its related entities
  */
 const getAAAById = async (id) => {
     return await AAARepository.findOne({
@@ -74,7 +77,16 @@ const getAAAById = async (id) => {
         tableName: 'afterActionAnalysis'
     });
 };
-
+/**
+ * Queries and returns the AAA instances that match the filter and options
+ * @function
+ * @param {Object} filter - The filter object for the query
+ * @param {Object} options - The options object for the query
+ * @param {number} options.limit - The maximum number of results to return
+ * @param {number} options.page - The page number of the results
+ * @param {string} [options.sortBy] - The optional sorting option for the results
+ * @returns {Promise<Array<Object>>} - The array of AAA instances with their related entities
+ */
 const groupAAAByProject = async (filter, options) => {
     const groupedResults = await AAARepository
         .createQueryBuilder('aaa')
@@ -103,10 +115,13 @@ const groupAAAByProject = async (filter, options) => {
 };
 
 /**
- * Update user by id
- * @param {ObjectId} postId
- * @param {Object} updateBody
- * @returns {Promise<AAA>}
+ * Updates and returns an AAA instance by its ID and the update body
+ * @function
+ * @param {number} AAAId - The ID of the AAA instance to update
+ * @param {Object} updateBody - The update body for the AAA instance
+ * @param {Array<number>} [updateBody.issueRelatesId] - The optional array of related issue IDs
+ * @param {Array<number>} [updateBody.departments] - The optional array of department IDs
+ * @returns {Promise<Object>} - The updated AAA instance with its related entities
  */
 const updateAAAById = async (AAAId, updateBody) => {
 
@@ -147,11 +162,11 @@ const updateAAAById = async (AAAId, updateBody) => {
         return await getAAAById(checkAAAId.id);
     }
 };
-
 /**
- * Delete user by id
- * @param {ObjectId} riskId
- * @returns {Promise<AAA>}
+ * Deletes an AAA instance by its ID and its related entities
+ * @function
+ * @param {number} AAAId - The ID of the AAA instance to delete
+ * @returns {Promise<Object>} - The deleted AAA instance
  */
 const deleteAAAById = async (AAAId) => {
     const AAA = await getAAAById(AAAId);
@@ -161,7 +176,12 @@ const deleteAAAById = async (AAAId) => {
     }
     return await AAARepository.delete({ id: AAAId });
 };
-
+/**
+ * Gets and returns all the AAA instances by the project ID
+ * @function
+ * @param {number} id - The ID of the project
+ * @returns {Promise<Array<Object>>} - The array of AAA instances with their related entities
+ */
 const getAllAAAByProjectId = async (id) => {
     return await AAARepository.find({
         where: { projectId: id },

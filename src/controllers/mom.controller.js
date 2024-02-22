@@ -4,7 +4,17 @@ const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { momService } = require('../services');
 const { momComment } = require('../models');
-
+/**
+ * @module MOM
+ */
+/**
+ * Creates a new meeting minutes (MOM).
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the created meeting minutes.
+ * @throws {ApiError} - Throws an error if the MOM cannot be created.
+ */
 const createMom = catchAsync(async (req, res) => {
   const Attendees = req.body.attendees;
   const Absents = req.body.absents
@@ -17,8 +27,14 @@ const createMom = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).json(mom);
 });
 
-
-
+/**
+ * Retrieves all meeting minutes (MOMs).
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the list of MOMs.
+ * @throws {ApiError} - Throws an error if no MOMs are found.
+ */
 const getMoms = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['status']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
@@ -26,6 +42,14 @@ const getMoms = catchAsync(async (req, res) => {
   res.send(mom);
 });
 
+/**
+ * Retrieves a specific meeting minutes (MOM) by ID.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the requested MOM.
+ * @throws {ApiError} - Throws an error if the MOM is not found.
+ */
 const getMom = catchAsync(async (req, res) => {
   const mom = await momService.getMom(req.params.momId);
   if (!mom) {
@@ -34,12 +58,25 @@ const getMom = catchAsync(async (req, res) => {
   res.send(mom);
 });
 
-
+/**
+ * Retrieves meeting minutes (MOMs) associated with a specific project.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the MOMs for the specified project.
+ */
 const getByProject = catchAsync(async (req, res) => {
   const projectMom = await momService.getByProject(req.params.projectId);
   res.send(projectMom);
 });
 
+/**
+ * Groups meeting minutes (MOMs) by project.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with a list of projects and their associated MOMs.
+ */
 const groupMOMByProject = catchAsync(async (req, res) => {
   const MOM = await momService.groupMOMByProject();
   if (!MOM) {
@@ -51,6 +88,13 @@ const groupMOMByProject = catchAsync(async (req, res) => {
   });
 });
 
+/**
+ * Updates meeting minutes (MOM) by ID.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the updated MOM.
+ */
 const updateMom = catchAsync(async (req, res) => {
   const attendees = req.body.attendees;
   const absents = req.body.absents;
@@ -68,17 +112,37 @@ const updateMom = catchAsync(async (req, res) => {
   res.send(mom);
 });
 
-
+/**
+ * Deletes meeting minutes (MOM) by ID.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with a success status after deletion.
+ */
 const deleteMom = catchAsync(async (req, res) => {
   await momService.deleteMom(req.params.momId);
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+/**
+ * Adds a new comment to the meeting minutes (MOM).
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the created comment.
+ */
 const addComment = catchAsync(async (req, res) => {
   const momComment = await momService.addComment(req.body);
   res.status(httpStatus.CREATED).send(momComment);
 });
 
+/**
+ * Retrieves comments associated with a specific meeting minutes (MOM) by ID.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the list of comments for the specified MOM.
+ */
 const getComments = catchAsync(async (req, res) => {
   const momComment = await momService.getComments(req.params.momId);
   res.send(momComment);

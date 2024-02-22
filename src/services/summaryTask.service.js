@@ -14,7 +14,18 @@ const taskRepository = dataSource.getRepository(Task).extend({
   findAll,
   sortBy,
 });
-
+/**
+ * @module summaryTask
+ */
+/**
+ * Creates summary tasks recursively based on the provided task body, baseline ID, milestone ID, and parent ID.
+ * @function
+ * @param {Array<Object>} taskBody - The body of the tasks to create.
+ * @param {string} baselineId - The ID of the baseline associated with the tasks.
+ * @param {string} mileId - The ID of the milestone associated with the tasks.
+ * @param {string|null} parentId - The ID of the parent task, or null if there is no parent.
+ * @returns {Promise<Array<Object>>} A Promise that resolves with an array of created summary tasks.
+ */
 const createSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
   const allTasks = [];
   if (taskBody?.length !== 0) {
@@ -37,7 +48,15 @@ const createSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
   }
   return allTasks;
 };
-
+/**
+ * Updates summary tasks recursively based on the provided task body, baseline ID, milestone ID, and parent ID.
+ * @function
+ * @param {Object|null} taskBody - The body of the task to update, or null if no task is provided.
+ * @param {string} baselineId - The ID of the baseline associated with the tasks.
+ * @param {string} mileId - The ID of the milestone associated with the tasks.
+ * @param {string|null} parentId - The ID of the parent task, or null if there is no parent.
+ * @returns {Promise<Array<Object>>} A Promise that resolves with an array of updated summary tasks.
+ */
 const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
   let allTasks = [];
 
@@ -106,6 +125,12 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
   }
   return allTasks;
 };
+/**
+ * Updates a single summary task or a list of summary tasks recursively.
+ * @function
+ * @param {Array<Object>} taskBody - The array of task objects to update.
+ * @returns {Promise<Array<Object>>} A Promise that resolves with an array of updated summary tasks.
+ */
 
 const updateSingleSummaryTask = async (taskBody) => {
   const allTasks = [];

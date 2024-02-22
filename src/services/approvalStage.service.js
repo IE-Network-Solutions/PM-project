@@ -10,11 +10,15 @@ const ApprovalStageRepository = dataSource.getRepository(ApprovalStage).extend({
   findAll,
   sortBy,
 });
-
 /**
- * Create a approval stage
- * @param {Object}
- * @returns {Promise<Project>}
+ * @module approvalStage
+ */
+/**
+ * Creates approval stages.
+ * @function
+ * @async
+ * @param {ApprovalStage[]} ApprovalStages - An array of approval stage data.
+ * @returns {Promise<ApprovalStage[]>} - An array of created approval stage objects.
  */
 const createApprovalStage = async (ApprovalStages) => {
   const approvalStages = ApprovalStages.map((approvalStage) => {
@@ -25,7 +29,11 @@ const createApprovalStage = async (ApprovalStages) => {
   return approvalStages;
 };
 
-
+/**
+ * Generates approval stages for seeding.
+ * @function
+ * @returns {ApprovalStage[]} - An array of approval stage objects.
+ */
 const approvalStageSeeder = async () => {
   const approvalStages = [
     {
@@ -74,29 +82,26 @@ const approvalStageSeeder = async () => {
       ]
     }
   ]
-  
+
 
   return approvalStages;
 }
-
 /**
- * Query for budget
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves approval stages along with associated roles.
+ * @function
+ * @async
+ * @returns {Promise<ApprovalStage[]>} - An array of approval stage objects, each including related role information.
  */
-
 const getApprovalStages = async () => {
   return await ApprovalStageRepository.find({ relations: ['role'] });
 };
 
 /**
- * Get budget by id
- * @param {ObjectId} id
- * @returns {Promise<Project>}
+ * Retrieves an approval stage by its ID.
+ * @function
+ * @async
+ * @param {number} id - The unique identifier of the approval stage.
+ * @returns {Promise<ApprovalStage | null>} - The approval stage object, or null if not found.
  */
 const getApprovalStage = async (id) => {
   return await budgetRepository.findOneBy({ id: id });

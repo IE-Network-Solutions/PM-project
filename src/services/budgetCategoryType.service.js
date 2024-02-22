@@ -11,23 +11,27 @@ const budgetCategoryTypeRepository = dataSource.getRepository(budgetCategoryType
 });
 
 /**
- * Create a budget category type
- * @param {Object} budgetCategoryy
- * @returns {Promise<Project>}
+ * @module budgetCategoryType
+ */
+/**
+ * Creates a budget category type.
+ * @function
+ * @param {object} budgetCategoryTypeData - The data for the budget category type.
+ * @returns {Promise<object>} - A promise that resolves with the saved budget category type.
  */
 const createBudgetCategoryType = async (budgetCategoryTypeData) => {
   const budgetCategoryType = budgetCategoryTypeRepository.create(budgetCategoryTypeData);
   return await budgetCategoryTypeRepository.save(budgetCategoryType);
 };
-
 /**
- * Query for budgetCategorieTypes
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves all budget categories.
+ * @function
+ * @param {object} filter - The filter criteria for querying budget categories.
+ * @param {object} options - Additional options for pagination and sorting.
+ * @param {number} options.limit - The maximum number of results to return.
+ * @param {number} options.page - The page number for pagination.
+ * @param {string} options.sortBy - The field to sort the results by.
+ * @returns {Promise<object[]>} - A promise that resolves with an array of budget categories.
  */
 const getAllBudgetCategoryTypes = async (filter, options) => {
   const { limit, page, sortBy } = options;
@@ -38,21 +42,22 @@ const getAllBudgetCategoryTypes = async (filter, options) => {
     paginationOptions: { limit: limit, page: page },
   });
 };
-
 /**
- * Get catagory budget by id
- * @param {ObjectId} id
- * @returns {Promise<Project>}
+ * Retrieves a budget category type by its ID.
+ * @function
+ * @param {number} id - The unique identifier of the budget category type.
+ * @returns {Promise<object|null>} - A promise that resolves with the budget category type object or null if not found.
  */
 const getBudgetCategoryType = async (id) => {
   return await budgetCategoryTypeRepository.findOneBy({ id: id });
 };
-
 /**
- * Update category budget by id
- * @param {ObjectId} taskId
- * @param {Object} updateBody
- * @returns {Promise<Project>}
+ * Updates a budget category type.
+ * @function
+ * @param {number} budgetCategoryTypeId - The unique identifier of the budget category type to update.
+ * @param {object} updateBody - The data to update the budget category type with.
+ * @returns {Promise<object|null>} - A promise that resolves with the updated budget category type object or null if not found.
+ * @throws {ApiError} - Throws an error if the budget category type is not found.
  */
 const updateBudgetCategoryType = async (budgetCategoryTypeId, updateBody) => {
   const budgetCategoryType = await getBudgetCategoryType(budgetCategoryTypeId);
@@ -62,11 +67,12 @@ const updateBudgetCategoryType = async (budgetCategoryTypeId, updateBody) => {
   await budgetCategoryTypeRepository.update({ id: budgetCategoryTypeId }, updateBody);
   return getBudgetCategoryType(budgetCategoryTypeId);
 };
-
 /**
- * Delete budget category by id
- * @param {ObjectId} budgetCategoryId
- * @returns {Promise<User>}
+ * Deletes a budget category type by its ID.
+ * @function
+ * @param {number} budgetCategoryTypeId - The unique identifier of the budget category type to delete.
+ * @returns {Promise<object|null>} - A promise that resolves with the result of the deletion (usually null).
+ * @throws {ApiError} - Throws an error if the budget category type is not found.
  */
 const deleteBudgetCategoryTypeId = async (budgetCategoryTypeId) => {
   const budgetCategoryType = await getBudgetCategoryType(budgetCategoryTypeId);

@@ -24,11 +24,15 @@ const projectBudgetRepository = dataSource.getRepository(projectBudget).extend({
   findAll,
   sortBy,
 });
-
 /**
- * Create a budget
- * @param {Object} budgetBody
- * @returns {Promise<Project>}
+ * @module budget
+ */
+/**
+ * Creates a budget and associates it with a project.
+ * @function
+ * @async
+ * @param {Object} budgetBody - The budget data including details like date range, project, and budget items.
+ * @returns {Promise<Object[]>} - An array of created budget objects.
  */
 const createBudget = async (budgetBody) => {
   budgetData = budgetBody.budgetData;
@@ -49,7 +53,16 @@ const createBudget = async (budgetBody) => {
   await budgetRepository.save(budgets);
   return budgets;
 };
-
+/**
+ * Deducts an amount from the project budget based on the specified category, currency, and project.
+ * @function
+ * @async
+ * @param {string} categoryId - The unique identifier of the budget category.
+ * @param {string} currencyId - The unique identifier of the currency.
+ * @param {string} projectId - The unique identifier of the project.
+ * @param {number} amount - The amount to deduct from the budget.
+ * @returns {Promise<Object>} - The updated project budget object.
+ */
 const deductFromProjectBudget = async (categoryId, currencyId, projectId, amount) => {
   const projectBudget = await projectBudgetRepository
     .createQueryBuilder('projectBudget')
@@ -67,7 +80,7 @@ const deductFromProjectBudget = async (categoryId, currencyId, projectId, amount
 
   console.log(projectBudget);
   // if (!projectBudget) {
-  //   $projectBudget = 
+  //   $projectBudget =
   // }
   projectBudget.usedAmount += amount;
 
@@ -76,15 +89,13 @@ const deductFromProjectBudget = async (categoryId, currencyId, projectId, amount
   return projectBudget;
 };
 /**
- * Query for budget
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves budget data along with associated details.
+ * @function
+ * @async
+ * @param {Object} filter - The filter criteria for budget retrieval.
+ * @param {Object} options - Additional options for pagination and sorting.
+ * @returns {Promise<Object[]>} - An array of budget objects with related details.
  */
-
 const getBudgets = async (filter, options) => {
   const { limit, page, sortBy } = options;
 
@@ -92,17 +103,13 @@ const getBudgets = async (filter, options) => {
     relations: ['currency', 'group', 'task', 'budgetCategory', 'taskCategory', 'project'],
   });
 };
-
 /**
- * Query for budget for the project
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves budgets of a project.
+ * @function
+ * @async
+ * @param {number} projectId - The ID of the project.
+ * @returns {Promise<Object>} - An object containing grouped budget data.
  */
-
 const getBudgetsOfProject = async (projectId) => {
   // const { limit, page, sortBy } = options;
   const approval = false;
@@ -148,17 +155,14 @@ const getBudgetsOfProject = async (projectId) => {
   // console.log(groupedResult);
   return groupedData;
 };
-
 /**
- * Query for budget for the project
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves budgets grouped by category within a specified date range.
+ * @function
+ * @async
+ * @param {string} from - The start date of the range.
+ * @param {string} to - The end date of the range.
+ * @returns {Promise<Array>} - An array of budget data grouped by category.
  */
-
 const getBudgetGroupByCategory = async (from, to) => {
   const budgets = await budgetRepository
     .createQueryBuilder('budget')
@@ -189,7 +193,12 @@ const getBudgetGroupByCategory = async (from, to) => {
   });
   return budgets;
 };
-
+/**
+ * Retrieves budgets of projects.
+ * @function
+ * @async
+ * @returns {Promise<Object>} - An object containing grouped budget data for multiple projects.
+ */
 const getBudgetsOfProjects = async () => {
   const approval = false;
   const isOffice = false
@@ -236,6 +245,15 @@ const getBudgetsOfProjects = async () => {
 
   return groupedData;
 };
+/**
+ * Retrieves budgets grouped by category within a specified date range for office projects.
+ * @function
+ * @async
+ * @param {Object} month - An object containing 'from' and 'to' properties representing the date range.
+ * @param {string} month.from - The start date of the range.
+ * @param {string} month.to - The end date of the range.
+ * @returns {Promise<Object>} - An object containing grouped budget data for office projects.
+ */
 const getBudgetsOfficeOfProjects = async (month) => {
   let from = month.from;
   let to = month.to;
@@ -304,6 +322,15 @@ const getMonthlyBudgetsOfProjects = async () => {
 };
 
 // get only current month budgets and there sum
+/**
+ * Retrieves budgets grouped by category within a specified date range for office projects.
+ * @function
+ * @async
+ * @param {Object} month - An object containing 'from' and 'to' properties representing the date range.
+ * @param {string} month.from - The start date of the range.
+ * @param {string} month.to - The end date of the range.
+ * @returns {Promise<Object>} - An object containing grouped budget data for office projects.
+ */
 const getCurrentMonthBudgetOfProjectss = async () => {
   const approval = false;
 
@@ -383,7 +410,15 @@ const getCurrentMonthBudgetOfProjectss = async () => {
 
   return groupedData;
 };
-
+/**
+ * Retrieves budgets grouped by category within a specified date range for office projects.
+ * @function
+ * @async
+ * @param {Object} month - An object containing 'from' and 'to' properties representing the date range.
+ * @param {string} month.from - The start date of the range.
+ * @param {string} month.to - The end date of the range.
+ * @returns {Promise<Object>} - An object containing grouped budget data for office projects.
+ */
 const getCurrentMonthBudgetOfProjects = async (projectId) => {
   const approval = false;
   console.log(projectId, 'uuuuuuuuuuuuuuu');
@@ -459,17 +494,15 @@ const getCurrentMonthBudgetOfProjects = async (projectId) => {
 
   return groupedData;
 };
-
 /**
- * Query for budget for the project
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves budgets grouped by category within a specified date range for office projects.
+ * @function
+ * @async
+ * @param {Object} month - An object containing 'from' and 'to' properties representing the date range.
+ * @param {string} month.from - The start date of the range.
+ * @param {string} month.to - The end date of the range.
+ * @returns {Promise<Object>} - An object containing grouped budget data for office projects.
  */
-
 const getAllBudgetsOfProjects = async () => {
   const approval = false;
 
@@ -534,11 +567,12 @@ const getAllBudgetsOfProjects = async () => {
 
   return groupedData;
 };
-
 /**
- * master budget
+ * Retrieves budgets grouped by category within a specified date range for office projects.
+ * @function
+ * @async
+ * @returns {Promise<Object>} - An object containing grouped budget data for office projects.
  */
-
 const masterBudget = async () => {
   const approval = true;
 
@@ -598,9 +632,13 @@ const masterBudget = async () => {
 
   return groupedData;
 };
-
 /**
- * filter budget by date
+ * Retrieves budgets grouped by category within a specified date range.
+ * @function
+ * @async
+ * @param {string} startDate - The start date of the range.
+ * @param {string} endDate - The end date of the range.
+ * @returns {Promise<Object>} - An object containing grouped budget data.
  */
 const filterBudget = async (startDate, endDate) => {
   const approval = true;
@@ -668,15 +706,12 @@ const filterBudget = async (startDate, endDate) => {
 };
 
 /**
- * Query for budget for the project by task level
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves tasks associated with a specific project.
+ * @function
+ * @async
+ * @param {number} projectId - The ID of the project.
+ * @returns {Promise<Object>} - An object containing grouped task data.
  */
-
 const getTasksOfProject = async (projectId) => {
   // const { limit, page, sortBy } = options;
 
@@ -706,43 +741,46 @@ const getTasksOfProject = async (projectId) => {
   console.log(groupedResult);
   return groupedData;
 };
-
 /**
- * Get budget by id
- * @param {ObjectId} id
- * @returns {Promise<Project>}
+ * Retrieves a budget object based on the provided ID.
+ * @function
+ * @async
+ * @param {string} id - The unique identifier for the budget.
+ * @returns {Promise<object>} - The budget object retrieved from the repository.
  */
 const getBudget = async (id) => {
   return await budgetRepository.findOneBy({ id: id });
 };
-
 /**
- * Update budget by id
- * @param {ObjectId} budgetId
- * @param {Object} updateBody
- * @returns {Promise<Project>}
+ * Updates a budget based on the provided budget ID and update data.
+ * @function
+ * @async
+ * @param {string} budgetId - The unique identifier for the budget.
+ * @param {object} updateBody - The data to update the budget with.
+ * @returns {Promise<object>} - The updated budget object.
  */
 const updateBudget = async (budgetId, updateBody) => {
   const budget = await budgetRepository.update({ id: budgetId }, updateBody);
   return await getBudget(budgetId);
 };
-
 /**
- * Update budget by id
- * @param {ObjectId} budgetId
- * @param {Object} updateBody
- * @returns {Promise<Project>}
+ * Adds a new budget to the repository.
+ *
+ * @async
+ * @param {object} budget - The budget object to be added.
+ * @returns {Promise<object>} - The saved budget object.
  */
 const addBudget = async (budget) => {
   const budgetData = budgetRepository.create(budget);
 
   return await budgetRepository.save(budgetData);
 };
-
 /**
- * Delete budget by id
- * @param {ObjectId} budgetId
- * @returns {Promise<Budget>}
+ * Deletes a budget based on the provided budget ID.
+ *
+ * @async
+ * @param {string} budgetId - The unique identifier for the budget.
+ * @throws {ApiError} - Throws an error if the budget is not found.
  */
 const deleteBudget = async (budgetId) => {
   const budget = await getBudget(budgetId);
@@ -751,15 +789,33 @@ const deleteBudget = async (budgetId) => {
   }
   return await budgetRepository.delete({ id: budgetId });
 };
-
+/**
+ * Retrieves a budget group based on the provided group ID.
+ * @function
+ * @async
+ * @param {string} groupId - The unique identifier for the budget group.
+ * @returns {Promise<object>} - The budget group object retrieved from the repository.
+ */
 const getBudgetGroup = async (groupId) => {
   return await budgetGroupRepository.findOne({ where: { id: groupId }, relations: ['project'] });
 };
-
+/**
+ * Retrieves budget groups based on the provided project ID.
+ * @function
+ * @async
+ * @param {string} id - The unique identifier for the project.
+ * @returns {Promise<object[]>} - An array of budget group objects associated with the project.
+ */
 const getBudgetGroups = async (id) => {
   return await budgetGroupRepository.find({ where: { projectId: id } });
 };
-
+/**
+ * Retrieves budget groups based on the provided project ID.
+ * @function
+ * @async
+ * @param {string} id - The unique identifier for the project.
+ * @returns {Promise<object[]>} - An array of budget group objects associated with the project.
+ */
 const getBudgetsByGroup = async (groupId) => {
   const budgets = await budgetRepository
     .createQueryBuilder('budget')

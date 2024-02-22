@@ -13,34 +13,46 @@ const raciListRepository = dataSource.getRepository(RaciList).extend({
   findAll,
   sortBy,
 });
-
-
-
-// const projectstakholderRepository = dataSource.getRepository(ProjectStakHolder)
-
-
+/**
+ * @module raciList
+ */
+/**
+ * Creates a RACI (Responsible, Accountable, Consulted, Informed) list entry.
+ *
+ * @function
+ * @param {Object} raciBody - Data representing the RACI list entry.
+ *   - {string} name - The name of the RACI list.
+ *   - {string} description - A description of the RACI list.
+ * @throws {Error} - Throws an error if there's an issue creating the RACI list.
+ * @returns {Promise<Object>} - A promise that resolves to the saved RACI list entry.
+ */
 const createRaciList = async (raciBody) => {
     try {
-   
+
       // Create Stakholder entity using properties directly
       const raciList = raciListRepository.create({
         name: raciBody.name,
         describtion: raciBody.describtion,
-      
+
 
       });
-  
+
       const savedRaciList = await raciListRepository.save(raciList);
-  
-  
+
+
       return savedRaciList;
-      
+
     } catch (error) {
       console.error('Error creating Stakholder:', error);
       throw error; // Rethrow the error to allow for further handling
     }
   };
-
+/**
+ * Retrieves RACI (Responsible, Accountable, Consulted, Informed) lists from the repository.
+ *
+ * @function
+ * @returns {Promise<Object[]>} - A promise that resolves to an array of RACI lists.
+ */
   const getRaciLists = async () => {
     return await raciListRepository.find({});
   }
