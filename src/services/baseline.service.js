@@ -5,7 +5,7 @@ const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 const { all } = require('../routes/v1');
-const { milestoneService } = require('.');
+const { milestoneService, projectService } = require('.');
 const summaryTaskService = require("./summaryTask.service")
 
 const baselineRepository = dataSource.getRepository(Baseline).extend({
@@ -90,7 +90,6 @@ const createBaseline = async (baselineBody, milestones) => {
         const savedMilestones = await Promise.all(milestones.map(async (milestone) => {
           if (milestone.summaryTask) {
             const savedSummaryTasks = await Promise.all(milestone.summaryTask.map(async (eachTask) => {
-              console.log(savedBaseline.id)
               return summaryTaskService.updateSummaryTasks(eachTask, savedBaseline.id, milestone.id);
             }));
 
@@ -187,7 +186,6 @@ const scheduleDashboard = async (projectId) => {
     eachResource?.map(r => r?.map(re => taskResourceName = taskResourceName + re.name + ","
     )
     )
-    // console.log(eachResource[0]?.map(p => p.name), "ooo");
 
     const plannedStartDate = new Date(task.plannedStart);
     const plannedEndDate = new Date(task.plannedFinish);
@@ -224,7 +222,7 @@ const masterSchedule = async () => {
     const milestone = await milestoneRepository.find({
       where: { projectId: basline.projectId },
       relations: ['summaryTask', 'summaryTask.tasks', 'summaryTask.baseline', "summaryTask.tasks.baseline"],
-      order: { createdAt: 'DESC' }
+      order: { createdAt: 'ASC' }
     });
     if (milestone) {
 
@@ -248,12 +246,16 @@ const masterSchedule = async () => {
   const groupedBaslines = baselines.reduce((prev, base) => {
 
     const projectId = base.projectId
-    if (!prev[projectId]) {
-      prev[projectId] = {
-        name: base.project.name,
-        baselines: {}
-      };
-      prev[projectId].baselines = base;
+
+    if (base.project.status) {
+      if (!prev[projectId]) {
+
+        prev[projectId] = {
+          name: base.project.name,
+          baselines: {}
+        };
+        prev[projectId].baselines = base;
+      }
     }
     return Object.values(prev)
 
@@ -271,44 +273,56 @@ const masterSchedule = async () => {
  * @returns {Promise<Object[]>} - An array of task objects for the dashboard.
  */
 const masterScheduleByDateFilter = async (startDate, endDate) => {
-  const status = true;
-  const baselineData = await baselineRepository
-    .createQueryBuilder('baselines')
-    .leftJoinAndSelect('baselines.tasks', 'task')
-    .leftJoinAndSelect('baselines.project', 'project')
-    .leftJoinAndSelect('task.subtasks', 'subtask')
-    .leftJoinAndSelect('task.resources', 'resource')
-    .leftJoinAndSelect('task.milestone', 'milestone')
-    .orderBy('baselines.createdAt', 'DESC')
-    .andWhere('task.plannedStart >= :startDate', { startDate: startDate })
-    .andWhere('task.plannedFinish <= :endDate', { endDate: endDate })
-
-    .getMany();
-  // return baselineData;
-  const projectBaseline = [];
-
-  baselineData.forEach((base) => {
-    if (!projectBaseline.some((p) => p.id === base.projectId)) {
-      let baselineProj = base.project
-      projectBaseline.push({ ...baselineProj, "baselines": [] });
-    }
-    let projIndx = projectBaseline.findIndex((bp) => bp.id === base.projectId)
-    projectBaseline[projIndx].baselines.push(base)
-
-    const milestones = [];
-    base.tasks.forEach((task) => {
-      if (!milestones.some((m) => m.id === task.milestoneId)) {
-        let taskMilestone = task.milestone
-        milestones.push({ ...taskMilestone, "tasks": [] });
-      }
-      let mileInd = milestones.findIndex((m) => m.id === task.milestoneId)
-      milestones[mileInd].tasks.push(task)
+  const baselines = await baselineRepository.find({ where: { status: true }, relations: ['project'] })
+  for (const basline of baselines) {
+    const milestone = await milestoneRepository.find({
+      where: { projectId: basline.projectId },
+      relations: ['summaryTask', 'summaryTask.tasks', 'summaryTask.baseline', "summaryTask.tasks.baseline"],
+      order: { createdAt: 'ASC' }
     });
-    delete base.tasks
-    base.milestones = milestones
-  });
+    if (milestone) {
 
-  return projectBaseline;
+      let milestones = milestone
+      basline.milestones = milestones.map(milestone => {
+        let finalSub = milestoneService.flatToHierarchy(milestone.summaryTask)
+        delete milestone.summaryTask
+        milestone["summaryTask"] = finalSub
+        return milestone
+      })
+
+
+    }
+    else {
+      basline.milestones = [];
+    }
+  }
+  const groupedBaslines = baselines.reduce((prev, base) => {
+    const newbaseline = base.milestones.map((milestone) => {
+      const lastSummaryTask = findLastSummaryTask(milestone.summaryTask);
+      const filteredTasks = lastSummaryTask.tasks.filter(task => {
+        return new Date(task.plannedStart) > new Date(startDate) && new Date(task.plannedFinish) < new Date(endDate)
+      })
+
+      const updatedLastSummaryTask = { ...lastSummaryTask, tasks: [...filteredTasks] };
+
+      return { ...milestone, summaryTask: updatedLastSummaryTask };
+    })
+    delete base.milestones
+    base.milestones = newbaseline
+
+    const projectId = base.projectId
+    if (!prev[projectId]) {
+      prev[projectId] = {
+        name: base.project.name,
+        baselines: {}
+      };
+      prev[projectId].baselines = base;
+
+    }
+
+    return Object.values(prev)
+  }, {})
+  return groupedBaslines
 };
 /**
  * Generates a project schedule dashboard based on the provided project ID.
@@ -380,6 +394,7 @@ const projectSchedule = async (projectId) => {
   throw new ApiError(httpStatus.NOT_FOUND, 'there are no milestones on this project');
 
 };
+
 /**
  * Generates a project schedule dashboard based on the provided project ID.
  * @function
@@ -729,7 +744,9 @@ const getByMilestone = async (milestoneId) => {
  * @returns {Promise<Object[]>} - An array of updated baseline and milestone objects.
  */
 const updateBaseline = async (baselineId, baselineBody, milestones) => {
+
   if (baselineBody) {
+    // await projectService.updateProject(baselineBody.projectInfo.id, baselineBody.projectInfo)
     await baselineRepository.update({ id: baselineId }, { name: baselineBody.name });
   }
 
@@ -832,6 +849,24 @@ function findLastSummaryTask(summaryTasks) {
   }
   return null;
 }
+function replaceLastSummaryTask(summaryTasks, newLastSummaryTask) {
+  if (!summaryTasks || summaryTasks.length === 0) {
+    return null;
+  }
+  for (const summaryTask of summaryTasks) {
+    if (summaryTask.lastChild) {
+      return summaryTask;
+    } else if (summaryTask.summaryTask) {
+      let lastSummaryTask = replaceLastSummaryTask(summaryTask.summaryTask);
+      if (lastSummaryTask) {
+        lastSummaryTask = newLastSummaryTask
+        return summaryTasks;
+      }
+    }
+  }
+  return null;
+}
+
 /**
  * Filters tasks with the same baseline.
  * @function
@@ -849,7 +884,6 @@ const filterTasksWithSameBaseline = async (baselines) => {
     await Promise.all(baseline.milestones.map(async (milestone) => {
       const lastSummaryTask = await findLastSummaryTask(milestone.summaryTask);
       lastSummaryTask.tasks = await filterTasks(lastSummaryTask.tasks, baseline.id);
-      console.log(lastSummaryTask.tasks, "  lastSummaryTask.tasks")
       milestone.summaryTask = lastSummaryTask;
     }));
   }));
@@ -872,7 +906,6 @@ const filterTasks = (tasks, baselineId) => {
   //   // console.log(lastBaseline, "ghjkl")
   //   return await task.baselineId === baselineId;
   // });
-  console.log(filteredTasks, "nvncncneeeoopp")
   return filteredTasks
 }
 

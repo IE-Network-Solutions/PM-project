@@ -78,7 +78,6 @@ const updateBudgetTaskCategory = catchAsync(async (req, res) => {
  */
 
 const deleteBudgetTaskCategory = catchAsync(async (req, res) => {
-  console.log(req.params.budgetTaskCategoryId);
   await budgetTaskCategoryService.deleteBudgetTaskCategory(req.params.budgetTaskCategoryId);
   res.status(httpStatus.NO_CONTENT).send();
 });

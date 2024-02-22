@@ -220,6 +220,21 @@ const getWeeklyReport = async (projectId) => {
     }
   }
 
+
+  const projectStatusReport = [];
+
+  for (const eachAllActiveBaselines of allActiveBaselines) {
+    const activeTasks = await taskRepository.findBy({
+      baselineId: eachAllActiveBaselines.id,
+      actualStart: Between(startOfWeekDate, endOfWeekDate),
+
+    });
+
+    if (activeTasks.length > 0) {
+      projectStatusReport.push(...activeTasks);
+    }
+  }
+
   const issues = await issueRepository.find({
 
     where: {
@@ -242,6 +257,7 @@ const getWeeklyReport = async (projectId) => {
     allTasks: allTasks,
     sleepingTasks: sleepingTasks,
     nextWeekTasks: nextWeekTasks,
+    projectStatusReport: projectStatusReport,
     risks: risks,
     issues: issues,
   };
@@ -295,6 +311,7 @@ const addWeeklyReport = async (projectId, weeklyReportData) => {
   const sleepingTasks = weeklyReportData.sleepingTasks;
   const nextWeekTasks = weeklyReportData.nextWeekTasks;
   const overAllProgress = weeklyReportData.overAllProgress;
+  const projectStatusReport = weeklyReportData.projectStatusReport;
 
   // return [projectId, currentMonthNumber, risks, issues, sleepingTasks, nextWeekTasks,]
 
@@ -312,6 +329,7 @@ const addWeeklyReport = async (projectId, weeklyReportData) => {
     sleepingTasks: sleepingTasks,
     nextWeekTasks: nextWeekTasks,
     overAllProgress: overAllProgress,
+    projectStatusReport: projectStatusReport,
   });
 
   const savedWeeklyReport = await weeklyReportRepository.save(addedWeeklyReport);

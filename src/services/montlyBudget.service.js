@@ -86,7 +86,6 @@ const createMontlyBudget = async (monthlyBudgetBody) => {
  * @returns {Promise<void>} - Resolves when the monthly budget is created.
  */
 const createMontlyOfficeBudget = async (monthlyBudgetBody) => {
-  console.log(monthlyBudgetBody, "finalmonthlyBudgetBody")
   const moduleName = "MonthlyBudget";
   const level = 1;
   const fromDate = new Date(monthlyBudgetBody.from);
@@ -164,16 +163,6 @@ const createMontlyOfficeBudget = async (monthlyBudgetBody) => {
  */
 const getMonthlyBudgetByMonthGroup = async (month) => {
   const monthlyBudget = await montlyBudgetRepository.findOne({ where: { from: month.from, to: month.to, isOffice: false }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments'] });
-  console.log(monthlyBudget, "monthlyBudgetmonthlyBudget")
-  // for (const budget of monthlyBudget.budgetsData) {
-
-  //   const project = await projectService.getProject(budget?.projectId)
-  //   const category = await budgetCategoryService.getBudgetCategory(budget?.budgetCategoryId)
-  //   const currency = await currencyService.getCurrencyById(budget.currencyId)
-  //   budget.budgetCategory = category;
-  //   budget.currency = currency;
-
-  // };
   return monthlyBudget;
 }
 /**

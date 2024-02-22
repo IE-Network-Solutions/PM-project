@@ -143,6 +143,28 @@ const updateProject = {
     })
     .min(1),
 };
+
+
+const updateProjectFomSchedule = {
+  params: Joi.object().keys({
+    projectId: Joi.required(),
+  }),
+  body: Joi.object()
+    .keys({
+      plannedStart: Joi.date(),
+      plannedFinish: Joi.date(),
+      startVariance: Joi.number(),
+      finishVariance: Joi.number(),
+      actualStart: Joi.date(),
+      actualFinish: Joi.date(),
+      start: Joi.date(),
+      finish: Joi.date(),
+      duration: Joi.number(),
+      actualDuration: Joi.number()
+    })
+    .min(1),
+};
+
 /**
  * Schema for deleting a project.
  * @type {object}
@@ -207,5 +229,6 @@ module.exports = {
   getProjectVariance,
   addMember,
   removeMember,
-  createOfficeProject
+  createOfficeProject,
+  updateProjectFomSchedule
 };

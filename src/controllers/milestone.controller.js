@@ -81,7 +81,6 @@ const updateMilestone = catchAsync(async (req, res) => {
  * @returns {Promise<void>} A Promise that resolves with the updated milestones' variance.
  */
 const updateMilestoneVariance = catchAsync(async (req, res) => {
-  console.log(req.body, "ajeyroyselammeuselam")
   const milestones = await Promise.all(req.body.map(async (element) => {
     const milestone = milestoneService.updateMilestone(element.id, element);
     return milestone;
@@ -99,7 +98,6 @@ const updateMilestoneVariance = catchAsync(async (req, res) => {
  * @returns {Promise<void>} A Promise that resolves after deleting the milestone.
  */
 const deleteMilestone = catchAsync(async (req, res) => {
-  console.log(req.params.milestoneId, "psiueuehdbc")
   await milestoneService.deleteMilestone(req.params.milestoneId);
   res.status(httpStatus.NO_CONTENT).send();
 });

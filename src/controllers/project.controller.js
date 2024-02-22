@@ -72,7 +72,12 @@ const getProject = catchAsync(async (req, res) => {
  * @returns {Promise<void>} A Promise that resolves with the updated project.
  */
 const updateProject = catchAsync(async (req, res) => {
-  console.log(req.body, "rhhnananmmeqkkkkselamkkk")
+
+  const project = await projectService.updateProject(req.params.projectId, req.body);
+  res.send(project);
+});
+const updateProjectFomSchedule = catchAsync(async (req, res) => {
+
   const project = await projectService.updateProject(req.params.projectId, req.body);
   res.send(project);
 });
@@ -183,4 +188,5 @@ module.exports = {
   getTotalActiveClosedProjects,
   closeProject,
   getProjectMemebres,
+  updateProjectFomSchedule
 };
