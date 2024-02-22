@@ -138,5 +138,6 @@ module.exports = {
   getProjectVariance,
   addMember,
   removeMember,
-  createOfficeProject
+  createOfficeProject,
+  updateProjectFomSchedule
 };
