@@ -19,7 +19,7 @@ const approvalModuleRepository = dataSource.getRepository(ApprovalModule).extend
   sortBy,
 });
 /**
- * @module monthlBbudgetComment
+ * @module monthlyBudgetComment
 */
 /**
  * Retrieves monthly budget comments from the repository.

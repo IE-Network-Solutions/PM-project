@@ -5,7 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const { projectBudgetService } = require('../services');
 
 /**
- * @module projecctBudget
+ * @module projectBudget
  */
 /**
  * Retrieves project budgets by category.

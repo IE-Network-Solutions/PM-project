@@ -74,6 +74,17 @@ const createMontlyBudget = async (monthlyBudgetBody) => {
 
   return newMonthlyBudget;
 };
+/**
+ * Creates an office monthly budget.
+ *
+ * @function
+ * @param {Object} monthlyBudgetBody - The request body containing budget details.
+ * @param {string} monthlyBudgetBody.from - Start date of the budget.
+ * @param {string} monthlyBudgetBody.to - End date of the budget.
+ * @param {Array} monthlyBudgetBody.budgetsData - Array of budget data.
+ * @param {string} monthlyBudgetBody.budgetsData.projectId - ID of the project.
+ * @returns {Promise<void>} - Resolves when the monthly budget is created.
+ */
 const createMontlyOfficeBudget = async (monthlyBudgetBody) => {
   console.log(monthlyBudgetBody, "finalmonthlyBudgetBody")
   const moduleName = "MonthlyBudget";
@@ -165,7 +176,15 @@ const getMonthlyBudgetByMonthGroup = async (month) => {
   // };
   return monthlyBudget;
 }
-
+/**
+ * Retrieves an office monthly budget based on the specified month and project ID.
+ * @function
+ * @param {Object} month - Object containing the start and end dates of the month.
+ * @param {string} month.from - Start date of the month.
+ * @param {string} month.to - End date of the month.
+ * @param {string} ProjectId - ID of the project to filter by.
+ * @returns {Promise<Object>} - Resolves with the retrieved monthly budget (if found).
+ */
 const getMonthlyBudgetByMonthGroupOfficeProject = async (month, ProjectId) => {
   const monthlyBudget = await montlyBudgetRepository.find({ where: { from: month.from, to: month.to, isOffice: true }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments'] });
   let returnedBudget = {}
@@ -269,7 +288,19 @@ const updateMonthlyBudget = async (id, updatedData) => {
   const monthlyBudget = await montlyBudgetRepository.update({ id: id }, updatedData);
   return await montlyBudgetRepository.findOne({ where: { id: id } });
 }
-
+/**
+ * Updates an existing office monthly budget.
+ * 
+ * @function
+ * @param {string} id - ID of the budget to be updated.
+ * @param {Object} updatedData - Updated budget data.
+ * @param {Array} updatedData.budgetsData - Array of updated budget data.
+ * @param {string} updatedData.budgetsData.currencyId - ID of the currency.
+ * @param {string} updatedData.budgetsData.budgetCategoryId - ID of the budget category.
+ * @param {number} updatedData.budgetsData.budgetAmount - Updated budget amount.
+ * @returns {Promise<void>} - Resolves when the budget is successfully updated.
+ * @throws {ApiError} - Throws an error if the remaining amount is insufficient.
+ */
 const updateOfficeMonthlyBudget = async (id, updatedData) => {
   const budgetToBeUpdated = await montlyBudgetRepository.findOne({ where: { id: id } })
   let remmaing = 0

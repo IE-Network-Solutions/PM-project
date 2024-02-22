@@ -100,7 +100,7 @@ const updateLLCommentById = async (LLCommentId, updateBody) => {
     return await getLLCommentById(LLCommentId);
 };
 /**
- * Delets the LL comment using the ID
+ * Deletes the LL comment using the ID
  * @function
  * @param {string} LLCommentId - The ID of the lesson learned comment.
  * @throws {Error} Throws an error if the lesson learned comment is not found.

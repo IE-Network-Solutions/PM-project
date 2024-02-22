@@ -27,7 +27,7 @@ const summaryTaskRepository = dataSource.getRepository(SummaryTask).extend({
   sortBy,
 });
 /**
- * @module Milestone
+ * @module milestone
  */
 /**
  * Creates and saves milestones based on provided milestone data.
@@ -95,7 +95,12 @@ const getMilestones = async (filter, options) => {
 const getMilestone = async (milestoenId) => {
   return await milestoneRepository.findOneBy({ id: milestoenId });
 };
-
+/**
+ * Converts a flat list of items into a hierarchical structure.
+ * @function
+ * @param {Array} flat - An array of flat objects.
+ * @returns {Array} - An array of root-level items forming the hierarchy.
+ */
 const flatToHierarchy = (flat) => {
   let roots = [];
   let all = {};

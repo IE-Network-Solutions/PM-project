@@ -57,7 +57,7 @@ const getApprovalModuleByModuleName = async (moduleName) => {
 };
 /**
  * Retrieves all approval modules.
- * @fuction
+ * @function
  * @async
  * @returns {Promise<ApprovalModule[]>} - An array of approval module objects.
  */

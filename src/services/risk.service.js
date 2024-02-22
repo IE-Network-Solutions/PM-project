@@ -122,7 +122,13 @@ const getRiskById = async (id) => {
             relations: ['project']
         });
 };
-
+/**
+ * Groups critical risks by project based on specified filter and options.
+ * @function
+ * @param {Object} filter - Filter criteria for risk selection.
+ * @param {Object} options - Additional options for grouping.
+ * @returns {Promise<Array>} - Resolves with an array of grouped results.
+ */
 const groupCriticalRiskByProject = async (filter, options) => {
     const groupedResults = await riskRepository
         .createQueryBuilder('cr')

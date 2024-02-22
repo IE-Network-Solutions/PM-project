@@ -21,7 +21,7 @@ const projectRepository = dataSource.getRepository(Project).extend({
 
 const projectstakholderRepository = dataSource.getRepository(ProjectStakHolder)
 /**
- * @module stakholder
+ * @module Stakholder
  */
 /**
  * Creates a stakeholder asynchronously.

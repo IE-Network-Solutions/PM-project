@@ -4,7 +4,7 @@ const catchAsync = require('../utils/catchAsync');
 const ApiError = require('../utils/ApiError');
 const pick = require('../utils/pick');
 /**
- * @module evalution
+ * @module evaluation
  */
 /**
  * Creates a new evaluation.

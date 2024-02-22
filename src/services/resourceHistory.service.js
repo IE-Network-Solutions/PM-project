@@ -11,7 +11,7 @@ const resourceHistoryRepository = dataSource.getRepository(ResourceHistory).exte
   sortBy,
 });
 /**
- * @module resourcehistory
+ * @module resourceHistory
  */
 /**
  * Creates a resource history entry by saving the given data.

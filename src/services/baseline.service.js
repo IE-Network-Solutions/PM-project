@@ -859,7 +859,7 @@ const filterTasksWithSameBaseline = async (baselines) => {
 };
 /**
  * Filters tasks with the same baseline ID.
- * @fuction
+ * @function
  * @param {Object[]} tasks - An array of task objects.
  * @param {string} baselineId - The unique identifier of the baseline.
  * @returns {Object[]} - An array of filtered task objects.

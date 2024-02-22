@@ -3,7 +3,7 @@ const { Solution } = require('../services');
 const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
 /**
- * @module solution
+ * @module solutions
  */
 /**
  * Creates a solution record.
