@@ -58,6 +58,7 @@ const createSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
  * @returns {Promise<Array<Object>>} A Promise that resolves with an array of updated summary tasks.
  */
 const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
+
   let allTasks = [];
 
   if (taskBody) {
@@ -76,6 +77,7 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
         parentId: taskBody.parentId,
       }
     );
+    console.log(task, "task nahome why")
 
     if (taskBody?.tasks.length !== 0) {
       let newTasks = taskBody.tasks

@@ -150,9 +150,10 @@ const getByProject = async (projectId) => {
     where: { projectId: projectId },
 
     relations: ['summaryTask', 'summaryTask.tasks'],
-    order: { createdAt: 'DESC' },
-  });
+    // order: { createdAt: 'DESC' },
 
+  });
+  milestone.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
   for (const item of milestone) {
     let finalSub = flatToHierarchy(item.summaryTask);
     delete item.summaryTask;
