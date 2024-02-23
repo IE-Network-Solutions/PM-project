@@ -59,6 +59,7 @@ const createSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
  */
 const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
 
+  console.log(taskBody.tasks, "taskssss")
   let allTasks = [];
 
   if (taskBody) {
@@ -77,18 +78,17 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
         parentId: taskBody.parentId,
       }
     );
-    console.log(task, "task nahome why")
-
     if (taskBody?.tasks.length !== 0) {
       let newTasks = taskBody.tasks
         .filter((t) => !t.id)
         .map((e) => {
-          delete e.duration;
+          // delete e.duration;
           delete e.taskId;
           return { ...e, baselineId: baselineId };
         });
 
       if (newTasks.length > 0) {
+
         let createTask = taskRepository.create(newTasks);
         allTasks = [...allTasks, ...createTask];
         await taskRepository.save(createTask);
@@ -97,7 +97,7 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
       let updateTasks = taskBody.tasks
         .filter((t) => t.id)
         .map((e) => {
-          delete e.duration;
+          // delete e.duration;
           delete e.taskId;
           return { ...e, baselineId: baselineId };
         });

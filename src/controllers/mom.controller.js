@@ -16,6 +16,7 @@ const { momComment } = require('../models');
  * @throws {ApiError} - Throws an error if the MOM cannot be created.
  */
 const createMom = catchAsync(async (req, res) => {
+  console.log(req.body, "mom create")
   const Attendees = req.body.attendees;
   const Absents = req.body.absents
   const Agenda = req.body.agenda;
