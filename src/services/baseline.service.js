@@ -510,7 +510,6 @@ function groupDataByProjectBaselineMilestone(data) {
  */
 const getBaseline = async (baselineId) => {
   const baselineData = await baselineRepository.findOne({ where: { id: baselineId } })
-
   const milestone = await milestoneRepository.find({
     where: { projectId: baselineData.projectId },
     relations: ['summaryTask', 'summaryTask.tasks', 'summaryTask.baseline'],
@@ -549,6 +548,7 @@ const getBaseline = async (baselineId) => {
     groupedData[baselineId].milestones.push(item);
   });
   return Object.values(groupedData);
+
 
 
 

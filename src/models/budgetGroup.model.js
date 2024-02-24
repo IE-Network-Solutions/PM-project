@@ -30,6 +30,7 @@ module.exports = new EntitySchema({
           name: 'budgetCommentId',
           referencedColumnName: 'id',
         },
+        onDelete: 'CASCADE',
       },
     },
     approvalStage: {

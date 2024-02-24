@@ -26,6 +26,7 @@ module.exports = new EntitySchema({
         name: 'budgetGroupId',
         referencedColumnName: 'id',
       },
+      onDelete: 'CASCADE',
     },
   },
 });
