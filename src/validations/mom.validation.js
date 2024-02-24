@@ -32,7 +32,7 @@ const createMom = {
     facilitatorId: Joi.string(),
     specialNote: Joi.string(),
     attendees: Joi.array(),
-    absents: Joi.array(),
+    absents: Joi.array().allow(null),
     externalAttendees: Joi.array(),
     action: Joi.array(),
     agenda: Joi.array(),
