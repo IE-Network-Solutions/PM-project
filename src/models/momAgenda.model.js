@@ -20,6 +20,7 @@ module.exports = new EntitySchema({
       type: "many-to-one",
       target: "minuteOfMeeting",
       inverseSide: "agenda",
+      onDelete: 'CASCADE',
     },
     momTopics: {
       type: "one-to-many",

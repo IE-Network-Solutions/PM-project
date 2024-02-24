@@ -22,6 +22,7 @@ module.exports = new EntitySchema({
       type: "many-to-one",
       target: "minute_of_meetings",
       inverseSide: "mom_actions",
+      onDelete: 'CASCADE',
     },
     momActionResponsible: {
       type: "one-to-many",

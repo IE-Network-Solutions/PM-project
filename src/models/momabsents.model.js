@@ -20,6 +20,7 @@ const momAbsents = new EntitySchema({
         mom: {
             type: 'many-to-one',
             target: 'minuteOfMeeting',
+            onDelete: 'CASCADE',
         },
     },
 });

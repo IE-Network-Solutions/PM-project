@@ -25,7 +25,7 @@ const momActionResponsible = new EntitySchema({
     momAction: {
       type: "many-to-one",
       target: "momAction",
-      onDelete: 'SET NULL',
+      onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
   },
