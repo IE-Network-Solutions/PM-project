@@ -252,6 +252,10 @@ const getWeeklyReport = async (projectId) => {
     },
   });
 
+  allTasks.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  sleepingTasks.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  nextWeekTasks.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  projectStatusReport.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
   const weeklyReport = {
     allTasks: filterTasks(allTasks),

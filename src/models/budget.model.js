@@ -35,6 +35,7 @@ module.exports = new EntitySchema({
     project: {
       type: 'many-to-one',
       target: 'Project',
+      onDelete: 'SET NULL',
     },
     currency: {
       type: 'many-to-one',
