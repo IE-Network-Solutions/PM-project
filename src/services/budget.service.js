@@ -78,14 +78,15 @@ const deductFromProjectBudget = async (categoryId, currencyId, projectId, amount
     .addOrderBy('currency.id')
     .getOne();
 
-  console.log(projectBudget);
+
   // if (!projectBudget) {
   //   $projectBudget =
   // }
-  projectBudget.usedAmount += amount;
+  if (projectBudget) {
+    projectBudget.usedAmount += amount;
 
-  await projectBudgetRepository.save(projectBudget);
-
+    await projectBudgetRepository.save(projectBudget);
+  }
   return projectBudget;
 };
 /**

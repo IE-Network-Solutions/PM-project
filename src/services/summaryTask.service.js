@@ -58,6 +58,8 @@ const createSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
  * @returns {Promise<Array<Object>>} A Promise that resolves with an array of updated summary tasks.
  */
 const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
+
+  console.log(taskBody.tasks, "taskssss")
   let allTasks = [];
 
   if (taskBody) {
@@ -76,17 +78,17 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
         parentId: taskBody.parentId,
       }
     );
-
     if (taskBody?.tasks.length !== 0) {
       let newTasks = taskBody.tasks
         .filter((t) => !t.id)
         .map((e) => {
-          delete e.duration;
+          // delete e.duration;
           delete e.taskId;
           return { ...e, baselineId: baselineId };
         });
 
       if (newTasks.length > 0) {
+
         let createTask = taskRepository.create(newTasks);
         allTasks = [...allTasks, ...createTask];
         await taskRepository.save(createTask);
@@ -95,7 +97,7 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
       let updateTasks = taskBody.tasks
         .filter((t) => t.id)
         .map((e) => {
-          delete e.duration;
+          // delete e.duration;
           delete e.taskId;
           return { ...e, baselineId: baselineId };
         });

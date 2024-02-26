@@ -61,10 +61,7 @@ const userRepository = dataSource.getRepository(User).extend({
  */
 
 const allActiveBaselineTasks = async (projectId) => {
-  const getMilestoneByProject = await milestoneRepository.findBy({
-    projectId: projectId,
-    status: true
-  });
+  const getMilestoneByProject = await milestoneRepository.findBy({ projectId: projectId, status: true, relations: ['summaryTask.tasks'] });
 
   const allActiveBaselines = [];
 
@@ -101,6 +98,9 @@ const allActiveBaselineTasks = async (projectId) => {
       .orderBy('task.plannedStart', 'ASC')
       .groupBy('baseline.id, milestone.id, project.id, task.id')
       .getMany();
+
+
+
     if (activeTasks.length > 0) {
       tasksForVariance.push(...activeTasks);
     }
@@ -139,10 +139,10 @@ const allActiveBaselineTasks = async (projectId) => {
 
 
   const weeklyReport = {
-    allTasks: allTasks,
-    nextWeekTasks: nextWeekTasks,
-    risks: risks,
-    issues: issues,
+    // allTasks: allTasks,
+    // nextWeekTasks: nextWeekTasks,
+    // risks: risks,
+    // issues: issues,
     tasksForVariance: tasksForVariance
   };
 
@@ -252,12 +252,16 @@ const getWeeklyReport = async (projectId) => {
     },
   });
 
+  allTasks.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  sleepingTasks.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  nextWeekTasks.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  projectStatusReport.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
   const weeklyReport = {
-    allTasks: allTasks,
-    sleepingTasks: sleepingTasks,
-    nextWeekTasks: nextWeekTasks,
-    projectStatusReport: projectStatusReport,
+    allTasks: filterTasks(allTasks),
+    sleepingTasks: filterTasks(sleepingTasks),
+    nextWeekTasks: filterTasks(nextWeekTasks),
+    projectStatusReport: filterTasks(projectStatusReport),
     risks: risks,
     issues: issues,
   };
@@ -416,7 +420,17 @@ const getComments = async (weeklyReportId) => {
     }
   );
 }
-
+const filterTasks = (tasks) => {
+  let uniqueIds = {};
+  let filteredArray = tasks.filter(item => {
+    if (!uniqueIds[item.id]) {
+      uniqueIds[item.id] = true;
+      return true; // Keep the item
+    }
+    return false; // Discard the item
+  });
+  return filteredArray
+}
 
 module.exports = {
   getWeeklyReport,

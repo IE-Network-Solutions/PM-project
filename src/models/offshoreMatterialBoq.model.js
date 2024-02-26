@@ -27,6 +27,8 @@ module.exports = new EntitySchema({
     project: {
       type: 'many-to-one',
       target: 'Project',
+      onDelete: 'CASCADE',
+
     },
     department: {
       type: 'many-to-one',

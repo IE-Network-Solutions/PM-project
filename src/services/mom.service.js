@@ -35,6 +35,7 @@ const userRepository = dataSource.getRepository(User);
  * @returns {Promise<Object>} - A promise that resolves to the saved MOM.
  */
 const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
+  console.log(Agenda[0].agendaTopics, "Agenda")
   const mom = momRepository.create(momBody);
   // Save the mom
   await momRepository.save(mom);
@@ -51,16 +52,19 @@ const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
     await momAttendeesRepository.save(momInstances);
   }
   if (Absents) {
-    const momInstances = Absents.map((eachAbsents) => {
-      return momAbsentsRepository.create({
-        momId: mom.id,
-        userId: eachAbsents.userId,
-      });
-    });
+    const momInstances = [];
+    for (const eachAbsents of Absents) {
+      if (eachAbsents.userId !== null && eachAbsents.userId !== '') {
+        const createdAbsents = momAbsentsRepository.create({
+          momId: mom.id,
+          userId: eachAbsents.userId,
+        });
 
-    // Save the mom instances
-    console.log(momInstances, "momInstances")
-    await momAbsentsRepository.save(momInstances);
+        const savedAbsents = await momAbsentsRepository.save(createdAbsents);
+        momInstances.push(savedAbsents);
+      }
+    }
+    //  return momInstances;
   }
 
 
@@ -78,21 +82,17 @@ const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
 
       const savedActionInstance = await momActionRepository.save(actionInstance);
 
-      for (const responsiblePerson of responsiblePersons) {
-        if (responsiblePerson.id) {
-          const responsiblePersonInstance = momActionResponsibleRepository.create({
-            userId: responsiblePerson.id,
-            momActionId: savedActionInstance.id,
-          });
+      const responsiblePersonInstance = momActionResponsibleRepository.create({
+        userId: eachAction.responsiblePersonId,
+        momActionId: savedActionInstance.id,
+      });
 
-          await momActionResponsibleRepository.save(responsiblePersonInstance);
-        }
+      await momActionResponsibleRepository.save(responsiblePersonInstance);
+      actionInstances.push(savedActionInstance);
 
-        actionInstances.push(savedActionInstance);
-      }
     }
 
-
+    console.log(actionInstances, "actionInstances")
     mom.action = actionInstances;
   }
 
@@ -163,7 +163,7 @@ const getMoms = async (filter, options) => {
 const getMom = async (momId) => {
   return await momRepository.findOne({
     where: { id: momId },
-    relations: ['facilitator', 'momAttendees', 'momAgenda.momTopics', 'momAction', 'momComment', 'momAbsents'],
+    relations: ['facilitator', 'momAttendees', 'momAgenda.momTopics', 'momAction', 'momComment', 'momAbsents', 'momAction', 'momAction.momActionResponsible.user'],
   },
   );
 };
