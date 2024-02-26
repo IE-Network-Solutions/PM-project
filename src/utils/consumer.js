@@ -1,6 +1,7 @@
 const amqp = require('amqplib');
 const logger = require('../config/logger');
 const userService = require('../services/user.service');
+const roleService = require('../services/role.service');
 const projectBudgetService = require('../services/projectBudget.service');
 async function ConsumeFromRabbit(routingKeys = []) {
   const rabbitmqUrl = 'amqp://localhost:5672';
@@ -31,7 +32,16 @@ async function ConsumeFromRabbit(routingKeys = []) {
       // projectBudget.budgetCategoryId = JSON.parse(data.content.toString()).budget_category_id;
       // console.log(projectBudget);
       projectBudgetService.updateOrCreateProjectBudget(data.content.toString());
-    }
+    } else if (data.fields.routingKey.includes('role') && data.fields.routingKey.includes('create')) {
+      let roleData = {};
+      roleData.id = JSON.parse(data.content.toString()).id;
+      roleData.roleName = JSON.parse(data.content.toString()).role_name;
+      roleData.isProjectRole = JSON.parse(data.content.toString()).isProjectRole;
+      roleData.createdAt = JSON.parse(data.content.toString()).created_at;
+      roleData.updatedAt = JSON.parse(data.content.toString()).updated_at;
+      console.log(roleData,"role testttttt");
+      roleService.createRole(roleData);
+     }
     channel.ack(data, false, true);
   });
 }
