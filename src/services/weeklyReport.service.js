@@ -252,10 +252,10 @@ const getWeeklyReport = async (projectId) => {
     },
   });
 
-  allTasks.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-  sleepingTasks.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-  nextWeekTasks.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-  projectStatusReport.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  allTasks.sort((a, b) => (a.order) - (b.order));
+  sleepingTasks.sort((a, b) => (a.order) - (b.order));
+  nextWeekTasks.sort((a, b) => (a.order) - (b.order));
+  projectStatusReport.sort((a, b) => (a.order) - (b.order));
 
   const weeklyReport = {
     allTasks: filterTasks(allTasks),
@@ -265,7 +265,7 @@ const getWeeklyReport = async (projectId) => {
     risks: risks,
     issues: issues,
   };
-
+  console.log(weeklyReport, "weeklyReport")
   return weeklyReport;
 
 };

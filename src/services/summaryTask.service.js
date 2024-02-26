@@ -31,14 +31,19 @@ const createSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
   if (taskBody?.length !== 0) {
     await Promise.all(
       taskBody.map(async (element) => {
+        console.log(element.label, "=>", "ech summarytask element")
+        console.log(element.properties, "=>", "ech summarytask element")
         const task = summaryTaskRepository.create({
           name: element.label,
           baselineId: baselineId,
           milestoneId: mileId,
           parentId: parentId,
+          order: element.order
         });
         const savedTask = await summaryTaskRepository.save(task);
+
         const nestedTasks = await createSummaryTasks(element.properties, baselineId, mileId, savedTask.id);
+
         allTasks.push({
           ...savedTask,
           summaryTask: nestedTasks,
@@ -83,8 +88,8 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
         .filter((t) => !t.id)
         .map((e) => {
           // delete e.duration;
-          delete e.taskId;
-          return { ...e, baselineId: baselineId };
+          //delete e.taskId;
+          return { ...e, order: e.taskId, baselineId: baselineId };
         });
 
       if (newTasks.length > 0) {
@@ -98,7 +103,7 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
         .filter((t) => t.id)
         .map((e) => {
           // delete e.duration;
-          delete e.taskId;
+          //  delete e.taskId;
           return { ...e, baselineId: baselineId };
         });
 

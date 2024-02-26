@@ -42,18 +42,20 @@ const summaryTaskRepository = dataSource.getRepository(SummaryTask).extend({
 const createMilestone = async (milestoneBody) => {
   const milestones = await Promise.all(
     milestoneBody?.properties.map(async (element) => {
+      console.log(element)
       const milestone = milestoneRepository.create({
         name: element.label,
         weight: element.weight,
         projectId: milestoneBody.projectId,
         baselineId: element.baselineId,
+        order: element.order
       });
       const savedMilestone = await milestoneRepository.save(milestone);
       const summaryTasks = await summaryTaskService.createSummaryTasks(
         element.properties,
         element.baselineId,
         savedMilestone.id,
-        element.baselineId || null
+        null
       );
       return {
         ...savedMilestone,
@@ -116,9 +118,12 @@ const flatToHierarchy = (flat) => {
     } else if (item.parentId in all) {
       let parent = all[item.parentId];
       if (!('summaryTask' in parent)) {
+
         parent.summaryTask = [];
       }
+
       parent.summaryTask.push(item);
+      parent.summaryTask.sort((a, b) => (a.order) - (b.order))
     }
   });
 
@@ -153,14 +158,21 @@ const getByProject = async (projectId) => {
     // order: { createdAt: 'DESC' },
 
   });
-  milestone.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  milestone.sort((a, b) => (a.order) - (b.order));
+
   for (const item of milestone) {
+
     let finalSub = flatToHierarchy(item.summaryTask);
     delete item.summaryTask;
 
     item['summaryTask'] = finalSub;
-  }
 
+    item.summaryTask.sort((a, b) => (a.order) - (b.order));
+    console.log(item.summaryTask, "finalSub")
+
+    // console.log(finalSub.summaryTask, "summaryTaskFinalSub")
+  }
+  // console.log(milestone, "Project Status ReportProject milestone Report")
   return milestone;
 };
 /**

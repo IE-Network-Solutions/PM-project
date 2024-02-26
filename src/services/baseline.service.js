@@ -339,7 +339,8 @@ const projectSchedule = async (projectId) => {
     // order: { createdAt: 'DEC' }
 
   });
-  milestone.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  console.log(milestone, "Project Status Report")
+  milestone.sort((a, b) => (a.order) - (b.order));
   if (milestone) {
 
     let milestones = milestone
@@ -347,7 +348,7 @@ const projectSchedule = async (projectId) => {
 
       let finalSub = milestoneService.flatToHierarchy(item.summaryTask)
       delete item.summaryTask
-      finalSub.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      finalSub.sort((a, b) => (a.order) - (b.order));
 
       item["summaryTask"] = finalSub
 
@@ -355,7 +356,7 @@ const projectSchedule = async (projectId) => {
 
     const groupedByBaseline = milestone.reduce((base, milestone) => {
       const lastSummaryTask = findLastSummaryTask(milestone.summaryTask);
-      lastSummaryTask.tasks.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      lastSummaryTask.tasks.sort((a, b) => (a.order) - (b.order));
 
       if (lastSummaryTask) {
         let newLastSummaryTask = lastSummaryTask.tasks
