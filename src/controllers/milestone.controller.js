@@ -18,8 +18,19 @@ const createMilestone = catchAsync(async (req, res) => {
   // const subTasks = req.body.subTasks;
   // delete req.body.Tasks;
   // delete req.body.subTasks;
+  let milestones = []
   const milestone = await milestoneService.createMilestone(req.body);
-  res.status(httpStatus.CREATED).json(milestone);
+  for (element of milestone) {
+    console.log(milestone, "gggggg")
+    const returnedMilestone = await milestoneService.getByMilestoneId(element.id);
+    console.log(returnedMilestone, "returnedMilestone")
+    milestones.push(returnedMilestone)
+
+
+  }
+  //milestones.sort((a, b) => (a.order) - (b.order));
+  console.log(milestones, "xcvbnmdfghjkrtyui")
+  res.status(httpStatus.CREATED).json(milestones);
 });
 /**
  * Retrieves milestones based on the provided filter and options.

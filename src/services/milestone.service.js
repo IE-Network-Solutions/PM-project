@@ -170,9 +170,30 @@ const getByProject = async (projectId) => {
     item.summaryTask.sort((a, b) => (a.order) - (b.order));
     console.log(item.summaryTask, "finalSub")
 
-    // console.log(finalSub.summaryTask, "summaryTaskFinalSub")
+
   }
-  // console.log(milestone, "Project Status ReportProject milestone Report")
+
+  return milestone;
+};
+
+
+const getByMilestoneId = async (milestoenId) => {
+  console.log(milestoenId, milestoenId)
+  const milestone = await milestoneRepository.findOne({
+    where: { id: milestoenId },
+
+    relations: ['summaryTask', 'summaryTask.tasks'],
+    // order: { createdAt: 'DESC' },
+
+  });
+
+  let finalSub = flatToHierarchy(milestone.summaryTask);
+  delete milestone.summaryTask;
+
+  milestone['summaryTask'] = finalSub;
+
+  milestone.summaryTask.sort((a, b) => (a.order) - (b.order));
+
   return milestone;
 };
 /**
@@ -256,4 +277,5 @@ module.exports = {
   updateIsEvaluted,
   updateIsSendToDOO,
   flatToHierarchy,
+  getByMilestoneId,
 };
