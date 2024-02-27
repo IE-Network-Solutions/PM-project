@@ -20,7 +20,7 @@ const createBaseline = catchAsync(async (req, res) => {
   //delete req.body.milestones;
   // delete req.body.subTasks;
 
-  console.log(req.body, "nahomeconsole")
+
 
   const baseline = await baselineService.createBaseline(req.body, milestones);
 

@@ -30,7 +30,7 @@ const createMom = {
     meetingTime: Joi.string(),
     location: Joi.string(),
     facilitatorId: Joi.string(),
-    specialNote: Joi.string(),
+    specialNote: Joi.string().allow(null),
     attendees: Joi.array(),
     absents: Joi.array().allow(null),
     externalAttendees: Joi.array(),
@@ -116,9 +116,10 @@ const updateMom = {
  * @property {Object} params - URL parameters object.
  * @property {string} params.MomId - ID of the MoM to delete.
  */
+
 const deleteMom = {
   params: Joi.object().keys({
-    MomId: Joi.string(),
+    momId: Joi.string(),
   }),
 };
 /**

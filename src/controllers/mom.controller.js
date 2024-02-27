@@ -121,6 +121,7 @@ const updateMom = catchAsync(async (req, res) => {
  * @returns {Promise<void>} - Resolves with a success status after deletion.
  */
 const deleteMom = catchAsync(async (req, res) => {
+  console.log(req.params.momId, 'llll')
   await momService.deleteMom(req.params.momId);
   res.status(httpStatus.NO_CONTENT).send();
 });
