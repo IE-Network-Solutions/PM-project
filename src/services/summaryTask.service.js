@@ -148,6 +148,7 @@ const updateSingleSummaryTask = async (taskBody) => {
       taskBody.map(async (element) => {
         const sumtask = await summaryTaskRepository.save({
           id: element.id,
+          order: element.taskId,
           ...element,
         });
 
