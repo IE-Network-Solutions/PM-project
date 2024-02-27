@@ -21,15 +21,11 @@ const createMilestone = catchAsync(async (req, res) => {
   let milestones = []
   const milestone = await milestoneService.createMilestone(req.body);
   for (element of milestone) {
-    console.log(milestone, "gggggg")
+
     const returnedMilestone = await milestoneService.getByMilestoneId(element.id);
-    console.log(returnedMilestone, "returnedMilestone")
     milestones.push(returnedMilestone)
-
-
   }
-  //milestones.sort((a, b) => (a.order) - (b.order));
-  console.log(milestones, "xcvbnmdfghjkrtyui")
+  milestones.sort((a, b) => (a.order) - (b.order));
   res.status(httpStatus.CREATED).json(milestones);
 });
 /**

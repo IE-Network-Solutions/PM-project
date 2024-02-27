@@ -339,7 +339,7 @@ const projectSchedule = async (projectId) => {
     // order: { createdAt: 'DEC' }
 
   });
-  console.log(milestone, "Project Status Report")
+
   milestone.sort((a, b) => (a.order) - (b.order));
   if (milestone) {
 

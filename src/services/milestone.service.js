@@ -168,7 +168,7 @@ const getByProject = async (projectId) => {
     item['summaryTask'] = finalSub;
 
     item.summaryTask.sort((a, b) => (a.order) - (b.order));
-    console.log(item.summaryTask, "finalSub")
+
 
 
   }
