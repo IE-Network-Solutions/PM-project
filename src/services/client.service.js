@@ -32,6 +32,13 @@ const getClients = async (filter, options) => {
         paginationOptions: { limit: limit, page: page },
     });
 };
+
+const createClient = async (clientData) => {
+    let client = await clientRepository.create(clientData);
+
+    return await clientRepository.save(client);
+}
 module.exports={
-    getClients
+    getClients,
+    createClient
 };

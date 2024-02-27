@@ -2,6 +2,7 @@ const amqp = require('amqplib');
 const logger = require('../config/logger');
 const userService = require('../services/user.service');
 const roleService = require('../services/role.service');
+const clientService = require('../services/client.service');
 const projectBudgetService = require('../services/projectBudget.service');
 async function ConsumeFromRabbit(routingKeys = []) {
   const rabbitmqUrl = 'amqp://localhost:5672';
@@ -41,6 +42,17 @@ async function ConsumeFromRabbit(routingKeys = []) {
       roleData.updatedAt = JSON.parse(data.content.toString()).updated_at;
       console.log(roleData,"role testttttt");
       roleService.createRole(roleData);
+     } else if (data.fields.routingKey.includes('client') && data.fields.routingKey.includes('create')) {
+      let clientData = {};
+      clientData.id = JSON.parse(data.content.toString()).id;
+      clientData.clientName = JSON.parse(data.content.toString()).client_name;
+      clientData.postalCode = JSON.parse(data.content.toString()).postal_code;
+      clientData.address = JSON.parse(data.content.toString()).address;
+      clientData.telephone = JSON.parse(data.content.toString()).telephone;
+      clientData.createdAt = JSON.parse(data.content.toString()).created_at;
+      clientData.updatedAt = JSON.parse(data.content.toString()).updated_at;
+      console.log(clientData,"client testttttt");
+      clientService.createClient(clientData);
      }
     channel.ack(data, false, true);
   });
