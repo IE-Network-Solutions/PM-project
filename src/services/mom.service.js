@@ -81,13 +81,14 @@ const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
       });
 
       const savedActionInstance = await momActionRepository.save(actionInstance);
+      if (eachAction.responsiblePersonId !== null && eachAction.responsiblePersonId !== '') {
+        const responsiblePersonInstance = momActionResponsibleRepository.create({
+          userId: eachAction.responsiblePersonId,
+          momActionId: savedActionInstance.id,
+        });
 
-      const responsiblePersonInstance = momActionResponsibleRepository.create({
-        userId: eachAction.responsiblePersonId,
-        momActionId: savedActionInstance.id,
-      });
-
-      await momActionResponsibleRepository.save(responsiblePersonInstance);
+        await momActionResponsibleRepository.save(responsiblePersonInstance);
+      }
       actionInstances.push(savedActionInstance);
 
     }

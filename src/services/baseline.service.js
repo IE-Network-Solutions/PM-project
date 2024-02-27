@@ -58,6 +58,7 @@ const baselineHistoryRepository = dataSource.getRepository(BaselineHistory).exte
 const createBaseline = async (baselineBody, milestones) => {
   delete baselineBody.milestones;
   let savedBaseline
+
   if (baselineBody) {
     const lastActiveBaseline = await baselineRepository.findOne({
       where: {
@@ -84,9 +85,19 @@ const createBaseline = async (baselineBody, milestones) => {
         projectId: baselineBody.projectId,
       });
 
-      savedBaseline = await baselineRepository.save(baseline);
 
-      if (milestones) {
+      savedBaseline = await baselineRepository.save(baseline);
+    }
+    else {
+      const baseline = baselineRepository.create({
+        name: baselineBody.name,
+        status: true,
+        projectId: baselineBody.projectId,
+      });
+      savedBaseline = await baselineRepository.save(baseline);
+    }
+    try {
+      if (milestones && savedBaseline) {
         const savedMilestones = await Promise.all(milestones.map(async (milestone) => {
           if (milestone.summaryTask) {
             const savedSummaryTasks = await Promise.all(milestone.summaryTask.map(async (eachTask) => {
@@ -102,36 +113,18 @@ const createBaseline = async (baselineBody, milestones) => {
 
         savedBaseline.milestones = savedMilestones;
       }
-
-
+      return await getBaseline(savedBaseline.id)
     }
-    else {
-      const baseline = baselineRepository.create({
-        name: baselineBody.name,
-        status: true,
-        projectId: baselineBody.projectId,
-      });
 
-      savedBaseline = await baselineRepository.save(baseline);
 
-      if (milestones) {
 
-        const savedMilestones = await Promise.all(milestones.map(async (milestone) => {
-          if (milestone.summaryTask) {
-            return summaryTaskService.createSummaryTasks(milestone.summaryTask, savedBaseline.id, milestone.id);
+    catch (error) {
+      console.log(error, "error")
+      await baselineRepository.delete(savedBaseline.id);
 
-          }
-
-          return milestone;
-        }));
-
-        savedBaseline.milestones = savedMilestones;
-      }
-
+      throw error
     }
   }
-
-  return await getBaseline(savedBaseline.id)
 }
 /**
  * Retrieves baselines with optional filtering and pagination.
@@ -351,7 +344,6 @@ const projectSchedule = async (projectId) => {
       finalSub.sort((a, b) => (a.order) - (b.order));
 
       item["summaryTask"] = finalSub
-
     }
 
     const groupedByBaseline = milestone.reduce((base, milestone) => {
@@ -514,9 +506,9 @@ const getBaseline = async (baselineId) => {
   const milestone = await milestoneRepository.find({
     where: { projectId: baselineData.projectId },
     relations: ['summaryTask', 'summaryTask.tasks', 'summaryTask.baseline'],
-    order: { createdAt: 'ASC' }
+    // order: { createdAt: 'ASC' }
   });
-
+  milestone.sort((a, b) => (a.order) - (b.order))
   let milestones = milestone
   for (const item of milestones) {
 

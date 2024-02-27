@@ -113,6 +113,7 @@ const flatToHierarchy = (flat) => {
 
   Object.keys(all).forEach(function (id, index, array) {
     let item = all[id];
+
     if (item.parentId === null) {
       roots.push(item);
     } else if (item.parentId in all) {
@@ -121,6 +122,8 @@ const flatToHierarchy = (flat) => {
 
         parent.summaryTask = [];
       }
+
+      item.tasks.sort((a, b) => (a.order) - (b.order))
 
       parent.summaryTask.push(item);
       parent.summaryTask.sort((a, b) => (a.order) - (b.order))
@@ -132,6 +135,7 @@ const flatToHierarchy = (flat) => {
     if (!('summaryTask' in item) || item.summaryTask.length === 0) {
       // If it's a leaf node, mark it as the last child
       item.lastChild = true;
+      item.tasks.sort((a, b) => (a.order) - (b.order))
     } else {
       // If it has children, check if it's referenced by another object
       let referenced = Object.values(all).some(function (otherItem) {

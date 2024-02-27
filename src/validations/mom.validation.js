@@ -30,7 +30,7 @@ const createMom = {
     meetingTime: Joi.string(),
     location: Joi.string(),
     facilitatorId: Joi.string(),
-    specialNote: Joi.string().allow(null),
+    specialNote: Joi.string().allow(null || ""),
     attendees: Joi.array(),
     absents: Joi.array().allow(null),
     externalAttendees: Joi.array(),

@@ -64,7 +64,6 @@ const createSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
  */
 const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
 
-  console.log(taskBody.tasks, "taskssss")
   let allTasks = [];
 
   if (taskBody) {
@@ -83,12 +82,12 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
         parentId: taskBody.parentId,
       }
     );
-    if (taskBody?.tasks.length !== 0) {
+    if (taskBody && taskBody.tasks && taskBody.tasks.length !== 0) {
       let newTasks = taskBody.tasks
         .filter((t) => !t.id)
         .map((e) => {
           // delete e.duration;
-          //delete e.taskId;
+          // delete e.taskId;
           return { ...e, order: e.taskId, baselineId: baselineId };
         });
 
@@ -103,12 +102,14 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
         .filter((t) => t.id)
         .map((e) => {
           // delete e.duration;
-          //  delete e.taskId;
-          return { ...e, baselineId: baselineId };
+          // delete e.taskId;
+          return { ...e, order: e.taskId, baselineId: baselineId };
         });
 
       if (updateTasks.length > 0) {
+
         updateTasks.forEach((ut) => {
+          delete ut.taskId;
           let updatedTasks = taskRepository.update(
             { id: ut.id },
             {
