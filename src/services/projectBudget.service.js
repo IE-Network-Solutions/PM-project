@@ -11,30 +11,42 @@ const projectBudgetRepository = dataSource.getRepository(projectBudget).extend({
 });
 
 /**
- * create a project budget
- * @param {Object} budgetCategoryy
- * @returns {Promise<Project>}
+ * @module projectBudget
+ */
+/**
+ * Creates a project budget by saving the given project budget data.
+ *
+ * @function
+ * @param {Object} projectBudgetData - Data representing the project budget.
+ * @returns {Promise<Object>} - A promise that resolves to the saved project budget.
  */
 const createProjectBudget = async (projectBudgetData) => {
   const projectBudget = projectBudgetRepository.create(projectBudgetData);
   return await projectBudgetRepository.save(projectBudget);
 };
-
 /**
- * Query for budgetCategories
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves all project budgets from the repository.
+ *
+ * @function
+ * @returns {Promise<Object[]>} - A promise that resolves to an array of project budgets.
  */
 const getAllProjectBudgets = async () => {
   //   const { limit, page, sortBy } = options;
 
   return await projectBudgetRepository.find();
 };
-
+/**
+ * Retrieves project budgets grouped by budget type, category, and currency.
+ *
+ * @function
+ * @param {number} projectId - The ID of the project to retrieve budgets for.
+ * @returns {Promise<Object>} - An object with nested structures representing project budgets:
+ *   - {Object} budgetType - Budget type (e.g., "Operating", "Capital").
+ *     - {Object} budgetCategory - Budget category (e.g., "Personnel", "Equipment").
+ *       - {Object} currency - Currency type (e.g., "USD", "EUR").
+ *         - {Array<Object>} projectBudgets - Array of project budget entries.
+ *           Each entry contains details about the budget for a specific project.
+ */
 const getAllProjectBudgetsByCategory = async (projectId) => {
   //   const projectBudgets = await projectBudgetRepository.find();
   const projectBudgets = await projectBudgetRepository
@@ -75,21 +87,24 @@ const getAllProjectBudgetsByCategory = async (projectId) => {
   return regroupedData;
   //   return projectBudgets;
 };
-
 /**
- * Get catagory budget by id
- * @param {ObjectId} id
- * @returns {Promise<Project>}
+ * Retrieves a project budget based on the specified ID.
+ *
+ * @function
+ * @param {number} id - The unique identifier of the project budget.
+ * @returns {Promise<Object>} - A promise that resolves to the project budget object.
  */
 const getProjectBudget = async (id) => {
   return await projectBudgetRepository.findOneBy({ id: id });
 };
-
 /**
- * Update category budget by id
- * @param {ObjectId} taskId
- * @param {Object} updateBody
- * @returns {Promise<Project>}
+ * Updates a project budget based on the specified ID.
+ *
+ * @function
+ * @param {number} projectBudgetID - The unique identifier of the project budget to update.
+ * @param {Object} data - Updated data for the project budget.
+ * @throws {ApiError} - Throws an error if the project budget with the given ID is not found.
+ * @returns {Promise<Object>} - A promise that resolves to the updated project budget object.
  */
 const updateProjectBudget = async (projectBudgetID, data) => {
   const projectBudget = await getProjectBudget(projectBudgetID);
@@ -101,6 +116,13 @@ const updateProjectBudget = async (projectBudgetID, data) => {
   await projectBudgetRepository.update({ id: projectBudgetID }, updateBody);
   return getProjectBudget(projectBudgetID);
 };
+/**
+ * Updates or creates project budgets based on the provided data.
+ *
+ * @function
+ * @param {string} projectBudgets - A JSON string containing an array of project budget objects.
+ * @returns {Promise<Object[]>} - A promise that resolves to an array of updated or newly created project budgets.
+ */
 const updateOrCreateProjectBudget = async (projectBudgets) => {
   for (const projectBudget of JSON.parse(projectBudgets)) {
     const projectBudgetData = await getProjectBudget(projectBudget.id);

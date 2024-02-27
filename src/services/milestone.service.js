@@ -1,9 +1,10 @@
 const httpStatus = require('http-status');
-const { Milestone, Task, Subtask, Baseline } = require('../models');
+const { Milestone, Task, Subtask, Baseline, SummaryTask } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const summaryTaskService = require('./summaryTask.service');
 
 const milestoneRepository = dataSource.getRepository(Milestone).extend({
   findAll,
@@ -21,29 +22,62 @@ const subTaskRepository = dataSource.getRepository(Subtask).extend({
   findAll,
   sortBy,
 });
-
+const summaryTaskRepository = dataSource.getRepository(SummaryTask).extend({
+  findAll,
+  sortBy,
+});
 /**
- * Create a user
- * @param {Object} milestoneBody
- * @returns {Promise<Project>}
+ * @module milestone
+ */
+/**
+ * Creates and saves milestones based on provided milestone data.
+ *
+ * @function
+ * @param {Object} milestoneBody - The milestone data.
+ * @property {Array} milestoneBody.properties - An array of milestone properties.
+ * @property {string} milestoneBody.projectId - The ID of the associated project.
+ * @throws {Error} Throws an error if there's an issue creating or saving milestones.
+ * @returns {Promise<Array>} - A promise that resolves to an array of saved milestones.
  */
 const createMilestone = async (milestoneBody) => {
-  const milestone = milestoneRepository.create(milestoneBody);
-  return await milestoneRepository.save(milestone);
+  const milestones = await Promise.all(
+    milestoneBody?.properties.map(async (element) => {
+      console.log(element)
+      const milestone = milestoneRepository.create({
+        name: element.label,
+        weight: element.weight,
+        projectId: milestoneBody.projectId,
+        baselineId: element.baselineId,
+        order: element.order
+      });
+      const savedMilestone = await milestoneRepository.save(milestone);
+      const summaryTasks = await summaryTaskService.createSummaryTasks(
+        element.properties,
+        element.baselineId,
+        savedMilestone.id,
+        null
+      );
+      return {
+        ...savedMilestone,
+        summaryTask: summaryTasks,
+      };
+    })
+  );
+
+  return milestones;
 };
-
-
-
 /**
- * Query for users
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves milestones based on provided filter criteria and options.
+ *
+ * @function
+ * @param {Object} filter - The filter criteria.
+ * @param {Object} options - Additional options.
+ * @property {number} options.limit - The maximum number of results to return.
+ * @property {number} options.page - The page number for pagination.
+ * @property {string} options.sortBy - The field to sort the results by.
+ * @throws {Error} Throws an error if there's an issue retrieving milestones.
+ * @returns {Promise<Array>} - A promise that resolves to an array of milestones.
  */
-
 const getMilestones = async (filter, options) => {
   const { limit, page, sortBy } = options;
   return await milestoneRepository.findAll({
@@ -52,77 +86,189 @@ const getMilestones = async (filter, options) => {
     paginationOptions: { limit: limit, page: page },
   });
 };
-
 /**
- * Get post by id
- * @param {ObjectId} id
- * @returns {Promise<Milestone>}
+ * Retrieves a milestone by its unique ID.
+ *
+ * @function
+ * @param {string} milestoenId - The ID of the milestone.
+ * @throws {Error} Throws an error if there's an issue retrieving the milestone.
+ * @returns {Promise<Object>} - A promise that resolves to the retrieved milestone.
  */
 const getMilestone = async (milestoenId) => {
   return await milestoneRepository.findOneBy({ id: milestoenId });
 };
+/**
+ * Converts a flat list of items into a hierarchical structure.
+ * @function
+ * @param {Array} flat - An array of flat objects.
+ * @returns {Array} - An array of root-level items forming the hierarchy.
+ */
+const flatToHierarchy = (flat) => {
+  let roots = [];
+  let all = {};
 
+  flat.forEach(function (item) {
+    all[item.id] = item;
+  });
+
+  Object.keys(all).forEach(function (id, index, array) {
+    let item = all[id];
+
+    if (item.parentId === null) {
+      roots.push(item);
+    } else if (item.parentId in all) {
+      let parent = all[item.parentId];
+      if (!('summaryTask' in parent)) {
+
+        parent.summaryTask = [];
+      }
+
+      item.tasks.sort((a, b) => (a.order) - (b.order))
+
+      parent.summaryTask.push(item);
+      parent.summaryTask.sort((a, b) => (a.order) - (b.order))
+    }
+  });
+
+  // Mark the last children for each parent
+  Object.values(all).forEach(function (item) {
+    if (!('summaryTask' in item) || item.summaryTask.length === 0) {
+      // If it's a leaf node, mark it as the last child
+      item.lastChild = true;
+      item.tasks.sort((a, b) => (a.order) - (b.order))
+    } else {
+      // If it has children, check if it's referenced by another object
+      let referenced = Object.values(all).some(function (otherItem) {
+        return otherItem.parentId === item.id;
+      });
+      item.lastChild = !referenced;
+    }
+  });
+  return roots;
+};
+/**
+ * Retrieves milestones associated with a specific project ID.
+ *
+ * @function
+ * @param {string} projectId - The ID of the project.
+ * @throws {Error} Throws an error if there's an issue retrieving milestones.
+ * @returns {Promise<Array>} - A promise that resolves to an array of milestones.
+ */
 const getByProject = async (projectId) => {
-  return await milestoneRepository.findBy({ projectId: projectId, });
+  const milestone = await milestoneRepository.find({
+    where: { projectId: projectId },
+
+    relations: ['summaryTask', 'summaryTask.tasks'],
+    // order: { createdAt: 'DESC' },
+
+  });
+  milestone.sort((a, b) => (a.order) - (b.order));
+
+  for (const item of milestone) {
+
+    let finalSub = flatToHierarchy(item.summaryTask);
+    delete item.summaryTask;
+
+    item['summaryTask'] = finalSub;
+
+    item.summaryTask.sort((a, b) => (a.order) - (b.order));
+
+
+
+  }
+
+  return milestone;
 };
 
+
+const getByMilestoneId = async (milestoenId) => {
+  console.log(milestoenId, milestoenId)
+  const milestone = await milestoneRepository.findOne({
+    where: { id: milestoenId },
+
+    relations: ['summaryTask', 'summaryTask.tasks'],
+    // order: { createdAt: 'DESC' },
+
+  });
+
+  let finalSub = flatToHierarchy(milestone.summaryTask);
+  delete milestone.summaryTask;
+
+  milestone['summaryTask'] = finalSub;
+
+  milestone.summaryTask.sort((a, b) => (a.order) - (b.order));
+
+  return milestone;
+};
 /**
- * Update user by id
- * @param {ObjectId} milestoneId
- * @param {Object} updateBody
- * @returns {Promise<Project>}
+ * Updates a milestone by its unique ID.
+ *
+ * @function
+ * @param {string} milestoneId - The ID of the milestone.
+ * @param {Object} updateBody - The update data for the milestone.
+ * @property {Array} updateBody.summaryTask - An array of summary tasks associated with the milestone.
+ * @throws {ApiError} Throws an error if the milestone is not found.
+ * @returns {Promise<Object>} - A promise that resolves to the updated milestone along with updated summary tasks.
  */
 const updateMilestone = async (milestoneId, updateBody) => {
   const milestone = await getMilestone(milestoneId);
   if (!milestone) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Milestone not found');
   }
-  await milestoneRepository.update({ id: milestoneId }, updateBody);
-  return await getMilestone(milestoneId);
+  let summaryTasks = updateBody['summaryTask'];
+  delete updateBody.summaryTask;
+
+  const savedMilestone = await milestoneRepository.save({ ...milestone, ...updateBody });
+
+  let updatedSummaryTask = await summaryTaskService.updateSingleSummaryTask(summaryTasks);
+  return { ...savedMilestone, summaryTask: updatedSummaryTask };
 };
-
-
 /**
- * Delete user by id
- * @param {ObjectId} milestoenId
- * @returns {Promise<User>}
+ * Deletes a milestone by its unique ID.
+ *
+ * @function
+ * @param {string} milestoneId - The ID of the milestone.
+ * @throws {ApiError} Throws an error if the milestone is not found.
+ * @returns {Promise<Object>} - A promise that resolves when the milestone is successfully deleted.
  */
-
 const deleteMilestone = async (milestoneId) => {
   const milestone = await getMilestone(milestoneId);
-  console.log(milestone, milestoneId, "yugfggvbhhuhuhh")
   if (!milestone) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Milestone not found');
   }
-
-
   return await milestoneRepository.delete({ id: milestoneId });
-  //The following code is to cascade deleting baselines, 
-  //tasks and subtasks when we delete milestone
-  // const baselinesToDelete = await baselineRepository.find({ milestoneId: milestoneId });
-  // for (const baseline of baselinesToDelete) {
-  //       const tasksToDelete = await taskRepository.find({ baselineId: baseline.id });
-  //       for (const task of tasksToDelete) {
-  //       const subTasksToDelet = await subTaskRepository.find({ taskId: task.id });
-  //       for (const subtask of subTasksToDelet) {
-  //         await subTaskRepository.delete({ id: subtask.id });
-  //       }
-  //         await taskRepository.delete({ id: task.id });
-  //       }
-  //   await baselineRepository.delete({ id: baseline.id });
-  // }
 
 };
-
+/**
+ *This function allows you to update the hasCheckList property of a milestone based on its unique ID.
+ * @function
+ * @param {string} milestoneId - The ID of the milestone.
+ * @throws {Error} Throws an error if the milestone is not found.
+ * @returns {Promise<Object>} - A promise that resolves when the `hasCheckList` property of the milestone is successfully updated.
+ */
 const updateHasCheckList = async (milestoneId) => {
-  return await milestoneRepository.update({ id: milestoneId }, { hasCheckList: true })
-}
+  return await milestoneRepository.update({ id: milestoneId }, { hasCheckList: true });
+};
+/**
+ * This function allows you to update the isEvaluated property of a milestone based on its unique ID.
+ * @function
+ * @param {string} milestoneId - The ID of the milestone.
+ * @throws {Error} Throws an error if the milestone is not found.
+ * @returns {Promise<Object>} - A promise that resolves when the `isEvaluted` property of the milestone is successfully updated.
+ */
 const updateIsEvaluted = async (milestoneId) => {
-  return await milestoneRepository.update({ id: milestoneId }, { isEvaluted: true })
-}
-const updateIsSendToDOO= async (milestoneId) => {
-  return await milestoneRepository.update({ id: milestoneId }, { isSendToDOO: true })
-}
+  return await milestoneRepository.update({ id: milestoneId }, { isEvaluted: true });
+};
+/**
+ * This function allows you to update the isSendToDOO property of a milestone based on its unique ID.
+ * @function
+ * @param {string} milestoneId - The ID of the milestone.
+ * @throws {Error} Throws an error if the milestone is not found.
+ * @returns {Promise<Object>} - A promise that resolves when the `isSendToDOO` property of the milestone is successfully updated.
+ */
+const updateIsSendToDOO = async (milestoneId) => {
+  return await milestoneRepository.update({ id: milestoneId }, { isSendToDOO: true });
+};
 
 module.exports = {
   createMilestone,
@@ -133,5 +279,7 @@ module.exports = {
   deleteMilestone,
   updateHasCheckList,
   updateIsEvaluted,
-  updateIsSendToDOO
+  updateIsSendToDOO,
+  flatToHierarchy,
+  getByMilestoneId,
 };

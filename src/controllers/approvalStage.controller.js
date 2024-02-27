@@ -3,6 +3,16 @@ const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { roleService, approvalModuleService, approvalStageService } = require('../services');
+/**
+ * @module approvalStage
+ */
+/**
+ * Creates new approval stages based on the provided data.
+ * @function
+ * @param {Object} req - The request object containing the data for creating approval stages.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves once the approval stages are created.
+ */
 
 const createApprovalStage = catchAsync(async (req, res) => {
   const data = req.body;
@@ -24,20 +34,25 @@ const createApprovalStage = catchAsync(async (req, res) => {
         level: stage.level,
         role: role,
         approvalModule: approvalModule,
-        project_role: stage.project_role?stage.project_role:false
+        project_role: stage.project_role ? stage.project_role : false
       };
 
       approvalStageData.push(singleApprovalStageData);
     }
-    console.log(approvalStageData);
     return approvalStageData;
   }
   const approvalstagedata = await returnApprovalStageData(data);
-  console.log(approvalstagedata);
   const approvalStage = await approvalStageService.createApprovalStage(approvalstagedata);
 
   res.status(httpStatus.CREATED).send(approvalStage);
 });
+/**
+ * Retrieves all approval stages.
+ * @function
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with all approval stages.
+ */
 
 const getApprovalStages = catchAsync(async (req, res) => {
   const result = await approvalStageService.getApprovalStages();

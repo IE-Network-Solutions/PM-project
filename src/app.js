@@ -1,7 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const xss = require('xss-clean');
-
+var bodyParser = require('body-parser')
 
 const compression = require('compression');
 const cors = require('cors');
@@ -24,7 +24,7 @@ if (config.env !== 'test') {
   app.use(morgan.successHandler);
   app.use(morgan.errorHandler);
 }
-
+app.use(bodyParser.json({ limit: '5mb' }))
 // set security HTTP headers
 app.use(helmet());
 
@@ -47,7 +47,7 @@ app.options('*', cors());
 
 // limit repeated failed requests to auth endpoints
 if (config.env === 'production') {
-  app.use('/pm-backend/v1/auth', authLimiter);
+  app.use('/v1/auth', authLimiter);
 }
 
 // v1 api routes

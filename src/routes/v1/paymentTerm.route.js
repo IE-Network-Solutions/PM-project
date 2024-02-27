@@ -33,4 +33,8 @@ router
 
 router.route('/atp/:paymentTermId').patch(uploadOptions.single('atp-doc'), paymentTermController.updatePaymentTerm);
 
+router
+  .route('/setVariance')
+  .post(validate(paymentTermValidation.validateVariance),paymentTermController.setVariance);
+
 module.exports = router;

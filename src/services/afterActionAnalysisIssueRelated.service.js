@@ -12,12 +12,15 @@ const findAll = require('./Plugins/findAll');
 
 const afterActionAnalysisIssueRelatedRepository = dataSource.getRepository(AfterActionAnalysisIssueRelated)
     .extend({ findAll, sortBy });
-
-
 /**
- * Create a risk
- * @param {Object} userBody
- * @returns {Promise<AfterActionAnalysisIssueRelated>}
+ * @module afterActionAnalysisIssueRelated
+*/
+/**
+ * Creates and returns an array of after action analysis issue related instances for a given AAA instance and an array of issue related IDs
+ * @function
+ * @param {number} afterActionAnalysisId - The ID of the AAA instance
+ * @param {Array<number>} issueRelatedId - The array of issue related IDs
+ * @returns {Promise<Array<Object>>} - The array of created after action analysis issue related instances
  */
 const createAfterActionAnalysisIssueRelated = async (afterActionAnalysisId, issueRelatedId) => {
     console.log("HERE 1")
@@ -50,17 +53,16 @@ const createAfterActionAnalysisIssueRelated = async (afterActionAnalysisId, issu
 
     return await afterActionAnalysisIssueRelatedRepository.save(AAAAction);
 };
-
 /**
- * Query for users
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Queries and returns the after action analysis issue related instances that match the filter and options
+ * @function
+ * @param {Object} filter - The filter object for the query
+ * @param {Object} options - The options object for the query
+ * @param {number} options.limit - The maximum number of results to return
+ * @param {number} options.page - The page number of the results
+ * @param {string} [options.sortBy] - The optional sorting option for the results
+ * @returns {Promise<Array<Object>>} - The array of after action analysis issue related instances
  */
-
 const queryActionAnalysisWithIssueRelated = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
@@ -70,7 +72,16 @@ const queryActionAnalysisWithIssueRelated = async (filter, options) => {
         paginationOptions: { limit: limit, page: page },
     });
 };
-
+/**
+ * Queries and returns the after action analysis issue related instances by their ID that match the filter and options
+ * @function
+ * @param {Object} filter - The filter object for the query
+ * @param {Object} options - The options object for the query
+ * @param {number} options.limit - The maximum number of results to return
+ * @param {number} options.page - The page number of the results
+ * @param {string} [options.sortBy] - The optional sorting option for the results
+ * @returns {Promise<Array<Object>>} - The array of after action analysis issue related instances by their ID
+ */
 const queryActionAnalysisWithIssueRelatedById = async (filter, options) => {
     const { limit, page, sortBy } = options;
 

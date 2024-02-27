@@ -5,9 +5,9 @@ class Task extends Base {
   // Define additional properties specific to Post entity
   constructor() {
     super(); // Call the constructor of the Base entity to inherit its properties
-    this.name = { type: 'varchar' };
-    this.plannedStart = { type: 'date' };
-    this.plannedFinish = { type: 'date' };
+    this.name = { type: 'varchar', nullable: true };
+    this.plannedStart = { type: 'date', nullable: true };
+    this.plannedFinish = { type: 'date', nullable: true };
     this.actualStart = { type: 'date', nullable: true };
     this.actualFinish = { type: 'date', nullable: true };
     this.completion = { type: 'int', nullable: true };
@@ -15,11 +15,20 @@ class Task extends Base {
     this.actualCost = { type: 'int', nullable: true };
     this.status = { type: 'boolean', nullable: true };
     this.sleepingReason = { type: 'varchar', nullable: true };
-    this.baselineId = { type: 'uuid' };
+    this.baselineId = { type: 'uuid', nullable: true };
     this.milestoneId = { type: 'uuid', nullable: true };
     this.predecessor = { type: 'varchar', nullable: true };
-    this.predecessorType = { type: 'varchar', nullable: true }
+    this.predecessorType = { type: 'varchar', nullable: true };
+    this.start = { type: 'date', nullable: true };
+    this.finish = { type: 'date', nullable: true };
+    this.summarytaskId = { type: 'uuid', nullable: true };
+    this.startVariance = { type: 'int', nullable: true };
+    this.finishVariance = { type: 'int', nullable: true };
+    this.duration = { type: 'int', nullable: true };
+    this.actualDuration = { type: 'int', nullable: true };
+    this.order = { type: 'int', nullable: true }
   }
+
 }
 
 module.exports = new EntitySchema({
@@ -41,6 +50,7 @@ module.exports = new EntitySchema({
       onDelete: 'SET NULL',
       onUpdate: 'SET NULL',
     },
+
     subtasks: {
       type: 'one-to-many',
       target: 'SubTask',
@@ -65,6 +75,13 @@ module.exports = new EntitySchema({
           referencedColumnName: 'id',
         },
       },
+    },
+    summarytask: {
+      type: 'many-to-one',
+      target: 'SummaryTask',
+      // inverseSide: 'tasks',
+      onDelete: 'SET NULL',
+      onUpdate: 'SET NULL',
     },
   },
 });

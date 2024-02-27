@@ -3,7 +3,17 @@ const { Evalution, CheckList, milestoneService, projectService } = require('../s
 const catchAsync = require('../utils/catchAsync');
 const ApiError = require('../utils/ApiError');
 const pick = require('../utils/pick');
-
+/**
+ * @module evaluation
+ */
+/**
+ * Creates a new evaluation.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the created evaluation.
+ * @throws {ApiError} - Throws an error if the evaluation cannot be created.
+ */
 const createEvalution = catchAsync(async (req, res, next) => {
     const todoEvalutionIds = req.body.todoEvalutionIds;
     const checkListId = req.body.checkListId;
@@ -11,10 +21,18 @@ const createEvalution = catchAsync(async (req, res, next) => {
     const evalution = await Evalution.createEvalution(checkListId);
     await milestoneService.updateIsEvaluted(result?.milestone?.id);
     const ids = await CheckList.createTodoEvalution(evalution.id, todoEvalutionIds);
-   
+
     res.status(httpStatus.CREATED).send(evalution);
 })
 
+/**
+ * Retrieves a specific evaluation by ID.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the requested evaluation.
+ * @throws {ApiError} - Throws an error if the evaluation is not found.
+ */
 const getEvalution = catchAsync(async (req, res) => {
     const evalution = await Evalution.getEvalution(req.params.id);
     if (!evalution) {
@@ -25,6 +43,14 @@ const getEvalution = catchAsync(async (req, res) => {
 
 });
 
+/**
+ * Retrieves all evaluations.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the list of evaluations.
+ * @throws {ApiError} - Throws an error if no evaluations are found.
+ */
 const getEvalutions = catchAsync(async (req, res, next) => {
     const evalution = await Evalution.getEvalutions();
     if (!evalution) {
@@ -33,13 +59,27 @@ const getEvalutions = catchAsync(async (req, res, next) => {
     res.status(httpStatus.OK).send(evalution)
 })
 
+/**
+ * Retrieves the evaluation associated with a milestone ID.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the evaluation for the specified milestone.
+ */
 const getEvalutionByMilestoneId = catchAsync(async (req, res) => {
     const evalution = await Evalution.getEvalutionByMilestoneId(req.params.id);
     res.status(httpStatus.OK).send(evalution)
 })
 
+/**
+ * Updates an evaluation by ID.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the updated evaluation.
+ */
 const updateEvalution = catchAsync(async (req, res) => {
-    
+
     const checkListId = req.body.checkListId;
     const todoEvalutionIds = req.body.todoEvalutionIds;
 
@@ -48,6 +88,15 @@ const updateEvalution = catchAsync(async (req, res) => {
 
 })
 
+
+/**
+ * Sends a milestone to DOO (Director of Operations).
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the updated milestone after sending to DOO.
+ * @throws {ApiError} - Throws an error if the milestone cannot be sent to DOO.
+ */
 const sendToDOO = catchAsync(async (req, res) => {
     const sendToDoo = await milestoneService.updateIsSendToDOO(req.params.id);
     if (!sendToDoo) {
@@ -55,6 +104,15 @@ const sendToDOO = catchAsync(async (req, res) => {
     }
     res.status(httpStatus.OK).send(await milestoneService.getMilestone(req.params.id));
 });
+
+/**
+ * Exports evaluation data to Excel for a specific milestone.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the project data including evaluation information.
+ * @throws {ApiError} - Throws an error if the milestone is not evaluated.
+ */
 const exportEvaluationToExcelPerMilestone = catchAsync(async (req, res) => {
     const evaluation = await Evalution.getEvalutionByMilestoneId(req.params.id);
     const project = await projectService.getProject(evaluation?.evalution?.milestone?.projectId)
@@ -65,11 +123,25 @@ const exportEvaluationToExcelPerMilestone = catchAsync(async (req, res) => {
     res.status(httpStatus.OK).send(project)
 })
 
+/**
+ * Exports evaluation data to Excel for the entire project.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with the project data including evaluation information.
+ */
 const exportEvaluationToExcelPerProject = catchAsync(async (req, res) => {
     const project = await projectService.getProjects();
     res.status(httpStatus.OK).send(project)
 })
 
+/**
+ * Retrieves sent milestones by manager, associating evaluations with their respective projects.
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - Resolves with a list of projects and their associated evaluations.
+ */
 const getSentMilestonesByManager = catchAsync(async (req, res) => {
     const filter = pick(req.query, ['milestone']);
     const options = pick(req.query, ['sortBy', 'limit', 'page']);

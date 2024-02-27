@@ -7,7 +7,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(validate(milestoneValidation.createMilestone), milestoneController.createMilestone)
+  .post(milestoneController.createMilestone)
   .get(validate(milestoneValidation.getMilestones), milestoneController.getMilestones);
 
 router

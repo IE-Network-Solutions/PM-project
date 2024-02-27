@@ -12,9 +12,12 @@ const approvalLevelRepository = dataSource.getRepository(ApprovalLevel).extend({
 });
 
 /**
- * Create a approval level
- * @param {Object} approvalModuleBody
- * @returns {Promise<ApprovalLevel>}
+ * @module approvalLevel
+ */
+/**
+ * Creates and returns an array of approval level instances with predefined data
+ * @function
+ * @returns {Promise<Array<Object>>} - The array of approval level instances
  */
 const createApprovalLevel = async () => {
   const approvalLevels = [
@@ -37,17 +40,11 @@ const createApprovalLevel = async () => {
   const moduleDatas = await approvalLevelRepository.save(levels);
   return moduleDatas;
 };
-
 /**
- * Query for approval level
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Gets and returns an array of approval level instances from the repository
+ * @function
+ * @returns {Promise<Array<Object>>} - The array of approval level instances
  */
-
 const getApprovalLevels = async () => {
   return await approvalLevelRepository.find();
 };

@@ -8,11 +8,18 @@ const findAll = require('./Plugins/findAll');
 const LLCommentsRepository = dataSource.getRepository(LLComments).extend({ findAll, sortBy });
 // .extend({ sortBy });
 //
-
 /**
- * Create a risk
- * @param {Object} userBody
- * @returns {Promise<LLComments>}
+ * @module LLComment
+ */
+/**
+ * Creates an entry for LL comments
+ * @function
+ * @param {Object} LLCommentBody - The lesson learned comment data.
+ * @property {string} LLCommentBody.id - The ID of the lesson learned comment.
+ * @property {string} LLCommentBody.lessonLearnedId - The ID of the associated lesson learned.
+ * @property {Date} LLCommentBody.date - The date of the comment.
+ * @throws {Error} Throws an error if there's an issue creating or saving the comment.
+ * @returns {Promise<Object>} - A promise that resolves to the saved lesson learned comment.
  */
 const createLLComment = async (LLCommentBody) => {
     LLCommentBody.lessonLearnedId = LLCommentBody.id;
@@ -21,17 +28,17 @@ const createLLComment = async (LLCommentBody) => {
     const result = LLCommentsRepository.create(LLCommentBody);
     return await LLCommentsRepository.save(result);
 };
-
 /**
- * Query for users
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * This function retrieves the LL comments based on the filter confition
+ * @function
+ * @param {Object} filter - The filter criteria.
+ * @param {Object} options - Additional options.
+ * @property {number} options.limit - The maximum number of results to return.
+ * @property {number} options.page - The page number for pagination.
+ * @property {string} options.sortBy - The field to sort the results by.
+ * @throws {Error} Throws an error if there's an issue retrieving the comments.
+ * @returns {Promise<Array>} - A promise that resolves to an array of lesson learned comments.
  */
-
 const queryLLComments = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
@@ -44,11 +51,12 @@ const queryLLComments = async (filter, options) => {
         });
 
 };
-
 /**
- * Get risk by id
- * @param {ObjectId} id
- * @returns {Promise<LLComments>}
+ * This function retrieves a lesson learned comment by its unique ID and returns an array of comments associated with the specified ID.
+ * @function
+ * @param {string} id - The ID of the lesson learned comment.
+ * @throws {Error} Throws an error if there's an issue retrieving the comment.
+ * @returns {Promise<Array>} - A promise that resolves to an array of lesson learned comments.
  */
 const getLLCommentById = async (id) => {
     return await LLCommentsRepository.find(
@@ -57,7 +65,14 @@ const getLLCommentById = async (id) => {
             relations: ['lessonLearned', 'user']
         });
 };
-
+/**
+ * Retrieves lesson learned comments associated with a specific lesson learned ID.
+ *
+ * @function
+ * @param {string} id - The ID of the lesson learned.
+ * @throws {Error} Throws an error if there's an issue retrieving the comments.
+ * @returns {Promise<Array>} - A promise that resolves to an array of lesson learned comments.
+ */
 const getLLCommentByLLId = async (id) => {
     return await LLCommentsRepository.find(
         {
@@ -65,12 +80,15 @@ const getLLCommentByLLId = async (id) => {
             relations: ['lessonLearned', 'user']
         });
 };
-
 /**
- * Update user by id
- * @param {ObjectId} commentId
- * @param {Object} updateBody
- * @returns {Promise<LLComments>}
+ * Updates a lesson learned comment by its unique ID.
+ *
+ * @function
+ * @param {string} LLCommentId - The ID of the lesson learned comment.
+ * @param {Object} updateBody - The update data for the lesson learned comment.
+ * @property {Date} updateBody.date - The updated date for the comment.
+ * @throws {Error} Throws an error if the lesson learned comment is not found.
+ * @returns {Promise<Object>} - A promise that resolves to the updated lesson learned comment.
  */
 const updateLLCommentById = async (LLCommentId, updateBody) => {
     const result = await getLLCommentById(LLCommentId);
@@ -81,11 +99,12 @@ const updateLLCommentById = async (LLCommentId, updateBody) => {
     await LLCommentsRepository.update({ id: LLCommentId }, updateBody);
     return await getLLCommentById(LLCommentId);
 };
-
 /**
- * Delete user by id
- * @param {ObjectId} commentId
- * @returns {Promise<LLComments>}
+ * Deletes the LL comment using the ID
+ * @function
+ * @param {string} LLCommentId - The ID of the lesson learned comment.
+ * @throws {Error} Throws an error if the lesson learned comment is not found.
+ * @returns {Promise<Object>} - A promise that resolves when the lesson learned comment is successfully deleted.
  */
 const deleteLLCommentById = async (LLCommentId) => {
     const result = await getLLCommentById(LLCommentId);

@@ -9,11 +9,14 @@ const budgetTypeRepository = dataSource.getRepository(BudgetType).extend({
   findAll,
   sortBy,
 });
-
 /**
- * Create a budget type
- * @param {Object} budgetType
- * @returns {Promise<Project>}
+ * @module budgetType
+ */
+/**
+ * Creates a budget type.
+ * @function
+ * @param {object} budgetTypeData - The data for the budget type.
+ * @returns {Promise<object>} - A promise that resolves with the saved budget type.
  */
 const createBudgetType = async (budgetTypeData) => {
   const budgetType = budgetTypeRepository.create(budgetTypeData);
@@ -21,13 +24,14 @@ const createBudgetType = async (budgetTypeData) => {
 };
 
 /**
- * Query for budgetTypes
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves all budget types.
+ * @function
+ * @param {object} filter - The filter criteria for querying budget types.
+ * @param {object} options - Additional options for pagination and sorting.
+ * @param {number} options.limit - The maximum number of results to return.
+ * @param {number} options.page - The page number for pagination.
+ * @param {string} options.sortBy - The field to sort the results by.
+ * @returns {Promise<object[]>} - A promise that resolves with an array of budget types.
  */
 const getAllBudgetTypes = async (filter, options) => {
   const { limit, page, sortBy } = options;
@@ -38,21 +42,22 @@ const getAllBudgetTypes = async (filter, options) => {
     paginationOptions: { limit: limit, page: page },
   });
 };
-
 /**
- * Get budget type by id
- * @param {ObjectId} id
- * @returns {Promise<Project>}
+ * Retrieves a budget type by its ID.
+ * @function
+ * @param {number} id - The unique identifier of the budget type.
+ * @returns {Promise<object|null>} - A promise that resolves with the budget type object or null if not found.
  */
 const getBudgetType = async (id) => {
   return await budgetTypeRepository.findOneBy({ id: id });
 };
-
 /**
- * Update budget type by id
- * @param {ObjectId} taskId
- * @param {Object} updateBody
- * @returns {Promise<Project>}
+ * Updates a budget type.
+ * @function
+ * @param {number} budgetTypeId - The unique identifier of the budget type to update.
+ * @param {object} updateBody - The data to update the budget type with.
+ * @returns {Promise<object|null>} - A promise that resolves with the updated budget type object or null if not found.
+ * @throws {ApiError} - Throws an error if the budget type is not found.
  */
 const updateBudgetType = async (budgetTypeId, updateBody) => {
   const budgetType = getBudgetType(budgetTypeId);
@@ -62,11 +67,12 @@ const updateBudgetType = async (budgetTypeId, updateBody) => {
   await budgetTypeRepository.update({ id: budgetTypeId }, updateBody);
   return getBudgetType(budgetTypeId);
 };
-
 /**
- * Delete budget type by id
- * @param {ObjectId} budgetTypeId
- * @returns {Promise<User>}
+ * Deletes a budget type by its ID.
+ * @function
+ * @param {number} budgetTypeId - The unique identifier of the budget type to delete.
+ * @returns {Promise<object|null>} - A promise that resolves with the result of the deletion (usually null).
+ * @throws {ApiError} - Throws an error if the budget type is not found.
  */
 const deleteBudgetTypeId = async (budgetTypeId) => {
   const budgetType = await getBudgetType(budgetTypeId);
@@ -76,6 +82,11 @@ const deleteBudgetTypeId = async (budgetTypeId) => {
   return await budgetTypeRepository.delete({ id: budgetTypeId });
 };
 
+/**
+ * Retrieves all office-related budget types.
+ * @function
+ * @returns {Promise<object[]>} - A promise that resolves with an array of office budget types.
+ */
 const getAllOfficeBudgetTypes = async () => {
   let isOffice = true;
   return await budgetTypeRepository.find({ where: { isOffice: isOffice } });

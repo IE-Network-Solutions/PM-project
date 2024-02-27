@@ -13,7 +13,12 @@ router
   .get(monthlyBudgetController.getMonthlyBudget);
 
 router.route('/month').get(monthlyBudgetController.getMonthlyBudgetByMonth);
+router.route('/month/project').get(monthlyBudgetController.getMonthlyBudgetByMonthGroupedByProject);
+router.route('/month/officProject').get(monthlyBudgetController.getMonthlyBudgetByMonthGroupedByProjectOfficeProject);
 
 router.route('/:id').patch(authPermision.editProjectBudgetMiddleware, monthlyBudgetController.updateMonthlyBudget);
+
+router.route('/officProject:id').patch(monthlyBudgetController.updateOfficeMonthlyBudget);
+router.route('/officProject/:projectId').get(monthlyBudgetController.getMonthlyBudgetByProject);
 
 module.exports = router;

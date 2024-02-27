@@ -21,11 +21,21 @@ const momAgendaTopicRepository = dataSource.getRepository(momAgendaTopic);
 const userRepository = dataSource.getRepository(User);
 
 /**
- * Create a user
- * @param {Object} momBody
- * @returns {Promise<Mom>}
+ * @module MOM
+ */
+/**
+ * This function creates and saves the Minutes of Meeting (MOM) along with attendees, absentees, action items, and agenda topics.
+ * @function
+ * @param {Object} momBody - The main body of the MOM (Minutes of Meeting).
+ * @param {Array<Object>} Attendees - An array of attendees' data.
+ * @param {Array<Object>} Absents - An array of absentees' data.
+ * @param {Array<Object>} Action - An array of action items.
+ * @param {Array<Object>} Agenda - An array of agenda topics.
+ * @throws {Error} Throws an error if there's an issue creating or saving the MOM.
+ * @returns {Promise<Object>} - A promise that resolves to the saved MOM.
  */
 const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
+  console.log(Agenda[0].agendaTopics, "Agenda")
   const mom = momRepository.create(momBody);
   // Save the mom
   await momRepository.save(mom);
@@ -42,16 +52,19 @@ const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
     await momAttendeesRepository.save(momInstances);
   }
   if (Absents) {
-    const momInstances = Absents.map((eachAbsents) => {
-      return momAbsentsRepository.create({
-        momId: mom.id,
-        userId: eachAbsents.userId,
-      });
-    });
+    const momInstances = [];
+    for (const eachAbsents of Absents) {
+      if (eachAbsents.userId !== null && eachAbsents.userId !== '') {
+        const createdAbsents = momAbsentsRepository.create({
+          momId: mom.id,
+          userId: eachAbsents.userId,
+        });
 
-    // Save the mom instances
-    console.log(momInstances, "momInstances")
-    await momAbsentsRepository.save(momInstances);
+        const savedAbsents = await momAbsentsRepository.save(createdAbsents);
+        momInstances.push(savedAbsents);
+      }
+    }
+    //  return momInstances;
   }
 
 
@@ -68,22 +81,19 @@ const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
       });
 
       const savedActionInstance = await momActionRepository.save(actionInstance);
+      if (eachAction.responsiblePersonId !== null && eachAction.responsiblePersonId !== '') {
+        const responsiblePersonInstance = momActionResponsibleRepository.create({
+          userId: eachAction.responsiblePersonId,
+          momActionId: savedActionInstance.id,
+        });
 
-      for (const responsiblePerson of responsiblePersons) {
-        if (responsiblePerson.id) {
-          const responsiblePersonInstance = momActionResponsibleRepository.create({
-            userId: responsiblePerson.id,
-            momActionId: savedActionInstance.id,
-          });
-
-          await momActionResponsibleRepository.save(responsiblePersonInstance);
-        }
-
-        actionInstances.push(savedActionInstance);
+        await momActionResponsibleRepository.save(responsiblePersonInstance);
       }
+      actionInstances.push(savedActionInstance);
+
     }
 
-
+    console.log(actionInstances, "actionInstances")
     mom.action = actionInstances;
   }
 
@@ -123,19 +133,18 @@ const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
 
   return mom;
 };
-
-
-
 /**
- * Query for users
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves MOMs (Minutes of Meeting) based on provided filter criteria and options.
+ *
+ * @function
+ * @param {Object} filter - The filter criteria.
+ * @param {Object} options - Additional options.
+ * @property {number} options.limit - The maximum number of results to return.
+ * @property {number} options.page - The page number for pagination.
+ * @property {string} options.sortBy - The field to sort the results by.
+ * @throws {Error} Throws an error if there's an issue retrieving MOMs.
+ * @returns {Promise<Array>} - A promise that resolves to an array of MOMs.
  */
-
 const getMoms = async (filter, options) => {
   const { limit, page, sortBy } = options;
   return await momRepository.findAll({
@@ -144,20 +153,32 @@ const getMoms = async (filter, options) => {
     paginationOptions: { limit: limit, page: page },
   });
 };
-
 /**
- * Get post by id
- * @param {ObjectId} id
- * @returns {Promise<Mom>}
+ * Retrieves a MOM (Minutes of Meeting) by its unique ID.
+ *
+ * @function
+ * @param {string} momId - The ID of the MOM.
+ * @throws {Error} Throws an error if there's an issue retrieving the MOM.
+ * @returns {Promise<Object>} - A promise that resolves to the retrieved MOM.
  */
 const getMom = async (momId) => {
   return await momRepository.findOne({
     where: { id: momId },
-    relations: ['facilitator', 'momAttendees', 'momAgenda.momTopics', 'momAction', 'momComment', 'momAbsents'],
+    relations: ['facilitator', 'momAttendees', 'momAgenda.momTopics', 'momAction', 'momComment', 'momAbsents', 'momAction', 'momAction.momActionResponsible.user'],
   },
   );
 };
-
+/**
+ * This function retrieves Minutes of Meeting (MOMs) grouped by project based on the specified filter criteria and additional options.
+ * @function
+ * @param {Object} filter - The filter criteria.
+ * @param {Object} options - Additional options.
+ * @property {number} options.limit - The maximum number of results to return.
+ * @property {number} options.page - The page number for pagination.
+ * @property {string} options.sortBy - The field to sort the results by.
+ * @throws {Error} Throws an error if there's an issue retrieving MOMs grouped by project.
+ * @returns {Promise<Array>} - A promise that resolves to an array of grouped MOM results.
+ */
 const groupMOMByProject = async (filter, options) => {
   const groupedResults = await momRepository
     .createQueryBuilder('mom')
@@ -184,17 +205,29 @@ const groupMOMByProject = async (filter, options) => {
 
   return groupedResults;
 };
-
+/**
+ * Retrieves MOMs (Minutes of Meeting) associated with a specific project ID.
+ *
+ * @function
+ * @param {string} projectId - The ID of the project.
+ * @throws {Error} Throws an error if there's an issue retrieving MOMs.
+ * @returns {Promise<Array>} - A promise that resolves to an array of MOMs.
+ */
 const getByProject = async (projectId) => {
   return await momRepository.findBy({ projectId: projectId });
 }
-
-
 /**
- * Update user by id
- * @param {ObjectId} momId
- * @param {Object} updateBody
- * @returns {Promise<Mom>}
+ * This function allows you to update a Minutes of Meeting (MOM) based on its unique ID. You can modify the MOM body, update attendees, absents, external attendees, action items, and agenda topics.
+ * @function
+ * @param {string} momId - The ID of the MOM (Minutes of Meeting).
+ * @param {Object} momBody - The update data for the MOM.
+ * @param {Array<Object>} attendees - An array of attendees' data.
+ * @param {Array<Object>} absents - An array of absentees' data.
+ * @param {Array<Object>} externalAttendees - An array of external attendees' data.
+ * @param {Array<Object>} action - An array of action items.
+ * @param {Array<Object>} agenda - An array of agenda topics.
+ * @throws {Error} Throws an error if there's an issue updating the MOM.
+ * @returns {Promise<Object>} - A promise that resolves to the updated MOM.
  */
 const updateMom = async (momId, momBody, attendees, absents, externalAttendees, action, agenda) => {
 
@@ -310,13 +343,12 @@ const updateMom = async (momId, momBody, attendees, absents, externalAttendees, 
 
   return mom;
 };
-
-
-
 /**
- * Delete user by id
- * @param {ObjectId} milestoenId
- * @returns {Promise<User>}
+ * This function allows you to delete a Minutes of Meeting (MOM) based on its unique ID.
+ * @function
+ * @param {string} momId - The ID of the MOM (Minutes of Meeting).
+ * @throws {Error} Throws an error if the MOM is not found.
+ * @returns {Promise<Object>} - A promise that resolves when the MOM is successfully deleted.
  */
 const deleteMom = async (momId) => {
   const mom = await getMom(momId);
@@ -325,6 +357,17 @@ const deleteMom = async (momId) => {
   }
   return await momRepository.delete({ id: momId });
 };
+/**
+ * The function allows you to add a comment to a Minutes of Meeting (MOM) based on the provided MOM ID, user ID, comment, and mentioned user ID.
+ * @function
+ * @param {Object} momBody - The main body of the MOM (Minutes of Meeting).
+ * @property {string} momBody.id - The ID of the MOM.
+ * @property {string} momBody.userId - The ID of the user adding the comment.
+ * @property {string} momBody.comment - The comment to be added.
+ * @property {string} momBody.mentionedId - The ID of any mentioned user.
+ * @throws {Error} Throws an error if there's an issue creating or saving the comment.
+ * @returns {Promise<Object>} - A promise that resolves to the saved MOM comment.
+ */
 
 const addComment = async (momBody) => {
   const momComment = momCommentRepository.create({
@@ -345,7 +388,13 @@ const addComment = async (momBody) => {
   savedComment.user = sender;
   return savedComment;
 }
-
+/**
+ * The function retrieves all comments associated with a specific MOM ID, ordered by creation date.
+ * @function
+ * @param {string} momId - The ID of the MOM (Minutes of Meeting).
+ * @throws {Error} Throws an error if there's an issue retrieving the comments.
+ * @returns {Promise<Array>} - A promise that resolves to an array of MOM comments.
+ */
 const getComments = async (momId) => {
 
   return await momCommentRepository.find(

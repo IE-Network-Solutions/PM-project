@@ -12,29 +12,35 @@ const roleRepository = dataSource.getRepository(Role).extend({
 });
 
 /**
- * Query for approval level
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * @module role
  */
-
+/**
+ * Retrieves roles along with their associated role permissions.
+ *
+ * @function
+ * @returns {Promise<Array<Object>>} - A promise that resolves to an array of role objects.
+ */
 const getRoles = async () => {
   return await roleRepository.find({ relations: ['rolePermission'] });
 };
-
 /**
- * Get budget by id
- * @param {ObjectId} id
- * @returns {Promise<Project>}
+ * Retrieves a role by its unique identifier.
+ *
+ * @function
+ * @param {number} id - The ID of the role to retrieve.
+ * @returns {Promise<Object|null>} - A promise that resolves to the role object or null if not found.
  */
 const getRole = async (id) => {
   return await roleRepository.findOneBy({ id: id });
 };
 
+const createRole = async (roleBody) => {
+  const role = await roleRepository.create(roleBody);
+  return await roleRepository.save(role);
+}
+
 module.exports = {
   getRoles,
   getRole,
+  createRole
 };

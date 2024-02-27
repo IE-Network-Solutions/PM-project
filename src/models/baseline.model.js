@@ -29,6 +29,11 @@ module.exports = new EntitySchema({
       target: 'Task',
       inverseSide: 'baseline',
     },
+    summaryTask: {
+      type: 'one-to-many',
+      target: 'SummaryTask',
+      inverseSide: 'baseline',
+    },
     baselineComment: {
       type: 'one-to-many',
       target: 'BaselineComment',

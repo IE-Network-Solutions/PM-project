@@ -13,6 +13,7 @@ class weeklyReport extends Base {
     this.risks = { type: 'json', nullable: true };
     this.issues = { type: 'json', nullable: true };
     this.overAllProgress = { type: 'json', nullable: true };
+    this.projectStatusReport = { type: 'json', nullable: true };
     this.isApproved = { type: 'boolean', default: false };
     this.projectId = { type: 'uuid', };
   }
@@ -26,6 +27,7 @@ module.exports = new EntitySchema({
       type: "many-to-one",
       target: "Project",
       inverseSide: "weeklyReport",
+      onDelete: 'CASCADE',
     },
     weeklyReportComment: {
       type: "one-to-many",

@@ -19,6 +19,11 @@ class Milestone extends Base {
     this.finishVariance = { type: 'int', nullable: true };
     this.actualStart = { type: 'date', nullable: true };
     this.actualFinish = { type: 'date', nullable: true };
+    this.start = { type: 'date', nullable: true }
+    this.finish = { type: 'date', nullable: true };
+    this.duration = { type: 'int', nullable: true };
+    this.actualDuration = { type: 'int', nullable: true };
+    this.order = { type: 'int', nullable: true }
 
   }
 }
@@ -45,6 +50,20 @@ module.exports = new EntitySchema({
       target: "Baseline",
       inverseSide: "milestone",
       onDelete: 'CASCADE',
+    },
+    summaryTask: {
+      type: 'one-to-many',
+      target: 'SummaryTask',
+      inverseSide: 'milestone',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+    tasks: {
+      type: 'one-to-many',
+      target: 'Task',
+      inverseSide: 'milestone',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
     criteria: {
       type: 'many-to-many',

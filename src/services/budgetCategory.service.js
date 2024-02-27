@@ -13,25 +13,28 @@ const budgetCategoryTypeRepository = dataSource.getRepository(budgetCategoryType
   findAll,
   sortBy,
 });
-
 /**
- * Create a budget category
- * @param {Object} budgetCategoryy
- * @returns {Promise<Project>}
+ * @module budgetCategory
+ */
+/**
+ * Creates a budget category.
+ * @function
+ * @param {object} budgetCategoryData - The data for the budget category.
+ * @returns {Promise<object>} - A promise that resolves with the saved budget category.
  */
 const createBudgetCategory = async (budgetCategoryData) => {
   const budgetCategory = budgetCategoryRepository.create(budgetCategoryData);
   return await budgetCategoryRepository.save(budgetCategory);
 };
-
 /**
- * Query for budgetCategories
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * Retrieves all budget categories.
+ * @function
+ * @param {object} filter - The filter criteria for querying budget categories.
+ * @param {object} options - Additional options for pagination and sorting.
+ * @param {number} options.limit - The maximum number of results to return.
+ * @param {number} options.page - The page number for pagination.
+ * @param {string} options.sortBy - The field to sort the results by.
+ * @returns {Promise<object[]>} - A promise that resolves with an array of budget categories.
  */
 const getAllBudgetCategories = async (filter, options) => {
   const { limit, page, sortBy } = options;
@@ -42,21 +45,22 @@ const getAllBudgetCategories = async (filter, options) => {
     paginationOptions: { limit: limit, page: page },
   });
 };
-
 /**
- * Get catagory budget by id
- * @param {ObjectId} id
- * @returns {Promise<Project>}
+ * Retrieves a budget category by its ID.
+ * @function
+ * @param {number} id - The unique identifier of the budget category.
+ * @returns {Promise<object|null>} - A promise that resolves with the budget category object or null if not found.
  */
 const getBudgetCategory = async (id) => {
   return await budgetCategoryRepository.findOneBy({ id: id });
 };
-
 /**
- * Update category budget by id
- * @param {ObjectId} taskId
- * @param {Object} updateBody
- * @returns {Promise<Project>}
+ * Updates a budget category.
+ * @function
+ * @param {number} budgetCategoryId - The unique identifier of the budget category to update.
+ * @param {object} updateBody - The data to update the budget category with.
+ * @returns {Promise<object|null>} - A promise that resolves with the updated budget category object or null if not found.
+ * @throws {ApiError} - Throws an error if the budget category is not found.
  */
 const updateBudgetCategory = async (budgetCategoryId, updateBody) => {
   const budgetCategory = await getBudgetCategory(budgetCategoryId);
@@ -66,11 +70,12 @@ const updateBudgetCategory = async (budgetCategoryId, updateBody) => {
   await budgetCategoryRepository.update({ id: budgetCategoryId }, updateBody);
   return getBudgetCategory(budgetCategoryId);
 };
-
 /**
- * Delete budget category by id
- * @param {ObjectId} budgetCategoryId
- * @returns {Promise<User>}
+ * Deletes a budget category by its ID.
+ * @function
+ * @param {number} budgetCategoryId - The unique identifier of the budget category to delete.
+ * @returns {Promise<object|null>} - A promise that resolves with the result of the deletion (usually null).
+ * @throws {ApiError} - Throws an error if the budget category is not found.
  */
 const deleteBudgetCategoryId = async (budgetCategoryId) => {
   const budgetCategory = await getBudgetCategory(budgetCategoryId);

@@ -32,6 +32,11 @@ module.exports.approvalController = require('./approval.controller');
 module.exports.departmentController = require('./department.controller');
 module.exports.resourceHistoryController = require('./resourceHistory.controller');
 
+module.exports.stakholderController = require('./stakholder.controller')
+module.exports.raciController = require('./raci.controller')
+module.exports.raciListController = require('./raciList.controller')
+
+    ;
 module.exports.Quality = require('./quality.controller');
 module.exports.Solution = require('./solution.controller');
 module.exports.Criteria = require('./criteria.controller');
@@ -47,5 +52,7 @@ module.exports.permissionController = require('./permission.controller');
 module.exports.budgetCategoryTypeController = require('./budgetCategoryType.controller');
 module.exports.projectBudgetController = require('./projecctBudget.controller');
 module.exports.officeQuarterlyBudgetController = require('./officeProjectQuarterlyBudget.controller');
+
+// module.exports.officeMonthlyBudgetController = require('./officeMonthlyBudgetController');
 module.exports.accountablityController = require('./accountablity.controller');
 module.exports.officeBudgetSessioncontroller = require('./officeBudgetSession.controller');

@@ -7,13 +7,19 @@ const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 
 const actionRepository = dataSource.getRepository(Action).extend({ findAll, sortBy });
-// .extend({ sortBy });
-//
-
 /**
- * Create a risk
- * @param {Object} actionBody
- * @returns {Promise<Action>}
+ * @module action
+*/
+/**
+ * Creates and returns an array of action instances for a given AAA instance
+ * @function
+ * @param {Object} [actionBody] - The optional body of the action instances
+ * @param {number} actionBody.afterActionAnalysisId - The ID of the AAA instance
+ * @param {Array<Object>} actionBody.actions - The array of action objects
+ * @param {number} actionBody.actions.responsiblePersonId - The ID of the responsible person
+ * @param {number} actionBody.actions.authorizedPersonId - The ID of the authorized person
+ * @param {string} actionBody.actions.action - The action description
+ * @returns {Promise<Array<Object>>} - The array of created action instances with their related entities
  */
 const createAction = async (actionBody = []) => {
     const { afterActionAnalysisId, actions } = actionBody;
@@ -36,16 +42,17 @@ const createAction = async (actionBody = []) => {
     }
     return finalActions
 }
-/**
- * Query for users
- * @param {Object} filter - Filter options
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
- */
 
+/**
+ * Queries and returns the action instances that match the filter and options
+ * @function
+ * @param {Object} filter - The filter object for the query
+ * @param {Object} options - The options object for the query
+ * @param {number} options.limit - The maximum number of results to return
+ * @param {number} options.page - The page number of the results
+ * @param {string} [options.sortBy] - The optional sorting option for the results
+ * @returns {Promise<Array<Object>>} - The array of action instances with their related entities
+ */
 const queryActions = async (filter, options) => {
     const { limit, page, sortBy } = options;
 
@@ -56,11 +63,11 @@ const queryActions = async (filter, options) => {
         paginationOptions: { limit: limit, page: page },
     });
 };
-
 /**
- * Get risk by id
- * @param {ObjectId} id
- * @returns {Promise<Action>}
+ * Gets and returns an action instance by its ID
+ * @function
+ * @param {number} id - The ID of the action instance
+ * @returns {Promise<Object>} - The action instance with its related entities
  */
 const getActionById = async (id) => {
     return await actionRepository.findOne(
@@ -71,10 +78,11 @@ const getActionById = async (id) => {
 };
 
 /**
- * Update user by id
- * @param {ObjectId} postId
- * @param {Object} updateBody
- * @returns {Promise<Action>}
+ * Updates and returns an action instance by its ID and the update body
+ * @function
+ * @param {number} actionId - The ID of the action instance to update
+ * @param {Object} updateBody - The update body for the action instance
+ * @returns {Promise<Object>} - The updated action instance with its related entities
  */
 const updateActionById = async (actionId, updateBody) => {
     const action = await getActionById(actionId);
@@ -84,11 +92,11 @@ const updateActionById = async (actionId, updateBody) => {
     await actionRepository.update({ id: actionId }, updateBody);
     return await getActionById(actionId);
 };
-
 /**
- * Delete user by id
- * @param {ObjectId} actionId
- * @returns {Promise<Action>}
+ * Deletes an action instance by its ID
+ * @function
+ * @param {number} actionId - The ID of the action instance to delete
+ * @returns {Promise<Object>} - The deleted action instance
  */
 const deleteActionById = async (actionId) => {
     const action = await getActionById(actionId);

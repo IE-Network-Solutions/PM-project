@@ -35,7 +35,7 @@ router
   );
 
 router.route('/all/getTotalProjects').get(projectController.getTotalActiveClosedProjects);
-
 router.route(authPermision.closeProjectMiddleware, '/closeproject/:projectId').patch(projectController.closeProject);
+router.route('/update/:projectId').patch(validate(projectValidation.updateProjectFomSchedule), projectController.updateProjectFomSchedule)
 
 module.exports = router;
