@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const { startOfWeek, endOfWeek, addWeeks } = require('date-fns');
-const { Between, IsNull } = require('typeorm');
+const { Between, IsNull, LessThan } = require('typeorm');
 const { Task, TaskUser, Baseline, Milestone, Risk, Issue, WeeklyReport, WeeklyReportComment, User } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
@@ -50,18 +50,13 @@ const userRepository = dataSource.getRepository(User).extend({
   findAll,
   sortBy,
 });
-/**I
- * @module weeklyReport
- */
-/**
- * Retrieves all active baseline tasks, next week's tasks, risks, and issues for the given project ID.
- * @function
- * @param {string} projectId - The ID of the project to retrieve the weekly report for.
- * @returns {Promise<Object>} A Promise that resolves with an object containing all active baseline tasks, next week's tasks, risks, and issues.
- */
+
 
 const allActiveBaselineTasks = async (projectId) => {
-  const getMilestoneByProject = await milestoneRepository.findBy({ projectId: projectId, status: true, relations: ['summaryTask.tasks'] });
+  const getMilestoneByProject = await milestoneRepository.findBy({
+    projectId: projectId,
+    status: true
+  });
 
   const allActiveBaselines = [];
 
@@ -98,9 +93,6 @@ const allActiveBaselineTasks = async (projectId) => {
       .orderBy('task.plannedStart', 'ASC')
       .groupBy('baseline.id, milestone.id, project.id, task.id')
       .getMany();
-
-
-
     if (activeTasks.length > 0) {
       tasksForVariance.push(...activeTasks);
     }
@@ -139,22 +131,18 @@ const allActiveBaselineTasks = async (projectId) => {
 
 
   const weeklyReport = {
-    // allTasks: allTasks,
-    // nextWeekTasks: nextWeekTasks,
-    // risks: risks,
-    // issues: issues,
+    allTasks: allTasks,
+    nextWeekTasks: nextWeekTasks,
+    risks: risks,
+    issues: issues,
     tasksForVariance: tasksForVariance
   };
 
   return weeklyReport;
 
 };
-/**
- * Retrieves the weekly report for the given project ID, including all tasks, sleeping tasks, next week's tasks, risks, and issues.
- * @function
- * @param {string} projectId - The ID of the project to retrieve the weekly report for.
- * @returns {Promise<Object>} A Promise that resolves with an object containing all tasks, sleeping tasks, next week's tasks, risks, and issues for the week.
- */
+
+
 
 const getWeeklyReport = async (projectId) => {
   const getMilestoneByProject = await milestoneRepository.findBy({
@@ -193,11 +181,19 @@ const getWeeklyReport = async (projectId) => {
   const sleepingTasks = [];
 
   for (const eachAllActiveBaselines of allActiveBaselines) {
-    const activeTasks = await taskRepository.findBy({
-      baselineId: eachAllActiveBaselines.id,
-      plannedStart: Between(startOfWeekDate, endOfWeekDate),
-      actualStart: IsNull()
+    // const activeTasks = await taskRepository.findBy({
+    //   baselineId: eachAllActiveBaselines.id,
+    //   plannedStart: Between(startOfWeekDate, endOfWeekDate),
+    //   actualStart: IsNull()
+    // });
+
+    const activeTasks = await taskRepository.find({
+      where: [
+        { baselineId: eachAllActiveBaselines.id, plannedStart: LessThan(new Date()), actualStart: IsNull() },
+        //   { baselineId: eachAllActiveBaselines.id, plannedFinish: LessThan(new Date()), actualStart: IsNull() }
+      ]
     });
+
 
     if (activeTasks.length > 0) {
       sleepingTasks.push(...activeTasks);
@@ -220,26 +216,11 @@ const getWeeklyReport = async (projectId) => {
     }
   }
 
-
-  const projectStatusReport = [];
-
-  for (const eachAllActiveBaselines of allActiveBaselines) {
-    const activeTasks = await taskRepository.findBy({
-      baselineId: eachAllActiveBaselines.id,
-      actualStart: Between(startOfWeekDate, endOfWeekDate),
-
-    });
-
-    if (activeTasks.length > 0) {
-      projectStatusReport.push(...activeTasks);
-    }
-  }
-
   const issues = await issueRepository.find({
 
     where: {
       projectId: projectId,
-      // createdAt: Between(startOfWeekDate, endOfWeekDate),
+      createdAt: Between(startOfWeekDate, endOfWeekDate),
     },
   });
 
@@ -248,33 +229,23 @@ const getWeeklyReport = async (projectId) => {
   const risks = await riskRepository.find({
     where: {
       projectId: projectId,
-      // createdAt: Between(startOfWeekDate, endOfWeekDate),
+      createdAt: Between(startOfWeekDate, endOfWeekDate),
     },
   });
 
-  allTasks.sort((a, b) => (a.order) - (b.order));
-  sleepingTasks.sort((a, b) => (a.order) - (b.order));
-  nextWeekTasks.sort((a, b) => (a.order) - (b.order));
-  projectStatusReport.sort((a, b) => (a.order) - (b.order));
 
   const weeklyReport = {
-    allTasks: filterTasks(allTasks),
-    sleepingTasks: filterTasks(sleepingTasks),
-    nextWeekTasks: filterTasks(nextWeekTasks),
-    projectStatusReport: filterTasks(projectStatusReport),
+    allTasks: allTasks,
+    sleepingTasks: sleepingTasks,
+    nextWeekTasks: nextWeekTasks,
     risks: risks,
     issues: issues,
   };
-  console.log(weeklyReport, "weeklyReport")
+
   return weeklyReport;
 
 };
-/**
- * Adds sleeping reason to the tasks provided and returns the updated tasks.
- * @function
- * @param {Array<Object>} tasks - The tasks to update with sleeping reasons.
- * @returns {Promise<Array<Object>>} A Promise that resolves with the updated tasks.
- */
+
 
 const addSleepingReason = async (tasks) => {
   const updatedTasks = [];
@@ -297,13 +268,6 @@ const addSleepingReason = async (tasks) => {
 
   return updatedTasks;
 };
-/**
- * Adds a weekly report for the specified project ID with the provided data.
- * @function
- * @param {string} projectId - The ID of the project to add the weekly report for.
- * @param {Object} weeklyReportData - The data for the weekly report.
- * @returns {Promise<Object>} A Promise that resolves with the added weekly report.
- */
 
 const addWeeklyReport = async (projectId, weeklyReportData) => {
   const currentDate = new Date();
@@ -315,7 +279,6 @@ const addWeeklyReport = async (projectId, weeklyReportData) => {
   const sleepingTasks = weeklyReportData.sleepingTasks;
   const nextWeekTasks = weeklyReportData.nextWeekTasks;
   const overAllProgress = weeklyReportData.overAllProgress;
-  const projectStatusReport = weeklyReportData.projectStatusReport;
 
   // return [projectId, currentMonthNumber, risks, issues, sleepingTasks, nextWeekTasks,]
 
@@ -333,18 +296,11 @@ const addWeeklyReport = async (projectId, weeklyReportData) => {
     sleepingTasks: sleepingTasks,
     nextWeekTasks: nextWeekTasks,
     overAllProgress: overAllProgress,
-    projectStatusReport: projectStatusReport,
   });
 
   const savedWeeklyReport = await weeklyReportRepository.save(addedWeeklyReport);
   return savedWeeklyReport;
 }
-/**
- * Retrieves the added weekly report for the specified project ID.
- * @function
- * @param {string} projectId - The ID of the project to retrieve the added weekly report for.
- * @returns {Promise<Object>} A Promise that resolves with the added weekly report.
- */
 
 const getAddedWeeklyReport = async (projectId) => {
   const savedWeeklyReport = await weeklyReportRepository.findBy({ projectId });
@@ -359,13 +315,6 @@ const getAddedWeeklyReport = async (projectId) => {
 
   return groupedWeeklyReports;
 };
-/**
- * Retrieves the weekly report for the specified project ID and week.
- * @function
- * @param {string} projectId - The ID of the project to retrieve the weekly report for.
- * @param {number} week - The week number of the report to retrieve.
- * @returns {Promise<Array<Object>>} A Promise that resolves with the weekly report for the specified project and week.
- */
 
 const getReportByWeek = async (projectId, week) => {
   const reportByWeek = await weeklyReportRepository.find({
@@ -374,15 +323,7 @@ const getReportByWeek = async (projectId, week) => {
   });
   return reportByWeek;
 };
-/**
- * Adds a comment to a weekly report.
- * @function
- * @param {Object} comment - The comment object containing the weekly report ID, user ID, and comment.
- * @param {string} comment.id - The ID of the weekly report to add the comment to.
- * @param {string} comment.userId - The ID of the user adding the comment.
- * @param {string} comment.comment - The comment content.
- * @returns {Promise<Object>} A Promise that resolves with the added comment.
- */
+
 
 const addComment = async (comment) => {
   const weeklyReportComment = weeklyCommentReportRepository.create({
@@ -403,12 +344,6 @@ const addComment = async (comment) => {
   savedComment.user = sender;
   return savedComment;
 }
-/**
- * Retrieves comments for a weekly report.
- * @function
- * @param {string} weeklyReportId - The ID of the weekly report to retrieve comments for.
- * @returns {Promise<Array<Object>>} A Promise that resolves with an array of comments for the specified weekly report.
- */
 
 const getComments = async (weeklyReportId) => {
 
@@ -420,17 +355,7 @@ const getComments = async (weeklyReportId) => {
     }
   );
 }
-const filterTasks = (tasks) => {
-  let uniqueIds = {};
-  let filteredArray = tasks.filter(item => {
-    if (!uniqueIds[item.id]) {
-      uniqueIds[item.id] = true;
-      return true; // Keep the item
-    }
-    return false; // Discard the item
-  });
-  return filteredArray
-}
+
 
 module.exports = {
   getWeeklyReport,
