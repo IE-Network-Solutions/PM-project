@@ -329,7 +329,7 @@ const projectSchedule = async (projectId) => {
   const milestone = await milestoneRepository.find({
     where: { projectId: projectId },
     relations: ['summaryTask', 'summaryTask.tasks', 'summaryTask.baseline', "summaryTask.tasks.baseline"],
-    // order: { createdAt: 'DEC' }
+    // order: { order: 'ASC' }
 
   });
 
@@ -384,6 +384,7 @@ const projectSchedule = async (projectId) => {
         groupedByBaseline[element.id] = element;
       });
     });
+
     return {
       activeBaselineaseline: activeBaselines[0],
       allBaselines: Object.values(groupedByBaseline),
@@ -506,7 +507,7 @@ const getBaseline = async (baselineId) => {
   const milestone = await milestoneRepository.find({
     where: { projectId: baselineData.projectId },
     relations: ['summaryTask', 'summaryTask.tasks', 'summaryTask.baseline'],
-    // order: { createdAt: 'ASC' }
+    // order: { order: 'ASC' }
   });
   milestone.sort((a, b) => (a.order) - (b.order))
   let milestones = milestone
@@ -514,7 +515,7 @@ const getBaseline = async (baselineId) => {
 
     let finalSub = milestoneService.flatToHierarchy(item.summaryTask)
     delete item.summaryTask
-
+    finalSub.sort((a, b) => (a.order) - (b.order));
 
     item["summaryTask"] = finalSub
 
@@ -573,7 +574,7 @@ const updateBaseline = async (baselineId, baselineBody, milestones) => {
     // await projectService.updateProject(baselineBody.projectInfo.id, baselineBody.projectInfo)
     await baselineRepository.update({ id: baselineId }, { name: baselineBody.name });
   }
-
+  milestones.sort((a, b) => (a.order) - (b.order));
   if (milestones) {
 
     const savedMilestones = await Promise.all(milestones.map(async (milestone) => {
@@ -594,7 +595,7 @@ const updateBaseline = async (baselineId, baselineBody, milestones) => {
 
 
   const updatedBaseline = await getBaseline(baselineId)
-
+  console.log(updatedBaseline, "updatedBaseline")
   return updatedBaseline;
 };
 /**
