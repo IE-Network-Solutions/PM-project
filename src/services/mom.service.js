@@ -230,7 +230,7 @@ const getByProject = async (projectId) => {
  * @returns {Promise<Object>} - A promise that resolves to the updated MOM.
  */
 const updateMom = async (momId, momBody, attendees, absents, externalAttendees, action, agenda) => {
-
+  //console.log(attendees, "attendees")
   const mom = await momRepository.findOneBy({ id: momId });
 
   if (Object.keys(momBody).length > 0) {

@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const { startOfWeek, endOfWeek, addWeeks } = require('date-fns');
-const { Between, IsNull } = require('typeorm');
+const { Between, IsNull, LessThan } = require('typeorm');
 const { Task, TaskUser, Baseline, Milestone, Risk, Issue, WeeklyReport, WeeklyReportComment, User } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
@@ -193,10 +193,16 @@ const getWeeklyReport = async (projectId) => {
   const sleepingTasks = [];
 
   for (const eachAllActiveBaselines of allActiveBaselines) {
-    const activeTasks = await taskRepository.findBy({
-      baselineId: eachAllActiveBaselines.id,
-      plannedStart: Between(startOfWeekDate, endOfWeekDate),
-      actualStart: IsNull()
+    // const activeTasks = await taskRepository.findBy({
+    //   baselineId: eachAllActiveBaselines.id,
+    //   plannedStart: Between(startOfWeekDate, endOfWeekDate),
+    //   actualStart: IsNull()
+    // });
+    const activeTasks = await taskRepository.find({
+      where: [
+        { baselineId: eachAllActiveBaselines.id, plannedStart: LessThan(new Date()), actualStart: IsNull() },
+        { baselineId: eachAllActiveBaselines.id, plannedFinish: LessThan(new Date()), actualFinish: IsNull() }
+      ]
     });
 
     if (activeTasks.length > 0) {
