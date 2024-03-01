@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const {weeklyReportService} = require('../services');
+const { weeklyReportService } = require('../services');
 /**
  * @module weeklyReport
 */
@@ -46,9 +46,9 @@ const addSleepingReason = catchAsync(async (req, res) => {
  * @param {Object} res - The response object.
  * @returns {Promise<void>} A Promise that resolves with the added weekly report.
  */
-const addWeeklyReport = catchAsync(async(req, res)=>{
-   const weeklyReport = await weeklyReportService.addWeeklyReport(req.params.projectId, req.body);
-   res.status(httpStatus.CREATED).send(weeklyReport);
+const addWeeklyReport = catchAsync(async (req, res) => {
+  const weeklyReport = await weeklyReportService.addWeeklyReport(req.params.projectId, req.body);
+  res.status(httpStatus.CREATED).send(weeklyReport);
 });
 
 /**
@@ -58,7 +58,7 @@ const addWeeklyReport = catchAsync(async(req, res)=>{
  * @param {Object} res - The response object.
  * @returns {Promise<void>} A Promise that resolves with the retrieved weekly report.
  */
-const getAddedWeeklyReport = catchAsync(async(req, res)=>{
+const getAddedWeeklyReport = catchAsync(async (req, res) => {
   const savedWeeklyReport = await weeklyReportService.getAddedWeeklyReport(req.params.projectId);
   res.send(savedWeeklyReport);
 });
@@ -69,7 +69,7 @@ const getAddedWeeklyReport = catchAsync(async(req, res)=>{
  * @param {Object} res - The response object.
  * @returns {Promise<void>} A Promise that resolves with the retrieved weekly report.
  */
-const getReportByWeek = catchAsync(async(req, res)=>{
+const getReportByWeek = catchAsync(async (req, res) => {
   const reportByWeek = await weeklyReportService.getReportByWeek(req.params.projectId, req.params.week);
   res.send(reportByWeek);
 });
@@ -80,7 +80,7 @@ const getReportByWeek = catchAsync(async(req, res)=>{
  * @param {Object} res - The response object.
  * @returns {Promise<void>} A Promise that resolves with the added comment.
  */
-const addComment = catchAsync(async(req, res) =>{
+const addComment = catchAsync(async (req, res) => {
   const weeklyReportComment = await weeklyReportService.addComment(req.body);
   res.status(httpStatus.CREATED).send(weeklyReportComment);
 });
@@ -91,12 +91,15 @@ const addComment = catchAsync(async(req, res) =>{
  * @param {Object} res - The response object.
  * @returns {Promise<void>} A Promise that resolves with the retrieved comments.
  */
-const getComments = catchAsync(async (req, res)=>{
+const getComments = catchAsync(async (req, res) => {
   const weeklyReportComment = await weeklyReportService.getComments(req.params.weeklyReportId);
   res.send(weeklyReportComment);
 });
 
-
+const deleteWeeklyReport = catchAsync(async (req, res) => {
+  const weeklyReportComment = await weeklyReportService.deleteWeeklyReport(req.params.weeklyReportId);
+  res.send(weeklyReportComment);
+});
 
 
 module.exports = {
@@ -107,5 +110,6 @@ module.exports = {
   getAddedWeeklyReport,
   getReportByWeek,
   addComment,
-  getComments
+  getComments,
+  deleteWeeklyReport
 };

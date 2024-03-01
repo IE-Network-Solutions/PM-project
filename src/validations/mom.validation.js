@@ -102,12 +102,13 @@ const updateMom = {
     meetingTime: Joi.string(),
     location: Joi.string(),
     facilitatorId: Joi.string(),
-    specialNote: Joi.string(),
-    attendees: Joi.array(),
-    absents: Joi.array(),
+    specialNote: Joi.string().allow(null || ""),
+    momAttendees: Joi.array(),
+    momAbsents: Joi.array(),
     externalAttendees: Joi.array(),
-    action: Joi.array(),
-    agenda: Joi.array(),
+    momAction: Joi.array(),
+    momAgenda: Joi.array(),
+    momComment: Joi.array(),
   }),
 };
 /**

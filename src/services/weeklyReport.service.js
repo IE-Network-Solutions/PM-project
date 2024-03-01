@@ -198,12 +198,21 @@ const getWeeklyReport = async (projectId) => {
     //   plannedStart: Between(startOfWeekDate, endOfWeekDate),
     //   actualStart: IsNull()
     // });
+    // const now = new Date();
+    // const activeTasks = await taskRepository
+    //   .createQueryBuilder("task")
+    //   .where("task.baselineId = :baselineId", { baselineId: eachAllActiveBaselines.id })
+    //   .andWhere("(task.actualStart IS NULL AND (task.plannedStart < :now OR task.plannedFinish < :now AND task.actualFinish IS NULL))")
+    //   .setParameter("now", now)
+    //   .getMany();
     const activeTasks = await taskRepository.find({
       where: [
         { baselineId: eachAllActiveBaselines.id, plannedStart: LessThan(new Date()), actualStart: IsNull() },
         { baselineId: eachAllActiveBaselines.id, plannedFinish: LessThan(new Date()), actualFinish: IsNull() }
       ]
     });
+
+
 
     if (activeTasks.length > 0) {
       sleepingTasks.push(...activeTasks);
@@ -271,7 +280,6 @@ const getWeeklyReport = async (projectId) => {
     risks: risks,
     issues: issues,
   };
-  console.log(weeklyReport, "weeklyReport")
   return weeklyReport;
 
 };
@@ -315,7 +323,6 @@ const addWeeklyReport = async (projectId, weeklyReportData) => {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonthNumber = currentDate.getMonth() + 1;
-
   const risks = weeklyReportData.risks;
   const issues = weeklyReportData.issues;
   const sleepingTasks = weeklyReportData.sleepingTasks;
@@ -363,7 +370,7 @@ const getAddedWeeklyReport = async (projectId) => {
     return result;
   }, {});
 
-  return groupedWeeklyReports;
+  return Object.values(groupedWeeklyReports);
 };
 /**
  * Retrieves the weekly report for the specified project ID and week.
@@ -426,6 +433,19 @@ const getComments = async (weeklyReportId) => {
     }
   );
 }
+
+
+const deleteWeeklyReport = async (weeklyReportId) => {
+  const WeeklyReportExists = await weeklyReportRepository.findOne({ where: { id: weeklyReportId } })
+  if (!WeeklyReportExists) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'weekly report  not found');
+
+  }
+
+  await weeklyReportRepository.delete({ id: WeeklyReportExists.id })
+  return WeeklyReportExists
+
+}
 const filterTasks = (tasks) => {
   let uniqueIds = {};
   let filteredArray = tasks.filter(item => {
@@ -446,5 +466,6 @@ module.exports = {
   getAddedWeeklyReport,
   getReportByWeek,
   addComment,
-  getComments
+  getComments,
+  deleteWeeklyReport
 };

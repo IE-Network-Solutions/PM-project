@@ -119,10 +119,10 @@ const createBaseline = async (baselineBody, milestones) => {
 
 
     catch (error) {
-      console.log(error, "error")
+      console.log(error, "error when basline create")
       await baselineRepository.delete(savedBaseline.id);
 
-      throw error
+      throw new ApiError(httpStatus[422], 'Invalid Input');
     }
   }
 }
@@ -437,8 +437,11 @@ const activeProjectSchedule = async (projectId) => {
       }
       let mileInd = milestones.findIndex((m) => m.id === task.milestoneId)
       milestones[mileInd].tasks.push(task)
+      milestones[mileInd].tasks.sort((a, b) => (a.order) - (b.order))
     });
     delete base.tasks
+    milestones.sort((a, b) => (a.order) - (b.order));
+
     base.milestones = milestones
   });
 
