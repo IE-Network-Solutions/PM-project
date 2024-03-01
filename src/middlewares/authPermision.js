@@ -13,7 +13,10 @@ const authPermissions = (prmissions) => {
 
     if (user?.role?.roleName === 'supperadmin') {
       next();
-    } else {
+    } else if(userPermissions?.includes('all')) {
+      next();
+    }
+      else {
       const hasRequiredRights = await prmissions.every((requiredRight) => userPermissions?.includes(requiredRight));
       if (!hasRequiredRights) {
         return next(new ApiError(httpStatus.FORBIDDEN, 'Access Denied'));
