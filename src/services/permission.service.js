@@ -355,6 +355,21 @@ const seedPermission = async () => {
       slug: 'delete_aaa',
       permissionResourceId: 1,
     },
+    {
+      permissionName: 'Add Sleeping Task',
+      slug: 'add_sleeping_task',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'All',
+      slug: 'all',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Ask Budget Approval',
+      slug: 'ask_budget_approval',
+      permissionResourceId: 1,
+    },
   ];
   const permissions = permissionData.map((permissionData) => {
     const permission = permissionRepository.create(permissionData);
