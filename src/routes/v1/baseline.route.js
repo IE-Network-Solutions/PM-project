@@ -32,4 +32,8 @@ router.route('/comment').post(validate(baselineValidation.addComment), baselineC
 
 router.route('/comment/:baselineId').get(validate(baselineValidation.getComments), baselineController.getComments);
 
+
+router.route('/upload/:projectId').post(baselineController.uploadBaseline);
+
+
 module.exports = router;

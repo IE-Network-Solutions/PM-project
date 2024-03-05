@@ -44,6 +44,7 @@ const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
       return momAttendeesRepository.create({
         momId: mom.id,
         userId: eachAttendees.userId,
+        department: eachAttendees.department
       });
     });
 
@@ -51,12 +52,14 @@ const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
     await momAttendeesRepository.save(momInstances);
   }
   if (Absents) {
+    console.log(Absents)
     const momInstances = [];
     for (const eachAbsents of Absents) {
       if (eachAbsents.userId !== null && eachAbsents.userId !== '') {
         const createdAbsents = momAbsentsRepository.create({
           momId: mom.id,
           userId: eachAbsents.userId,
+          department: eachAbsents.department
         });
 
         const savedAbsents = await momAbsentsRepository.save(createdAbsents);
@@ -161,11 +164,34 @@ const getMoms = async (filter, options) => {
  * @returns {Promise<Object>} - A promise that resolves to the retrieved MOM.
  */
 const getMom = async (momId) => {
-  return await momRepository.findOne({
+  const mom = await momRepository.findOne({
     where: { id: momId },
-    relations: ['facilitator', 'momAttendees', 'momAgenda.momTopics', 'momAction', 'momComment', 'momAbsents', 'momAction', 'momAction.momActionResponsible.user'],
+    relations: ['facilitator', 'momAttendees', 'momAttendees.role', 'momAgenda.momTopics', 'momAgenda.momTopics.user', 'momAction', 'momComment', 'momAbsents', 'momAction', 'momAction.momActionResponsible.user'],
   },
   );
+  const attendees = await momAttendeesRepository.find({ where: { momId: momId } })
+
+  const momAt = mom.momAttendees.map(momAttendee => {
+    const attendee = attendees.find(a => a.userId === momAttendee.id);
+    if (attendee) {
+      momAttendee.department = attendee.department;
+    }
+    return momAttendee;
+  });
+
+
+
+  const absents = await momAbsentsRepository.find({ where: { momId: momId } })
+
+  const momAb = mom.momAbsents.map(momAbsent => {
+    const absent = absents.find(a => a.userId === momAbsent.id);
+    if (absent) {
+      momAbsent.department = absent.department;
+    }
+    return momAbsent;
+  });
+
+  return mom;
 };
 /**
  * This function retrieves Minutes of Meeting (MOMs) grouped by project based on the specified filter criteria and additional options.
@@ -229,7 +255,6 @@ const getByProject = async (projectId) => {
  * @returns {Promise<Object>} - A promise that resolves to the updated MOM.
  */
 const updateMom = async (momId, momBody, attendees, absents, action, agenda) => {
-  console.log(momBody, "externalAttendees")
   if (Object.keys(momBody).length > 0) {
     await momRepository.update(momId, momBody);
     const updatedMom = await momRepository.findOneBy({ id: momId });
@@ -249,6 +274,7 @@ const updateMom = async (momId, momBody, attendees, absents, action, agenda) => 
       return momAttendeesRepository.create({
         momId: momId,
         userId: eachAttendees.id,
+        department: eachAttendees.department
       });
     });
     await momAttendeesRepository.save(momInstances);
@@ -269,6 +295,7 @@ const updateMom = async (momId, momBody, attendees, absents, action, agenda) => 
       return momAbsentsRepository.create({
         momId: momId,
         userId: eachAbsents.id,
+        department: eachAbsents.department
       });
     });
 

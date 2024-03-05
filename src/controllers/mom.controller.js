@@ -96,7 +96,6 @@ const groupMOMByProject = catchAsync(async (req, res) => {
  * @returns {Promise<void>} - Resolves with the updated MOM.
  */
 const updateMom = catchAsync(async (req, res) => {
-  //console.log(req.body.agenda, "shdfiuhui")
   const attendees = req.body.momAttendees;
   const absents = req.body.momAbsents;
   const action = req.body.momAction;

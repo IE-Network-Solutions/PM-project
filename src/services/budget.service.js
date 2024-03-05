@@ -46,7 +46,6 @@ const createBudget = async (budgetBody) => {
   const budgets = budgetData.map((budget) => {
     budget.group = budgetGroup;
     const budgetData = budgetRepository.create(budget);
-    console.log('mmmmmmmmmmm', budgetData);
     deductFromProjectBudget(budgetData.budgetCategory.id, budgetData.currency.id, budgetData.project.id, budgetData.amount);
     return budgetData;
   });
@@ -422,7 +421,6 @@ const getCurrentMonthBudgetOfProjectss = async () => {
  */
 const getCurrentMonthBudgetOfProjects = async (projectId) => {
   const approval = false;
-  console.log(projectId, 'uuuuuuuuuuuuuuu');
   const budgets = await budgetRepository
     .createQueryBuilder('budget')
     .leftJoin('budget.project', 'project')
@@ -738,8 +736,6 @@ const getTasksOfProject = async (projectId) => {
   });
 
   const groupedResult = Object.values(groupedData);
-
-  console.log(groupedResult);
   return groupedData;
 };
 /**

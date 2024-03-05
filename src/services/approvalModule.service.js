@@ -29,9 +29,7 @@ const createApprovalModule = async () => {
   ];
 
   const modules = approvalModules.map((approvalModule) => {
-    // console.log(approvalModule);
     // const module = await getApprovalModuleByModuleName(approvalModule.moduleName);
-    // console.log('return dataaa', module);
     // if (!module) {
     const moduleData = approvalModuleRepository.create(approvalModule);
     console.log('created data', moduleData);
