@@ -380,8 +380,8 @@ const projectSchedule = async (projectId) => {
     }, {});
 
     const activeBaselines = Object.values(groupedByBaseline).filter((activeBaseline) => activeBaseline.status)
-    console.log(activeBaselines, "activeBaselinesactiveBaselinesactiveBaselines")
-    const activeBaselineWithApprovalStage = await baselineRepository.findOne({ where: { id: activeBaselines[0].id }, relations: ['approvalStage'] })
+
+    const activeBaselineWithApprovalStage = await baselineRepository.findOne({ where: { id: activeBaselines[0].id }, relations: ['approvalStage', "approvalStage.role"] })
     activeBaselines[0].approvalStage = activeBaselineWithApprovalStage.approvalStage
     const allBaselines = baseline.map((item) => {
       item.baselineData.forEach((element) => {
