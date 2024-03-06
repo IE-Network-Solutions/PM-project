@@ -23,7 +23,7 @@ const createApprovalModule = async () => {
   const approvalModules = [
     { moduleName: 'ProjectBudget', max_level: 2 },
     { moduleName: 'OfficeProjectBudget', max_level: 2 },
-    { moduleName: 'ProjectSchedule', max_level: 3 },
+    { moduleName: 'ProjectSchedule', max_level: 2 },
     { moduleName: 'MonthlyBudget', max_level: 2 },
     { moduleName: 'OfficeProjectQuarterlyBudget', max_level: 2 },
   ];
