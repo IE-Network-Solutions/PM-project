@@ -1,3 +1,4 @@
+const path = require('path');
 const configs = require('./config');
 
 // configuration file for TypeORM db connection
@@ -10,15 +11,15 @@ module.exports = {
   password: configs.postgres.pswd,
   database: configs.postgres.database,
   // ssl: { rejectUnauthorized: false },
-  entities: [__dirname + '/../models/*.js'],
+  entities: [path.join(__dirname + '/../models/*.js')],
   // entities: [Post,Project,Task,SubTask,Milestone,minuteOfMeeting,agenda,agendaTopic,momAction,momAttendees, Risk, Issue, AfterActionAnalysis, RelatedIssue, Action, AfterActionAnalysisIssueRelated],
   // entities: [Post,Project,Task,SubTask,Milestone,minuteOfMeeting,agenda,agendaTopic,momAction,momAttendees],
 
-  synchronize: configs.env == 'development' ? true : false,
-  migrations: [__dirname + './migrations/*.js'], // Path to migration files
+  synchronize: false,
+  migrations: [path.join(__dirname, '../migrations/*.js')], // Path to migration files
   cli: {
-    entitiesDir: __dirname + '/../models/*.js',
-    migrationsDir: __dirname + './migrations',
+    entitiesDir: path.join(__dirname, '../models'),
+    migrationsDir: path.join(__dirname, '../migrations*.js'),
   },
   extra: {
     connectionLimit: configs.postgres.maxConn, // Set the pool size to 20 connections (adjust as needed)
