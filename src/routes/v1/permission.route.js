@@ -8,7 +8,7 @@ const { seedPermissionMiddleware } = require('../../middlewares/authPermissionSt
 const router = express.Router();
 
 router.route('/seed').post(permissionController.seedPermissions);
-router.route('/seedResource').post(seedPermissionMiddleware, permissionController.seedPermissionResource);
+router.route('/seedResource').post(permissionController.seedPermissionResource);
 router.route('/permissionResources').get(permissionController.getResourcesWithPermission);
 
 router
