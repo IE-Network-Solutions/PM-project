@@ -263,7 +263,6 @@ const getWeeklyReport = async (projectId) => {
   const risks = await riskRepository.find({
     where: {
       projectId: projectId,
-      // createdAt: Between(startOfWeekDate, endOfWeekDate),
     },
   });
 
