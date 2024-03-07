@@ -6,6 +6,7 @@ const { json } = require('express');
 
 const authPermissions = (prmissions) => {
   return async (req, res, next) => {
+    console.log(req.headers)
     const userData = await JSON.parse(req.headers.user);
     const user = await userService.getUserById(userData.id);
     if (!user) {
