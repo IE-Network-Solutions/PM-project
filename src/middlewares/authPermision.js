@@ -6,7 +6,7 @@ const { json } = require('express');
 
 const authPermissions = (prmissions) => {
   return async (req, res, next) => {
-    const userData = await JSON.parse(req.headers.user);
+    const userData = req.headers.user;
     const user = await userService.getUserById(userData.id);
     if (!user) {
       return next(new ApiError(httpStatus.NOT_FOUND, 'User Does not Exist'));
