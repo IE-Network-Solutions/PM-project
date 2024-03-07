@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Project, ProjectMembers, ProjectContractValue, User } = require('../models');
+const { Project, ProjectMembers, ProjectContractValue, User, Role } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -14,6 +14,7 @@ const projectRepository = dataSource.getRepository(Project).extend({
 });
 const projectMemberRepository = dataSource.getRepository(ProjectMembers);
 const projectContractValueRepository = dataSource.getRepository(ProjectContractValue);
+const roleRepository = dataSource.getRepository(Role);
 
 /**
  * @module project
@@ -39,6 +40,7 @@ const createProject = async (projectBody, projectMembers, projectContractValue) 
 
   if (projectMembers) {
     const projectMemberInstances = projectMembers.map((member) => {
+      
       return projectMemberRepository.create({
         projectId: project.id,
         userId: member.memberId,
@@ -104,10 +106,17 @@ const getProjects = async (filter, options) => {
  * @returns {Promise<Object>} The project object with associated members and contract values.
  */
 const getProject = async (id) => {
-  return await projectRepository.findOne({
+  let project = await projectRepository.findOne({
     where: { id: id },
     relations: ['projectMembers', 'projectContractValues.currency'],
   });
+
+  for (const member of project.projectMembers) {
+    let projectMember = await projectMemberRepository.findOne({ where: { userId: member.id, projectId: project.id } });
+    member.projectRole = await roleRepository.findOne({ where: { id: projectMember.roleId } })
+  }
+  
+  return project;
 };
 /**
  * Updates an existing project with the specified details.
@@ -130,12 +139,8 @@ const updateProject = async (projectId, updateBody) => {
 
   await projectRepository.update({ id: projectId }, updateBody);
   const updatedProject = await getProject(projectId);
-  console.log(updatedProject, "ggmikkkg")
   updatedProject.members = await getMembers(updatedProject.id);
-
   publishToRabbit('project.update', updatedProject);
-
-  console.log(updatedProject, 'sl up');
   return updatedProject;
 };
 /**

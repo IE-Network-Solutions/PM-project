@@ -15,6 +15,7 @@ class SummaryTask extends Base {
         this.baselineId = { type: 'uuid', nullable: true };
         this.milestoneId = { type: 'uuid', nullable: false };
         this.parentId = { type: 'uuid', nullable: true };
+        this.order = { type: 'int', nullable: true }
 
     }
 }

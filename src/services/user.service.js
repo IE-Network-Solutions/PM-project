@@ -49,6 +49,7 @@ const getUsers = async (id) => {
  */
 
 const getUserById = async (id) => {
+  console.log(id, "test id");
   return await userRepository.findOne({ where: { id: id }, relations: ['permissions', 'role'] });
 };
 /**

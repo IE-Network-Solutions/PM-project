@@ -42,18 +42,20 @@ const summaryTaskRepository = dataSource.getRepository(SummaryTask).extend({
 const createMilestone = async (milestoneBody) => {
   const milestones = await Promise.all(
     milestoneBody?.properties.map(async (element) => {
+      console.log(element)
       const milestone = milestoneRepository.create({
         name: element.label,
         weight: element.weight,
         projectId: milestoneBody.projectId,
         baselineId: element.baselineId,
+        order: element.order
       });
       const savedMilestone = await milestoneRepository.save(milestone);
       const summaryTasks = await summaryTaskService.createSummaryTasks(
         element.properties,
         element.baselineId,
         savedMilestone.id,
-        element.baselineId || null
+        null
       );
       return {
         ...savedMilestone,
@@ -111,14 +113,20 @@ const flatToHierarchy = (flat) => {
 
   Object.keys(all).forEach(function (id, index, array) {
     let item = all[id];
+
     if (item.parentId === null) {
       roots.push(item);
     } else if (item.parentId in all) {
       let parent = all[item.parentId];
       if (!('summaryTask' in parent)) {
+
         parent.summaryTask = [];
       }
+
+      item.tasks.sort((a, b) => (a.order) - (b.order))
+
       parent.summaryTask.push(item);
+      parent.summaryTask.sort((a, b) => (a.order) - (b.order))
     }
   });
 
@@ -127,6 +135,7 @@ const flatToHierarchy = (flat) => {
     if (!('summaryTask' in item) || item.summaryTask.length === 0) {
       // If it's a leaf node, mark it as the last child
       item.lastChild = true;
+      item.tasks.sort((a, b) => (a.order) - (b.order))
     } else {
       // If it has children, check if it's referenced by another object
       let referenced = Object.values(all).some(function (otherItem) {
@@ -150,15 +159,44 @@ const getByProject = async (projectId) => {
     where: { projectId: projectId },
 
     relations: ['summaryTask', 'summaryTask.tasks'],
-    order: { createdAt: 'DESC' },
+    // order: { createdAt: 'DESC' },
+
   });
+  milestone.sort((a, b) => (a.order) - (b.order));
 
   for (const item of milestone) {
+
     let finalSub = flatToHierarchy(item.summaryTask);
     delete item.summaryTask;
 
     item['summaryTask'] = finalSub;
+
+    item.summaryTask.sort((a, b) => (a.order) - (b.order));
+
+
+
   }
+
+  return milestone;
+};
+
+
+const getByMilestoneId = async (milestoenId) => {
+  console.log(milestoenId, milestoenId)
+  const milestone = await milestoneRepository.findOne({
+    where: { id: milestoenId },
+
+    relations: ['summaryTask', 'summaryTask.tasks'],
+    // order: { createdAt: 'DESC' },
+
+  });
+
+  let finalSub = flatToHierarchy(milestone.summaryTask);
+  delete milestone.summaryTask;
+
+  milestone['summaryTask'] = finalSub;
+
+  milestone.summaryTask.sort((a, b) => (a.order) - (b.order));
 
   return milestone;
 };
@@ -179,7 +217,6 @@ const updateMilestone = async (milestoneId, updateBody) => {
   }
   let summaryTasks = updateBody['summaryTask'];
   delete updateBody.summaryTask;
-
   const savedMilestone = await milestoneRepository.save({ ...milestone, ...updateBody });
 
   let updatedSummaryTask = await summaryTaskService.updateSingleSummaryTask(summaryTasks);
@@ -243,4 +280,5 @@ module.exports = {
   updateIsEvaluted,
   updateIsSendToDOO,
   flatToHierarchy,
+  getByMilestoneId,
 };

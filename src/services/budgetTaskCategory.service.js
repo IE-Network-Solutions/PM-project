@@ -19,7 +19,6 @@ const budgetTaskCategoryRepository = dataSource.getRepository(BudgetTaskCategory
  * @returns {Promise<object>} - A promise that resolves with the saved budget task category.
  */
 const createBudgetTaskCategory = async (budgetTaskCategoryData) => {
-  console.log(budgetTaskCategoryData);
   const budgetTaskCategory = budgetTaskCategoryRepository.create(budgetTaskCategoryData);
   return await budgetTaskCategoryRepository.save(budgetTaskCategory);
 };

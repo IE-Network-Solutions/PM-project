@@ -49,7 +49,6 @@ const raci = require('./raci.route');
 const raciList = require('./raciList.route');
 const officeBudgetSessions = require('./officeBudgetSession.route');
 
-
 ///////////////////////////////////////////////////////
 const qualityRoute = require('./quality.route');
 const solutionRoute = require('./solution.route');
@@ -58,7 +57,6 @@ const todoRoute = require('./todo.route');
 const colorRoute = require('./color.route');
 const checkListRoute = require('./checkList.route');
 const evalutionRoute = require('./evalution.route');
-
 
 const router = express.Router();
 
@@ -192,7 +190,7 @@ const defaultRoutes = [
   },
   {
     path: '/budgetSession',
-    route: budgetSessionRoute
+    route: budgetSessionRoute,
   },
   {
     path: '/roles',
@@ -201,35 +199,35 @@ const defaultRoutes = [
   { path: '/roles', route: roleRoute },
   {
     path: '/monthlyBudget',
-    route: monthlyBudget
+    route: monthlyBudget,
   },
   {
     path: '/quality',
-    route: qualityRoute
+    route: qualityRoute,
   },
   {
-    path: "/solution",
-    route: solutionRoute
+    path: '/solution',
+    route: solutionRoute,
   },
   {
-    path: "/criteria",
-    route: criteriaRoute
+    path: '/criteria',
+    route: criteriaRoute,
   },
   {
-    path: "/todo",
-    route: todoRoute
+    path: '/todo',
+    route: todoRoute,
   },
   {
-    path: "/color",
-    route: colorRoute
+    path: '/color',
+    route: colorRoute,
   },
   {
-    path: "/checkList",
-    route: checkListRoute
+    path: '/checkList',
+    route: checkListRoute,
   },
   {
-    path: "/evalution",
-    route: evalutionRoute
+    path: '/evalution',
+    route: evalutionRoute,
   },
   {
     path: '/permissions',

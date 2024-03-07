@@ -27,7 +27,6 @@ const taskRepository = dataSource.getRepository(Task).extend({
  * @returns {Promise<Array<Object>>} A Promise that resolves with an array of created summary tasks.
  */
 const createSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
-  console.log(taskBody, "whyy idont")
   const allTasks = [];
   if (taskBody?.length !== 0) {
     await Promise.all(
@@ -37,9 +36,12 @@ const createSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
           baselineId: baselineId,
           milestoneId: mileId,
           parentId: parentId,
+          order: element.order
         });
         const savedTask = await summaryTaskRepository.save(task);
+
         const nestedTasks = await createSummaryTasks(element.properties, baselineId, mileId, savedTask.id);
+
         allTasks.push({
           ...savedTask,
           summaryTask: nestedTasks,
@@ -59,6 +61,7 @@ const createSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
  * @returns {Promise<Array<Object>>} A Promise that resolves with an array of updated summary tasks.
  */
 const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
+
   let allTasks = [];
 
   if (taskBody) {
@@ -77,17 +80,17 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
         parentId: taskBody.parentId,
       }
     );
-
-    if (taskBody?.tasks.length !== 0) {
+    if (taskBody && taskBody.tasks && taskBody.tasks.length !== 0) {
       let newTasks = taskBody.tasks
         .filter((t) => !t.id)
         .map((e) => {
-          delete e.duration;
-          delete e.taskId;
-          return { ...e, baselineId: baselineId };
+          // delete e.duration;
+          // delete e.taskId;
+          return { ...e, order: e.taskId, baselineId: baselineId };
         });
 
       if (newTasks.length > 0) {
+
         let createTask = taskRepository.create(newTasks);
         allTasks = [...allTasks, ...createTask];
         await taskRepository.save(createTask);
@@ -96,13 +99,14 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
       let updateTasks = taskBody.tasks
         .filter((t) => t.id)
         .map((e) => {
-          delete e.duration;
-          delete e.taskId;
-          return { ...e, baselineId: baselineId };
+          // delete e.duration;
+          // delete e.taskId;
+          return { ...e, order: e.taskId, baselineId: baselineId };
         });
 
       if (updateTasks.length > 0) {
         updateTasks.forEach((ut) => {
+          delete ut.taskId;
           let updatedTasks = taskRepository.update(
             { id: ut.id },
             {
@@ -124,8 +128,6 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
       );
     }
   }
-
-  console.log(allTasks, 'taskbodies');
   return allTasks;
 };
 /**
@@ -141,8 +143,10 @@ const updateSingleSummaryTask = async (taskBody) => {
   if (taskBody?.length !== 0) {
     await Promise.all(
       taskBody.map(async (element) => {
+        console.log(element, "startOfWeekDate")
         const sumtask = await summaryTaskRepository.save({
           id: element.id,
+          order: element.taskId,
           ...element,
         });
 

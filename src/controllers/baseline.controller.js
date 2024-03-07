@@ -15,7 +15,7 @@ const { baselineService, projectService } = require('../services');
  */
 
 const createBaseline = catchAsync(async (req, res) => {
-  console.log(req.body, 'print now');
+
   const milestones = req.body.milestones;
   // const subTasks = req.body.subTasks;
   //delete req.body.milestones;
@@ -48,7 +48,6 @@ const getBaselines = catchAsync(async (req, res) => {
 
 const getBaseline = catchAsync(async (req, res) => {
   const baseline = await baselineService.getBaseline(req.params.baselineId);
-  console.log('testttttt selam');
   if (!baseline) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Baseline not found');
   }
@@ -75,7 +74,6 @@ const getByMilestone = catchAsync(async (req, res) => {
  */
 
 const updateBaseline = catchAsync(async (req, res) => {
-  console.log(req.params, 'bodysur');
   const baseline = await baselineService.updateBaseline(req.params.baselineId, req.body, req.body.milestones);
 
   delete req.body.milestones;
@@ -184,6 +182,12 @@ const scheduleDashboard = catchAsync(async (req, res) => {
   const projectSchedule = await baselineService.scheduleDashboard(projectId);
   res.send(projectSchedule);
 });
+const uploadBaseline = catchAsync(async (req, res) => {
+
+  const projectId = req.params.projectId;
+  const projectSchedule = await baselineService.uploadBaseline(projectId, req.body);
+  res.send(projectSchedule);
+});
 
 module.exports = {
   createBaseline,
@@ -199,5 +203,6 @@ module.exports = {
   activeProjectSchedule,
   masterScheduleByDateFilter,
   scheduleDashboard,
+  uploadBaseline
 
 };

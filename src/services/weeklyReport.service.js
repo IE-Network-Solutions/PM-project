@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const { startOfWeek, endOfWeek, addWeeks } = require('date-fns');
-const { Between, IsNull } = require('typeorm');
+const { Between, IsNull, LessThan } = require('typeorm');
 const { Task, TaskUser, Baseline, Milestone, Risk, Issue, WeeklyReport, WeeklyReportComment, User } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
@@ -61,10 +61,7 @@ const userRepository = dataSource.getRepository(User).extend({
  */
 
 const allActiveBaselineTasks = async (projectId) => {
-  const getMilestoneByProject = await milestoneRepository.findBy({
-    projectId: projectId,
-    status: true
-  });
+  const getMilestoneByProject = await milestoneRepository.findBy({ projectId: projectId, status: true, relations: ['summaryTask.tasks'] });
 
   const allActiveBaselines = [];
 
@@ -101,6 +98,9 @@ const allActiveBaselineTasks = async (projectId) => {
       .orderBy('task.plannedStart', 'ASC')
       .groupBy('baseline.id, milestone.id, project.id, task.id')
       .getMany();
+
+
+
     if (activeTasks.length > 0) {
       tasksForVariance.push(...activeTasks);
     }
@@ -139,10 +139,10 @@ const allActiveBaselineTasks = async (projectId) => {
 
 
   const weeklyReport = {
-    allTasks: allTasks,
-    nextWeekTasks: nextWeekTasks,
-    risks: risks,
-    issues: issues,
+    // allTasks: allTasks,
+    // nextWeekTasks: nextWeekTasks,
+    // risks: risks,
+    // issues: issues,
     tasksForVariance: tasksForVariance
   };
 
@@ -193,11 +193,26 @@ const getWeeklyReport = async (projectId) => {
   const sleepingTasks = [];
 
   for (const eachAllActiveBaselines of allActiveBaselines) {
-    const activeTasks = await taskRepository.findBy({
-      baselineId: eachAllActiveBaselines.id,
-      plannedStart: Between(startOfWeekDate, endOfWeekDate),
-      actualStart: IsNull()
+    // const activeTasks = await taskRepository.findBy({
+    //   baselineId: eachAllActiveBaselines.id,
+    //   plannedStart: Between(startOfWeekDate, endOfWeekDate),
+    //   actualStart: IsNull()
+    // });
+    // const now = new Date();
+    // const activeTasks = await taskRepository
+    //   .createQueryBuilder("task")
+    //   .where("task.baselineId = :baselineId", { baselineId: eachAllActiveBaselines.id })
+    //   .andWhere("(task.actualStart IS NULL AND (task.plannedStart < :now OR task.plannedFinish < :now AND task.actualFinish IS NULL))")
+    //   .setParameter("now", now)
+    //   .getMany();
+    const activeTasks = await taskRepository.find({
+      where: [
+        { baselineId: eachAllActiveBaselines.id, plannedStart: LessThan(new Date()), actualStart: IsNull() },
+        { baselineId: eachAllActiveBaselines.id, plannedFinish: LessThan(new Date()), actualFinish: IsNull() }
+      ]
     });
+
+
 
     if (activeTasks.length > 0) {
       sleepingTasks.push(...activeTasks);
@@ -220,6 +235,21 @@ const getWeeklyReport = async (projectId) => {
     }
   }
 
+
+  const projectStatusReport = [];
+
+  for (const eachAllActiveBaselines of allActiveBaselines) {
+    const activeTasks = await taskRepository.findBy({
+      baselineId: eachAllActiveBaselines.id,
+      actualStart: Between(startOfWeekDate, endOfWeekDate),
+
+    });
+
+    if (activeTasks.length > 0) {
+      projectStatusReport.push(...activeTasks);
+    }
+  }
+
   const issues = await issueRepository.find({
 
     where: {
@@ -233,19 +263,22 @@ const getWeeklyReport = async (projectId) => {
   const risks = await riskRepository.find({
     where: {
       projectId: projectId,
-      // createdAt: Between(startOfWeekDate, endOfWeekDate),
     },
   });
 
+  allTasks.sort((a, b) => (a.order) - (b.order));
+  sleepingTasks.sort((a, b) => (a.order) - (b.order));
+  nextWeekTasks.sort((a, b) => (a.order) - (b.order));
+  projectStatusReport.sort((a, b) => (a.order) - (b.order));
 
   const weeklyReport = {
-    allTasks: allTasks,
-    sleepingTasks: sleepingTasks,
-    nextWeekTasks: nextWeekTasks,
+    allTasks: filterTasks(allTasks),
+    sleepingTasks: filterTasks(sleepingTasks),
+    nextWeekTasks: filterTasks(nextWeekTasks),
+    projectStatusReport: filterTasks(projectStatusReport),
     risks: risks,
     issues: issues,
   };
-
   return weeklyReport;
 
 };
@@ -289,12 +322,12 @@ const addWeeklyReport = async (projectId, weeklyReportData) => {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonthNumber = currentDate.getMonth() + 1;
-
   const risks = weeklyReportData.risks;
   const issues = weeklyReportData.issues;
   const sleepingTasks = weeklyReportData.sleepingTasks;
   const nextWeekTasks = weeklyReportData.nextWeekTasks;
   const overAllProgress = weeklyReportData.overAllProgress;
+  const projectStatusReport = weeklyReportData.projectStatusReport;
 
   // return [projectId, currentMonthNumber, risks, issues, sleepingTasks, nextWeekTasks,]
 
@@ -312,6 +345,7 @@ const addWeeklyReport = async (projectId, weeklyReportData) => {
     sleepingTasks: sleepingTasks,
     nextWeekTasks: nextWeekTasks,
     overAllProgress: overAllProgress,
+    projectStatusReport: projectStatusReport,
   });
 
   const savedWeeklyReport = await weeklyReportRepository.save(addedWeeklyReport);
@@ -335,7 +369,7 @@ const getAddedWeeklyReport = async (projectId) => {
     return result;
   }, {});
 
-  return groupedWeeklyReports;
+  return Object.values(groupedWeeklyReports);
 };
 /**
  * Retrieves the weekly report for the specified project ID and week.
@@ -400,6 +434,29 @@ const getComments = async (weeklyReportId) => {
 }
 
 
+const deleteWeeklyReport = async (weeklyReportId) => {
+  const WeeklyReportExists = await weeklyReportRepository.findOne({ where: { id: weeklyReportId } })
+  if (!WeeklyReportExists) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'weekly report  not found');
+
+  }
+
+  await weeklyReportRepository.delete({ id: WeeklyReportExists.id })
+  return WeeklyReportExists
+
+}
+const filterTasks = (tasks) => {
+  let uniqueIds = {};
+  let filteredArray = tasks.filter(item => {
+    if (!uniqueIds[item.id]) {
+      uniqueIds[item.id] = true;
+      return true; // Keep the item
+    }
+    return false; // Discard the item
+  });
+  return filteredArray
+}
+
 module.exports = {
   getWeeklyReport,
   addSleepingReason,
@@ -408,5 +465,6 @@ module.exports = {
   getAddedWeeklyReport,
   getReportByWeek,
   addComment,
-  getComments
+  getComments,
+  deleteWeeklyReport
 };

@@ -163,7 +163,6 @@ const deleteBudget = catchAsync(async (req, res) => {
  */
 
 const getBudgetsOfProject = catchAsync(async (req, res) => {
-  console.log(req.params.projectId);
   const data = await budgetService.getBudgetsOfProject(req.params.projectId);
   res.send(data);
 });
@@ -244,7 +243,7 @@ const getBudgetGroupByCategory = catchAsync(async (req, res) => {
 
 const getMonthlyBudget = catchAsync(async (req, res) => {
   const projectId = req.params.projectId;
-  console.log(projectId, 'kkkkkkkk');
+
   const data = await budgetService.getCurrentMonthBudgetOfProjects(projectId);
   res.send(data);
 });
@@ -325,7 +324,6 @@ const addBudget = catchAsync(async (req, res) => {
     taskCategory: taskCategory,
     group: group,
   };
-  console.log(singleBudgetData, 'pppppppppppp');
   const budget = await budgetService.addBudget(singleBudgetData);
   res.status(httpStatus.CREATED).send(budget);
 });

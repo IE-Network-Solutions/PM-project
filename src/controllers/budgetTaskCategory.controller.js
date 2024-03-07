@@ -22,7 +22,7 @@ const createBudgetTaskCategory = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Budget Type not found');
   }
   data.budgetType = budgetType;
-  console.log(data);
+
   const budgetTaskCategory = await budgetTaskCategoryService.createBudgetTaskCategory(data);
   res.status(httpStatus.CREATED).send(budgetTaskCategory);
 });
@@ -78,7 +78,6 @@ const updateBudgetTaskCategory = catchAsync(async (req, res) => {
  */
 
 const deleteBudgetTaskCategory = catchAsync(async (req, res) => {
-  console.log(req.params.budgetTaskCategoryId);
   await budgetTaskCategoryService.deleteBudgetTaskCategory(req.params.budgetTaskCategoryId);
   res.status(httpStatus.NO_CONTENT).send();
 });

@@ -1,40 +1,45 @@
 const express = require('express');
 const validate = require('../../middlewares/validate');
-const {weeklyReportValidation } = require('../../validations');
-const {weeklyReportController } = require('../../controllers');
+const { weeklyReportValidation } = require('../../validations');
+const { weeklyReportController } = require('../../controllers');
 
 const router = express.Router();
-  router
+router
   .route('/:projectId')
   .get(validate(weeklyReportValidation.weeklyReport), weeklyReportController.weeklyReport);
-  
-  router
+
+router
   .route('/all-tasks/:projectId')
   .get(validate(weeklyReportValidation.weeklyReport), weeklyReportController.allTasks);
 
-  router
+router
   .route('/add-sleeping-reason')
   .patch(validate(weeklyReportValidation.sleepingTasks), weeklyReportController.addSleepingReason);
 
-  router
-  .route ('/add/:projectId')
+router
+  .route('/add/:projectId')
   .post(validate(weeklyReportValidation.addWeeklyReport), weeklyReportController.addWeeklyReport);
 
-  router
+router
   .route('/saved/:projectId')
   .get(validate(weeklyReportValidation.savedWeeklyReport), weeklyReportController.getAddedWeeklyReport);
 
-  router
+router
   .route('/:projectId/week/:week')
   .get(validate(weeklyReportValidation.getReportByWeek), weeklyReportController.getReportByWeek);
-  
-  router
+
+router
   .route('/comment')
   .post(validate(weeklyReportValidation.addComment), weeklyReportController.addComment);
 
-  router
+router
   .route('/comment/:weeklyReportId')
   .get(validate(weeklyReportValidation.getComment), weeklyReportController.getComments);
+
+
+router
+  .route('/:weeklyReportId')
+  .delete(weeklyReportController.deleteWeeklyReport);
 
 
 module.exports = router;

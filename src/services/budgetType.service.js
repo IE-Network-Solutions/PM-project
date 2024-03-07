@@ -88,8 +88,8 @@ const deleteBudgetTypeId = async (budgetTypeId) => {
  * @returns {Promise<object[]>} - A promise that resolves with an array of office budget types.
  */
 const getAllOfficeBudgetTypes = async () => {
-  let isOffice = true
-  return await budgetTypeRepository.find({ where: { isOffice: isOffice } })
+  let isOffice = true;
+  return await budgetTypeRepository.find({ where: { isOffice: isOffice } });
 };
 
 module.exports = {
@@ -98,5 +98,5 @@ module.exports = {
   getBudgetType,
   updateBudgetType,
   deleteBudgetTypeId,
-  getAllOfficeBudgetTypes
+  getAllOfficeBudgetTypes,
 };

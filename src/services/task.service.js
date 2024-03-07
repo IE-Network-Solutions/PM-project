@@ -31,12 +31,9 @@ const baselineRepository = dataSource.getRepository(Baseline).extend({
  */
 
 const createTask = async (taskBody) => {
-  console.log(taskBody, "nbvbvbvvbvjdididi")
-  const task = taskRepository.create(taskBody);
-  console.log(task, "kkk")
+  const task = taskRepository.create(taskBody)
+  return await taskRepository.save(task);
 
-  const gg = await taskRepository.save(task);
-  console.log(gg, "nahome")
 
 };
 /**
@@ -307,6 +304,22 @@ const filterTaskByPlanedDate = async (projectId, startDate, endDate) => {
   return tasks;
 };
 
+
+
+const activeBaselineTasks = async (projectId) => {
+
+
+  const activeBaseline = await baselineRepository.findOne({ where: { projectId: projectId, status: true } })
+  const tasks = await taskRepository.find({ where: { baselineId: activeBaseline.id } })
+
+  if (!tasks) {
+    new AppError('relation not found', 404);
+  }
+
+  // Remove the TaskUser association from the database
+  return tasks
+};
+
 module.exports = {
   createTask,
   getTasks,
@@ -319,4 +332,5 @@ module.exports = {
   removeResource,
   filterTaskByPlanedDate,
   assignAllResource,
+  activeBaselineTasks,
 };
