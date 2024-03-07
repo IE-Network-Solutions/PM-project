@@ -16,7 +16,7 @@ module.exports = {
   // entities: [Post,Project,Task,SubTask,Milestone,minuteOfMeeting,agenda,agendaTopic,momAction,momAttendees],
 
   synchronize: configs.env == 'development' ? false : false,
-  migrations: [path.join(__dirname, '../migrations/*.js')], // Path to migration files
+  migrations: [path.join(__dirname, '/../migrations/*.js')], // Path to migration files
 
   cli: {
     entitiesDir: path.join(__dirname, '../models'),
