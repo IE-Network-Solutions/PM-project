@@ -252,6 +252,7 @@ const getCurrentApprover = async (moduleName, moduleId) => {
  */
 const approve = async (moduleName, moduleId) => {
   const approvalModule = await approvalModuleRepository.findOne({ where: { moduleName: moduleName } });
+  console.log(approvalModule, "approvalModule")
   let updatedModule;
   if (!approvalModule) {
     throw new ApiError(httpStatus.NOT_FOUND, 'approval module does not exist');

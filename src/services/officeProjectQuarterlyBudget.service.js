@@ -112,7 +112,6 @@ const getQuarterlyBudgetByProject = async (month, projectId) => {
         budgetData.push(monthlyBudget)
         return monthlyBudget;
     }
-    console.log(budgetData, "monthlyBudgetffggglolloo")
 
     return budgetData;
 }
