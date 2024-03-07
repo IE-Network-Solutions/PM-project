@@ -186,7 +186,6 @@ const getWeeklyReport = async (projectId) => {
     //   plannedStart: Between(startOfWeekDate, endOfWeekDate),
     //   actualStart: IsNull()
     // });
-
     const activeTasks = await taskRepository.find({
       where: [
         { baselineId: eachAllActiveBaselines.id, plannedStart: LessThan(new Date()), actualStart: IsNull() },
@@ -241,7 +240,6 @@ const getWeeklyReport = async (projectId) => {
     risks: risks,
     issues: issues,
   };
-
   return weeklyReport;
 
 };
@@ -273,7 +271,6 @@ const addWeeklyReport = async (projectId, weeklyReportData) => {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonthNumber = currentDate.getMonth() + 1;
-
   const risks = weeklyReportData.risks;
   const issues = weeklyReportData.issues;
   const sleepingTasks = weeklyReportData.sleepingTasks;
@@ -313,7 +310,7 @@ const getAddedWeeklyReport = async (projectId) => {
     return result;
   }, {});
 
-  return groupedWeeklyReports;
+  return Object.values(groupedWeeklyReports);
 };
 
 const getReportByWeek = async (projectId, week) => {
@@ -357,6 +354,29 @@ const getComments = async (weeklyReportId) => {
 }
 
 
+const deleteWeeklyReport = async (weeklyReportId) => {
+  const WeeklyReportExists = await weeklyReportRepository.findOne({ where: { id: weeklyReportId } })
+  if (!WeeklyReportExists) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'weekly report  not found');
+
+  }
+
+  await weeklyReportRepository.delete({ id: WeeklyReportExists.id })
+  return WeeklyReportExists
+
+}
+const filterTasks = (tasks) => {
+  let uniqueIds = {};
+  let filteredArray = tasks.filter(item => {
+    if (!uniqueIds[item.id]) {
+      uniqueIds[item.id] = true;
+      return true; // Keep the item
+    }
+    return false; // Discard the item
+  });
+  return filteredArray
+}
+
 module.exports = {
   getWeeklyReport,
   addSleepingReason,
@@ -365,5 +385,6 @@ module.exports = {
   getAddedWeeklyReport,
   getReportByWeek,
   addComment,
-  getComments
+  getComments,
+  deleteWeeklyReport
 };

@@ -224,7 +224,6 @@ const getCurrentApprover = async (moduleName, moduleId) => {
 
     if (moduleData.approvalStage.project_role) {
       let project = await moduleData.project;
-      console.log(project, "sdfghjklfghjk")
       let projectId = project.id;
       let roleId = moduleData.approvalStage.role.id;
       let ProjectMemebrsRoleData = await approvalProjectMemebrsRepository
@@ -253,7 +252,6 @@ const getCurrentApprover = async (moduleName, moduleId) => {
  */
 const approve = async (moduleName, moduleId) => {
   const approvalModule = await approvalModuleRepository.findOne({ where: { moduleName: moduleName } });
-  console.log(approvalModule, "approvalModule")
   let updatedModule;
   if (!approvalModule) {
     throw new ApiError(httpStatus.NOT_FOUND, 'approval module does not exist');
@@ -299,7 +297,6 @@ const approve = async (moduleName, moduleId) => {
       // Rabit Mq Producer
       // let approvedByGroup=await services.budgetService.getBudgetGroupByCategory(moduleId)
       // publishToRabbit('project.budget',approvedByGroup)
-      // console.log(approvedByGroup)
     } else {
       level = moduleData.approvalStage.level + 1;
       const approvalStage = await approvalStageRepository

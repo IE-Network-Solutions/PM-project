@@ -11,7 +11,8 @@ router
   .post(validate(taskValidation.createTask), taskController.createTask)
   .get(validate(taskValidation.getTasks), taskController.getTasks);
 
-router.route('/extend-tasks/:baselineId').get(validate(taskValidation.extendTasks), taskController.extendTasks);
+router
+  .route('/extend-tasks/:baselineId').get(validate(taskValidation.extendTasks), taskController.extendTasks);
 
 router
   .route('/:taskId')
@@ -34,6 +35,13 @@ router
   .get(validate(taskValidation.getByPlnedDate), taskController.getTasksByPlandStartDate);
 router.route('/project/:projectId').get(validate(taskValidation.getTasksByMileston), taskController.getTasksByMileston);
 
+router
+  .route('/allactiveTasks/:projectId')
+  .get(taskController.getActiveBaselineTasks);
+
 router.route('/assign-resource/:taskId').post(validate(taskValidation.assignResource), taskController.assignResource);
+
+
+
 
 module.exports = router;

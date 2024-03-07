@@ -112,7 +112,7 @@ const updateProjectBudget = async (projectBudgetID, data) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project Budget not found');
   }
   // updateBody.amount += projectBudget.amount;
-  // console.log()
+
   await projectBudgetRepository.update({ id: projectBudgetID }, updateBody);
   return getProjectBudget(projectBudgetID);
 };
@@ -126,13 +126,13 @@ const updateProjectBudget = async (projectBudgetID, data) => {
 const updateOrCreateProjectBudget = async (projectBudgets) => {
   for (const projectBudget of JSON.parse(projectBudgets)) {
     const projectBudgetData = await getProjectBudget(projectBudget.id);
-    console.log(projectBudget);
+
     const data = {};
     data.amount = await projectBudget.amount;
     data.projectId = await projectBudget.project_id;
     data.currencyId = await projectBudget.currency_id;
     data.budgetCategoryId = await projectBudget.budget_category_id;
-    // console.log(data);
+
     if (!projectBudgetData) {
       projectBudgetRepository.create(data);
     } else {

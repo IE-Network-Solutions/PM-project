@@ -52,6 +52,10 @@ const momAttendees = new EntitySchema({
       type: "uuid",
       primary: true,
     },
+    department: {
+      type: "varchar",
+      nullable: true
+    },
   },
   relations: {
     user: {

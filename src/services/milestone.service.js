@@ -217,7 +217,6 @@ const updateMilestone = async (milestoneId, updateBody) => {
   }
   let summaryTasks = updateBody['summaryTask'];
   delete updateBody.summaryTask;
-
   const savedMilestone = await milestoneRepository.save({ ...milestone, ...updateBody });
 
   let updatedSummaryTask = await summaryTaskService.updateSingleSummaryTask(summaryTasks);

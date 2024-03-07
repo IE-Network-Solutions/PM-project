@@ -31,8 +31,6 @@ const createSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
   if (taskBody?.length !== 0) {
     await Promise.all(
       taskBody.map(async (element) => {
-        console.log(element.label, "=>", "ech summarytask element")
-        console.log(element.properties, "=>", "ech summarytask element")
         const task = summaryTaskRepository.create({
           name: element.label,
           baselineId: baselineId,
@@ -107,7 +105,6 @@ const updateSummaryTasks = async (taskBody, baselineId, mileId, parentId) => {
         });
 
       if (updateTasks.length > 0) {
-
         updateTasks.forEach((ut) => {
           delete ut.taskId;
           let updatedTasks = taskRepository.update(
@@ -146,6 +143,7 @@ const updateSingleSummaryTask = async (taskBody) => {
   if (taskBody?.length !== 0) {
     await Promise.all(
       taskBody.map(async (element) => {
+        console.log(element, "startOfWeekDate")
         const sumtask = await summaryTaskRepository.save({
           id: element.id,
           order: element.taskId,

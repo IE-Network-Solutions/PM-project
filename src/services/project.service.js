@@ -139,12 +139,8 @@ const updateProject = async (projectId, updateBody) => {
 
   await projectRepository.update({ id: projectId }, updateBody);
   const updatedProject = await getProject(projectId);
-  console.log(updatedProject, "ggmikkkg")
   updatedProject.members = await getMembers(updatedProject.id);
-
   publishToRabbit('project.update', updatedProject);
-
-  console.log(updatedProject, 'sl up');
   return updatedProject;
 };
 /**

@@ -15,13 +15,11 @@ const { baselineService, projectService } = require('../services');
  */
 
 const createBaseline = catchAsync(async (req, res) => {
+
   const milestones = req.body.milestones;
   // const subTasks = req.body.subTasks;
   //delete req.body.milestones;
   // delete req.body.subTasks;
-
-
-
   const baseline = await baselineService.createBaseline(req.body, milestones);
 
   res.status(httpStatus.CREATED).json(baseline);
@@ -184,6 +182,12 @@ const scheduleDashboard = catchAsync(async (req, res) => {
   const projectSchedule = await baselineService.scheduleDashboard(projectId);
   res.send(projectSchedule);
 });
+const uploadBaseline = catchAsync(async (req, res) => {
+
+  const projectId = req.params.projectId;
+  const projectSchedule = await baselineService.uploadBaseline(projectId, req.body);
+  res.send(projectSchedule);
+});
 
 module.exports = {
   createBaseline,
@@ -199,5 +203,6 @@ module.exports = {
   activeProjectSchedule,
   masterScheduleByDateFilter,
   scheduleDashboard,
+  uploadBaseline
 
 };

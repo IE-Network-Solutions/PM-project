@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 const httpStatus = require('http-status');
-const {Client} = require('../models')
+const { Client } = require('../models')
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -38,7 +38,7 @@ const createClient = async (clientData) => {
 
     return await clientRepository.save(client);
 }
-module.exports={
+module.exports = {
     getClients,
     createClient
 };
