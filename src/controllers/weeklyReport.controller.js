@@ -58,10 +58,11 @@ const addWeeklyReport = catchAsync(async (req, res) => {
  * @param {Object} res - The response object.
  * @returns {Promise<void>} A Promise that resolves with the retrieved weekly report.
  */
-const getAddedWeeklyReport = catchAsync(async (req, res) => {
-  const savedWeeklyReport = await weeklyReportService.getAddedWeeklyReport(req.params.projectId);
-  res.send(savedWeeklyReport);
-});
+const
+  getAddedWeeklyReport = catchAsync(async (req, res) => {
+    const savedWeeklyReport = await weeklyReportService.getAddedWeeklyReport(req.params.projectId);
+    res.send(savedWeeklyReport);
+  });
 /**
  * Retrieves the weekly report for a project by week number.
  * @function

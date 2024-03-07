@@ -381,8 +381,9 @@ const projectSchedule = async (projectId) => {
 
     const activeBaselines = Object.values(groupedByBaseline).filter((activeBaseline) => activeBaseline.status)
 
-    const activeBaselineWithApprovalStage = await baselineRepository.findOne({ where: { id: activeBaselines[0].id }, relations: ['approvalStage', "approvalStage.role"] })
+    const activeBaselineWithApprovalStage = await baselineRepository.findOne({ where: { id: activeBaselines[0].id }, relations: ['approvalStage', "approvalStage.role", "baselineComment"] })
     activeBaselines[0].approvalStage = activeBaselineWithApprovalStage.approvalStage
+    activeBaselines[0].baselineComment = activeBaselineWithApprovalStage.baselineComment
     const allBaselines = baseline.map((item) => {
       item.baselineData.forEach((element) => {
         groupedByBaseline[element.id] = element;
@@ -582,27 +583,32 @@ const updateBaseline = async (baselineId, baselineBody, milestones) => {
     await baselineRepository.update({ id: baselineId }, { name: baselineBody.name });
   }
   milestones.sort((a, b) => (a.order) - (b.order));
-  if (milestones) {
+  try {
+    if (milestones) {
 
-    const savedMilestones = await Promise.all(milestones.map(async (milestone) => {
-      if (milestone.summaryTask) {
-        const savedSummaryTasks = await Promise.all(milestone.summaryTask.map(async (eachTask) => {
-          return summaryTaskService.updateSummaryTasks(eachTask, baselineId, milestone.id);
-        }));
+      const savedMilestones = await Promise.all(milestones.map(async (milestone) => {
+        if (milestone.summaryTask) {
+          const savedSummaryTasks = await Promise.all(milestone.summaryTask.map(async (eachTask) => {
+            return summaryTaskService.updateSummaryTasks(eachTask, baselineId, milestone.id);
+          }));
 
 
-        milestone.summaryTask = savedSummaryTasks;
-      }
+          milestone.summaryTask = savedSummaryTasks;
+        }
 
-      return milestone;
-    }));
+        return milestone;
+      }));
 
-    milestones = savedMilestones;
+      milestones = savedMilestones;
+    }
+
+
+    const updatedBaseline = await getBaseline(baselineId)
+    return updatedBaseline;
   }
-
-
-  const updatedBaseline = await getBaseline(baselineId)
-  return updatedBaseline;
+  catch (error) {
+    throw new ApiError(httpStatus.BAD_REQUEST, error);
+  }
 };
 /**
  * Deletes a baseline by its unique identifier.

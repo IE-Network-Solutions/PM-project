@@ -75,7 +75,6 @@ const getByMilestone = catchAsync(async (req, res) => {
 
 const updateBaseline = catchAsync(async (req, res) => {
   const baseline = await baselineService.updateBaseline(req.params.baselineId, req.body, req.body.milestones);
-
   delete req.body.milestones;
   res.send(baseline);
 });
