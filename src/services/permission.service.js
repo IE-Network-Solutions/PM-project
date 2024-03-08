@@ -372,8 +372,11 @@ const seedPermission = async () => {
     },
   ];
   const permissions = permissionData.map((permissionData) => {
+    try{
     const permission = permissionRepository.create(permissionData);
     return permission;
+    } catch (error){
+    }
   });
 
   const createdPermissions = await permissionRepository.save(permissions);
