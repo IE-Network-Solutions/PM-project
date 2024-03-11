@@ -13,7 +13,7 @@ class OfficeQuarterlyBudget extends Base {
         this.approved = { type: 'boolean', default: false };
         this.rejected = { type: 'boolean', default: false };
         this.isDeleted = { type: 'boolean', default: false };
-        this.projectId = { type: 'uuid' };
+        this.projectId = { type: 'uuid', nullable: true };
 
 
     }
@@ -37,7 +37,8 @@ module.exports = new EntitySchema({
         project: {
             type: 'many-to-one',
             target: 'Project',
-            inverseSide: 'OfficeQuarterlyBudget'
+            inverseSide: 'OfficeQuarterlyBudget',
+            onDelete: 'CASCADE',
 
         },
 

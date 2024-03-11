@@ -243,7 +243,7 @@ const getBudgetGroupByCategory = catchAsync(async (req, res) => {
 
 const getMonthlyBudget = catchAsync(async (req, res) => {
   const projectId = req.params.projectId;
-  console.log(projectId, 'kkkkkkkk');
+
   const data = await budgetService.getCurrentMonthBudgetOfProjects(projectId);
   res.send(data);
 });

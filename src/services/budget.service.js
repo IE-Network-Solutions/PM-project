@@ -46,7 +46,6 @@ const createBudget = async (budgetBody) => {
   const budgets = budgetData.map((budget) => {
     budget.group = budgetGroup;
     const budgetData = budgetRepository.create(budget);
-    console.log('mmmmmmmmmmm', budgetData);
     deductFromProjectBudget(budgetData.budgetCategory.id, budgetData.currency.id, budgetData.project.id, budgetData.amount);
     return budgetData;
   });
@@ -78,14 +77,15 @@ const deductFromProjectBudget = async (categoryId, currencyId, projectId, amount
     .addOrderBy('currency.id')
     .getOne();
 
-  console.log(projectBudget);
+
   // if (!projectBudget) {
   //   $projectBudget =
   // }
-  projectBudget.usedAmount += amount;
+  if (projectBudget) {
+    projectBudget.usedAmount += amount;
 
-  await projectBudgetRepository.save(projectBudget);
-
+    await projectBudgetRepository.save(projectBudget);
+  }
   return projectBudget;
 };
 /**
@@ -216,7 +216,7 @@ const getBudgetsOfProjects = async () => {
     .leftJoin('budget.currency', 'currency')
     .select(['budget', 'task', 'project', 'group', 'budgetCategory', 'taskCategory', 'approvalStage', 'role', 'comments'])
     .where('group.approved = :approval', { approval })
-    .andWhere('budget.currency=:isOffice', { isOffice })
+    // .andWhere('budget.currency=:isOffice', { isOffice })
     .andWhere('group.approvalStage IS NOT NULL')
     .getMany();
 
@@ -421,7 +421,6 @@ const getCurrentMonthBudgetOfProjectss = async () => {
  */
 const getCurrentMonthBudgetOfProjects = async (projectId) => {
   const approval = false;
-  console.log(projectId, 'uuuuuuuuuuuuuuu');
   const budgets = await budgetRepository
     .createQueryBuilder('budget')
     .leftJoin('budget.project', 'project')
@@ -737,8 +736,6 @@ const getTasksOfProject = async (projectId) => {
   });
 
   const groupedResult = Object.values(groupedData);
-
-  console.log(groupedResult);
   return groupedData;
 };
 /**

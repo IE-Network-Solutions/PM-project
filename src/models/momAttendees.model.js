@@ -14,7 +14,7 @@
 //   name: 'MomAttendees',
 //   tableName: 'mom_attendees',
 //   columns: new momAttendees(),
-  
+
 //   relations: {
 //     // mom: {
 //     //     type: "many-to-one", 
@@ -48,9 +48,13 @@ const momAttendees = new EntitySchema({
       type: "uuid",
       primary: true,
     },
-     momId: {
+    momId: {
       type: "uuid",
       primary: true,
+    },
+    department: {
+      type: "varchar",
+      nullable: true
     },
   },
   relations: {
@@ -61,6 +65,7 @@ const momAttendees = new EntitySchema({
     mom: {
       type: 'many-to-one',
       target: 'minuteOfMeeting',
+      onDelete: 'CASCADE',
     },
   },
 });

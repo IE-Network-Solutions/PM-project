@@ -16,10 +16,12 @@ module.exports = new EntitySchema({
     budgetGroup: {
       type: 'many-to-one',
       target: 'BudgetGroup',
+      onDelete: 'CASCADE',
     },
     budgetComment: {
       type: 'many-to-one',
       target: 'BudgetComment',
+      onDelete: 'CASCADE',
     },
   },
 });
