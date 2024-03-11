@@ -707,7 +707,7 @@ const uploadBaseline = async (projectId, baselineBody) => {
           finishVariance: eachObject.finishVariance,
           finish: eachObject.finish,
           start: eachObject.start,
-          duation: eachObject.duration,
+          duration: eachObject.duration,
           actualStart: eachObject.actualStart,
           actualFinish: eachObject.actualFinish
 
@@ -770,7 +770,7 @@ const uploadBaseline = async (projectId, baselineBody) => {
         }
         else {
 
-          throw new Error(" summary task Parent not found")
+          throw new Error("Summary Task Parent Not Found")
         }
       }
       else if (eachObject.type.toLowerCase() === "t") {
@@ -802,7 +802,7 @@ const uploadBaseline = async (projectId, baselineBody) => {
           }
         }
         else {
-          throw new Error("  task Parent not found")
+          throw new Error("Task Parent Not Found")
         }
 
       }
