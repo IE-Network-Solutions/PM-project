@@ -94,8 +94,6 @@ const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
       actionInstances.push(savedActionInstance);
 
     }
-
-    console.log(actionInstances, "actionInstances")
     mom.action = actionInstances;
   }
 

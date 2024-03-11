@@ -6,7 +6,8 @@ const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 const { all } = require('../routes/v1');
 const { milestoneService, projectService } = require('.');
-const summaryTaskService = require("./summaryTask.service")
+const summaryTaskService = require("./summaryTask.service");
+const { object } = require('joi');
 
 const baselineRepository = dataSource.getRepository(Baseline).extend({
   findAll,
@@ -120,9 +121,10 @@ const createBaseline = async (baselineBody, milestones) => {
 
     catch (error) {
       await baselineRepository.delete(savedBaseline.id);
+      if (lastActiveBaseline) {
 
-      await baselineRepository.update(lastActiveBaseline.id, { status: true })
-
+        await baselineRepository.update(lastActiveBaseline.id, { status: true })
+      }
       throw new ApiError(error.message);
     }
   }
@@ -331,15 +333,12 @@ const projectSchedule = async (projectId) => {
     where: { projectId: projectId },
     relations: ['summaryTask', 'summaryTask.tasks', 'summaryTask.baseline', "summaryTask.tasks.baseline"],
     // order: { order: 'ASC' }
-
   });
 
   milestone.sort((a, b) => (a.order) - (b.order));
   if (milestone) {
-
     let milestones = milestone
     for (const item of milestones) {
-
       let finalSub = milestoneService.flatToHierarchy(item.summaryTask)
       delete item.summaryTask
       finalSub.sort((a, b) => (a.order) - (b.order));
@@ -348,41 +347,46 @@ const projectSchedule = async (projectId) => {
     }
 
     const groupedByBaseline = milestone.reduce((base, milestone) => {
-      const lastSummaryTask = findLastSummaryTask(milestone.summaryTask);
-      lastSummaryTask.tasks.sort((a, b) => (a.order) - (b.order));
+      if (milestone.summaryTask.length !== 0) {
+        const lastSummaryTask = findLastSummaryTask(milestone.summaryTask);
+        lastSummaryTask.tasks.sort((a, b) => (a.order) - (b.order));
 
-      if (lastSummaryTask) {
-        let newLastSummaryTask = lastSummaryTask.tasks
-        newLastSummaryTask.forEach(task => {
-          const baselineId = task.baseline.id;
-          if (!base[baselineId]) {
-            base[baselineId] = {
-              id: baselineId,
-              name: task.baseline.name,
-              createdAt: task.baseline.createdAt,
-              updatedAt: task.baseline.updatedAt,
-              createdBy: task.baseline.createdBy,
-              updatedBy: task.baseline.updatedBy,
-              status: task.baseline.status,
-              projectId: task.baseline.projectId,
-              approved: task.baseline.approved,
-              rejected: task.baseline.rejected,
-              milestones: []
-            };
-          }
+        if (lastSummaryTask) {
+          let newLastSummaryTask = lastSummaryTask.tasks
+          newLastSummaryTask.forEach(task => {
+            const baselineId = task.baseline.id;
+            if (!base[baselineId]) {
+              base[baselineId] = {
+                id: baselineId,
+                name: task.baseline.name,
+                createdAt: task.baseline.createdAt,
+                updatedAt: task.baseline.updatedAt,
+                createdBy: task.baseline.createdBy,
+                updatedBy: task.baseline.updatedBy,
+                status: task.baseline.status,
+                projectId: task.baseline.projectId,
+                approved: task.baseline.approved,
+                rejected: task.baseline.rejected,
+                milestones: []
+              };
+            }
 
-          if (!base[baselineId].milestones.some(m => m.id === milestone.id)) {
-            base[baselineId].milestones.push(milestone);
-          }
-        });
+            if (!base[baselineId].milestones.some(m => m.id === milestone.id)) {
+              base[baselineId].milestones.push(milestone);
+            }
+          });
+
+        }
+        return base;
       }
-      return base;
     }, {});
-
+    if (!groupedByBaseline) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'No basline was created');
+    }
     const activeBaselines = Object.values(groupedByBaseline).filter((activeBaseline) => activeBaseline.status)
-
-    const activeBaselineWithApprovalStage = await baselineRepository.findOne({ where: { id: activeBaselines[0].id }, relations: ['approvalStage', "approvalStage.role"] })
+    const activeBaselineWithApprovalStage = await baselineRepository.findOne({ where: { id: activeBaselines[0].id }, relations: ['approvalStage', "approvalStage.role", "baselineComment"] })
     activeBaselines[0].approvalStage = activeBaselineWithApprovalStage.approvalStage
+    activeBaselines[0].baselineComment = activeBaselineWithApprovalStage.baselineComment
     const allBaselines = baseline.map((item) => {
       item.baselineData.forEach((element) => {
         groupedByBaseline[element.id] = element;
@@ -582,27 +586,32 @@ const updateBaseline = async (baselineId, baselineBody, milestones) => {
     await baselineRepository.update({ id: baselineId }, { name: baselineBody.name });
   }
   milestones.sort((a, b) => (a.order) - (b.order));
-  if (milestones) {
+  try {
+    if (milestones) {
 
-    const savedMilestones = await Promise.all(milestones.map(async (milestone) => {
-      if (milestone.summaryTask) {
-        const savedSummaryTasks = await Promise.all(milestone.summaryTask.map(async (eachTask) => {
-          return summaryTaskService.updateSummaryTasks(eachTask, baselineId, milestone.id);
-        }));
+      const savedMilestones = await Promise.all(milestones.map(async (milestone) => {
+        if (milestone.summaryTask) {
+          const savedSummaryTasks = await Promise.all(milestone.summaryTask.map(async (eachTask) => {
+            return summaryTaskService.updateSummaryTasks(eachTask, baselineId, milestone.id);
+          }));
 
 
-        milestone.summaryTask = savedSummaryTasks;
-      }
+          milestone.summaryTask = savedSummaryTasks;
+        }
 
-      return milestone;
-    }));
+        return milestone;
+      }));
 
-    milestones = savedMilestones;
+      milestones = savedMilestones;
+    }
+
+
+    const updatedBaseline = await getBaseline(baselineId)
+    return updatedBaseline;
   }
-
-
-  const updatedBaseline = await getBaseline(baselineId)
-  return updatedBaseline;
+  catch (error) {
+    throw new ApiError(httpStatus.BAD_REQUEST, error);
+  }
 };
 /**
  * Deletes a baseline by its unique identifier.
@@ -708,9 +717,9 @@ const uploadBaseline = async (projectId, baselineBody) => {
         allObjects.push(savedMilestone);
       }
       else if (eachObject.type.toLowerCase() === "s") {
-        const parent = allObjects.find(t => t.order === eachObject.parentId)
 
-        if (parent.length !== 0) {
+        const parent = allObjects.find(t => t.order === eachObject.parentId)
+        if (parent !== null && parent !== undefined) {
           if (parent.type.toLowerCase() === "m") {
             const summaryTask = summaryTaskRepository.create({
               order: eachObject.id,
@@ -759,11 +768,14 @@ const uploadBaseline = async (projectId, baselineBody) => {
           }
 
         }
+        else {
 
+          throw new Error("Summary Task Parent Not Found")
+        }
       }
       else if (eachObject.type.toLowerCase() === "t") {
         const parent = allObjects.find(t => t.order === eachObject.parentId)
-        if (parent) {
+        if (parent !== null && parent !== undefined) {
 
           if (parent.type.toLowerCase() === "s") {
             const milestoen = findMilestone(allObjects, parent)
@@ -789,6 +801,9 @@ const uploadBaseline = async (projectId, baselineBody) => {
             allObjects.push(savedTask);
           }
         }
+        else {
+          throw new Error("Task Parent Not Found")
+        }
 
       }
     }
@@ -796,8 +811,10 @@ const uploadBaseline = async (projectId, baselineBody) => {
   }
   catch (error) {
     await baselineRepository.delete(createdBaseline.id)
-    await baselineRepository.update(lastActiveBaseline.id, { status: true })
-    throw new ApiError(error.message)
+    if (lastActiveBaseline) {
+      await baselineRepository.update(lastActiveBaseline.id, { status: true })
+    }
+    throw new ApiError(httpStatus.BAD_REQUEST, error)
 
   }
 };

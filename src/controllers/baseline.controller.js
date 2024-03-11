@@ -75,7 +75,6 @@ const getByMilestone = catchAsync(async (req, res) => {
 
 const updateBaseline = catchAsync(async (req, res) => {
   const baseline = await baselineService.updateBaseline(req.params.baselineId, req.body, req.body.milestones);
-
   delete req.body.milestones;
   res.send(baseline);
 });
@@ -154,7 +153,7 @@ const projectSchedule = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, ' Project doesnt exist');
   }
   const projectSchedule = await baselineService.projectSchedule(projectId);
-  res.send(projectSchedule);
+  res.status(httpStatus.CREATED).json(projectSchedule);
 });
 /**
  * Retrieves the active project schedule.
@@ -186,7 +185,7 @@ const uploadBaseline = catchAsync(async (req, res) => {
 
   const projectId = req.params.projectId;
   const projectSchedule = await baselineService.uploadBaseline(projectId, req.body);
-  res.send(projectSchedule);
+  res.status(httpStatus.CREATED).json(projectSchedule);
 });
 
 module.exports = {
