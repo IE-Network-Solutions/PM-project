@@ -25,7 +25,7 @@ const createLL = {
         PMId: Joi.string().required(),
         status: Joi.string().valid("Created", "Pending", "CEO Pending", "Approved").required(),
         projectId: Joi.string().required(),
-        departmentId: Joi.string().required()
+        departmentId: Joi.string().allow(null)
     }),
 };
 /**
