@@ -11,10 +11,6 @@ const momAbsents = new EntitySchema({
             type: "uuid",
             primary: true,
         },
-        department: {
-            type: "varchar",
-            nullable: true
-        },
     },
     relations: {
         user: {
@@ -24,7 +20,6 @@ const momAbsents = new EntitySchema({
         mom: {
             type: 'many-to-one',
             target: 'minuteOfMeeting',
-            onDelete: 'CASCADE',
         },
     },
 });

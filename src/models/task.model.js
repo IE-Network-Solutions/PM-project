@@ -26,9 +26,7 @@ class Task extends Base {
     this.finishVariance = { type: 'int', nullable: true };
     this.duration = { type: 'int', nullable: true };
     this.actualDuration = { type: 'int', nullable: true };
-    this.order = { type: 'int', nullable: true }
   }
-
 }
 
 module.exports = new EntitySchema({

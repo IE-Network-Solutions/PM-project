@@ -18,7 +18,6 @@ module.exports = new EntitySchema({
         OfficeQuarterlyBudget: {
             type: 'many-to-one',
             target: 'OfficeQuarterlyBudget',
-            onDelete: 'CASCADE',
         },
     }
 });

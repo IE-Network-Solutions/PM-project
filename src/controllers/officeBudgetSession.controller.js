@@ -26,7 +26,7 @@ const getAllBudgetSessions = catchAsync(async (req, res) => {
  * @param {Object} res - Express response object.
  * @returns {Promise<void>} - Resolves with the requested budget session.
  */
-const getBudgetSession = catchAsync(async (req, res) => {
+const getBudgetSession = catchAsync(async (req, res) => {p
     const budgetSession = await officeBudgetSessionService.getSessionBudget(req.params.id);
     res.status(httpStatus.CREATED).send(budgetSession);
 

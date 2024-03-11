@@ -23,13 +23,15 @@ const createApprovalModule = async () => {
   const approvalModules = [
     { moduleName: 'ProjectBudget', max_level: 2 },
     { moduleName: 'OfficeProjectBudget', max_level: 2 },
-    { moduleName: 'ProjectSchedule', max_level: 2 },
+    { moduleName: 'ProjectSchedule', max_level: 3 },
     { moduleName: 'MonthlyBudget', max_level: 2 },
     { moduleName: 'OfficeProjectQuarterlyBudget', max_level: 2 },
   ];
 
   const modules = approvalModules.map((approvalModule) => {
+    // console.log(approvalModule);
     // const module = await getApprovalModuleByModuleName(approvalModule.moduleName);
+    // console.log('return dataaa', module);
     // if (!module) {
     const moduleData = approvalModuleRepository.create(approvalModule);
     console.log('created data', moduleData);

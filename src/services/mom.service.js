@@ -44,7 +44,6 @@ const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
       return momAttendeesRepository.create({
         momId: mom.id,
         userId: eachAttendees.userId,
-        department: eachAttendees.department
       });
     });
 
@@ -52,21 +51,16 @@ const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
     await momAttendeesRepository.save(momInstances);
   }
   if (Absents) {
-    console.log(Absents)
-    const momInstances = [];
-    for (const eachAbsents of Absents) {
-      if (eachAbsents.userId !== null && eachAbsents.userId !== '') {
-        const createdAbsents = momAbsentsRepository.create({
-          momId: mom.id,
-          userId: eachAbsents.userId,
-          department: eachAbsents.department
-        });
+    const momInstances = Absents.map((eachAbsents) => {
+      return momAbsentsRepository.create({
+        momId: mom.id,
+        userId: eachAbsents.userId,
+      });
+    });
 
-        const savedAbsents = await momAbsentsRepository.save(createdAbsents);
-        momInstances.push(savedAbsents);
-      }
-    }
-    //  return momInstances;
+    // Save the mom instances
+    console.log(momInstances, "momInstances")
+    await momAbsentsRepository.save(momInstances);
   }
 
 
@@ -83,17 +77,22 @@ const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
       });
 
       const savedActionInstance = await momActionRepository.save(actionInstance);
-      if (eachAction.responsiblePersonId !== null && eachAction.responsiblePersonId !== '') {
-        const responsiblePersonInstance = momActionResponsibleRepository.create({
-          userId: eachAction.responsiblePersonId,
-          momActionId: savedActionInstance.id,
-        });
 
-        await momActionResponsibleRepository.save(responsiblePersonInstance);
+      for (const responsiblePerson of responsiblePersons) {
+        if (responsiblePerson.id) {
+          const responsiblePersonInstance = momActionResponsibleRepository.create({
+            userId: responsiblePerson.id,
+            momActionId: savedActionInstance.id,
+          });
+
+          await momActionResponsibleRepository.save(responsiblePersonInstance);
+        }
+
+        actionInstances.push(savedActionInstance);
       }
-      actionInstances.push(savedActionInstance);
-
     }
+
+
     mom.action = actionInstances;
   }
 
@@ -162,34 +161,11 @@ const getMoms = async (filter, options) => {
  * @returns {Promise<Object>} - A promise that resolves to the retrieved MOM.
  */
 const getMom = async (momId) => {
-  const mom = await momRepository.findOne({
+  return await momRepository.findOne({
     where: { id: momId },
-    relations: ['facilitator', 'momAttendees', 'momAttendees.role', 'momAgenda.momTopics', 'momAgenda.momTopics.user', 'momAction', 'momComment', 'momAbsents', 'momAction', 'momAction.momActionResponsible.user'],
+    relations: ['facilitator', 'momAttendees', 'momAgenda.momTopics', 'momAction', 'momComment', 'momAbsents'],
   },
   );
-  const attendees = await momAttendeesRepository.find({ where: { momId: momId } })
-
-  const momAt = mom.momAttendees.map(momAttendee => {
-    const attendee = attendees.find(a => a.userId === momAttendee.id);
-    if (attendee) {
-      momAttendee.department = attendee.department;
-    }
-    return momAttendee;
-  });
-
-
-
-  const absents = await momAbsentsRepository.find({ where: { momId: momId } })
-
-  const momAb = mom.momAbsents.map(momAbsent => {
-    const absent = absents.find(a => a.userId === momAbsent.id);
-    if (absent) {
-      momAbsent.department = absent.department;
-    }
-    return momAbsent;
-  });
-
-  return mom;
 };
 /**
  * This function retrieves Minutes of Meeting (MOMs) grouped by project based on the specified filter criteria and additional options.
@@ -252,7 +228,10 @@ const getByProject = async (projectId) => {
  * @throws {Error} Throws an error if there's an issue updating the MOM.
  * @returns {Promise<Object>} - A promise that resolves to the updated MOM.
  */
-const updateMom = async (momId, momBody, attendees, absents, action, agenda) => {
+const updateMom = async (momId, momBody, attendees, absents, externalAttendees, action, agenda) => {
+
+  const mom = await momRepository.findOneBy({ id: momId });
+
   if (Object.keys(momBody).length > 0) {
     await momRepository.update(momId, momBody);
     const updatedMom = await momRepository.findOneBy({ id: momId });
@@ -270,9 +249,8 @@ const updateMom = async (momId, momBody, attendees, absents, action, agenda) => 
     //add attendees to again to update mom attendees
     const momInstances = attendees.map((eachAttendees) => {
       return momAttendeesRepository.create({
-        momId: momId,
-        userId: eachAttendees.id,
-        department: eachAttendees.department
+        momId: mom.id,
+        userId: eachAttendees.userId,
       });
     });
     await momAttendeesRepository.save(momInstances);
@@ -281,33 +259,26 @@ const updateMom = async (momId, momBody, attendees, absents, action, agenda) => 
   if (absents) {
 
     //  remove all attendees
-
-    const momAbsent = await momAbsentsRepository.findBy({ momId: momId });
-
-    await momAbsentsRepository.remove(momAbsent);
-
+    for (const eachAbsents of absents) {
+      const momAbsent = await momAbsentsRepository.findBy({ momId: momId });
+      await momAbsentsRepository.remove(momAbsent);
+    }
 
     //add attendees to again to update mom attendees
     const momInstances = absents.map((eachAbsents) => {
-
       return momAbsentsRepository.create({
-        momId: momId,
-        userId: eachAbsents.id,
-        department: eachAbsents.department
+        momId: mom.id,
+        userId: eachAbsents.userId,
       });
     });
-
     await momAbsentsRepository.save(momInstances);
   }
 
 
   if (action) {
-
     const updatedActions = [];
     for (const eachAction of action) {
       const responsiblePersons = eachAction.responsiblePersonId || [];
-
-
       if (eachAction.id) {
         // Update existing record
         const updatedAction = await momActionRepository.update(eachAction.id, {
@@ -316,28 +287,6 @@ const updateMom = async (momId, momBody, attendees, absents, action, agenda) => 
         });
 
         updatedActions.push(updatedAction);
-        if (eachAction.momActionResponsible.length !== 0) {
-          for (const eachResponsible of eachAction.momActionResponsible) {
-            if (eachResponsible.id) {
-              const updatedResponsiblePerson = await momActionResponsibleRepository.update(eachResponsible, {
-                momActionId: eachAction.id,
-                userId: eachResponsible.userId
-              })
-
-            }
-            else {
-              const createdResponsiblePerson = momActionResponsibleRepository.create({
-                momActionId: eachAction.id,
-                userId: eachResponsible.userId,
-              })
-              await momActionResponsibleRepository.save(createdResponsiblePerson)
-
-            }
-          }
-
-        }
-
-
       } else {
         // Create new record
         const actionInstance = momActionRepository.create({
@@ -346,72 +295,30 @@ const updateMom = async (momId, momBody, attendees, absents, action, agenda) => 
           deadline: eachAction.deadline
         });
         const createdAction = await momActionRepository.save(actionInstance);
-
-        if (eachAction.momActionResponsible.length !== 0) {
-          for (const eachResponsible of eachAction.momActionResponsible) {
-            if (eachResponsible.id) {
-              const updatedResponsiblePerson = momActionResponsibleRepository.update(eachResponsible, eachResponsible)
-
-            }
-            else {
-
-              const createdResponsiblePerson = momActionResponsibleRepository.create({
-                momActionId: createdAction.id,
-                userId: eachResponsible.userId,
-              })
-              await momActionResponsibleRepository.save(createdResponsiblePerson)
-
-            }
-          }
-
-        }
         updatedActions.push(createdAction);
       }
     }
   }
 
   if (agenda) {
-
     for (const eachAgenda of agenda) {
-      const agendaTopics = eachAgenda.momTopics || [];
+      const agendaTopics = eachAgenda.agendaTopics || [];
       if (eachAgenda.id) {
-
         // Update existing record
         const updateAgenda = await momAgendaRepository.update(eachAgenda.id, {
           agenda: eachAgenda.agenda,
         });
-        for (const agendaTopic of agendaTopics) {
-          if (agendaTopic.id) {
-            const updateAgendaTopic = await momAgendaTopicRepository.update(agendaTopic.id, {
-              agendaPoints: agendaTopic.agendaPoints,
-              userId: agendaTopic.userId,
-
-            });
-          }
-          else {
-            const CreatedAgendaTopic = momAgendaTopicRepository.create({
-              agendaPoints: agendaTopic.agendaPoints,
-              userId: agendaTopic.userId,
-              agendaId: eachAgenda.id
-            });
-            await momAgendaTopicRepository.save(CreatedAgendaTopic);
-
-          }
-        }
-
-
       }
       else {
         // Create new record
         const agendaInstance = momAgendaRepository.create({
-          momId: momId,
+          momId: mom.id,
           agenda: eachAgenda.agenda,
         });
         const savedAgendaInstance = await momAgendaRepository.save(agendaInstance);
 
         for (const agendaTopic of agendaTopics) {
-
-          if (agendaTopic.userId == "" || agendaTopic.userId == null) {
+          if (agendaTopic.userId == "") {
             const agendaTopicInstance = momAgendaTopicRepository.create({
               agendaId: savedAgendaInstance.id,
               agendaPoints: agendaTopic.agendaPoints,
@@ -433,9 +340,6 @@ const updateMom = async (momId, momBody, attendees, absents, action, agenda) => 
     }
   }
 
-
-  const mom = await getMom(momId)
-  //console.log(mom, "danananannananan")
   return mom;
 };
 /**

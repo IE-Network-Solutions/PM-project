@@ -13,7 +13,7 @@ class Client{
         this.address = { type: 'varchar', nullable: true };
         this.telephone = { type: 'varchar' };
    
-        this.isDeleted = { type: 'boolean',default:false};
+        this.isdeleted = { type: 'smallint'};
        
         this.createdAt = { type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' };
         this.updatedAt = { type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' };

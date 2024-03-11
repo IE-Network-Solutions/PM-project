@@ -57,7 +57,6 @@ const getTasksByMileston = catchAsync(async (req, res) => {
   const task = await taskService.getTasksByMileston(req.params.projectId, filter, options);
   res.send(task);
 });
-
 /**
  * Retrieves a task by its ID.
  * @function
@@ -167,14 +166,6 @@ const getTasksByPlandStartDate = catchAsync(async (req, res) => {
   res.send(tasks);
 });
 
-
-
-
-const getActiveBaselineTasks = catchAsync(async (req, res) => {
-  const projectId = req.params.projectId
-  const tasks = await taskService.activeBaselineTasks(projectId)
-  res.send(tasks);
-});
 module.exports = {
   createTask,
   getTasks,
@@ -187,5 +178,4 @@ module.exports = {
   removeResource,
   getTasksByPlandStartDate,
   assignAllResource,
-  getActiveBaselineTasks
 };

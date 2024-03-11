@@ -91,6 +91,7 @@ const createPaymentTerm = async (paymentTermBody, milestone) => {
   paymentTerm.milestone = milestone;
 
   paymentTerm.bugetType = await getBudgetType(paymentTerm.budgetTypeId);
+  console.log(paymentTerm.bugetType);
   publishToRabbit('project.paymentTerm', paymentTerm);
   return paymentTerm;
 };
@@ -178,7 +179,7 @@ const updatePaymentTerm = async (paymentTermId, updateBody, requestedMilestone) 
         budgetTypeId: updateBody.budgetTypeId,
         status: updateBody.status,
         isAmountPercent: updateBody.percentage,
-        atpDocument: updateBody.path,
+        atpDocument : updateBody.path,
       }
     );
   }
@@ -245,7 +246,7 @@ const deletePaymentTerm = async (paymentTermId) => {
  * @throws {ApiError} Throws an error if setting the variance fails.
  * @returns {Promise<Object>} The created variance object.
  */
-const setVariance = async (VarianceBody) => {
+const setVariance = async(VarianceBody)=>{
   const varianceValue = projectContractValuesRepository.create(VarianceBody);
   const varianceVal = await projectContractValuesRepository.insert(varianceValue);
   return varianceValue;
