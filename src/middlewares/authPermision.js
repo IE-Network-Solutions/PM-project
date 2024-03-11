@@ -15,10 +15,10 @@ const authPermissions = (prmissions) => {
     const userPermissions = await user.permissions?.map((permission) => permission.slug);
     if (user?.role?.roleName === 'supperadmin') {
       next();
-    } else if(userPermissions?.includes('all')) {
+    } else if (userPermissions?.includes('all')) {
       next();
     }
-      else {
+    else {
       const hasRequiredRights = await prmissions.every((requiredRight) => userPermissions?.includes(requiredRight));
       if (!hasRequiredRights) {
         return next(new ApiError(httpStatus.FORBIDDEN, 'Access Denied'));

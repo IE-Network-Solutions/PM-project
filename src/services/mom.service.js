@@ -52,7 +52,6 @@ const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
     await momAttendeesRepository.save(momInstances);
   }
   if (Absents) {
-    console.log(Absents)
     const momInstances = [];
     for (const eachAbsents of Absents) {
       if (eachAbsents.userId !== null && eachAbsents.userId !== '') {
@@ -111,11 +110,12 @@ const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
 
 
       for (const agendaTopic of agendaTopics) {
-        if (agendaTopic.userId == "") {
+        if (agendaTopic.isExternalAttendee === true) {
           const agendaTopicInstance = momAgendaTopicRepository.create({
             agendaId: savedAgendaInstance.id,
             agendaPoints: agendaTopic.agendaPoints,
             otherUser: agendaTopic.otherUser
+
           });
           const savedAgendaTopics = await momAgendaTopicRepository.save(agendaTopicInstance);
         } else {
