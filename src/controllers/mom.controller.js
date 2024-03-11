@@ -96,21 +96,19 @@ const groupMOMByProject = catchAsync(async (req, res) => {
  * @returns {Promise<void>} - Resolves with the updated MOM.
  */
 const updateMom = catchAsync(async (req, res) => {
-  const attendees = req.body.momAttendees;
-  const absents = req.body.momAbsents;
-  const action = req.body.momAction;
-  const agenda = req.body.momAgenda;
+  const attendees = req.body.attendees;
+  const absents = req.body.absents;
+  const externalAttendees = req.body.externalAttendees;
+  const action = req.body.action;
+  const agenda = req.body.agenda;
 
-  delete req.body.momAttendees;
-  delete req.body.momAction;
-  delete req.body.momAgenda;
-  delete req.body.momComment;
-  delete req.body.momAbsents
-
+  delete req.body.attendees;
+  delete req.body.action;
+  delete req.body.agenda;
 
   const momBody = req.body;
 
-  const mom = await momService.updateMom(req.params.momId, momBody, attendees, absents, action, agenda);
+  const mom = await momService.updateMom(req.params.momId, momBody, attendees, absents, externalAttendees, action, agenda);
   res.send(mom);
 });
 
@@ -122,7 +120,6 @@ const updateMom = catchAsync(async (req, res) => {
  * @returns {Promise<void>} - Resolves with a success status after deletion.
  */
 const deleteMom = catchAsync(async (req, res) => {
-  console.log(req.params.momId, 'llll')
   await momService.deleteMom(req.params.momId);
   res.status(httpStatus.NO_CONTENT).send();
 });

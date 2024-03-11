@@ -34,13 +34,7 @@ const getRole = async (id) => {
   return await roleRepository.findOneBy({ id: id });
 };
 
-const createRole = async (roleBody) => {
-  const role = await roleRepository.create(roleBody);
-  return await roleRepository.save(role);
-}
-
 module.exports = {
   getRoles,
   getRole,
-  createRole
 };

@@ -15,6 +15,7 @@ const { projectBudgetService } = require('../services');
  * @throws {Error} - If there's an issue fetching the budgets.
  */
 const getProjectBudgets = catchAsync(async (req, res) => {
+  console.log(req.params.projectId);
   const projectBudget = await projectBudgetService.getAllProjectBudgetsByCategory(req.params.projectId);
   res.status(200).json(projectBudget);
 });

@@ -43,7 +43,6 @@ const monthlyBudgetSchema = Joi.object({
   sum: Joi.number().required(),
   from: Joi.date().required(),
   to: Joi.date().required(),
-  isOffice: Joi.boolean(),
 });
 /**
  * Schema for adding monthly budget data.

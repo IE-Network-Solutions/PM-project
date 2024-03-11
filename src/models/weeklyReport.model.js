@@ -27,7 +27,6 @@ module.exports = new EntitySchema({
       type: "many-to-one",
       target: "Project",
       inverseSide: "weeklyReport",
-      onDelete: 'CASCADE',
     },
     weeklyReportComment: {
       type: "one-to-many",

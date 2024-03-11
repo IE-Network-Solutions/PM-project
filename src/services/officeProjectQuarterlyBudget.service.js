@@ -109,11 +109,10 @@ const getQuarterlyBudgetByProject = async (month, projectId) => {
             return element
         }))
         monthlyBudget.budgetsData = budgetWithCategories
-        budgetData.push(monthlyBudget)
         return monthlyBudget;
     }
 
-    return budgetData;
+    return monthlyBudget;
 }
 /**
  * Requests approval for a quarterly budget by advancing it to the next approval stage.

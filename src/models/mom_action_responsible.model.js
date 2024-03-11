@@ -12,7 +12,7 @@ const momActionResponsible = new EntitySchema({
       type: "uuid",
       primary: true
     },
-    momActionId: {
+     momActionId: {
       type: "uuid",
       primary: true,
     },
@@ -23,10 +23,8 @@ const momActionResponsible = new EntitySchema({
       target: 'User',
     },
     momAction: {
-      type: "many-to-one",
-      target: "momAction",
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
+      type: 'many-to-one',
+      target: 'momAction',
     },
   },
 });

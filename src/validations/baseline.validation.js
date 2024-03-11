@@ -155,34 +155,6 @@ const getComments = {
   }),
 };
 
-
-
-const uploadBaseline = {
-  params: Joi.object().keys({
-    projectId: Joi.string(),
-  }),
-
-  body: Joi.array().items(
-    Joi.object().keys({
-      id: Joi.number().required(),
-      name: Joi.string().required(),
-      plannedStart: Joi.date().required(),
-      plannedFinish: Joi.date().required(),
-      startVariance: Joi.number().allow(null),
-      finishVariance: Joi.number().allow(null),
-      finish: Joi.date().allow(null),
-      start: Joi.date().allow(null),
-      duration: Joi.number().allow(null),
-      actualStart: Joi.date().allow(null),
-      actualFinish: Joi.date().allow(null),
-      completion: Joi.number().allow(null),
-      type: Joi.string().allow(null),
-      parentId: Joi.number().allow(null)
-    })
-      .min(1),
-  )
-};
-
 module.exports = {
   createBaseline,
   getBaselines,
@@ -193,5 +165,4 @@ module.exports = {
   addComment,
   getComments,
   projectSchedule,
-  uploadBaseline,
 };

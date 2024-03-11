@@ -22,7 +22,7 @@ const createBudgetTaskCategory = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Budget Type not found');
   }
   data.budgetType = budgetType;
-
+  console.log(data);
   const budgetTaskCategory = await budgetTaskCategoryService.createBudgetTaskCategory(data);
   res.status(httpStatus.CREATED).send(budgetTaskCategory);
 });
