@@ -130,7 +130,6 @@ const createMom = async (momBody, Attendees, Absents, Action, Agenda) => {
       }
     }
   }
-
   return mom;
 };
 /**
@@ -166,7 +165,15 @@ const getMom = async (momId) => {
     where: { id: momId },
     relations: ['facilitator', 'momAttendees', 'momAttendees.role', 'momAgenda.momTopics', 'momAgenda.momTopics.user', 'momAction', 'momComment', 'momAbsents', 'momAction', 'momAction.momActionResponsible.user'],
   },
+  
   );
+
+  if (mom) {
+    mom.momAgenda.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    mom.momAgenda.forEach(agenda => {
+      agenda.momTopics.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    });
+  }
   const attendees = await momAttendeesRepository.find({ where: { momId: momId } })
 
   const momAt = mom.momAttendees.map(momAttendee => {
@@ -174,10 +181,9 @@ const getMom = async (momId) => {
     if (attendee) {
       momAttendee.department = attendee.department;
     }
+  
     return momAttendee;
   });
-
-
 
   const absents = await momAbsentsRepository.find({ where: { momId: momId } })
 
@@ -187,8 +193,18 @@ const getMom = async (momId) => {
       momAbsent.department = absent.department;
     }
     return momAbsent;
-  });
+  });  
 
+ for(const agenda of mom.momAgenda){
+  for(const topic of agenda.momTopics){
+    if(topic.userId!==null){
+      topic.isExternalAttendee=false
+    }
+    else{
+      topic.isExternalAttendee=true
+    }
+  }
+ }
   return mom;
 };
 /**
@@ -257,8 +273,6 @@ const updateMom = async (momId, momBody, attendees, absents, action, agenda) => 
     await momRepository.update(momId, momBody);
     const updatedMom = await momRepository.findOneBy({ id: momId });
   }
-
-
   if (attendees) {
 
     //  remove all attendees
@@ -266,7 +280,6 @@ const updateMom = async (momId, momBody, attendees, absents, action, agenda) => 
       const momAttendees = await momAttendeesRepository.findBy({ momId: momId });
       await momAttendeesRepository.remove(momAttendees);
     }
-
     //add attendees to again to update mom attendees
     const momInstances = attendees.map((eachAttendees) => {
       return momAttendeesRepository.create({
@@ -337,7 +350,6 @@ const updateMom = async (momId, momBody, attendees, absents, action, agenda) => 
 
         }
 
-
       } else {
         // Create new record
         const actionInstance = momActionRepository.create({
@@ -382,24 +394,48 @@ const updateMom = async (momId, momBody, attendees, absents, action, agenda) => 
         });
         for (const agendaTopic of agendaTopics) {
           if (agendaTopic.id) {
+            if (agendaTopic.isExternalAttendee === true) {
+              const updateAgendaTopic = await momAgendaTopicRepository.update(agendaTopic.id, {
+                agendaPoints: agendaTopic.agendaPoints,
+                otherUser: agendaTopic.otherUser,
+                userId:null
+
+              });
+            }
+            else{
             const updateAgendaTopic = await momAgendaTopicRepository.update(agendaTopic.id, {
               agendaPoints: agendaTopic.agendaPoints,
               userId: agendaTopic.userId,
-
+              otherUser:null
+            
             });
           }
+          }
           else {
+            if (agendaTopic.isExternalAttendee === true) {
+              console.log(agendaTopic,"true")
+              const CreatedAgendaTopic = momAgendaTopicRepository.create({
+                agendaPoints: agendaTopic.agendaPoints,
+                otherUser: agendaTopic.otherUser,
+                agendaId: eachAgenda.id,
+                userId:null
+              });
+              await momAgendaTopicRepository.save(CreatedAgendaTopic);
+            }
+            else{
+              console.log(agendaTopic,"false")
             const CreatedAgendaTopic = momAgendaTopicRepository.create({
               agendaPoints: agendaTopic.agendaPoints,
               userId: agendaTopic.userId,
-              agendaId: eachAgenda.id
+              agendaId: eachAgenda.id,
+              otherUser:null
             });
             await momAgendaTopicRepository.save(CreatedAgendaTopic);
-
+          }
+            
+          
           }
         }
-
-
       }
       else {
         // Create new record
@@ -411,18 +447,20 @@ const updateMom = async (momId, momBody, attendees, absents, action, agenda) => 
 
         for (const agendaTopic of agendaTopics) {
 
-          if (agendaTopic.userId == "" || agendaTopic.userId == null) {
+          if (agendaTopic.isExternalAttendee === true) { 
             const agendaTopicInstance = momAgendaTopicRepository.create({
               agendaId: savedAgendaInstance.id,
               agendaPoints: agendaTopic.agendaPoints,
-              otherUser: agendaTopic.otherUser
+              otherUser: agendaTopic.otherUser,
+              userId:null
             });
             const savedAgendaTopics = await momAgendaTopicRepository.save(agendaTopicInstance);
           } else {
             const agendaTopicInstance = momAgendaTopicRepository.create({
               agendaId: savedAgendaInstance.id,
               agendaPoints: agendaTopic.agendaPoints,
-              userId: agendaTopic.userId
+              userId: agendaTopic.userId,
+              otherUser:null
             });
             const savedAgendaTopics = await momAgendaTopicRepository.save(agendaTopicInstance);
           }
@@ -432,10 +470,7 @@ const updateMom = async (momId, momBody, attendees, absents, action, agenda) => 
       }
     }
   }
-
-
   const mom = await getMom(momId)
-  //console.log(mom, "danananannananan")
   return mom;
 };
 /**
