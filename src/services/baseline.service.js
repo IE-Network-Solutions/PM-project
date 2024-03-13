@@ -709,7 +709,8 @@ const uploadBaseline = async (projectId, baselineBody) => {
           start: eachObject.start,
           duration: eachObject.duration,
           actualStart: eachObject.actualStart,
-          actualFinish: eachObject.actualFinish
+          actualFinish: eachObject.actualFinish,
+       
 
         })
         const savedMilestone = await milestoneRepository.save(milestone);
@@ -734,7 +735,8 @@ const uploadBaseline = async (projectId, baselineBody) => {
               start: eachObject.start,
               duration: eachObject.duration,
               actualStart: eachObject.actualStart,
-              actualFinish: eachObject.actualFinish
+              actualFinish: eachObject.actualFinish,
+            
             })
             const savedSummaryTasks = await summaryTaskRepository.save(summaryTask);
             savedSummaryTasks.type = eachObject.type
@@ -757,7 +759,8 @@ const uploadBaseline = async (projectId, baselineBody) => {
               start: eachObject.start,
               duration: eachObject.duration,
               actualStart: eachObject.actualStart,
-              actualFinish: eachObject.actualFinish
+              actualFinish: eachObject.actualFinish,
+              completion:eachObject.completion
             })
             const savedSummaryTasks = await summaryTaskRepository.save(summaryTask);
             savedSummaryTasks.type = eachObject.type
@@ -793,7 +796,9 @@ const uploadBaseline = async (projectId, baselineBody) => {
               start: eachObject.start,
               duration: eachObject.duration,
               actualStart: eachObject.actualStart,
-              actualFinish: eachObject.actualFinish
+              actualFinish: eachObject.actualFinish,
+              completion:eachObject.completion
+              
             })
             const savedTask = await taskRepository.save(task);
             savedTask.type = eachObject.type
