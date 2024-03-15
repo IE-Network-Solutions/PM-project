@@ -125,6 +125,13 @@ const deleteIssueById = catchAsync(async (req, res) => {
     await issueService.deleteIssueById(req.params.issueId);
     res.status(httpStatus.NO_CONTENT).send();
 });
+const getAllOpenIssuesByProject = catchAsync(async (req, res) => {
+    const result = await issueService.getAllOpenIssuesByProject();
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'issues  not found');
+    }
+    res.send(result);
+});
 
 module.exports = {
     createIssue,
@@ -134,5 +141,6 @@ module.exports = {
     deleteIssueById,
     getAllIssuesByProjectIdAndByDate,
     getIssueByProjectId,
-    getIssuesByDate
+    getIssuesByDate,
+    getAllOpenIssuesByProject
 };

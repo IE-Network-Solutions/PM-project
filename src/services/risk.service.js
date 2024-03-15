@@ -174,6 +174,22 @@ const getAllCriticalRisks = async (status) => {
             relations: ['project']
         });
 };
+
+const getAllOpenRisksByProject = async () => {
+        const groupedRisks = await riskRepository
+        .createQueryBuilder('risks')
+        .leftJoinAndSelect('risks.project', 'project')
+        .andWhere('(risks.status = :status)', { status: 'Open' })
+        .select([
+            'risks.projectId AS projectId',
+            'project.name AS name',
+            'project.status AS status',
+            'json_agg(risks.*) AS Risks',
+        ])
+        .groupBy('risks.projectId, project.id, project.name')
+        .getRawMany();
+      return groupedRisks;
+};
 /**
  * Retrieves all critical risks.
  *
@@ -247,5 +263,6 @@ module.exports = {
     getAllCriticalRisks,
     getAllRiskAndIssuesByProjectIdByDate,
     getAllRisksByProjectId,
-    groupCriticalRiskByProject
+    groupCriticalRiskByProject,
+    getAllOpenRisksByProject
 };

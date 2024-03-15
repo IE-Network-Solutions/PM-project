@@ -145,6 +145,15 @@ const getAllCriticalRisks = catchAsync(async (req, res) => {
     }
     res.send(result);
 });
+
+
+const getAllOpenRisksByProject = catchAsync(async (req, res) => {
+    const result = await riskService.getAllOpenRisksByProject();
+    if (!result) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Risk id not found');
+    }
+    res.send(result);
+});
 /**
  * Updates a risk by its ID.
  * @function
@@ -219,6 +228,6 @@ module.exports = {
     getAllCriticalRisks,
     getAllRiskAndIssuesByProjectIdByDate,
     getAllRisksByProjectId,
-    groupCriticalRiskByProject
-
+    groupCriticalRiskByProject,
+    getAllOpenRisksByProject
 };

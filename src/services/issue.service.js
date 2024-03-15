@@ -142,6 +142,22 @@ const deleteIssueById = async (issueId) => {
     }
     return await issueRepository.delete({ id: issueId });
 };
+const getAllOpenIssuesByProject = async () => {
+    const groupedIssues = await issueRepository
+    .createQueryBuilder('issues')
+    .leftJoinAndSelect('issues.project', 'project')
+    .andWhere('(issues.status = :status)', { status: 'Open' })
+    .select([
+        'issues.projectId AS projectId',
+        'project.name AS name',
+        'project.status AS status',
+        'json_agg(issues.*) AS Issues',
+    ])
+    .groupBy('issues.projectId, project.id, project.name')
+    .getRawMany();
+       return groupedIssues;
+ 
+ };
 
 module.exports = {
     createIssue,
@@ -151,5 +167,6 @@ module.exports = {
     deleteIssueById,
     getAllIssuesByProjectIdAndByDate,
     getIssueByProjectId,
-    getIssuesByDate
+    getIssuesByDate,
+    getAllOpenIssuesByProject
 };
