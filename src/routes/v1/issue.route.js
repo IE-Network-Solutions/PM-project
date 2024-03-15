@@ -28,6 +28,8 @@ router
 router
   .route('/issueByProjectId/:projectId')
   .get(validate(issueValidation.getIssueByProjectId), issueController.getIssueByProjectId);
+  router.route('/getAll/OpenIssuesByProject').get(issueController.getAllOpenIssuesByProject);
 router.route('/getAllIssues/ByDate').get(validate(issueValidation.getIssuesByDate), issueController.getIssuesByDate);
+
 
 module.exports = router;
