@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "pm-test-app",
+      "name": "pm-app",
       "script": "src/index.js",
       "instances": 1,
       "autorestart": true,
