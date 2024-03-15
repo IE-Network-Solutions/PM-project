@@ -34,6 +34,7 @@ router
   );
 
 router.route('/getAll/CriticalRisks').get(validate(riskValidation.getAllCriticalRisks), riskController.getAllCriticalRisks);
+router.route('/getAll/OpenRisksByProject').get(riskController.getAllOpenRisksByProject);
 
 router
   .route('/getAllRisksAndIssuesByProjectIdByDate/:projectId')
