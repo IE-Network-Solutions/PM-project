@@ -111,7 +111,7 @@ const createMontlyOfficeBudget = async (monthlyBudgetBody) => {
     .andWhere('office_quarterly_budgets.to >= :toDate', { toDate: toDate })
     .andWhere('office_quarterly_budgets.isDeleted = :isDeleted', { isDeleted: false })
     .getOne();
-  if (project.isOffice && existingMonthlyBudget.projectId === projectId) {
+  if (project.isOffice &&existingMonthlyBudget && existingMonthlyBudget.projectId === projectId) {
     monthlyBudgetBody.isOffice = true;
     if (existingMonthlyBudget && existingMonthlyBudget.budgetsData) {
       for (const existingBudget of existingMonthlyBudget.budgetsData) {
@@ -146,10 +146,10 @@ const createMontlyOfficeBudget = async (monthlyBudgetBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'quarterly budget For this project is not found');
   }
   // Create a new monthly budget with the original monthlyBudgetBody
-  const newMonthlyBudget = montlyBudgetRepository.create(monthlyBudgetBody);
-  await montlyBudgetRepository.save(newMonthlyBudget);
+  // const newMonthlyBudget = montlyBudgetRepository.create(monthlyBudgetBody);
+  // await montlyBudgetRepository.save(newMonthlyBudget);
 
-  return newMonthlyBudget;
+  // return newMonthlyBudget;
 
 };
 /**
