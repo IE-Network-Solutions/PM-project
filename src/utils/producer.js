@@ -1,7 +1,7 @@
 const amqp = require('amqplib');
 var channel, connection; //global variables
 const logger = require('../config/logger');
-const configs = require('./config');
+const configs = require('../config/config');
 const rabbitmqUrl = configs.rabbitmqUrl;
 async function publishToRabbit(routingKey, data) {
   try {
