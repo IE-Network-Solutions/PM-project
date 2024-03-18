@@ -1,6 +1,6 @@
 const amqp = require('amqplib');
 const logger = require('../config/logger');
-const configs = require('./config');
+const configs = require('../config/config');
 const userService = require('../services/user.service');
 const roleService = require('../services/role.service');
 const clientService = require('../services/client.service');
