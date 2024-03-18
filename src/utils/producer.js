@@ -1,12 +1,14 @@
 const amqp = require('amqplib');
 var channel, connection; //global variables
 const logger = require('../config/logger');
-
+const configs = require('./config');
+const rabbitmqUrl = configs.rabbitmqUrl;
 async function publishToRabbit(routingKey, data) {
   try {
-    connection = await amqp.connect('amqp://localhost:5672');
+    connection = await amqp.connect(rabbitmqUrl);
     channel = await connection.createChannel();
     let exchange = 'ProjectExchange';
+    
 
     await channel.assertExchange(exchange, 'topic', {});
      channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(data)), {});
