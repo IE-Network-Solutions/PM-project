@@ -1,11 +1,12 @@
 const amqp = require('amqplib');
 const logger = require('../config/logger');
+const configs = require('./config');
 const userService = require('../services/user.service');
 const roleService = require('../services/role.service');
 const clientService = require('../services/client.service');
 const projectBudgetService = require('../services/projectBudget.service');
 async function ConsumeFromRabbit(routingKeys = []) {
-  const rabbitmqUrl = 'amqp://localhost:5672';
+  const rabbitmqUrl = configs.rabbitmqUrl;
   const connection = await amqp.connect(rabbitmqUrl);
   const exchange = 'ProjectExchange';
   const options = {};
