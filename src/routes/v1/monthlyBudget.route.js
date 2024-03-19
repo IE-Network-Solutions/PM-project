@@ -13,6 +13,8 @@ router
   .get(monthlyBudgetController.getMonthlyBudget);
 
 router.route('/month').get(monthlyBudgetController.getMonthlyBudgetByMonth);
+router
+  .route('/officProject').post(authPermision.createProjectBudgetMiddleware, monthlyBudgetController.createOfficeMonthlyBudget)
 router.route('/month/project').get(monthlyBudgetController.getMonthlyBudgetByMonthGroupedByProject);
 router.route('/month/officProject').get(monthlyBudgetController.getMonthlyBudgetByMonthGroupedByProjectOfficeProject);
 
