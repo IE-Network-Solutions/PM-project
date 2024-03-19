@@ -57,6 +57,14 @@ const updateMonthlyBudget = catchAsync(async (req, res) => {
 
 
 const createOfficeMonthlyBudget = catchAsync(async (req, res) => {
+  let month={}
+  month.from=req.body.from
+  month.to=req.body.to
+  const projectId=req.body.budgetsData[0].projectId
+  const monthlyBudgetExists=  await monthlyBudgetService.getMonthlyBudgetByMonthGroupOfficeProject(month,projectId)
+  if(Object.keys(monthlyBudgetExists).length !== 0){
+    throw new ApiError(httpStatus.NOT_FOUND, 'Monthly Budget Already exists');
+  }
   const monthlyBudget = await monthlyBudgetService.createMontlyOfficeBudget(req.body);
   res.status(httpStatus.CREATED).json(monthlyBudget);
 });
@@ -153,6 +161,14 @@ const getMonthlyBudgetByProject = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).json(monthlyBudget);
 
 });
+
+
+const RequestApprovalOfficeMonthlyBudget=catchAsync(async(req,res)=>{
+const monthlyBudget= await  monthlyBudgetService.RequestApprovalOfficeMonthlyBudget(req.params.id)
+res.status(httpStatus.CREATED).json(monthlyBudget);
+
+
+})
 module.exports = {
   createMonthlyBudget,
   getMonthlyBudget,
@@ -162,5 +178,6 @@ module.exports = {
   getMonthlyBudgetByMonthGroupedByProjectOfficeProject,
   getMonthlyBudgetByProject,
   createOfficeMonthlyBudget,
-  updateOfficeMonthlyBudget
+  updateOfficeMonthlyBudget,
+  RequestApprovalOfficeMonthlyBudget
 };

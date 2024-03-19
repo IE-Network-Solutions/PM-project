@@ -87,20 +87,20 @@ const createMontlyBudget = async (monthlyBudgetBody) => {
  */
 const createMontlyOfficeBudget = async (monthlyBudgetBody) => {
   const moduleName = "MonthlyBudget";
-  const level = 1;
+  // const level = 1;
   const fromDate = new Date(monthlyBudgetBody.from);
   const toDate = new Date(monthlyBudgetBody.to);
   const projectId = monthlyBudgetBody.budgetsData[0].projectId
   const project = await projectService.getProject(projectId);
 
-  const approvalStage = await approvalStageRepository
-    .createQueryBuilder('approval_stage')
-    .leftJoin('approval_stage.approvalModule', 'approvalModule')
-    .where('approvalModule.moduleName = :moduleName', { moduleName })
-    .andWhere('approval_stage.level = :level', { level })
-    .getOne();
+  // const approvalStage = await approvalStageRepository
+  //   .createQueryBuilder('approval_stage')
+  //   .leftJoin('approval_stage.approvalModule', 'approvalModule')
+  //   .where('approvalModule.moduleName = :moduleName', { moduleName })
+  //   .andWhere('approval_stage.level = :level', { level })
+  //   .getOne();
 
-  monthlyBudgetBody.approvalStage = approvalStage;
+  // monthlyBudgetBody.approvalStage = approvalStage;
   const existingMonthlyBudget = await officeQuarterlyBudgetRepository
     .createQueryBuilder('office_quarterly_budgets')
     .leftJoinAndSelect('office_quarterly_budgets.approvalStage', 'approvalStage')
@@ -357,7 +357,7 @@ const getBudgetByProject = async (projectId) => {
   const activeBudgetSessions = await budgetSessionService.activeBudgetSession();
 
   const monthlyBudget = await montlyBudgetRepository.find({
-    where: { from: activeBudgetSessions.startDate, to: activeBudgetSessions.endDate, isOffice: true }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments']
+    where: { from: activeBudgetSessions.startDate, to: activeBudgetSessions.endDate, isOffice: true }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments','monthlyBudgetcomments.user','monthlyBudgetcomments.user.role']
   });
 
   if (monthlyBudget.length !== 0) {
@@ -386,6 +386,59 @@ const getBudgetByProject = async (projectId) => {
 
 }
 
+const RequestApprovalOfficeMonthlyBudget =async(budgetId)=>{
+  const monthlyBudget= await montlyBudgetRepository.findOne({where:{id:budgetId}, relations: ['approvalStage', 'approvalStage.role'] })
+  if(!monthlyBudget){
+    throw new ApiError(httpStatus.NOT_FOUND, 'monthlyBudget not found');
+  }
+  else if(monthlyBudget.approvalStage!==null){
+    const updatedMonthlyBudget = await montlyBudgetRepository.update({ id: budgetId }, {
+        rejected: false
+
+    });
+return await getMontlyOficeBudgetById(budgetId);
+
+}
+else{
+
+    const approvalModule = await approvalModuleRepository.findOne({ where: { moduleName: "MonthlyBudget" } })
+ 
+    const approvalSatge = await approvalStageRepository.findOne({ where: { approvalModuleId: approvalModule.id, level: 1 } })
+    const monthlyBudgetUpdated = await montlyBudgetRepository.update({ id: budgetId }, {
+        approvalStageId: approvalSatge.id
+
+    });
+    return await getMontlyOficeBudgetById(budgetId);
+  
+}
+  
+}
+
+
+
+const getMontlyOficeBudgetById = async (id) => {
+  const monthlyBudget = await montlyBudgetRepository.findOne({
+    where: { id:id }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments','monthlyBudgetcomments.user','monthlyBudgetcomments.user.role']
+  });
+
+    if (monthlyBudget) {
+      const budgetWithCategories = await Promise.all(monthlyBudget?.budgetsData.map(async (element) => {
+        const category = await budgetCategoryService.getBudgetCategory(element.budgetCategoryId)
+        const currency = await currencyService.getCurrencyById(element.currencyId)
+        element.budgetCategory = category
+        element.currency = currency
+        return element
+      }))
+      monthlyBudget.budgetsData = budgetWithCategories
+      return monthlyBudget;
+    }
+  
+
+  return monthlyBudget;
+
+
+}
+
 
 module.exports = {
   createMontlyBudget,
@@ -397,5 +450,7 @@ module.exports = {
   getBudgetByProject,
   createMontlyOfficeBudget,
   getMonthlyBudgetByMonthGroupOfficeProject,
-  updateOfficeMonthlyBudget
+  updateOfficeMonthlyBudget,
+  RequestApprovalOfficeMonthlyBudget,
+  getMontlyOficeBudgetById
 }

@@ -12,6 +12,8 @@ class MonthlyBudget extends Base {
     this.approved = { type: 'boolean', default: false };
     this.rejected = { type: 'boolean', default: false };
     this.isOffice = { type: 'boolean', default: false };
+    this.approvalStageId={type:'uuid', nullable:true}
+    
   }
 }
 
