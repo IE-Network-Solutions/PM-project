@@ -319,7 +319,7 @@ const approve = async (moduleName, moduleId) => {
     if (approvalModule.max_level == moduleData.approvalStage.level) {
       // approve
       await monthlyBudgetRepostory.update({ id: moduleId }, { approved: true });
-      updatedModule = await monthlyBudgetRepostory.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
+      updatedModule = await services.monthlyBudgetService.getMontlyOficeBudgetById(moduleId)
       // Rabit Mq Producer
       // let approvedByGroup=await services.budgetService.getBudgetGroupByCategory(moduleId)
       // publishToRabbit('project.budget',approvedByGroup)
@@ -335,7 +335,7 @@ const approve = async (moduleName, moduleId) => {
         .getOne();
 
       await monthlyBudgetRepostory.update({ id: moduleId }, { approvalStage: approvalStage });
-      updatedModule = await monthlyBudgetRepostory.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
+      updatedModule = await services.monthlyBudgetService.getMontlyOficeBudgetById(moduleId)
     }
   } else if (approvalModule.moduleName == 'OfficeProjectQuarterlyBudget') {
 
@@ -347,7 +347,7 @@ const approve = async (moduleName, moduleId) => {
       // approve
 
       await officeQuarterlyBudgetRepostory.update({ id: moduleId }, { approved: true });
-      updatedModule = await officeQuarterlyBudgetRepostory.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
+      updatedModule = await services.OfficeQuarterlyBudgetService.getAllQuarterlyBudgetById(moduleId)
       // Rabit Mq Producer
       // let approvedByGroup=await services.budgetService.getBudgetGroupByCategory(moduleId)
       // publishToRabbit('project.budget',approvedByGroup)
@@ -364,7 +364,7 @@ const approve = async (moduleName, moduleId) => {
         .getOne();
 
       await officeQuarterlyBudgetRepostory.update({ id: moduleId }, { approvalStage: approvalStage });
-      updatedModule = await officeQuarterlyBudgetRepostory.findOne({ where: { id: moduleId }, relations: ['approvalStage'] });
+      updatedModule = await services.OfficeQuarterlyBudgetService.getAllQuarterlyBudgetById(moduleId)
     }
   }
   return updatedModule;
@@ -427,12 +427,12 @@ const reject = async (moduleName, moduleId, comentData, userId = null) => {
   } else if (approvalModule.moduleName == 'MonthlyBudget') {
     const moduleData = await monthlyBudgetRepostory.findOne({
       where: { id: moduleId },
-      relations: ['approvalStage', 'monthlyBudgetcomments'],
+      relations: ['approvalStage', 'monthlyBudgetcomments','monthlyBudgetcomments.user','monthlyBudgetcomments.user.role'],
     });
     if (!moduleData) {
       throw new ApiError(httpStatus.NOT_FOUND, 'approval module(monthly budget) does not exist');
     }
-    const comment = await monthlyBudgetCommentRepository.create({ budgetComment: comentData, monthlyBudget: moduleData });
+    const comment = await monthlyBudgetCommentRepository.create({ budgetComment: comentData, monthlyBudget: moduleData,userId:userId });
 
     const monthlBbudgetComment = await monthlyBudgetCommentRepository.save(comment);
 
@@ -440,10 +440,7 @@ const reject = async (moduleName, moduleId, comentData, userId = null) => {
 
     // approve
     await monthlyBudgetRepostory.update({ id: moduleId }, { rejected: true });
-    updatedModule = await monthlyBudgetRepostory.findOne({
-      where: { id: moduleId },
-      relations: ['approvalStage', 'monthlyBudgetcomments'],
-    });
+    updatedModule = await services.monthlyBudgetService.getMontlyOficeBudgetById(moduleId)
   } else if (approvalModule.moduleName == 'OfficeProjectQuarterlyBudget') {
     const moduleData = await officeQuarterlyBudgetRepostory.findOne({
       where: { id: moduleId },
@@ -452,7 +449,10 @@ const reject = async (moduleName, moduleId, comentData, userId = null) => {
     if (!moduleData) {
       throw new ApiError(httpStatus.NOT_FOUND, 'approval module(group) does not exist');
     }
-    const comment = officeQuarterlyBudgetCommentRepository.create({ budgetComment: comentData });
+    const comment = officeQuarterlyBudgetCommentRepository.create({ 
+      budgetComment: comentData ,
+      userId:userId
+    });
     const budgetComment = await officeQuarterlyBudgetCommentRepository.save(comment);
     await moduleData.officeQuarterlyBudgetComment.push(budgetComment);
 
@@ -460,10 +460,11 @@ const reject = async (moduleName, moduleId, comentData, userId = null) => {
 
     // approve
     await officeQuarterlyBudgetRepostory.update({ id: moduleId }, { rejected: true });
-    updatedModule = await officeQuarterlyBudgetRepostory.findOne({
-      where: { id: moduleId },
-      relations: ['approvalStage', 'officeQuarterlyBudgetComment'],
-    });
+    // updatedModule = await officeQuarterlyBudgetRepostory.findOne({
+    //   where: { id: moduleId },
+    //   relations: ['approvalStage','approvalStage.role', 'officeQuarterlyBudgetComment','officeQuarterlyBudgetComment.user','officeQuarterlyBudgetComment.user.role'],
+    // });
+    updatedModule = await services.OfficeQuarterlyBudgetService.getAllQuarterlyBudgetById(moduleId)
   }
   return updatedModule;
 };

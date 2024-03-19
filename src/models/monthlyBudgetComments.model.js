@@ -19,5 +19,9 @@ module.exports = new EntitySchema({
         type: 'many-to-one',
         target: 'MonthlyBudget',
     },
+    user: {
+      type: 'many-to-one',
+      target: 'User'
+  },
 }
 });

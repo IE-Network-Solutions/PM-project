@@ -21,6 +21,9 @@ router.route('/month/officProject').get(monthlyBudgetController.getMonthlyBudget
 router.route('/:id').patch(authPermision.editProjectBudgetMiddleware, monthlyBudgetController.updateMonthlyBudget);
 
 router.route('/officProject:id').patch(monthlyBudgetController.updateOfficeMonthlyBudget);
+router
+    .route('/officeBudegtAskForApproval/:id')
+    .post(monthlyBudgetController.RequestApprovalOfficeMonthlyBudget)
 router.route('/officProject/:projectId').get(monthlyBudgetController.getMonthlyBudgetByProject);
 
 module.exports = router;

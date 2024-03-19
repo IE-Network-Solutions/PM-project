@@ -6,7 +6,7 @@ class OfficeQuarterlyBudgetComment extends Base {
     constructor() {
         super(); // Call the constructor of the Base entity to inherit its properties
         this.budgetComment = { type: 'text' };
-        this.userId = { type: 'text', default: null };
+        this.userId = { type: 'uuid', default: null };
     }
 }
 
@@ -19,6 +19,10 @@ module.exports = new EntitySchema({
             type: 'many-to-one',
             target: 'OfficeQuarterlyBudget',
             onDelete: 'CASCADE',
+        },
+        user: {
+            type: 'many-to-one',
+            target: 'User'
         },
     }
 });

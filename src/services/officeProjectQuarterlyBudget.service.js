@@ -98,7 +98,7 @@ const DeleteQuarterlyBudget = async (id) => {
  */
 const getQuarterlyBudgetByProject = async (month, projectId) => {
     let budgetData = []
-    const monthlyBudget = await officeQuarterlyBudgetRepository.findOne({ where: { from: month.from, to: month.to, isDeleted: false, projectId: projectId }, relations: ['approvalStage', 'approvalStage.role', 'officeQuarterlyBudgetComment'] });
+    const monthlyBudget = await officeQuarterlyBudgetRepository.findOne({ where: { from: month.from, to: month.to, isDeleted: false, projectId: projectId }, relations: ['approvalStage', 'approvalStage.role', 'officeQuarterlyBudgetComment','officeQuarterlyBudgetComment.user','officeQuarterlyBudgetComment.user.role'] });
     if (monthlyBudget) {
         const budgetWithCategories = await Promise.all(monthlyBudget?.budgetsData.map(async (element) => {
             const category = await budgetCategoryService.getBudgetCategory(element.budgetCategoryId)
@@ -129,14 +129,26 @@ const RequestApprovalQuarterlyBudget = async (id) => {
         throw new ApiError(httpStatus.NOT_FOUND, ' budget Doesnt exist');
 
     }
-    const approvalModule = await approvalModuleRepository.findOne({ where: { moduleName: "OfficeProjectQuarterlyBudget" } })
-    const approvalSatge = await approvalStageRepository.findOne({ where: { approvalModuleId: approvalModule.id, level: 1 } })
+    else if(Budget.approvalStageId!==null){
+        const quarterlyBudget = await officeQuarterlyBudgetRepository.update({ id: id }, {
+            rejected: false
+    
+        });
 
-    const monthlyBudget = await officeQuarterlyBudgetRepository.update({ id: id }, {
-        approvalStageId: approvalSatge.id
-
-    });
-    return await officeQuarterlyBudgetRepository.findOne({ where: { id: id, isDeleted: false }, relations: ['approvalStage', 'approvalStage.role'] });
+   return await getAllQuarterlyBudgetById(id)
+    }
+    else{
+      
+        const approvalModule = await approvalModuleRepository.findOne({ where: { moduleName: "OfficeProjectQuarterlyBudget" } })
+        const approvalSatge = await approvalStageRepository.findOne({ where: { approvalModuleId: approvalModule.id, level: 1 } })
+    
+        const quarterlyBudget = await officeQuarterlyBudgetRepository.update({ id: id }, {
+            approvalStageId: approvalSatge.id
+    
+        });
+        return await getAllQuarterlyBudgetById(id)
+    }
+   
 }
 /**
  * Retrieves quarterly budget data for a specific project.
@@ -151,7 +163,27 @@ const getAllQuarterlyBudgetByProject = async (projectId) => {
     const inActiveBudget = []
     const activeBudgetSessions = await officeBudgetSessionService.activeBudgetSession();
     const monthlyBudget = await officeQuarterlyBudgetRepository.findOne({
-        where: { from: activeBudgetSessions.startDate, to: activeBudgetSessions.endDate, isDeleted: false, projectId: projectId }, relations: ['approvalStage', 'approvalStage.role', 'officeQuarterlyBudgetComment']
+        where: { from: activeBudgetSessions.startDate, to: activeBudgetSessions.endDate, isDeleted: false, projectId: projectId }, relations: ['approvalStage', 'approvalStage.role', 'officeQuarterlyBudgetComment','officeQuarterlyBudgetComment.user','officeQuarterlyBudgetComment.user.role']
+    });
+
+    if (monthlyBudget) {
+        const budgetWithCategories = await Promise.all(monthlyBudget.budgetsData.map(async (element) => {
+            const category = await budgetCategoryService.getBudgetCategory(element.budgetCategoryId)
+            const currency = await currencyService.getCurrencyById(element.currencyId)
+            element.budgetCategory = category
+            element.currency = currency
+            return element
+        }))
+        monthlyBudget.budgetsData = budgetWithCategories
+        return monthlyBudget;
+    }
+
+    return monthlyBudget;
+
+}
+const getAllQuarterlyBudgetById = async (budgetId) => {
+    const monthlyBudget = await officeQuarterlyBudgetRepository.findOne({
+        where: { id:budgetId }, relations: ['approvalStage', 'approvalStage.role', 'officeQuarterlyBudgetComment','officeQuarterlyBudgetComment.user','officeQuarterlyBudgetComment.user.role']
     });
 
     if (monthlyBudget) {
@@ -177,5 +209,6 @@ module.exports = {
     getQuarterlyBudgetByProject,
     DeleteQuarterlyBudget,
     RequestApprovalQuarterlyBudget,
-    getAllQuarterlyBudgetByProject
+    getAllQuarterlyBudgetByProject,
+    getAllQuarterlyBudgetById
 }
