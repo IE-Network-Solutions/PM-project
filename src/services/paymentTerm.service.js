@@ -91,6 +91,12 @@ const createPaymentTerm = async (paymentTermBody, milestone) => {
   paymentTerm.milestone = milestone;
 
   paymentTerm.bugetType = await getBudgetType(paymentTerm.budgetTypeId);
+  if (paymentTermBody.isAdvance){
+    paymentTerm.isAdvance = true;
+  }else{
+    paymentTerm.isAdvance= false;
+  }
+  console.log(paymentTerm.bugetType);
   publishToRabbit('project.paymentTerm', paymentTerm);
   return paymentTerm;
 };
