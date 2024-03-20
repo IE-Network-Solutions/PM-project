@@ -16,6 +16,8 @@ class PaymentTerm extends Base {
     this.isAmountPercent = {type: 'boolean', default: false}
     this.budgetTypeId = {type: 'boolean', nullable: true}
     this.atpDocument ={type:'varchar', nullable: true}
+    this.milestone ={type:'varchar', nullable:true}
+    this.isAdvance ={type:'boolean', default:false}
   }
 }
 
