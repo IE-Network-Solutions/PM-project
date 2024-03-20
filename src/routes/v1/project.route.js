@@ -28,5 +28,6 @@ router.route('/remove-member/:projectId').delete(validate(projectValidation.remo
 router.route('/all/getTotalProjects').get(projectController.getTotalActiveClosedProjects);
 
 router.route('/closeproject/:projectId').patch(projectController.closeProject);
+router.route('/update/:projectId').patch(validate(projectValidation.updateProjectFomSchedule), projectController.updateProjectFomSchedule)
 
 module.exports = router;

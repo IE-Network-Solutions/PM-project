@@ -18,7 +18,6 @@ const ApiError = require("../utils/ApiError");
 const createChecklist = catchAsync(async (req, res, next) => {
     const milestoneId = req.body.milestoneId;
     const criteriaIds = req.body.criteriaIds;
-    console.log("req", req.body)
 
     const checkList1 = await CheckList.createChecklist(req.body);
     const checkList2 = await CheckList.createMilestoneCriteria(milestoneId, criteriaIds);
