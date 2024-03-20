@@ -3,12 +3,13 @@ const validate = require('../../middlewares/validate');
 const { budgetValidation } = require('../../validations');
 const { budgetController } = require('../../controllers');
 const { route } = require('./risk.route');
+const authPermision = require('../../middlewares/authPermissionStore');
 
 const router = express.Router();
 
 router
   .route('/')
-  .post(validate(budgetValidation.createBudget), budgetController.createBudget)
+  .post(authPermision.createProjectBudgetMiddleware, validate(budgetValidation.createBudget), budgetController.createBudget)
   .get(validate(budgetValidation.getBudgets), budgetController.getBudgets);
 
 router.route('/project').get(budgetController.getBudgetsOfProjects);
@@ -27,7 +28,11 @@ router.route('/monthly/:projectId').get(validate(budgetValidation.getBudgetByPro
 router
   .route('/:budgetId')
   .get(validate(budgetValidation.getBudget), budgetController.getBudget)
-  .patch(validate(budgetValidation.updateBudget), budgetController.updateBudget)
-  .delete(validate(budgetValidation.deleteBudget), budgetController.deleteBudget);
+  .patch(authPermision.editProjectBudgetMiddleware, validate(budgetValidation.updateBudget), budgetController.updateBudget)
+  .delete(
+    authPermision.deleteProjectBudgetMiddleware,
+    validate(budgetValidation.deleteBudget),
+    budgetController.deleteBudget
+  );
 
 module.exports = router;

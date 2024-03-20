@@ -131,11 +131,6 @@ const seedPermission = async () => {
       permissionResourceId: 1,
     },
     {
-      permissionName: 'View Project Option',
-      slug: 'view_project_option',
-      permissionResourceId: 1,
-    },
-    {
       permissionName: 'Edit Project',
       slug: 'edit_project',
       permissionResourceId: 1,
@@ -181,11 +176,6 @@ const seedPermission = async () => {
       permissionResourceId: 1,
     },
     {
-      permissionName: 'Manage Project',
-      slug: 'manage_project',
-      permissionResourceId: 1,
-    },
-    {
       permissionName: 'Add Milestone',
       slug: 'add_milestone',
       permissionResourceId: 1,
@@ -206,13 +196,148 @@ const seedPermission = async () => {
       permissionResourceId: 1,
     },
     {
-      permissionName: 'Delete Milestone',
-      slug: 'delete_milestone',
+      permissionName: 'Edit Schedule',
+      slug: 'edit_schedule',
       permissionResourceId: 1,
     },
     {
-      permissionName: 'View AAA',
-      slug: 'view_aaa',
+      permissionName: 'Add Payment Term',
+      slug: 'add_payment_term',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit Payment Term',
+      slug: 'edit_payment_term',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete Payment Term',
+      slug: 'delete_payment_term',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Import Local Material',
+      slug: 'import_local_material',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Create Project Budget',
+      slug: 'create_project_budget',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit Project Budget',
+      slug: 'edit_project_budget',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete Project Budget',
+      slug: 'delete_project_budget',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Add Project Risk',
+      slug: 'add_risk',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit Project Risk',
+      slug: 'edit_risk',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete Project Risk',
+      slug: 'delete_risk',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Transfer Project Risk',
+      slug: 'transfer_risk',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Add Project Issue',
+      slug: 'add_issue',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit Project Issue',
+      slug: 'edit_issue',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete Project Issue',
+      slug: 'delete_issue',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Add Project Resource',
+      slug: 'add_project_resource',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit Project Resource',
+      slug: 'edit_project_resource',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Add Stakeholder',
+      slug: 'add_stakeholder',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit Stakeholder',
+      slug: 'edit_stakeholder',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete Stakeholder',
+      slug: 'delete_stakeholder',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Send Weekly Report',
+      slug: 'send_weekly_report',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Create LL Report',
+      slug: 'create_ll_report',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete LL Report',
+      slug: 'delete_ll_report',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Insert LL',
+      slug: 'insert_ll',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit LL',
+      slug: 'edit_ll',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete LL',
+      slug: 'delete_ll',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Add MOM',
+      slug: 'add_mom',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Edit MOM',
+      slug: 'edit_mom',
+      permissionResourceId: 1,
+    },
+    {
+      permissionName: 'Delete MOM',
+      slug: 'delete_mom',
       permissionResourceId: 1,
     },
     {
@@ -222,53 +347,28 @@ const seedPermission = async () => {
     },
     {
       permissionName: 'Update AAA',
-      slug: 'update_aaa',
+      slug: 'edit_aaa',
       permissionResourceId: 1,
     },
     {
       permissionName: 'Delete AAA',
-      slug: 'deleteaaa',
+      slug: 'delete_aaa',
       permissionResourceId: 1,
     },
     {
-      permissionName: 'View Baseline',
-      slug: 'viewbaseline',
-      permissionResourceId: 2,
-    },
-    {
-      permissionName: 'Create Baseline',
-      slug: 'createbaseline',
-      permissionResourceId: 2,
-    },
-    {
-      permissionName: 'Delete Baseline',
-      slug: 'deletebaseline',
-      permissionResourceId: 2,
-    },
-    {
-      permissionName: 'Update Baseline',
-      slug: 'updatebaseline',
-      permissionResourceId: 2,
-    },
-    {
-      permissionName: 'View Master Schedule',
-      slug: 'viewmasterschedule',
-      permissionResourceId: 2,
-    },
-    {
-      permissionName: 'View Filtered Master Schedule',
-      slug: 'viewfilteredmasterschedule',
+      permissionName: 'Add Sleeping Task',
+      slug: 'add_sleeping_task',
       permissionResourceId: 1,
     },
     {
-      permissionName: 'View Baseline By Milestone',
-      slug: 'viewbaselinebymilestone',
+      permissionName: 'All',
+      slug: 'all',
       permissionResourceId: 1,
     },
     {
-      permissionName: 'View Project Scheule',
-      slug: 'viewprojectscheule',
-      permissionResourceId: 2,
+      permissionName: 'Ask Budget Approval',
+      slug: 'ask_budget_approval',
+      permissionResourceId: 1,
     },
   ];
   const permissions = permissionData.map((permissionData) => {
