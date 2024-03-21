@@ -167,8 +167,13 @@ const RequestApprovalOfficeMonthlyBudget=catchAsync(async(req,res)=>{
 const monthlyBudget= await  monthlyBudgetService.RequestApprovalOfficeMonthlyBudget(req.params.id)
 res.status(httpStatus.CREATED).json(monthlyBudget);
 
-
 })
+const deleteOfficeMontlyBudget=catchAsync(async(req,res)=>{
+  console.log(req.body.id,"req.body.id")
+  const monthlyBudget= await  monthlyBudgetService.deleteOfficeMontlyBudget(req.params.id,req.body.id)
+  res.status(httpStatus.CREATED).json(monthlyBudget);
+  
+  })
 module.exports = {
   createMonthlyBudget,
   getMonthlyBudget,
@@ -179,5 +184,6 @@ module.exports = {
   getMonthlyBudgetByProject,
   createOfficeMonthlyBudget,
   updateOfficeMonthlyBudget,
-  RequestApprovalOfficeMonthlyBudget
+  RequestApprovalOfficeMonthlyBudget,
+  deleteOfficeMontlyBudget
 };

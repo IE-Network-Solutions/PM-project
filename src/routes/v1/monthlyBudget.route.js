@@ -19,8 +19,9 @@ router.route('/month/project').get(monthlyBudgetController.getMonthlyBudgetByMon
 router.route('/month/officProject').get(monthlyBudgetController.getMonthlyBudgetByMonthGroupedByProjectOfficeProject);
 
 router.route('/:id').patch(authPermision.editProjectBudgetMiddleware, monthlyBudgetController.updateMonthlyBudget);
+router.route('/officProject/:id').patch(monthlyBudgetController.updateOfficeMonthlyBudget).
+delete(monthlyBudgetController.deleteOfficeMontlyBudget);
 
-router.route('/officProject:id').patch(monthlyBudgetController.updateOfficeMonthlyBudget);
 router
     .route('/officeBudegtAskForApproval/:id')
     .post(monthlyBudgetController.RequestApprovalOfficeMonthlyBudget)

@@ -6,6 +6,7 @@ const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 const { currencyService, budgetCategoryService } = require("./index")
 const officeBudgetSessionService = require("./officeBudegtSession.service")
+const { v4: uuidv4 } = require('uuid');
 
 const officeQuarterlyBudgetRepository = dataSource.getRepository(OfficeQuarterlyBudget).extend({
     findAll,
@@ -30,8 +31,12 @@ const approvalModuleRepository = dataSource.getRepository(ApprovalModule).extend
  * @returns {Promise<Object>} The newly created quarterly budget object.
  */
 const createQuarterlyBudget = async (montlyBudgetBody) => {
+    montlyBudgetBody.budgetsData.map((item)=>
+    item.id=uuidv4())
     const montlBudget = officeQuarterlyBudgetRepository.create(montlyBudgetBody);
-    return await officeQuarterlyBudgetRepository.save(montlBudget);
+
+  const savedBudget=   await officeQuarterlyBudgetRepository.save(montlBudget);
+  return await getAllQuarterlyBudgetById(savedBudget.id)
 
 
 };
@@ -60,11 +65,24 @@ const updateQuarterlyBudget = async (id, updatedData) => {
     const Budget = await officeQuarterlyBudgetRepository.findOne({ where: { id: id, isDeleted: false } })
     if (!Budget) {
         throw new ApiError(httpStatus.NOT_FOUND, ' budget Doesnt exist');
-
     }
-    const monthlyBudget = await officeQuarterlyBudgetRepository.update({ id: id }, updatedData);
-    return await officeQuarterlyBudgetRepository.findOne({ where: { id: id }, isDeleted: false });
+  const filterdBudget =Budget.budgetsData.filter(item=>item.id==updatedData.id);
+  Budget.budgetsData= Budget.budgetsData.filter(item=>item.id!==updatedData.id);
+   const budgetDataTobeUpdated=filterdBudget[0]
+   delete filterdBudget[0];
+  const amount = budgetDataTobeUpdated.budgetAmount-updatedData.budgetAmount
+  budgetDataTobeUpdated.remaining_amount = budgetDataTobeUpdated.remaining_amount - amount
+  budgetDataTobeUpdated.budgetAmount =updatedData.budgetAmount
+  budgetDataTobeUpdated.currencyId=updatedData.currencyId
+  budgetDataTobeUpdated.budgetCategoryId=updatedData.budgetCategoryId
+   Budget.budgetsData.push(budgetDataTobeUpdated)
+ const monthlyBudget = await officeQuarterlyBudgetRepository.update({ id: id }, 
+    {budgetsData:Budget.budgetsData});
+ const oneBudget=await getAllQuarterlyBudgetById(id);
+ const budgetData=oneBudget.budgetsData.filter(item=>item.id===updatedData.id)
+return  budgetData[0]
 }
+
 /**
  * Deletes a quarterly budget by marking it as deleted.
  * @async
@@ -73,17 +91,25 @@ const updateQuarterlyBudget = async (id, updatedData) => {
  * @throws {ApiError} Throws an error if the budget does not exist.
  * @returns {Promise<Object>} The deleted budget object.
  */
-const DeleteQuarterlyBudget = async (id) => {
+const DeleteQuarterlyBudget = async (id,budgetId) => {
     const budget = await officeQuarterlyBudgetRepository.findOne({ where: { id: id, isDeleted: false } })
     if (!budget) {
 
         throw new ApiError(httpStatus.NOT_FOUND, ' budget Doesnt exist');
     }
-    const deletedbudget = officeQuarterlyBudgetRepository.update({ id: id }, {
-        isDeleted: true
-    });;
+    budget.budgetsData= budget.budgetsData.filter(item=>item.id!==budgetId)
+    if( budget.budgetsData.length!==0){
+    const deletedbudget = await officeQuarterlyBudgetRepository.update({ id: id }, {
+        budgetsData:  budget.budgetsData,
+    });
+    }
+    else{
+        const deletedbudget = await officeQuarterlyBudgetRepository.update({ id: id }, {
+          isDeleted:true
+        });
 
-    return budget
+    }
+    return await getAllQuarterlyBudgetById(id);
 }
 /**
  * Retrieves quarterly budget data for a specific project.
@@ -112,7 +138,6 @@ const getQuarterlyBudgetByProject = async (month, projectId) => {
         budgetData.push(monthlyBudget)
         return monthlyBudget;
     }
-
     return budgetData;
 }
 /**

@@ -20,6 +20,17 @@ const officequarterlyBudgetSchema = Joi.object({
     currencyId: Joi.string().required(),
     projectId: Joi.string().required(),
 });
+
+
+const officequarterlyBudgetUpdateSchema = Joi.object({
+    budgetAmount: Joi.number().required(),
+    from: Joi.date().required(),
+    to: Joi.date().required(),
+    budgetCategoryId: Joi.string().required(),
+    currencyId: Joi.string().required(),
+    projectId: Joi.string().required(),
+    id:Joi.string().required(),
+});
 /**
  * Schema for creating a budget.
  * @type {object}
@@ -103,10 +114,13 @@ const updateBudget = {
             // projectId: Joi.string(),
             // currencyId: Joi.string(),
             // budgetCategoryId: Joi.string(),
-
-            budgetsData: Joi.array().items(officequarterlyBudgetSchema).required(),
-            from: Joi.string().required(),
-            to: Joi.string().required(),
+            budgetAmount: Joi.number().required(),
+            from: Joi.date().required(),
+            to: Joi.date().required(),
+            budgetCategoryId: Joi.string().required(),
+            currencyId: Joi.string().required(),
+            projectId: Joi.string().required(),
+            id:Joi.string().required(),
         })
         .min(1),
 };
@@ -120,6 +134,12 @@ const deleteBudget = {
     params: Joi.object().keys({
         id: Joi.required(),
     }),
+    body: Joi.object()
+    .keys({
+   
+        id:Joi.string().required(),
+    })
+    .min(1),
 };
 
 module.exports = {
