@@ -108,7 +108,10 @@ const updatePaymentTerm = {
       currencyId: Joi.string(),
       percentage: Joi.boolean(),
       milestone: Joi.array(),
-      isAdvance: Joi.boolean()
+      isAdvance: Joi.boolean(),
+      atpDocument: Joi.string(),
+      isAmountPercent: Joi.boolean(),
+      isOffshore: Joi.boolean(),
     })
     .min(1),
 };
