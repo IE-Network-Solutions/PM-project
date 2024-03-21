@@ -31,7 +31,8 @@ const createPaymentTerm = {
       projectId: Joi.string().required(),
       currencyId: Joi.string().required(),
       budgetTypeId: Joi.string().required(),
-      milestone: Joi.array().required(),
+      milestone: Joi.array(),
+      isAdvance: Joi.boolean()
     })
   ),
 };
@@ -106,6 +107,8 @@ const updatePaymentTerm = {
       budgetTypeId: Joi.string(),
       currencyId: Joi.string(),
       percentage: Joi.boolean(),
+      milestone: Joi.array(),
+      isAdvance: Joi.boolean()
     })
     .min(1),
 };
