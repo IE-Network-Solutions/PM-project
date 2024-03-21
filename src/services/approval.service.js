@@ -132,7 +132,7 @@ const sendForApproval = async (approvalModuleName, moduleId) => {
 
     updatedModule = await baselineRepository.update({ id: moduleId }, { approvalStage: approvalStage });
   }
-  let currentApprover = await getCurrentApprover(approvalModule.moduleName, moduleIdd);
+  let currentApprover = await getCurrentApprover(approvalModule.moduleName, moduleId);
   return currentApprover;
 };
 /**
@@ -144,6 +144,7 @@ const sendForApproval = async (approvalModuleName, moduleId) => {
  */
 const getCurrentApprover = async (moduleName, moduleId) => {
   const approvalModule = await approvalModuleRepository.findOneBy({ moduleName: moduleName });
+
   let currentApprover = {};
   if (!approvalModule) {
     throw new ApiError(httpStatus.NOT_FOUND, 'approval module does not exist');
@@ -172,7 +173,9 @@ const getCurrentApprover = async (moduleName, moduleId) => {
         .select(['project_member', 'project', 'user', 'role'])
         .where('project.id = :projectId', { projectId })
         .getOne();
-      currentApprover = ProjectMemebrsRoleData.filter((item) => item.roleId === moduleData.approvalStage.role.id);
+     // currentApprover = ProjectMemebrsRoleData.filter((item) => item.roleId === moduleData.approvalStage.role.id);
+    
+
       currentApprover = ProjectMemebrsRoleData;
     } else {
       currentApprover = userRepository.findOne({ where: { roleId: moduleData.approvalStage.role.id } });
@@ -240,7 +243,6 @@ const getCurrentApprover = async (moduleName, moduleId) => {
       currentApprover = userRepository.findOne({ where: { roleId: moduleData.approvalStage.role.id }, relations: ['role'] });
     }
   }
-
   return currentApprover;
 };
 /**
@@ -252,7 +254,6 @@ const getCurrentApprover = async (moduleName, moduleId) => {
  */
 const approve = async (moduleName, moduleId) => {
   const approvalModule = await approvalModuleRepository.findOne({ where: { moduleName: moduleName } });
-  console.log(approvalModule, "approvalModule")
   let updatedModule;
   if (!approvalModule) {
     throw new ApiError(httpStatus.NOT_FOUND, 'approval module does not exist');
@@ -272,7 +273,7 @@ const approve = async (moduleName, moduleId) => {
         approvalGroupRepository.from,
         approvalGroupRepository.to
       );
-      publishToRabbit('project.budget', approvedByGroup);
+   //   publishToRabbit('project.budget', approvedByGroup);
     } else {
       level = moduleData.approvalStage.level + 1;
       const approvalStage = await approvalStageRepository
