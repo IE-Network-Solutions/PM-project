@@ -20,7 +20,7 @@ class Client{
         this.createdBy = { type: 'varchar' , nullable: true};
         this.updatedBy = { type: 'varchar', nullable: true};
       }
-     
+
     }
 
 
@@ -30,13 +30,13 @@ module.exports = new EntitySchema({
     columns: new Client(),
     relations: {
         project: {
-            type: "one-to-many", 
+            type: "one-to-many",
             target: "Project",
             inverseSide: "Client",
             onDelete: 'CASCADE',
             onUpdate: 'CASCADE',
           }
-         
+
       },
 });
 

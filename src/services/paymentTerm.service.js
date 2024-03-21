@@ -75,7 +75,11 @@ const createPaymentTerm = async (paymentTermBody, milestone) => {
     isOffshore: isOffshore,
     isAmountPercent: paymentTermBody.percentage,
   });
-
+  if (paymentTermBody.isAdvance){
+    paymentTerm.isAdvance = true;
+  }else{
+    paymentTerm.isAdvance= false;
+  }
   await paymentTermRepository.save(paymentTerm);
 
   if (milestone) {
@@ -91,11 +95,6 @@ const createPaymentTerm = async (paymentTermBody, milestone) => {
   paymentTerm.milestone = milestone;
 
   paymentTerm.bugetType = await getBudgetType(paymentTerm.budgetTypeId);
-  if (paymentTermBody.isAdvance){
-    paymentTerm.isAdvance = true;
-  }else{
-    paymentTerm.isAdvance= false;
-  }
   console.log(paymentTerm.bugetType);
   publishToRabbit('project.paymentTerm', paymentTerm);
   return paymentTerm;
@@ -184,7 +183,9 @@ const updatePaymentTerm = async (paymentTermId, updateBody, requestedMilestone) 
         budgetTypeId: updateBody.budgetTypeId,
         status: updateBody.status,
         isAmountPercent: updateBody.percentage,
-        atpDocument: updateBody.path,
+        atpDocument : updateBody.path,
+        milestone : requestedMilestone,
+        isAdvance : updateBody.isAdvance,
       }
     );
   }
