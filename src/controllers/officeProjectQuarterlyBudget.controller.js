@@ -63,7 +63,7 @@ const updateQuarterlyBudget = catchAsync(async (req, res) => {
  * @returns {Promise<void>} - Resolves with a success status after deletion.
  */
 const DeleteQuarterlyBudget = catchAsync(async (req, res) => {
-    const monthlyBudget = await OfficeQuarterlyBudgetService.DeleteQuarterlyBudget(req.params.id);
+    const monthlyBudget = await OfficeQuarterlyBudgetService.DeleteQuarterlyBudget(req.params.id,req.body.id);
     res.status(httpStatus.CREATED).send(monthlyBudget);
 });
 

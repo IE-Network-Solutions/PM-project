@@ -6,6 +6,7 @@ const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
 const services = require('./index');
 const projectService = require('./project.service')
+const { v4: uuidv4 } = require('uuid');
 const { currencyService, budgetCategoryService, budgetSessionService } = require("./index")
 
 
@@ -111,7 +112,7 @@ const createMontlyOfficeBudget = async (monthlyBudgetBody) => {
     .andWhere('office_quarterly_budgets.to >= :toDate', { toDate: toDate })
     .andWhere('office_quarterly_budgets.isDeleted = :isDeleted', { isDeleted: false })
     .getOne();
-  if (project.isOffice &&existingMonthlyBudget && existingMonthlyBudget.projectId === projectId) {
+  if (project.isOffice && existingMonthlyBudget && existingMonthlyBudget.projectId === projectId) {
     monthlyBudgetBody.isOffice = true;
     if (existingMonthlyBudget && existingMonthlyBudget.budgetsData) {
       for (const existingBudget of existingMonthlyBudget.budgetsData) {
@@ -134,6 +135,8 @@ const createMontlyOfficeBudget = async (monthlyBudgetBody) => {
       }
       // Save the updated existingMonthlyBudget
       await officeQuarterlyBudgetRepository.save(existingMonthlyBudget);
+      monthlyBudgetBody.budgetsData.map((item) =>
+        item.id = uuidv4())
       const newMonthlyBudget = montlyBudgetRepository.create(monthlyBudgetBody);
       await montlyBudgetRepository.save(newMonthlyBudget);
       return newMonthlyBudget;
@@ -292,21 +295,13 @@ const updateMonthlyBudget = async (id, updatedData) => {
  */
 const updateOfficeMonthlyBudget = async (id, updatedData) => {
   const budgetToBeUpdated = await montlyBudgetRepository.findOne({ where: { id: id } })
+  const filteredBudget = budgetToBeUpdated.budgetsData.filter(item => item.id === updatedData.id)
+  const amountToBeSubtracted = updatedData.budgetAmount - filteredBudget[0].budgetAmount
+  const fromDate = new Date(updatedData.from);
+  const toDate = new Date(updatedData.to);
+  const projectId = updatedData.projectId
   let remmaing = 0
   if (budgetToBeUpdated) {
-    for (const existingBudget of budgetToBeUpdated.budgetsData) {
-      for (const newBudget of updatedData.budgetsData) {
-        if (
-          existingBudget && newBudget &&
-          existingBudget.currencyId === newBudget.currencyId &&
-          existingBudget.budgetCategoryId === newBudget.budgetCategoryId
-        ) {
-          remmaing = existingBudget.budgetAmount - newBudget.budgetAmount
-
-        }
-
-      }
-    }
     const existingQuarterlyBudget = await officeQuarterlyBudgetRepository
       .createQueryBuilder('office_quarterly_budgets')
       .leftJoinAndSelect('office_quarterly_budgets.approvalStage', 'approvalStage')
@@ -314,33 +309,38 @@ const updateOfficeMonthlyBudget = async (id, updatedData) => {
       .leftJoinAndSelect('office_quarterly_budgets.officeQuarterlyBudgetComment', 'officeQuarterlyBudgetComment')
       .where('office_quarterly_budgets.from <= :fromDate', { fromDate: fromDate })
       .andWhere('office_quarterly_budgets.to >= :toDate', { toDate: toDate })
-      .andWhere('office_quarterly_budgets.projectId >= :projectId', { projectId: project.id })
+      .andWhere('office_quarterly_budgets.projectId = :projectId', { projectId: projectId })
       .andWhere('office_quarterly_budgets.isDeleted = :isDeleted', { isDeleted: false })
 
       .getOne();
+
     if (existingQuarterlyBudget) {
 
       for (const existingBudget of existingQuarterlyBudget.budgetsData) {
-        for (const newBudget of updatedData.budgetsData) {
-          if (
-            existingBudget && newBudget &&  // Check if both existingBudget and newBudget are defined
-            existingBudget.currencyId === newBudget.currencyId &&
-            existingBudget.budgetCategoryId === newBudget.budgetCategoryId
-          ) {
-            // Check if remaining_amount is less than budgetAmount
-            if (existingBudget.remaining_amount < newBudget.budgetAmount) {
-              throw new ApiError(httpStatus.FORBIDDEN, 'Insufficient remaining amount. Cannot create monthly budget');
-
-            }
-            // Update remaining_amount by subtracting budgetAmount
-            existingBudget.remaining_amount -= remmaing;
+        // for (const newBudget of updatedData.budgetsData) {
+        if (
+          existingBudget && updatedData &&  // Check if both existingBudget and newBudget are defined
+          existingBudget.currencyId === updatedData.currencyId &&
+          existingBudget.budgetCategoryId === updatedData.budgetCategoryId
+        ) {
+          // Check if remaining_amount is less than budgetAmount
+          if (existingBudget.remaining_amount < updatedData.budgetAmount) {
+            throw new ApiError(httpStatus.FORBIDDEN, 'Insufficient remaining amount. Cannot create monthly budget');
           }
+          // Update remaining_amount by subtracting budgetAmount
+          existingBudget.remaining_amount -= amountToBeSubtracted;
         }
       }
+
+      budgetToBeUpdated.budgetsData = budgetToBeUpdated.budgetsData.filter(item => item.id !== updatedData.id);
+
+      await officeQuarterlyBudgetRepository.update({ id: existingQuarterlyBudget.id }, { budgetsData: existingQuarterlyBudget.budgetsData });
     }
 
-    const monthlyBudget = await montlyBudgetRepository.update({ id: id }, updatedData);
-    return await montlyBudgetRepository.findOne({ where: { id: id } });
+    budgetToBeUpdated.budgetsData = budgetToBeUpdated.budgetsData.filter(item => item.id !== updatedData.id);
+    budgetToBeUpdated.budgetsData.push(updatedData)
+    const monthlyBudget = await montlyBudgetRepository.update({ id: id }, { budgetsData: budgetToBeUpdated.budgetsData });
+    return await getMontlyOficeBudgetById(id)
   }
 }
 
@@ -357,12 +357,11 @@ const getBudgetByProject = async (projectId) => {
   const activeBudgetSessions = await budgetSessionService.activeBudgetSession();
 
   const monthlyBudget = await montlyBudgetRepository.find({
-    where: { from: activeBudgetSessions.startDate, to: activeBudgetSessions.endDate, isOffice: true }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments','monthlyBudgetcomments.user','monthlyBudgetcomments.user.role']
+    where: { from: activeBudgetSessions.startDate, to: activeBudgetSessions.endDate, isOffice: true }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments', 'monthlyBudgetcomments.user', 'monthlyBudgetcomments.user.role']
   });
-
   if (monthlyBudget.length !== 0) {
     const budgetDatas = monthlyBudget.forEach((item) => {
-      if (item.budgetsData[0].projectId === projectId) {
+      if (item.budgetsData[0]?.projectId === projectId) {
         activeBudget.push(item)
       }
 
@@ -386,56 +385,110 @@ const getBudgetByProject = async (projectId) => {
 
 }
 
-const RequestApprovalOfficeMonthlyBudget =async(budgetId)=>{
-  const monthlyBudget= await montlyBudgetRepository.findOne({where:{id:budgetId}, relations: ['approvalStage', 'approvalStage.role'] })
-  if(!monthlyBudget){
+const RequestApprovalOfficeMonthlyBudget = async (budgetId) => {
+  const monthlyBudget = await montlyBudgetRepository.findOne({ where: { id: budgetId }, relations: ['approvalStage', 'approvalStage.role'] })
+  if (!monthlyBudget) {
     throw new ApiError(httpStatus.NOT_FOUND, 'monthlyBudget not found');
   }
-  else if(monthlyBudget.approvalStage!==null){
+  else if (monthlyBudget.approvalStage !== null) {
     const updatedMonthlyBudget = await montlyBudgetRepository.update({ id: budgetId }, {
-        rejected: false
-
-    });
-return await getMontlyOficeBudgetById(budgetId);
-
-}
-else{
-
-    const approvalModule = await approvalModuleRepository.findOne({ where: { moduleName: "MonthlyBudget" } })
- 
-    const approvalSatge = await approvalStageRepository.findOne({ where: { approvalModuleId: approvalModule.id, level: 1 } })
-    const monthlyBudgetUpdated = await montlyBudgetRepository.update({ id: budgetId }, {
-        approvalStageId: approvalSatge.id
+      rejected: false
 
     });
     return await getMontlyOficeBudgetById(budgetId);
-  
-}
-  
-}
 
+  }
+  else {
 
+    const approvalModule = await approvalModuleRepository.findOne({ where: { moduleName: "MonthlyBudget" } })
+
+    const approvalSatge = await approvalStageRepository.findOne({ where: { approvalModuleId: approvalModule.id, level: 1 } })
+    const monthlyBudgetUpdated = await montlyBudgetRepository.update({ id: budgetId }, {
+      approvalStageId: approvalSatge.id
+
+    });
+    return await getMontlyOficeBudgetById(budgetId);
+
+  }
+
+}
 
 const getMontlyOficeBudgetById = async (id) => {
   const monthlyBudget = await montlyBudgetRepository.findOne({
-    where: { id:id }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments','monthlyBudgetcomments.user','monthlyBudgetcomments.user.role']
+    where: { id: id }, relations: ['approvalStage', 'approvalStage.role', 'monthlyBudgetcomments', 'monthlyBudgetcomments.user', 'monthlyBudgetcomments.user.role']
   });
 
-    if (monthlyBudget) {
-      const budgetWithCategories = await Promise.all(monthlyBudget?.budgetsData.map(async (element) => {
-        const category = await budgetCategoryService.getBudgetCategory(element.budgetCategoryId)
-        const currency = await currencyService.getCurrencyById(element.currencyId)
-        element.budgetCategory = category
-        element.currency = currency
-        return element
-      }))
-      monthlyBudget.budgetsData = budgetWithCategories
-      return monthlyBudget;
-    }
-  
+  if (monthlyBudget) {
+    const budgetWithCategories = await Promise.all(monthlyBudget?.budgetsData.map(async (element) => {
+      const category = await budgetCategoryService.getBudgetCategory(element.budgetCategoryId)
+      const currency = await currencyService.getCurrencyById(element.currencyId)
+      element.budgetCategory = category
+      element.currency = currency
+      return element
+    }))
+    monthlyBudget.budgetsData = budgetWithCategories
+    return monthlyBudget;
+  }
+
 
   return monthlyBudget;
 
+
+}
+
+const deleteOfficeMontlyBudget = async (id, budgetId) => {
+  const montlyBudget = await montlyBudgetRepository.findOne({ where: { id: id } })
+  if (!montlyBudget) {
+    throw new ApiError(httpStatus.NOT_FOUND, ' Budget Does Not Exist');
+  }
+  const budgetTobeDeleted = montlyBudget.budgetsData.filter(item => item.id === budgetId)
+  montlyBudget.budgetsData = montlyBudget.budgetsData.filter(item => item.id !== budgetId)
+  const calculatedRemainingAmount = await calculateRemainingAmount(montlyBudget, budgetTobeDeleted[0])
+  if (calculatedRemainingAmount) {
+    if (montlyBudget.budgetsData.length !== 0) {
+      await montlyBudgetRepository.update({ id: id }, {
+        budgetsData: montlyBudget.budgetsData,
+      });
+    }
+    else {
+      await montlyBudgetRepository.delete({ id: id })
+
+    }
+
+  }
+  return await getMontlyOficeBudgetById(id);
+
+}
+const calculateRemainingAmount = async (monthlyBudgetBody, montlBudgetUpdate) => {
+  const fromDate = new Date(monthlyBudgetBody.from);
+  const toDate = new Date(monthlyBudgetBody.to);
+  const projectId = montlBudgetUpdate.projectId
+  const existingQuarterlyBudget = await officeQuarterlyBudgetRepository
+    .createQueryBuilder('office_quarterly_budgets')
+    .leftJoinAndSelect('office_quarterly_budgets.approvalStage', 'approvalStage')
+    .leftJoinAndSelect('approvalStage.role', 'role')
+    .leftJoinAndSelect('office_quarterly_budgets.officeQuarterlyBudgetComment', 'officeQuarterlyBudgetComment')
+    .where('office_quarterly_budgets.from <= :fromDate', { fromDate: fromDate })
+    .andWhere('office_quarterly_budgets.to >= :toDate', { toDate: toDate })
+    .andWhere('office_quarterly_budgets.projectId = :projectId', { projectId: projectId })
+    .andWhere('office_quarterly_budgets.isDeleted = :isDeleted', { isDeleted: false })
+
+    .getOne();
+  if (existingQuarterlyBudget) {
+
+    for (const existingBudget of existingQuarterlyBudget.budgetsData) {
+      // for (const newBudget of updatedData.budgetsData) {
+      if (
+        existingBudget && montlBudgetUpdate &&  // Check if both existingBudget and newBudget are defined
+        existingBudget.currencyId === montlBudgetUpdate.currencyId &&
+        existingBudget.budgetCategoryId === montlBudgetUpdate.budgetCategoryId
+      ) {
+        existingBudget.remaining_amount = parseInt(existingBudget.remaining_amount) + parseInt(montlBudgetUpdate.budgetAmount);
+      }
+    }
+    await officeQuarterlyBudgetRepository.update({ id: existingQuarterlyBudget.id }, { budgetsData: existingQuarterlyBudget.budgetsData });
+    return existingQuarterlyBudget
+  }
 
 }
 
@@ -452,5 +505,6 @@ module.exports = {
   getMonthlyBudgetByMonthGroupOfficeProject,
   updateOfficeMonthlyBudget,
   RequestApprovalOfficeMonthlyBudget,
-  getMontlyOficeBudgetById
+  getMontlyOficeBudgetById,
+  deleteOfficeMontlyBudget
 }
