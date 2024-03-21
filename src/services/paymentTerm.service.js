@@ -75,7 +75,7 @@ const createPaymentTerm = async (paymentTermBody, milestone) => {
     isOffshore: isOffshore,
     isAmountPercent: paymentTermBody.percentage,
   });
-  if (paymentTermBody.isAdvance){
+    if (paymentTermBody.isAdvance){
     paymentTerm.isAdvance = true;
   }else{
     paymentTerm.isAdvance= false;
