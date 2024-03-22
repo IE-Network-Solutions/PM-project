@@ -122,7 +122,7 @@ const sendForApproval = async (approvalModuleName, moduleId) => {
       throw new ApiError(httpStatus.NOT_FOUND, 'approval module(group) does not exist');
     }
     // assigne the approval stage to the budget group which is the group identifier of the monthly budget
-    updatedModule = await approvalGroupRepository.update({ id: moduleId }, { approvalStage: approvalStage });
+    updatedModule = await approvalGroupRepository.update({ id: moduleId }, { approvalStage: approvalStage ,rejected:false});
   } else if (approvalModule.moduleName == 'ProjectSchedule') {
     const module = await baselineRepository.findOne({ where: { id: moduleId } });
     if (!module) {
@@ -273,7 +273,7 @@ const approve = async (moduleName, moduleId) => {
         approvalGroupRepository.from,
         approvalGroupRepository.to
       );
-   //   publishToRabbit('project.budget', approvedByGroup);
+     publishToRabbit('project.budget', approvedByGroup);
     } else {
       level = moduleData.approvalStage.level + 1;
       const approvalStage = await approvalStageRepository
