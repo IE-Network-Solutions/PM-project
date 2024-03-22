@@ -273,7 +273,7 @@ const approve = async (moduleName, moduleId) => {
         approvalGroupRepository.from,
         approvalGroupRepository.to
       );
-     publishToRabbit('project.budget', approvedByGroup);
+      publishToRabbit('project.budget', approvedByGroup);
     } else {
       level = moduleData.approvalStage.level + 1;
       const approvalStage = await approvalStageRepository
