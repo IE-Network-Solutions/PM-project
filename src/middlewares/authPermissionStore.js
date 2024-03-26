@@ -43,4 +43,13 @@ module.exports = {
   createProjectAaaMiddleware: authPermision(['create_aaa']),
   editProjectAaaMiddleware: authPermision(['edit_aaa']),
   deleteProjectAaaMiddleware: authPermision(['delete_aaa']),
+  createQuarterlyOfficeBudgetMiddleware: authPermision(['create_quarterly_office_budget']),
+  askQuarterlyOfficeBudgetApprovalMiddleware: authPermision(['ask_quarterly_office_budget_approval']),
+  deleteQuarterlyOfficeBudgetMiddleware:authPermision(['delete_quarterly_office_budget']),
+  editQuarterlyOfficeBudgetMiddleware:authPermision(['edit_quarterly_office_budget']),
+
+  createMonthlyOfficeBudgetMiddleware: authPermision(['create_monthly_office_budget']),
+  askMonthlyOfficeBudgetApprovalMiddleware: authPermision(['ask_monthly_office_budget_approval']),
+  deleteMonthlyOfficeBudgetMiddleware:authPermision(['delete_monthly_office_budget']),
+  editMonthlyOfficeBudgetMiddleware:authPermision(['edit_monthly_office_budget'])
 };
