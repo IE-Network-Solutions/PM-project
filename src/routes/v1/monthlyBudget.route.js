@@ -26,5 +26,6 @@ router
     .route('/officeBudegtAskForApproval/:id')
     .post(monthlyBudgetController.RequestApprovalOfficeMonthlyBudget)
 router.route('/officProject/:projectId').get(monthlyBudgetController.getMonthlyBudgetByProject);
+router.route('/budgetSummary').get(monthlyBudgetController.getBudgetsummary);
 
 module.exports = router;

@@ -27,6 +27,14 @@ const officeQuarterlyBudgetRepository = dataSource.getRepository(OfficeQuarterly
   findAll,
   sortBy,
 });
+const budgetGroupRepository = dataSource.getRepository(BudgetGroup).extend({
+  findAll,
+  sortBy,
+});
+const budgetRepository = dataSource.getRepository(Budget).extend({
+  findAll,
+  sortBy,
+});
 /**
  * @module monthlyBudget
  */
@@ -488,10 +496,51 @@ const calculateRemainingAmount = async (monthlyBudgetBody, montlBudgetUpdate) =>
     }
     await officeQuarterlyBudgetRepository.update({ id: existingQuarterlyBudget.id }, { budgetsData: existingQuarterlyBudget.budgetsData });
     return existingQuarterlyBudget
-  }
+  }``
 
 }
+const getBudgetsummary = async () => {
+  const activeSession = await budgetSessionService.activeBudgetSession()
+  const projectBudget = await budgetRepository.find({relations:['group']})
+  const approvedBudgets=projectBudget.filter(item=>item.group.approved===true && item.group.from===activeSession.startDate && item.group.to===activeSession.endDate )
+  const groupedBudget = {};
 
+  approvedBudgets.forEach(item => {
+      const currencyId = item.currencyId;
+      if (!groupedBudget[currencyId]) {
+        groupedBudget[currencyId] = [];
+        groupedBudget[currencyId] = {
+          approvedBudgets: [],
+          totalAmount: 0
+      };
+
+      }
+      groupedBudget[currencyId].approvedBudgets.push(item);
+      groupedBudget[currencyId].totalAmount+=item.amount
+  });
+
+  return groupedBudget;
+
+
+//  let  groupedData={}
+
+//   approvedBudgets.map((item=>{
+  
+//     if(groupedData[item.currencyId]){
+//       let totalammount=0
+//       totalammount=totalammount+item.amount
+
+//     }
+//     else{
+//       let totalammount=0
+//       totalammount=amount
+//     }
+//   }))
+  return approvedBudgets
+  ///filter approved then
+///group this by currency id 
+ 
+};
 
 module.exports = {
   createMontlyBudget,
@@ -506,5 +555,6 @@ module.exports = {
   updateOfficeMonthlyBudget,
   RequestApprovalOfficeMonthlyBudget,
   getMontlyOficeBudgetById,
-  deleteOfficeMontlyBudget
+  deleteOfficeMontlyBudget,
+  getBudgetsummary
 }
