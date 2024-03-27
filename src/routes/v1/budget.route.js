@@ -33,6 +33,8 @@ router
     authPermision.deleteProjectBudgetMiddleware,
     validate(budgetValidation.deleteBudget),
     budgetController.deleteBudget
-  );
+);
+  
+router.route("/budget/group-all-office-project-budgets-by-category-currency").get(budgetController.groupAllOfficeProjectBudgetsByCategoryAndCurrency)
 
 module.exports = router;

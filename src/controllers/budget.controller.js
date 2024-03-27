@@ -356,6 +356,45 @@ const filterBudget = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+
+/**
+ * Group all office project budgets by category and currency.
+ * @function
+ * @param {Object} req - The request object category and currency.
+ * @param {Object} res - The response object.
+ * @returns {Promise<void>} A Promise that resolves with budgets filtered by dates.
+ */
+const groupAllOfficeProjectBudgetsByCategoryAndCurrency = catchAsync(async (req, res) => {
+  const projects = await budgetService.groupAllOfficeProjectBudgetsByCategoryAndCurrency();
+  const groupedProjects = {};
+  projects.forEach(project => {
+    project.budgetsData.forEach(budget => {
+      const categoryId = budget.budgetCategoryId;
+      const currencyId = budget.currencyId;
+      const key = `${categoryId}`;
+      if (!groupedProjects[budget.budgetCategoryId]) {
+        groupedProjects[key] = {
+          budgetAmount: budget.budgetAmount,
+          from: budget.from,
+          to: budget.to,
+          budgetCategoryId: categoryId,
+          currencyId: currencyId,
+          projectId: project.projectId,
+          data: [],
+        };
+      }
+      const filteredBudgetData = project.budgetsData.filter(data => data.budgetCategoryId === categoryId
+      );
+      groupedProjects[key].data.push({
+        ...project,
+        budgetsData: filteredBudgetData
+      });
+    });
+  });
+
+  res.send(Object.values(groupedProjects));
+});
+
 module.exports = {
   createBudget,
   getBudgets,
@@ -373,5 +412,6 @@ module.exports = {
   getBudgetsByGroup,
   masterBudget,
   filterBudget,
-  getBudgetsOfOfficeProjects
+  getBudgetsOfOfficeProjects,
+  groupAllOfficeProjectBudgetsByCategoryAndCurrency
 };
