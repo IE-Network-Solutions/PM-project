@@ -26,7 +26,8 @@ async function ConsumeFromRabbit(routingKeys = []) {
       userService.createUser(JSON.parse(data.content.toString()));
     } else if (data.fields.routingKey.includes('user') && data.fields.routingKey.includes('update')) {
       userService.updateUser(JSON.parse(data.content.toString()));
-    } else if (data.fields.routingKey.includes('project_budget') && data.fields.routingKey.includes('createOrupdate')) {
+    } else if (data.fields.routingKey.includes('project_budget') ) {
+      // && data.fields.routingKey.includes('createOrupdate')
       // let projectBudget = {};
       // projectBudget.amount = JSON.parse(data.content.toString()).amount;
       // projectBudget.projectId = JSON.parse(data.content.toString()).project_id;
