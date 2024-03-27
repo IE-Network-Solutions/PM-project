@@ -7,7 +7,8 @@ const findAll = require('./Plugins/findAll');
 const services = require('./index');
 const projectService = require('./project.service')
 const { v4: uuidv4 } = require('uuid');
-const { currencyService, budgetCategoryService, budgetSessionService } = require("./index")
+const { currencyService, budgetCategoryService, budgetSessionService } = require("./index");
+const { reject } = require('./approval.service');
 
 
 const montlyBudgetRepository = dataSource.getRepository(monthlyBudget).extend({
@@ -635,6 +636,41 @@ const approvalStage = await approvalStageRepository
     return budgets
 }
 
+const approveOpprationProjects= async (budgetData)=>{
+ 
+ for(const item of budgetData){
+ 
+  const budget =  await  budgetRepository.find({where:{projectId: item.project_id},relations:['group']})
+  const filterdBudget=budget.filter((element)=> element.group.from===item.from&&element.group.to===item.to)
+  if(filterdBudget.length!==0){
+  for(const oneFilterdBudget of filterdBudget){
+  const moduleId= oneFilterdBudget.group.id
+  const moduleName="ProjectBudget"
+  const approvedata= await services.approvalService.approve(moduleName,moduleId)
+  if(approvedata){
+    item.approved=true
+  }
+  else{
+    item.approved=true
+  }
+  console.log(approvedata,"approvedataapprovedata")
+
+  }
+ }
+ }
+ const saveTomonthlyBudget = await montlyBudgetRepository.create({
+  budgetsData:budgetData,
+  approved:true,
+ rejected:false,
+
+ approvalStageId:"",
+ from:"",
+ to:""
+
+});
+//return budget
+}
+
 module.exports = {
   createMontlyBudget,
   getMonthlyBudgets,
@@ -650,5 +686,6 @@ module.exports = {
   getMontlyOficeBudgetById,
   deleteOfficeMontlyBudget,
   getBudgetsummary,
-  getMonthlyBudgetLevelTwoApproved
+  getMonthlyBudgetLevelTwoApproved,
+  approveOpprationProjects
 }
