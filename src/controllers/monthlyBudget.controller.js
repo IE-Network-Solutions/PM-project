@@ -194,9 +194,9 @@ const deleteOfficeMontlyBudget=catchAsync(async(req,res)=>{
      const monthlyBudgetData = await monthlyBudgetService.approveOpprationProjects(req.body);
      
    
-     if (!monthlyBudgetData) {
-       throw new ApiError(httpStatus.NOT_FOUND, 'no monthly budget exist');
-     }
+    //  if (!monthlyBudgetData) {
+    //    throw new ApiError(httpStatus.NOT_FOUND, 'no monthly budget exist');
+    //  }
    
      res.status(200).json(monthlyBudgetData);
    });
