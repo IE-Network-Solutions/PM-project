@@ -95,8 +95,7 @@ const createPaymentTerm = async (paymentTermBody, milestone) => {
   paymentTerm.milestone = milestone;
 
   paymentTerm.bugetType = await getBudgetType(paymentTerm.budgetTypeId);
-  console.log(paymentTerm.bugetType);
-  publishToRabbit('project.paymentTerm', paymentTerm);
+  await publishToRabbit('project.paymentTerm', paymentTerm);
   return paymentTerm;
 };
 /**

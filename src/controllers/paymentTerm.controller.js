@@ -18,14 +18,15 @@ const { paymentTerm } = require('../models');
  * @returns {Promise<void>} A Promise that resolves with the created payment terms.
  */
 const createPaymentTerm = catchAsync(async (req, res) => {
-  const PaymntTerms = await Promise.all(
-    req.body.map(async (singelPaymentTerm) => {
+  const PaymntTerms = []
+
+    for (const singelPaymentTerm of req.body) {
       milestone = singelPaymentTerm.milestone;
       delete singelPaymentTerm.milestone;
       const PaymentTerm = await paymentTermService.createPaymentTerm(singelPaymentTerm, milestone);
-      return PaymentTerm;
-    })
-  );
+      PaymntTerms.push(PaymentTerm)
+    }
+
 
   res.status(httpStatus.CREATED).json(PaymntTerms);
 });
