@@ -4,6 +4,8 @@ const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { monthlyBudgetService } = require('../services');
 const { budgetSessionService } = require('../services');
+const { groupAllOfficeProjectBudgetsByCategoryAndCurrency } = require('../services/budget.service');
+
 /**
  * @module monthlyBudget
  */
@@ -176,7 +178,9 @@ const deleteOfficeMontlyBudget=catchAsync(async(req,res)=>{
   })
 
   const getBudgetsummary = catchAsync(async (req, res) => {  
-    const monthlyBudgetData = await monthlyBudgetService.getBudgetsummary();
+   const montlyOfficeBudget = await groupAllOfficeProjectBudgetsByCategoryAndCurrency()
+    const monthlyBudgetData = await monthlyBudgetService.getBudgetsummary(montlyOfficeBudget);
+    
   
     if (!monthlyBudgetData) {
       throw new ApiError(httpStatus.NOT_FOUND, 'no monthly budget exist');
