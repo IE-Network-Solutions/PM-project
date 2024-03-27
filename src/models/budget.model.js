@@ -8,6 +8,7 @@ class Budget extends Base {
     this.description = { type: 'text' };
     this.amount = { type: 'double precision' };
     this.currencyId={type:'int',nullable:false}
+    this.projectId={type:'uuid',nullable:false}
   }
 }
 
