@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Budget, BudgetGroup, Task, projectBudget } = require('../models');
+const { Budget, BudgetGroup, Task, projectBudget, monthlyBudget } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -21,6 +21,11 @@ const budgetGroupRepository = dataSource.getRepository(BudgetGroup).extend({
 });
 
 const projectBudgetRepository = dataSource.getRepository(projectBudget).extend({
+  findAll,
+  sortBy,
+});
+
+const groupProjectBudgetByCategoryAndCurrencyRepository = dataSource.getRepository(monthlyBudget).extend({
   findAll,
   sortBy,
 });
@@ -835,6 +840,21 @@ const getBudgetsByGroup = async (groupId) => {
   return budgets;
 };
 
+/**
+ * Group all office project budgets by category and currency..
+ * @function
+ * @async
+ * @param {string}
+ * @returns {Promise<object[]>} - An array of budget group objects associated currency and budget.
+ */
+const groupAllOfficeProjectBudgetsByCategoryAndCurrency = async () => {
+  const activeSession = await services.budgetSessionService.activeBudgetSession();
+  const startDate = activeSession.startDate;
+  const endDate = activeSession.endDate;
+  const budgets = await groupProjectBudgetByCategoryAndCurrencyRepository.find({ where: { isOffice: true, from: startDate, to: endDate }});
+  return budgets;
+};
+
 module.exports = {
   createBudget,
   getBudgets,
@@ -855,4 +875,5 @@ module.exports = {
   masterBudget,
   filterBudget,
   getBudgetsOfficeOfProjects,
+  groupAllOfficeProjectBudgetsByCategoryAndCurrency
 };
