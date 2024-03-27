@@ -23,11 +23,15 @@ const budgetCategoryTypeRepository = dataSource.getRepository(budgetCategoryType
  * @param {object} budgetCategoryData - The data for the budget category.
  * @returns {Promise<object>} - A promise that resolves with the saved budget category.
  */
-const createBudgetCategory = async (budgetCategoryData) => {
+const createBudgetCategory = async (budgetCategoryData, budgetcategoryType) => {
   const budgetCategory = budgetCategoryRepository.create(budgetCategoryData);
-  console.log('hereeeeeee');
-  publishToRabbit('budget.category', budgetCategory);
-  return await budgetCategoryRepository.save(budgetCategory);
+  const budgetCategorySaved = await budgetCategoryRepository.save(budgetCategory);
+  publishToRabbit('budget.category', {
+    ...budgetCategorySaved,
+    slug: budgetCategorySaved.budgetCategorySlug,
+    budgetCategoryType: budgetcategoryType,
+  });
+  return;
 };
 /**
  * Retrieves all budget categories.
