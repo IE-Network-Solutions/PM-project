@@ -126,15 +126,16 @@ const updateProjectBudget = async (projectBudgetID, data) => {
 const updateOrCreateProjectBudget = async (projectBudgets) => {
   for (const projectBudget of JSON.parse(projectBudgets)) {
     const projectBudgetData = await getProjectBudget(projectBudget.id);
-
     const data = {};
+    data.id=await projectBudget.id;
     data.amount = await projectBudget.amount;
     data.projectId = await projectBudget.project_id;
     data.currencyId = await projectBudget.currency_id;
     data.budgetCategoryId = await projectBudget.budget_category_id;
-
     if (!projectBudgetData) {
-      projectBudgetRepository.create(data);
+  const createdProjectBudget=    projectBudgetRepository.create(data);
+      await projectBudgetRepository.save(createdProjectBudget)
+
     } else {
       projectBudgetRepository.update({ id: projectBudget.id }, data);
     }

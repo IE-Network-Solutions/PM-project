@@ -7,6 +7,7 @@ class Budget extends Base {
     super(); // Call the constructor of the Base entity to inherit its properties
     this.description = { type: 'text' };
     this.amount = { type: 'double precision' };
+    this.currencyId={type:'int',nullable:false}
   }
 }
 
