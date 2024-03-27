@@ -21,8 +21,9 @@ const createBudgetCategory = catchAsync(async (req, res) => {
     const budgetcategoryType = await budgetCategoryTypeService.getBudgetCategoryType(data.budgetCategoryTypeId);
     data.budgetCategoryType = budgetcategoryType;
     data.budgetCategorySlug = data.budgetCategoryName.toLowerCase().replace(/\s/g, '_');
+    let budgetCategoryTypeId = data.budgetCategoryTypeId;
     delete data.budgetCategoryTypeId;
-    const budgetCategory = await budgetCategoryService.createBudgetCategory(req.body);
+    const budgetCategory = await budgetCategoryService.createBudgetCategory(req.body, budgetCategoryTypeId);
     res.status(httpStatus.CREATED).send(budgetCategory);
   } catch (error) {
     throw error;

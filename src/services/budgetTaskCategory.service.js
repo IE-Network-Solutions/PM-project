@@ -4,6 +4,7 @@ const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const publishToRabbit = require('../utils/producer');
 
 const budgetTaskCategoryRepository = dataSource.getRepository(BudgetTaskCategory).extend({
   findAll,
@@ -20,7 +21,10 @@ const budgetTaskCategoryRepository = dataSource.getRepository(BudgetTaskCategory
  */
 const createBudgetTaskCategory = async (budgetTaskCategoryData) => {
   const budgetTaskCategory = budgetTaskCategoryRepository.create(budgetTaskCategoryData);
-  return await budgetTaskCategoryRepository.save(budgetTaskCategory);
+  const finalBudgetTaskCategory=await budgetTaskCategoryRepository.save(budgetTaskCategory);
+  publishToRabbit('budget.taskCategory', { ...finalBudgetTaskCategory, budgetTypeId: finalBudgetTaskCategory.budgetType.id });
+
+  return finalBudgetTaskCategory
 };
 /**
  * Retrieves all budget task categories.

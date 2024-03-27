@@ -370,17 +370,70 @@ const seedPermission = async () => {
       slug: 'ask_budget_approval',
       permissionResourceId: 1,
     },
+//office budget
+
+{
+permissionName: "Ask Monthly Office Budget Approval ",
+  slug: "ask_monthly_office_budget_approval",
+  permissionResourceId: 1
+},
+{
+permissionName: "Create Monthly Office Budget",
+  slug: "create_monthly_office_budget",
+  permissionResourceId: 1
+},
+{
+permissionName: "Edit Monthly Office Budget",
+  slug: "edit_monthly_office_budget",
+  permissionResourceId: 1
+},
+{
+permissionName: "Delete Monthly Office Budget",
+  slug: "delete_monthly_office_budget",
+  permissionResourceId: 1
+},
+{
+permissionName: "Ask Quarterly Office Budget Approval ",
+  slug: "ask_quarterly_office_budget_approval",
+  permissionResourceId: 1
+},
+{
+permissionName: "Create Quarterly Office Budget",
+  slug: "create_quarterly_office_budget",
+  permissionResourceId: 1
+},
+{
+permissionName: "Edit Quarterly Office Budget",
+  slug: "edit_quarterly_office_budget",
+  permissionResourceId: 1
+},
+{
+permissionName: "Delete Quarterly Office Budget",
+  slug: "delete_quarterly_office_budget",
+  permissionResourceId: 1
+}
+
+
   ];
-  const permissions = permissionData.map((permissionData) => {
+  const permissions = await Promise.all (permissionData.map(async(permissionData) => {
+
     try{
-    const permission = permissionRepository.create(permissionData);
+  const  permissionExists =  await permissionRepository.findOne({where:{slug:permissionData.slug}})
+  
+  let permission;
+      if(!permissionExists){
+    
+       permission = permissionRepository.create(permissionData);
+        
+      }
     return permission;
     } catch (error){
     }
-  });
+  }));
 
-  const createdPermissions = await permissionRepository.save(permissions);
-  return createdPermissions;
+const permissionToBeCreated= permissions.filter(item=>item!==undefined)
+ const createdPermissions = await permissionRepository.save(permissionToBeCreated);
+ return createdPermissions;
 };
 /**
  * Seeds permission resources in the repository.

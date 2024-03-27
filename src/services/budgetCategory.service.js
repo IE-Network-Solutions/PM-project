@@ -4,6 +4,7 @@ const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const publishToRabbit = require('../utils/producer');
 
 const budgetCategoryRepository = dataSource.getRepository(BudgetCategory).extend({
   findAll,
@@ -22,9 +23,15 @@ const budgetCategoryTypeRepository = dataSource.getRepository(budgetCategoryType
  * @param {object} budgetCategoryData - The data for the budget category.
  * @returns {Promise<object>} - A promise that resolves with the saved budget category.
  */
-const createBudgetCategory = async (budgetCategoryData) => {
+const createBudgetCategory = async (budgetCategoryData, budgetcategoryType) => {
   const budgetCategory = budgetCategoryRepository.create(budgetCategoryData);
-  return await budgetCategoryRepository.save(budgetCategory);
+  const budgetCategorySaved = await budgetCategoryRepository.save(budgetCategory);
+  publishToRabbit('budget.category', {
+    ...budgetCategorySaved,
+    slug: budgetCategorySaved.budgetCategorySlug,
+    budgetCategoryType: budgetcategoryType,
+  });
+  return;
 };
 /**
  * Retrieves all budget categories.

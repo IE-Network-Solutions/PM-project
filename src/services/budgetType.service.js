@@ -4,6 +4,7 @@ const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
 const findAll = require('./Plugins/findAll');
+const publishToRabbit = require('../utils/producer');
 
 const budgetTypeRepository = dataSource.getRepository(BudgetType).extend({
   findAll,
@@ -20,6 +21,7 @@ const budgetTypeRepository = dataSource.getRepository(BudgetType).extend({
  */
 const createBudgetType = async (budgetTypeData) => {
   const budgetType = budgetTypeRepository.create(budgetTypeData);
+  publishToRabbit('budget.type',budgetType)
   return await budgetTypeRepository.save(budgetType);
 };
 

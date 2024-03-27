@@ -14,17 +14,17 @@ router
 
 router.route('/month').get(monthlyBudgetController.getMonthlyBudgetByMonth);
 router
-  .route('/officProject').post(authPermision.createProjectBudgetMiddleware, monthlyBudgetController.createOfficeMonthlyBudget)
+  .route('/officProject').post(authPermision.createMonthlyOfficeBudgetMiddleware, monthlyBudgetController.createOfficeMonthlyBudget)
 router.route('/month/project').get(monthlyBudgetController.getMonthlyBudgetByMonthGroupedByProject);
 router.route('/month/officProject').get(monthlyBudgetController.getMonthlyBudgetByMonthGroupedByProjectOfficeProject);
 
 router.route('/:id').patch(authPermision.editProjectBudgetMiddleware, monthlyBudgetController.updateMonthlyBudget);
-router.route('/officProject/:id').patch(monthlyBudgetController.updateOfficeMonthlyBudget).
-delete(monthlyBudgetController.deleteOfficeMontlyBudget);
+router.route('/officProject/:id').patch(authPermision.editMonthlyOfficeBudgetMiddleware,  monthlyBudgetController.updateOfficeMonthlyBudget).
+delete(authPermision.deleteMonthlyOfficeBudgetMiddleware,  monthlyBudgetController.deleteOfficeMontlyBudget);
 
 router
     .route('/officeBudegtAskForApproval/:id')
-    .post(monthlyBudgetController.RequestApprovalOfficeMonthlyBudget)
+    .post(authPermision.askMonthlyOfficeBudgetApprovalMiddleware , monthlyBudgetController.RequestApprovalOfficeMonthlyBudget)
 router.route('/officProject/:projectId').get(monthlyBudgetController.getMonthlyBudgetByProject);
 router.route('/budgetSummary').get(monthlyBudgetController.getBudgetsummary);
 
