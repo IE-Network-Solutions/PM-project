@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Budget, BudgetGroup, Task, monthlyBudget, ApprovalStage, ApprovalModule, OfficeQuarterlyBudget } = require('../models');
+const { Budget, BudgetGroup, Task, monthlyBudget, ApprovalStage, ApprovalModule, OfficeQuarterlyBudget, Currency } = require('../models');
 const dataSource = require('../utils/createDatabaseConnection');
 const ApiError = require('../utils/ApiError');
 const sortBy = require('../utils/sorter');
@@ -516,11 +516,85 @@ const calculateRemainingAmount = async (monthlyBudgetBody, montlBudgetUpdate) =>
 
 }
 const getBudgetsummary = async () => {
+
+  //console.log(montlyOfficeBudget,"montlyOfficeBudget")
+  let finalArray=[]
   let MontlyBudgetData=[]
   let totalAmountSum={}
   let data={}
   const activeSession = await budgetSessionService.activeBudgetSession()
-  
+  const montlyOfficeBudget= await montlyBudgetRepository.find({where:{isOffice:true,from: activeSession.startDate,to:activeSession.endDate }})
+ const budgets= await getMonthlyBudgetLevelTwoApproved()
+    const sums = {};
+  budgets.map((budget) => {
+    (budget.from = activeSession.startDate), (budget.to = activeSession.endDate);
+    const currencyId = budget.currency_id;
+        const amount = budget.sum;
+
+        // If the currency ID already exists in the sums object, add the amount to it
+        const { currency_id, currency_name, sum } = budget;
+
+        // If the currency ID already exists in the sums object, add the amount to it
+        if (sums[currency_id]) {
+            sums[currency_id].amount += sum;
+        } else {
+            // If not, initialize the sum for that currency ID
+            sums[currency_id] = { name: currency_name, amount: sum };
+        }
+        
+        return sums;
+    });
+
+    totalAmountSum.projectName="allOpration"
+    totalAmountSum.currency=  Object.values(sums)
+totalAmountSum.montlyData=budgets
+  finalArray.push(totalAmountSum)
+
+
+  for (const item of montlyOfficeBudget) {
+    item.currency = [];
+    const projectId = item.budgetsData[0].projectId;
+
+    // Fetch project name
+    const project = await projectService.getProject(projectId);
+    item.projectName = project.name;
+    item.projectId=project.id
+
+    // Iterate through budgetsData of each item
+    for (const budget of item.budgetsData) {
+        const { currencyId, budgetAmount } = budget;
+        // If currencyId is not present, skip
+        if (!currencyId) continue;
+
+        // Fetch currency details
+        const currency = await currencyService.getCurrencyById(currencyId);
+
+        // Check if aggregatedBudgets already has this currency
+        const existingCurrency = item.currency.find(c => c.name === currency.name);
+        if (existingCurrency) {
+            // If exists, add the budget amount to the existing total
+            existingCurrency.amount += parseFloat(budgetAmount);
+        } else {
+            // If not, create a new entry for this currency
+            item.currency.push({
+                name: currency.name,
+                amount: parseFloat(budgetAmount)
+            });
+        }
+    }
+}
+
+  for (const item of montlyOfficeBudget) {
+    delete item.budgetsData
+    finalArray.push(item)
+  }
+
+  return finalArray;
+ 
+};
+const getMonthlyBudgetLevelTwoApproved= async( )=>{
+  const activeSession = await budgetSessionService.activeBudgetSession()
+
 const module="ProjectBudget"
 const approvalLevel= await approvalModuleRepository.findOne({where:{moduleName:module}})
 
@@ -557,72 +631,9 @@ const approvalStage = await approvalStageRepository
     .addGroupBy('group.to')
     .addGroupBy('group.from')
     .getRawMany();
-    const sums = {};
-  
-  budgets.map((budget) => {
-    (budget.from = activeSession.startDate), (budget.to = activeSession.endDate);
-    const currencyId = budget.currency_id;
-        const amount = budget.sum;
 
-        // If the currency ID already exists in the sums object, add the amount to it
-        const { currency_id, currency_name, sum } = budget;
-
-        // If the currency ID already exists in the sums object, add the amount to it
-        if (sums[currency_id]) {
-            sums[currency_id].amount += sum;
-        } else {
-            // If not, initialize the sum for that currency ID
-            sums[currency_id] = { name: currency_name, amount: sum };
-        }
-        
-        return sums;
-    });
-
-    totalAmountSum.name="allOpration"
-    totalAmountSum.currency=  Object.values(sums)
-totalAmountSum.montlyData=budgets
-
-
-  // const projectBudget = await budgetRepository.find({relations:['group','budgetCategory','taskCategory','currency']})
-  // const approvedBudgets=projectBudget.filter(item=>item.group.approved===true && item.group.from===activeSession.startDate && item.group.to===activeSession.endDate )
-  // const groupedBudget = {};
-
-  // approvedBudgets.forEach(item => {
-  //     const currencyId = item.currencyId;
-  //     if (!groupedBudget[currencyId]) {
-  //       groupedBudget[currencyId] = [];
-  //       groupedBudget[currencyId] = {
-  //         approvedBudgets: [],
-  //         totalAmount: 0
-  //     };
-
-  //     }
-  //     groupedBudget[currencyId].approvedBudgets.push(item);
-  //     groupedBudget[currencyId].totalAmount+=item.amount
-  // });
-
-  return totalAmountSum;
-
-
-//  let  groupedData={}
-
-//   approvedBudgets.map((item=>{
-  
-//     if(groupedData[item.currencyId]){
-//       let totalammount=0
-//       totalammount=totalammount+item.amount
-
-//     }
-//     else{
-//       let totalammount=0
-//       totalammount=amount
-//     }
-//   }))
-  return approvedBudgets
-  ///filter approved then
-///group this by currency id 
- 
-};
+    return budgets
+}
 
 module.exports = {
   createMontlyBudget,
@@ -638,5 +649,6 @@ module.exports = {
   RequestApprovalOfficeMonthlyBudget,
   getMontlyOficeBudgetById,
   deleteOfficeMontlyBudget,
-  getBudgetsummary
+  getBudgetsummary,
+  getMonthlyBudgetLevelTwoApproved
 }
