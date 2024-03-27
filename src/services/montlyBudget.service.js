@@ -524,7 +524,7 @@ const getBudgetsummary = async () => {
   let totalAmountSum={}
   let data={}
   const activeSession = await budgetSessionService.activeBudgetSession()
-  const montlyOfficeBudget= await montlyBudgetRepository.find({where:{isOffice:true,from: activeSession.startDate,to:activeSession.endDate }})
+  const montlyOfficeBudget= await montlyBudgetRepository.find({where:{isOffice:true,from: activeSession.startDate,to:activeSession.endDate },relations:['approvalStage','approvalStage.role']})
  const budgets= await getMonthlyBudgetLevelTwoApproved()
     const sums = {};
   budgets.map((budget) => {
@@ -545,7 +545,7 @@ const getBudgetsummary = async () => {
         
         return sums;
     });
-
+   
     totalAmountSum.projectName="allOpration"
     totalAmountSum.isOffice=false
     totalAmountSum.currency=  Object.values(sums)
@@ -555,6 +555,15 @@ const getBudgetsummary = async () => {
     else{
       totalAmountSum.approved=true
     }
+    totalAmountSum.approvalSatge={}
+    totalAmountSum.approvalSatge.role={}
+    totalAmountSum.approvalSatge.id=  budgets[0].approvalStage_id
+    totalAmountSum.approvalSatge.level=budgets[0].approvalStage_level
+    totalAmountSum.approvalSatge.roleId=budgets[0].approvalStage_roleId
+    totalAmountSum.approvalSatge.role.id=  budgets[0].role_id
+    totalAmountSum.approvalSatge.role.roleName=budgets[0].role_roleName
+   
+    
 totalAmountSum.montlyData=budgets
   finalArray.push(totalAmountSum)
   for (const item of montlyOfficeBudget) {
@@ -620,6 +629,8 @@ const approvalStage = await approvalStageRepository
     .leftJoinAndSelect('budget.group', 'group')
     .leftJoinAndSelect('group.project', 'project')
     .leftJoinAndSelect('budget.currency', 'currency') // Add this line to join the currency relation
+    .leftJoinAndSelect('group.approvalStage' ,'approvalStage')
+    .leftJoinAndSelect('approvalStage.role' ,'role')
     .where('group.from = :from', { from: activeSession.startDate })
     .andWhere('group.to = :to', { to: activeSession.endDate })
     .andWhere('group.approvalStageId = :approvalStageId', {approvalStageId: approvalStage.id })
@@ -633,12 +644,17 @@ const approvalStage = await approvalStageRepository
     .addSelect('project.id', 'project_id')
     .addSelect('project.name', 'project_name')
     .addSelect('project.isOffice', 'isOffice')
+   .addSelect('approvalStage' ,'approvalStage')
+   .addSelect('role' ,'role')
     .groupBy('currency.id') // Group by the currency ID
     .addGroupBy('taskCategory.id')
     .addGroupBy('project.id')
     .addGroupBy('group.to')
     .addGroupBy('group.from')
     .addGroupBy('group.approved')
+    .addGroupBy('approvalStage.id')
+    .addGroupBy('role.id')
+    
     .getRawMany();
 
     return budgets
