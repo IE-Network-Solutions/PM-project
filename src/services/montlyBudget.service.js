@@ -27,6 +27,14 @@ const officeQuarterlyBudgetRepository = dataSource.getRepository(OfficeQuarterly
   findAll,
   sortBy,
 });
+const budgetGroupRepository = dataSource.getRepository(BudgetGroup).extend({
+  findAll,
+  sortBy,
+});
+const budgetRepository = dataSource.getRepository(Budget).extend({
+  findAll,
+  sortBy,
+});
 /**
  * @module monthlyBudget
  */
@@ -130,6 +138,10 @@ const createMontlyOfficeBudget = async (monthlyBudgetBody) => {
 
             // Update remaining_amount by subtracting budgetAmount
             existingBudget.remaining_amount -= newBudget.budgetAmount;
+          }
+          else{
+             
+            throw new ApiError(httpStatus.NOT_FOUND, 'Quarterly Budget For This Currency And Category Does Not Exist');
           }
         }
       }
@@ -295,6 +307,9 @@ const updateMonthlyBudget = async (id, updatedData) => {
  */
 const updateOfficeMonthlyBudget = async (id, updatedData) => {
   const budgetToBeUpdated = await montlyBudgetRepository.findOne({ where: { id: id } })
+  if(!budgetToBeUpdated){
+    throw new ApiError(httpStatus.NOT_FOUND, 'Montly budget Does Not Exist');
+  }
   const filteredBudget = budgetToBeUpdated.budgetsData.filter(item => item.id === updatedData.id)
   const amountToBeSubtracted = updatedData.budgetAmount - filteredBudget[0].budgetAmount
   const fromDate = new Date(updatedData.from);
@@ -329,6 +344,11 @@ const updateOfficeMonthlyBudget = async (id, updatedData) => {
           }
           // Update remaining_amount by subtracting budgetAmount
           existingBudget.remaining_amount -= amountToBeSubtracted;
+        }
+        else {
+    
+            throw new ApiError(httpStatus.NOT_FOUND, ' Quarterly Budget For This Currency And Category Does Not Exist');
+     
         }
       }
 
@@ -454,9 +474,12 @@ const deleteOfficeMontlyBudget = async (id, budgetId) => {
       await montlyBudgetRepository.delete({ id: id })
 
     }
-
+    return await getMontlyOficeBudgetById(id);
   }
-  return await getMontlyOficeBudgetById(id);
+  else{
+    throw new ApiError(httpStatus.NOT_FOUND, ' Quarterly Budget Does Not Exist');
+  }
+ 
 
 }
 const calculateRemainingAmount = async (monthlyBudgetBody, montlBudgetUpdate) => {
@@ -488,10 +511,51 @@ const calculateRemainingAmount = async (monthlyBudgetBody, montlBudgetUpdate) =>
     }
     await officeQuarterlyBudgetRepository.update({ id: existingQuarterlyBudget.id }, { budgetsData: existingQuarterlyBudget.budgetsData });
     return existingQuarterlyBudget
-  }
+  }``
 
 }
+const getBudgetsummary = async () => {
+  const activeSession = await budgetSessionService.activeBudgetSession()
+  const projectBudget = await budgetRepository.find({relations:['group']})
+  const approvedBudgets=projectBudget.filter(item=>item.group.approved===true && item.group.from===activeSession.startDate && item.group.to===activeSession.endDate )
+  const groupedBudget = {};
 
+  approvedBudgets.forEach(item => {
+      const currencyId = item.currencyId;
+      if (!groupedBudget[currencyId]) {
+        groupedBudget[currencyId] = [];
+        groupedBudget[currencyId] = {
+          approvedBudgets: [],
+          totalAmount: 0
+      };
+
+      }
+      groupedBudget[currencyId].approvedBudgets.push(item);
+      groupedBudget[currencyId].totalAmount+=item.amount
+  });
+
+  return groupedBudget;
+
+
+//  let  groupedData={}
+
+//   approvedBudgets.map((item=>{
+  
+//     if(groupedData[item.currencyId]){
+//       let totalammount=0
+//       totalammount=totalammount+item.amount
+
+//     }
+//     else{
+//       let totalammount=0
+//       totalammount=amount
+//     }
+//   }))
+  return approvedBudgets
+  ///filter approved then
+///group this by currency id 
+ 
+};
 
 module.exports = {
   createMontlyBudget,
@@ -506,5 +570,6 @@ module.exports = {
   updateOfficeMonthlyBudget,
   RequestApprovalOfficeMonthlyBudget,
   getMontlyOficeBudgetById,
-  deleteOfficeMontlyBudget
+  deleteOfficeMontlyBudget,
+  getBudgetsummary
 }
