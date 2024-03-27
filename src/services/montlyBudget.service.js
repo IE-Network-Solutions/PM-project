@@ -35,6 +35,7 @@ const budgetRepository = dataSource.getRepository(Budget).extend({
   findAll,
   sortBy,
 });
+
 /**
  * @module monthlyBudget
  */
@@ -500,26 +501,92 @@ const calculateRemainingAmount = async (monthlyBudgetBody, montlBudgetUpdate) =>
 
 }
 const getBudgetsummary = async () => {
+  let MontlyBudgetData=[]
+  let totalAmountSum={}
+  let data={}
   const activeSession = await budgetSessionService.activeBudgetSession()
-  const projectBudget = await budgetRepository.find({relations:['group']})
-  const approvedBudgets=projectBudget.filter(item=>item.group.approved===true && item.group.from===activeSession.startDate && item.group.to===activeSession.endDate )
-  const groupedBudget = {};
+  
+const module="ProjectBudget"
+const approvalLevel= await approvalModuleRepository.findOne({where:{moduleName:module}})
 
-  approvedBudgets.forEach(item => {
-      const currencyId = item.currencyId;
-      if (!groupedBudget[currencyId]) {
-        groupedBudget[currencyId] = [];
-        groupedBudget[currencyId] = {
-          approvedBudgets: [],
-          totalAmount: 0
-      };
+const level = approvalLevel.max_level ;
 
-      }
-      groupedBudget[currencyId].approvedBudgets.push(item);
-      groupedBudget[currencyId].totalAmount+=item.amount
-  });
+const approvalStage = await approvalStageRepository
+    .createQueryBuilder('approval_stage')
+    .leftJoin('approval_stage.approvalModule', 'approvalModule')
+    .leftJoin('approval_stage.role', 'role')
+    .where('approvalModule.moduleName = :moduleName', { moduleName: module })
+    .andWhere('approval_stage.level = :level', { level })
+    .getOne();
+    const budgets = await budgetRepository
+    .createQueryBuilder('budget')
+    .leftJoinAndSelect('budget.taskCategory', 'taskCategory')
+    .leftJoinAndSelect('budget.group', 'group')
+    .leftJoinAndSelect('group.project', 'project')
+    .leftJoinAndSelect('budget.currency', 'currency') // Add this line to join the currency relation
+    .where('group.from = :from', { from: activeSession.startDate })
+    .andWhere('group.to = :to', { to: activeSession.endDate })
+    .andWhere('group.approvalStageId = :approvalStageId', {approvalStageId: approvalStage.id })
+    .select('SUM(budget.amount)', 'sum')
+    .addSelect('currency.id', 'currency_id') // Select the currency ID
+    .addSelect('currency.name', 'currency_name') // Select the currency name
+    .addSelect('taskCategory', 'taskCategory')
+    .addSelect('group.from', 'group_from')
+    .addSelect('group.to', 'group_to')
+    .addSelect('project.id', 'project_id')
+    .addSelect('project.name', 'project_name')
+    .addSelect('project.isOffice', 'isOffice')
+    .groupBy('currency.id') // Group by the currency ID
+    .addGroupBy('taskCategory.id')
+    .addGroupBy('project.id')
+    .addGroupBy('group.to')
+    .addGroupBy('group.from')
+    .getRawMany();
+    const sums = {};
+  
+  budgets.map((budget) => {
+    (budget.from = activeSession.startDate), (budget.to = activeSession.endDate);
+    const currencyId = budget.currency_id;
+        const amount = budget.sum;
 
-  return groupedBudget;
+        // If the currency ID already exists in the sums object, add the amount to it
+        const { currency_id, currency_name, sum } = budget;
+
+        // If the currency ID already exists in the sums object, add the amount to it
+        if (sums[currency_id]) {
+            sums[currency_id].amount += sum;
+        } else {
+            // If not, initialize the sum for that currency ID
+            sums[currency_id] = { name: currency_name, amount: sum };
+        }
+        
+        return sums;
+    });
+
+    totalAmountSum.name="allOpration"
+    totalAmountSum.currency=  Object.values(sums)
+totalAmountSum.montlyData=budgets
+
+
+  // const projectBudget = await budgetRepository.find({relations:['group','budgetCategory','taskCategory','currency']})
+  // const approvedBudgets=projectBudget.filter(item=>item.group.approved===true && item.group.from===activeSession.startDate && item.group.to===activeSession.endDate )
+  // const groupedBudget = {};
+
+  // approvedBudgets.forEach(item => {
+  //     const currencyId = item.currencyId;
+  //     if (!groupedBudget[currencyId]) {
+  //       groupedBudget[currencyId] = [];
+  //       groupedBudget[currencyId] = {
+  //         approvedBudgets: [],
+  //         totalAmount: 0
+  //     };
+
+  //     }
+  //     groupedBudget[currencyId].approvedBudgets.push(item);
+  //     groupedBudget[currencyId].totalAmount+=item.amount
+  // });
+
+  return totalAmountSum;
 
 
 //  let  groupedData={}
