@@ -21,7 +21,7 @@ const budgetTaskCategoryRepository = dataSource.getRepository(BudgetTaskCategory
  */
 const createBudgetTaskCategory = async (budgetTaskCategoryData) => {
   const budgetTaskCategory = budgetTaskCategoryRepository.create(budgetTaskCategoryData);
-  publishToRabbit('budget.category',budgetTaskCategory)
+  publishToRabbit('budget.taskCategory', budgetTaskCategory);
   return await budgetTaskCategoryRepository.save(budgetTaskCategory);
 };
 /**
