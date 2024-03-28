@@ -7,7 +7,8 @@ const findAll = require('./Plugins/findAll');
 const services = require('./index');
 const projectService = require('./project.service')
 const { v4: uuidv4 } = require('uuid');
-const { currencyService, budgetCategoryService, budgetSessionService } = require("./index")
+const { currencyService, budgetCategoryService, budgetSessionService } = require("./index");
+const { reject } = require('./approval.service');
 
 
 const montlyBudgetRepository = dataSource.getRepository(monthlyBudget).extend({
@@ -523,7 +524,7 @@ const getBudgetsummary = async () => {
   let totalAmountSum={}
   let data={}
   const activeSession = await budgetSessionService.activeBudgetSession()
-  const montlyOfficeBudget= await montlyBudgetRepository.find({where:{isOffice:true,from: activeSession.startDate,to:activeSession.endDate }})
+  const montlyOfficeBudget= await montlyBudgetRepository.find({where:{isOffice:true,from: activeSession.startDate,to:activeSession.endDate },relations:['approvalStage','approvalStage.role']})
  const budgets= await getMonthlyBudgetLevelTwoApproved()
     const sums = {};
   budgets.map((budget) => {
@@ -544,13 +545,27 @@ const getBudgetsummary = async () => {
         
         return sums;
     });
-
+   
     totalAmountSum.projectName="allOpration"
+    totalAmountSum.isOffice=false
     totalAmountSum.currency=  Object.values(sums)
+    if(budgets.includes((item=>item.approved===false))){ 
+      totalAmountSum.approved=false
+    }
+    else{
+      totalAmountSum.approved=true
+    }
+    totalAmountSum.approvalSatge={}
+    totalAmountSum.approvalSatge.role={}
+    totalAmountSum.approvalSatge.id=  budgets[0].approvalStage_id
+    totalAmountSum.approvalSatge.level=budgets[0].approvalStage_level
+    totalAmountSum.approvalSatge.roleId=budgets[0].approvalStage_roleId
+    totalAmountSum.approvalSatge.role.id=  budgets[0].role_id
+    totalAmountSum.approvalSatge.role.roleName=budgets[0].role_roleName
+   
+    
 totalAmountSum.montlyData=budgets
   finalArray.push(totalAmountSum)
-
-
   for (const item of montlyOfficeBudget) {
     item.currency = [];
     const projectId = item.budgetsData[0].projectId;
@@ -593,6 +608,7 @@ totalAmountSum.montlyData=budgets
  
 };
 const getMonthlyBudgetLevelTwoApproved= async( )=>{
+
   const activeSession = await budgetSessionService.activeBudgetSession()
 
 const module="ProjectBudget"
@@ -613,6 +629,8 @@ const approvalStage = await approvalStageRepository
     .leftJoinAndSelect('budget.group', 'group')
     .leftJoinAndSelect('group.project', 'project')
     .leftJoinAndSelect('budget.currency', 'currency') // Add this line to join the currency relation
+    .leftJoinAndSelect('group.approvalStage' ,'approvalStage')
+    .leftJoinAndSelect('approvalStage.role' ,'role')
     .where('group.from = :from', { from: activeSession.startDate })
     .andWhere('group.to = :to', { to: activeSession.endDate })
     .andWhere('group.approvalStageId = :approvalStageId', {approvalStageId: approvalStage.id })
@@ -622,17 +640,91 @@ const approvalStage = await approvalStageRepository
     .addSelect('taskCategory', 'taskCategory')
     .addSelect('group.from', 'group_from')
     .addSelect('group.to', 'group_to')
+   .addSelect('group.approved', 'approved')
     .addSelect('project.id', 'project_id')
     .addSelect('project.name', 'project_name')
     .addSelect('project.isOffice', 'isOffice')
+   .addSelect('approvalStage' ,'approvalStage')
+   .addSelect('role' ,'role')
     .groupBy('currency.id') // Group by the currency ID
     .addGroupBy('taskCategory.id')
     .addGroupBy('project.id')
     .addGroupBy('group.to')
     .addGroupBy('group.from')
+    .addGroupBy('group.approved')
+    .addGroupBy('approvalStage.id')
+    .addGroupBy('role.id')
+    
     .getRawMany();
 
     return budgets
+}
+
+const approveOpprationProjects= async (budgetData)=>{
+  let approvedMonthlyBudget={}
+  const activeSession = await budgetSessionService.activeBudgetSession()
+ const moduleName = "ProjectBudget"
+ for(const item of budgetData){
+ 
+  const budget =  await  budgetRepository.find({where:{projectId: item.project_id},relations:['group']})
+  const filterdBudget=budget.filter((element)=> element.group.from===item.from&&element.group.to===item.to)
+  if(filterdBudget.length!==0){
+  for(const oneFilterdBudget of filterdBudget){
+  const moduleId= oneFilterdBudget.group.id
+
+  const approvedata= await services.approvalService.approve(moduleName,moduleId)
+if(approvedata.approved===true){
+  oneFilterdBudget.approved=true
+}
+else{
+  oneFilterdBudget.approved=true
+}
+ 
+
+  }
+
+ }
+ if(filterdBudget.includes((item)=>item.approved===false)){
+  item.approved=false
+ }
+ else{
+  item.approved=true
+ }
+
+ 
+ }
+//  if(item.approved===true){
+//   const saveTomonthlyBudget = await montlyBudgetRepository.create({
+//     budgetsData:budgetData,
+//     approved:true,
+//     rejected:false,
+  
+//    approvalStageId:"",
+//    from:"",
+//    to:""
+  
+//   });
+//  }
+if(budgetData.includes((item)=>item.approved===false)){
+  throw new ApiError(httpStatus.NOT_FOUND, 'Montly Budget Not Approved Yet'); 
+}
+else{
+  const moduleData= await approvalModuleRepository.findOne({where:{moduleName:moduleName}})
+  const approvalStage= await approvalStageRepository.findOne({where:{approvalModuleId:moduleData.id,level:moduleData.max_level}})
+  const saveTomonthlyBudget = await montlyBudgetRepository.create({
+    budgetsData:budgetData,
+    approved:true,
+   rejected:false,
+  
+   approvalStageId:approvalStage.id,
+   from:activeSession.startDate,
+   to:activeSession.endDate
+  
+  });
+  approvedMonthlyBudget= await montlyBudgetRepository.save(saveTomonthlyBudget)
+}
+
+return approvedMonthlyBudget
 }
 
 module.exports = {
@@ -650,5 +742,6 @@ module.exports = {
   getMontlyOficeBudgetById,
   deleteOfficeMontlyBudget,
   getBudgetsummary,
-  getMonthlyBudgetLevelTwoApproved
+  getMonthlyBudgetLevelTwoApproved,
+  approveOpprationProjects
 }
